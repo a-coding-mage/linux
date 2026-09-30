@@ -69,14 +69,39 @@ class BootArchitectureTests(unittest.TestCase):
         source = (boot.ROOT / "scripts/tests/boot_init.rs").read_text()
         aarch64 = (boot.ROOT / "include/uapi/asm-generic/unistd.h").read_text()
         x86 = (boot.ROOT / "arch/x86/entry/syscalls/syscall_64.tbl").read_text()
-        for name in ("init_module", "delete_module"):
+        for name in ("init_module", "delete_module", "uname"):
             generic = re.search(r"(?m)^#define __NR_" + name + r"\s+(\d+)\s*$", aarch64)
             native = re.search(r"(?m)^(\d+)\s+\w+\s+" + name + r"\s", x86)
             self.assertIsNotNone(generic)
             self.assertIsNotNone(native)
             for arch, number in (("aarch64", generic[1]), ("x86_64", native[1])):
-                self.assertIn(f'#[cfg(target_arch = "{arch}")]\n'
-                              f'const {name.upper()}: std::ffi::c_long = {number};', source)
+                self.assertRegex(source, re.escape(f'#[cfg(target_arch = "{arch}")]') +
+                                 r'\s+' + re.escape(f'const {name.upper()}: std::ffi::c_long = {number};'))
+
+    def test_explicit_cpu_and_boot_options_reach_qemu_without_default_override(self):
+        for arch in ("x86_64", "aarch64"):
+            with self.subTest(arch=arch), tempfile.TemporaryDirectory(prefix="boot-options-") as tmp:
+                build = Path(tmp)
+                for name in (boot.architecture(arch)[0], "usr/gen_init_cpio"):
+                    path = build / name
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(b"must not execute")
+                selected = "ARM64" if arch == "aarch64" else "X86_64"
+                (build / ".config").write_text(f"CONFIG_MULTIUSER=y\nCONFIG_PRINTK=y\nCONFIG_{selected}=y\n")
+                args = ["boot_kernel", "--build", tmp, "--arch", arch, "--cpu", "max",
+                        "--kernel-arg", "initcall_debug", "--kernel-arg", "randomize_kstack_offset=off"]
+                with mock.patch.object(sys, "argv", args), \
+                     mock.patch.object(boot.subprocess, "run"), \
+                     mock.patch.object(boot.subprocess, "Popen", side_effect=RuntimeError("before QEMU")) as popen, \
+                     self.assertRaisesRegex(RuntimeError, "before QEMU"):
+                    boot.main()
+                command = popen.call_args.args[0]
+                self.assertEqual(command.count("-cpu"), 1)
+                self.assertEqual(command[command.index("-cpu") + 1], "max")
+                self.assertEqual(command.count("-append"), 1)
+                arguments = command[command.index("-append") + 1].split()
+                self.assertEqual(arguments[-2:], ["initcall_debug", "randomize_kstack_offset=off"])
+                self.assertIn("rdinit=/init", arguments)
 
     def test_wrong_guest_config_is_rejected_before_compiler_or_writes(self):
         for arch, wrong in (("aarch64", "X86_64"), ("x86_64", "ARM64")):
@@ -296,7 +321,7 @@ class BootArchitectureTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
             result = subprocess.run([binary], capture_output=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout.decode() + result.stderr.decode())
-            self.assertIn(b"13 passed; 0 failed", result.stdout)
+            self.assertIn(b"17 passed; 0 failed", result.stdout)
         source = (boot.ROOT / "scripts/tests/boot_init.rs").read_text().split("#[cfg(test)]", 1)[0]
         self.assertNotIn("println!", source)
         self.assertNotIn("io::stdout", source)
@@ -614,6 +639,260 @@ class BootArchitectureTests(unittest.TestCase):
                     userspace.assert_not_called()
                     guests = [line.split()[1] for line in (build / 'rust-boot-test/manifest').read_text().splitlines()]
                     self.assertFalse(any(name.startswith('/cpuset') for name in guests))
+
+
+class LegacyInitrdTests(unittest.TestCase):
+    def archive(self, work):
+        generator = work / 'gen_init_cpio'
+        subprocess.run([*shlex.split(os.environ.get('HOSTCC', 'cc')), '-O2',
+                        boot.ROOT / 'usr/gen_init_cpio.c', '-o', generator], check=True, capture_output=True)
+        payload = work / 'payload'
+        payload.write_bytes(bytes(range(256)) + b'\0binary\xff')
+        manifest = work / 'manifest'
+        manifest.write_text('dir /dev 0755 0 0\n'
+            'nod /dev/console 0600 0 0 c 5 1\n'
+            'nod /dev/kmsg 0600 0 0 c 1 11\n'
+            'nod /dev/ram0 0600 0 0 b 1 0\n'
+            f'file /fixture {payload} 0640 123 456 /hardlink\n'
+            f'file /init {payload} 0755 0 0\n'
+            'slink /symlink /fixture 0777 0 0\n'
+            'pipe /fifo 0620 123 456\n'
+            'sock /socket 0600 123 456\n')
+        archive = work / 'initramfs.cpio'
+        subprocess.run([generator, '-t', '0', '-c', '-o', archive, manifest], check=True, capture_output=True)
+        return archive, payload
+
+    def test_real_unprivileged_ext2_preserves_guest_fixture_metadata(self):
+        if not all(shutil.which(tool) for tool in ('mkfs.ext2', 'debugfs', 'e2fsck')):
+            self.skipTest('e2fsprogs is required for the real legacy initrd image check')
+        with tempfile.TemporaryDirectory(prefix='legacy-initrd-image-') as tmp:
+            work = Path(tmp)
+            archive, payload = self.archive(work)
+            image = work / 'initrd.ext2'
+            with mock.patch.object(os, 'mknod', side_effect=AssertionError('host device creation is forbidden')):
+                size = boot.legacy_initrd(archive, image)
+            self.assertEqual(image.stat().st_size, size * 1024)
+            self.assertGreater(size, 16 * 1024)
+            checked = subprocess.run(['e2fsck', '-fn', image], capture_output=True)
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+            def inspect(request):
+                return subprocess.run(['debugfs', '-R', request, image],
+                                      check=True, capture_output=True).stdout
+
+            regular = inspect('stat /fixture')
+            link = inspect('stat /hardlink')
+            self.assertEqual(re.search(rb'Inode: (\d+)', regular)[1], re.search(rb'Inode: (\d+)', link)[1])
+            self.assertIn(b'Mode:  0640', regular)
+            self.assertRegex(regular, rb'User:\s+123\s+Group:\s+456')
+            self.assertIn(b'Links: 2', regular)
+            self.assertIn(b'Mode:  0755', inspect('stat /init'))
+            self.assertIn(b'Fast link dest: "/fixture"', inspect('stat /symlink'))
+            for path, kind, device in (('/dev/console', b'character special', b'05:01'),
+                                       ('/dev/kmsg', b'character special', b'01:11'),
+                                       ('/dev/ram0', b'block special', b'01:00')):
+                record = inspect('stat ' + path)
+                self.assertIn(kind, record)
+                self.assertIn(b'Mode:  0600', record)
+                self.assertIn(b'Device major/minor number: ' + device, record)
+            self.assertIn(b'Type: FIFO', inspect('stat /fifo'))
+            self.assertIn(b'Type: socket', inspect('stat /socket'))
+            dump = work / 'dump'
+            for path in ('/fixture', '/hardlink', '/init'):
+                inspect(f'dump {path} {dump}')
+                self.assertEqual(dump.read_bytes(), payload.read_bytes())
+
+    def test_shared_cpio_decoder_rejects_bounds_checksum_and_trailing_data(self):
+        with tempfile.TemporaryDirectory(prefix='legacy-initrd-invalid-') as tmp:
+            archive, _ = self.archive(Path(tmp))
+            valid = archive.read_bytes()
+            records = boot.initramfs_entries(valid)
+            payload = next(offset for name, _, data, offset in records if name == b'hardlink' and data)
+            checksum = bytearray(valid)
+            checksum[payload] ^= 1
+            name_size = bytearray(valid)
+            name_size[94:102] = b'FFFFFFFF'
+            for invalid in (b'', valid[:50], valid[:-1], b'bad' + valid[3:], bytes(checksum),
+                            bytes(name_size), valid + bytes(511) + b'x'):
+                with self.subTest(length=len(invalid)), self.assertRaises(ValueError):
+                    boot.initramfs_entries(invalid)
+
+    def test_legacy_config_and_argument_gates_precede_output_writes(self):
+        base = ['CONFIG_X86_64=y', 'CONFIG_MULTIUSER=y', 'CONFIG_PRINTK=y', 'CONFIG_EXT2_FS=y',
+                *['CONFIG_' + name + '=y' for name in boot.LEGACY_INITRD_CONFIG]]
+        cases = [(set(base) - {setting}, []) for setting in base[3:]]
+        cases += [(set(base) | {'CONFIG_INITRAMFS_FORCE=y'}, [])]
+        cases += [(set(base), ['--kernel-arg=' + argument]) for argument in
+                  ('root=/dev/sda', 'rdinit=/init', 'init=/bin/sh', 'noinitrd', 'ramdisk_size=1', 'ro', '--')]
+        for config, extra in cases:
+            with self.subTest(config=config, extra=extra), tempfile.TemporaryDirectory(prefix='legacy-initrd-gate-') as tmp:
+                build = Path(tmp)
+                for name in (boot.architecture('x86_64')[0], 'usr/gen_init_cpio'):
+                    path = build / name
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.touch()
+                (build / '.config').write_text('\n'.join(config) + '\n')
+                with mock.patch.object(sys, 'argv', ['boot_kernel', '--build', tmp, '--legacy-initrd', *extra]), \
+                     mock.patch.object(boot.subprocess, 'run') as run, \
+                     mock.patch.object(boot.subprocess, 'Popen') as popen, \
+                     redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as result:
+                    boot.main()
+                self.assertEqual(result.exception.code, 2)
+                run.assert_not_called()
+                popen.assert_not_called()
+                self.assertFalse((build / 'rust-boot-test').exists())
+
+    def test_archive_paths_are_checked_before_image_or_tool_writes(self):
+        with tempfile.TemporaryDirectory(prefix='legacy-initrd-paths-') as tmp:
+            work = Path(tmp)
+            archive, _ = self.archive(work)
+            valid = archive.read_bytes()
+            cases = [(b'fixture\0', name) for name in (b'../oops\0', b'no/file\0', b'fixtur"\0')]
+            cases.append((b'hardlink\0', b'fixture\0\0'))
+            for original, replacement in cases:
+                with self.subTest(replacement=replacement):
+                    archive.write_bytes(valid.replace(original, replacement, 1))
+                    image = work / 'invalid.ext2'
+                    with mock.patch.object(boot.subprocess, 'run') as run, self.assertRaises(ValueError):
+                        boot.legacy_initrd(archive, image)
+                    run.assert_not_called()
+                    self.assertFalse(image.exists())
+
+    def test_legacy_image_and_original_module_plan_reach_both_guests(self):
+        for arch in ('x86_64', 'aarch64'):
+            with self.subTest(arch=arch), tempfile.TemporaryDirectory(prefix='legacy-initrd-route-') as tmp:
+                build = Path(tmp)
+                for name in (boot.architecture(arch)[0], 'usr/gen_init_cpio', 'test.ko'):
+                    path = build / name
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.touch()
+                selected = 'ARM64' if arch == 'aarch64' else 'X86_64'
+                (build / '.config').write_text(f'CONFIG_{selected}=y\nCONFIG_MULTIUSER=y\nCONFIG_PRINTK=y\n'
+                    'CONFIG_MODULES=y\nCONFIG_MODULE_UNLOAD=y\nCONFIG_EXT4_FS=y\nCONFIG_EXT4_USE_FOR_EXT2=y\n' +
+                    ''.join('CONFIG_' + name + '=y\n' for name in boot.LEGACY_INITRD_CONFIG))
+                args = ['boot_kernel', '--build', tmp, '--arch', arch, '--legacy-initrd',
+                        '--module', str(build / 'test.ko'), '--reload-modules', '--kernel-arg=initcall_debug']
+                with mock.patch.object(sys, 'argv', args), mock.patch.object(boot.subprocess, 'run'), \
+                     mock.patch.object(boot.shutil, 'which', return_value='/tools/present'), \
+                     mock.patch.object(boot, 'module_name', return_value='test'), \
+                     mock.patch.object(boot, 'legacy_initrd', return_value=49152) as generate, \
+                     mock.patch.object(boot.subprocess, 'Popen', side_effect=RuntimeError('before QEMU')) as popen, \
+                     self.assertRaisesRegex(RuntimeError, 'before QEMU'):
+                    boot.main()
+                work = build / 'rust-boot-test'
+                generate.assert_called_once_with(work / 'initramfs.cpio', work / 'initrd.ext2')
+                command = popen.call_args.args[0]
+                self.assertEqual(command[command.index('-initrd') + 1], str(work / 'initrd.ext2'))
+                options = command[command.index('-append') + 1].split()
+                for option in ('rdinit=' + boot.LEGACY_RDINIT, 'root=/dev/ram0', 'rootfstype=ext2',
+                               'rw', 'init=/init', 'ramdisk_size=49152', 'initcall_debug'):
+                    self.assertIn(option, options)
+                self.assertNotIn('rdinit=/init', options)
+                self.assertEqual((work / 'reload-plan').read_text(), '/test-module.ko\ttest\n')
+                self.assertIn('file /test-module.ko ', (work / 'manifest').read_text())
+
+    def test_legacy_success_requires_load_mount_pivot_and_pid_one_in_order(self):
+        events = [b'RAMDISK: ext2 filesystem found at block 0',
+                  b'using deprecated initrd support, will be removed in January 2027; use initramfs instead',
+                  b'VFS: Mounted root (ext2 filesystem) on device 1:0.',
+                  b'VFS: Pivoted into new rootfs', b'Run /init as init process', boot.MARKER]
+        console = b'\r\n'.join(b'[    1.234] ' + event for event in events)
+        boot.verify_legacy_initrd(console, True)
+        boot.verify_legacy_initrd(console.replace(b'ext2 filesystem)', b'ext4 filesystem)'), True)
+        boot.verify_legacy_initrd(boot.MARKER, False)
+        invalid = [events[:index] + events[index + 1:] for index in range(len(events))]
+        invalid += [events + [events[2]], list(reversed(events)), events + [events[3] + b' malformed']]
+        for lines in invalid:
+            with self.subTest(lines=lines), self.assertRaises(ValueError):
+                boot.verify_legacy_initrd(b'\n'.join(lines), True)
+        for original, replacement in ((b'1:0', b'8:0'), (b'filesystem)', b'filesystem) readonly')):
+            with self.subTest(replacement=replacement), self.assertRaises(ValueError):
+                boot.verify_legacy_initrd(console.replace(original, replacement), True)
+
+
+class RootDiskTests(unittest.TestCase):
+    def configuration(self, arch):
+        return ['CONFIG_MULTIUSER=y', 'CONFIG_PRINTK=y', 'CONFIG_EXT2_FS=y',
+                'CONFIG_' + ('X86_64' if arch == 'x86_64' else 'ARM64') + '=y',
+                *['CONFIG_' + name + '=y' for name in boot.ROOT_DISK_CONFIG],
+                *(['CONFIG_PCI=y', 'CONFIG_VIRTIO_PCI=y'] if arch == 'x86_64'
+                  else ['CONFIG_VIRTIO_MMIO=y'])]
+
+    def artifacts(self, directory, arch, configuration):
+        build = Path(directory)
+        for name in (boot.architecture(arch)[0], 'usr/gen_init_cpio'):
+            path = build / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch()
+        (build / '.config').write_text('\n'.join(configuration) + '\n')
+        return build
+
+    def test_root_disk_requires_no_initramfs_and_builtin_block_transport(self):
+        for arch in ('x86_64', 'aarch64'):
+            good = self.configuration(arch)
+            invalid = [good + ['CONFIG_BLK_DEV_INITRD=y']]
+            invalid += [[setting for setting in good if setting != missing]
+                        for missing in good if any(name in missing for name in ('BLOCK', 'VIRTIO', 'EXT2'))]
+            for configuration in invalid:
+                with self.subTest(arch=arch, configuration=configuration), tempfile.TemporaryDirectory() as directory:
+                    build = self.artifacts(directory, arch, configuration)
+                    with mock.patch.object(sys, 'argv', ['boot_kernel', '--build', directory, '--arch', arch, '--root-disk']), \
+                         mock.patch.object(boot.subprocess, 'run') as run, \
+                         mock.patch.object(boot.subprocess, 'Popen') as popen, \
+                         redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as failure:
+                        boot.main()
+                    self.assertEqual(failure.exception.code, 2)
+                    run.assert_not_called()
+                    popen.assert_not_called()
+                    self.assertFalse((build / 'rust-boot-test').exists())
+
+    def test_disk_image_reaches_matching_virtio_device_with_snapshot_and_no_initrd(self):
+        for arch, device in (('x86_64', 'virtio-blk-pci'), ('aarch64', 'virtio-blk-device')):
+            with self.subTest(arch=arch), tempfile.TemporaryDirectory() as directory:
+                build = self.artifacts(directory, arch, self.configuration(arch))
+                with mock.patch.object(sys, 'argv', ['boot_kernel', '--build', directory, '--arch', arch,
+                                                    '--root-disk', '--cpu', 'max']), \
+                     mock.patch.object(boot.subprocess, 'run'), \
+                     mock.patch.object(boot.shutil, 'which', return_value='/tools/present'), \
+                     mock.patch.object(boot, 'legacy_initrd', return_value=32768) as generate, \
+                     mock.patch.object(boot.subprocess, 'Popen', side_effect=RuntimeError('before QEMU')) as popen, \
+                     self.assertRaisesRegex(RuntimeError, 'before QEMU'):
+                    boot.main()
+                work = build / 'rust-boot-test'
+                generate.assert_called_once_with(work / 'initramfs.cpio', work / 'root.ext2')
+                command = popen.call_args.args[0]
+                self.assertNotIn('-initrd', command)
+                self.assertEqual(command[command.index('-device') + 1], device + ',drive=lupos-root')
+                self.assertEqual(command[command.index('-drive') + 1],
+                                 f'file={work / "root.ext2"},format=raw,if=none,id=lupos-root,snapshot=on')
+                options = command[command.index('-append') + 1].split()
+                for option in ('root=/dev/vda', 'rootfstype=ext2', 'rw', 'init=/init'):
+                    self.assertIn(option, options)
+                self.assertNotIn('rdinit=/init', options)
+                self.assertFalse(any(option.startswith('ramdisk_size=') for option in options))
+                self.assertEqual(command[command.index('-cpu') + 1], 'max')
+        with self.assertRaises(ValueError):
+            boot.qemu_command(None, 'x86_64', Path('/kernel'), Path('/image'), ramdisk_kib=1, root_disk=True)
+        with self.assertRaises(ValueError):
+            boot.qemu_command(None, 'x86_64', Path('/kernel'), Path('/image,option'), root_disk=True)
+
+    def test_disk_boot_requires_device_mount_pivot_and_pid_one(self):
+        events = [b'virtio_blk virtio0: [vda] 65536 512-byte logical blocks (33.6 MB/32.0 MiB)',
+                  b'VFS: Mounted root (ext2 filesystem) on device 254:0.',
+                  b'VFS: Pivoted into new rootfs', b'Run /init as init process', boot.MARKER]
+        console = b'\n'.join(events)
+        boot.verify_root_disk(console, True)
+        boot.verify_root_disk(b'[1.234] ' + console.replace(b'\n', b'\r\n[1.234] '), True)
+        boot.verify_root_disk(boot.MARKER, False)
+        invalid = [events[:index] + events[index + 1:] for index in range(len(events))]
+        invalid += [list(reversed(events)), events + [events[2]], events + [events[2] + b' malformed'],
+                    [b'RAMDISK: ext2 filesystem found at block 0', *events]]
+        for lines in invalid:
+            with self.subTest(lines=lines), self.assertRaises(ValueError):
+                boot.verify_root_disk(b'\n'.join(lines), True)
+        for original, replacement in ((b'254:0', b'1:0'), (b'[vda]', b'[vdb]'), (b'512-byte', b'0-byte')):
+            with self.subTest(replacement=replacement), self.assertRaises(ValueError):
+                boot.verify_root_disk(console.replace(original, replacement), True)
 
 
 if __name__ == "__main__":

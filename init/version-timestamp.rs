@@ -1,37 +1,28 @@
 // SPDX-License-Identifier: GPL-2.0-only
+//! Final build timestamp owner, linked after the preliminary weak definitions.
 
-// Dependencies corresponding to the C includes:
-// generated/compile.h, generated/utsrelease.h, linux/proc_ns.h,
-// linux/refcount.h, linux/uts.h, linux/utsname.h
+#[allow(
+    clippy::all, dead_code, missing_docs, non_camel_case_types, non_snake_case,
+    non_upper_case_globals, improper_ctypes, unsafe_op_in_unsafe_fn, unreachable_pub
+)]
+mod bindings {
+    use kernel::ffi;
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/init_version_timestamp_generated.rs"));
+}
 
+mod version_data;
+
+/// Initial UTS namespace containing the final build identity.
+#[allow(non_upper_case_globals)]
 #[no_mangle]
-pub static mut init_uts_ns: crate::uts_namespace = crate::uts_namespace {
-    ns: crate::NS_COMMON_INIT!(init_uts_ns),
-    name: crate::utsname {
-        sysname: crate::UTS_SYSNAME,
-        nodename: crate::UTS_NODENAME,
-        release: crate::UTS_RELEASE,
-        version: crate::UTS_VERSION,
-        machine: crate::UTS_MACHINE,
-        domainname: crate::UTS_DOMAINNAME,
-    },
-    user_ns: &raw const crate::init_user_ns,
-};
+pub static mut init_uts_ns: bindings::uts_namespace =
+    // SAFETY: the pointer names this static for the self-linked namespace lists.
+    unsafe { version_data::namespace(core::ptr::addr_of_mut!(init_uts_ns)) };
 
-/* FIXED STRINGS! Don't touch! */
+/// Fixed boot banner consumed as a NUL-terminated C array.
+#[allow(non_upper_case_globals)]
 #[no_mangle]
-pub static linux_banner: &[u8] = concat!(
-    "Linux version ",
-    crate::UTS_RELEASE,
-    " (",
-    crate::LINUX_COMPILE_BY,
-    "@",
-    crate::LINUX_COMPILE_HOST,
-    ") (",
-    crate::LINUX_COMPILER,
-    ") ",
-    crate::UTS_VERSION,
-    "\n",
-).as_bytes();
+pub static linux_banner: [u8; bindings::RUST_VERSION_BANNER.len()] =
+    *bindings::RUST_VERSION_BANNER;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1049,6 +1049,7 @@ static int process_exported_symbols(struct state *unused, struct die *cache,
 	case DW_TAG_namespace:
 	case DW_TAG_class_type:
 	case DW_TAG_structure_type:
+	case DW_TAG_union_type:
 		return check(process_die_container(
 			NULL, cache, die, process_exported_symbols, match_all));
 

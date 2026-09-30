@@ -81,8 +81,12 @@ pub(super) unsafe fn mark_readonly() {
             #[cfg(CONFIG_JUMP_LABEL)]
             bindings::jump_label_init_ro();
             bindings::mark_rodata_ro();
-            #[cfg(CONFIG_DEBUG_WX)]
-            { bindings::ptdump_check_wx(); }
+            // x86's pgtable.h renames the common ptdump interface with a C
+            // macro. Call its actual declaration, not the macro's name.
+            #[cfg(all(CONFIG_DEBUG_WX, CONFIG_X86))]
+            bindings::ptdump_walk_pgd_level_checkwx();
+            #[cfg(all(CONFIG_DEBUG_WX, not(CONFIG_X86)))]
+            bindings::ptdump_check_wx();
             #[cfg(CONFIG_DEBUG_RODATA_TEST)]
             bindings::rodata_test();
         } else {

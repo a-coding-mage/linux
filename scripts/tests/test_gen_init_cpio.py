@@ -16,29 +16,9 @@ import subprocess
 import tempfile
 import unittest
 
+from boot_kernel import initramfs_entries as entries
 
 ROOT = Path(__file__).resolve().parents[2]
-
-
-def entries(archive):
-    """Decode newc/crc without relying on either implementation's parser."""
-    result = []
-    offset = 0
-    while True:
-        assert archive[offset:offset + 6] in (b"070701", b"070702")
-        fields = [int(archive[offset + 6 + i * 8:offset + 14 + i * 8], 16)
-                  for i in range(13)]
-        offset += 110
-        name = archive[offset:offset + fields[11]].split(b"\0", 1)[0]
-        offset = (offset + fields[11] + 3) & ~3
-        data_offset = offset
-        data = archive[offset:offset + fields[6]]
-        offset = (offset + fields[6] + 3) & ~3
-        result.append((name, fields, data, data_offset))
-        if name == b"TRAILER!!!":
-            assert len(archive) % 512 == 0
-            assert archive[offset:] == bytes(len(archive) - offset)
-            return result
 
 
 class GenInitCpioTests(unittest.TestCase):

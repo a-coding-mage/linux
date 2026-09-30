@@ -18,7 +18,7 @@ from test_hexdump_kcfi import C_KCFI, RUST_KCFI
 from test_rational_build import run
 from test_sort_native import ids
 import test_init_main_command_line as support
-from test_init_main_bootconfig import InitMainBootconfig
+import test_init_main_bootconfig
 
 ROOT = support.ROOT
 FIXTURE = ROOT / 'scripts/tests/init_main_rodata'
@@ -27,7 +27,7 @@ FIXTURE = ROOT / 'scripts/tests/init_main_rodata'
 class InitMainRodata(unittest.TestCase):
     prepare = support.InitMainCommandLine.prepare
     records = support.InitMainCommandLine.records
-    rust_config = staticmethod(InitMainBootconfig.rust_config)
+    rust_config = staticmethod(test_init_main_bootconfig.InitMainBootconfig.rust_config)
 
     def bindings(self, build, work, env, reader, extra=(), arm_host=False):
         saved = reader.saved(build, 'rust/bindings/.bindings_generated.rs.cmd')
@@ -47,7 +47,7 @@ class InitMainRodata(unittest.TestCase):
              '--enable-function-attribute-detection',
              '--allowlist-type=^(system_states|ktime_t|initcall_entry_t|list_head|obs_kernel_param|pi_entry)$',
              '--allowlist-var=^(RUST_INIT_MAIN_.*|__initcall.*|rodata_full)$',
-             '--allowlist-function=^(strcmp|_printk|flush_module_init_free_work|jump_label_init_ro|mark_rodata_ro|ptdump_check_wx|rodata_test)$',
+             '--allowlist-function=^(strcmp|_printk|flush_module_init_free_work|jump_label_init_ro|mark_rodata_ro|ptdump_check_wx|ptdump_walk_pgd_level_checkwx|rodata_test)$',
              '-o', generated, '--', *flags, *extra], cwd=work, env=env)
         return generated
 
@@ -57,7 +57,9 @@ class InitMainRodata(unittest.TestCase):
             ('extern crate self as kernel;\npub extern crate ffi;\n' if host else '') +
             'pub mod bindings { include!(' + json.dumps(str(generated)) + '); }\n' +
             ''.join('#[path=' + json.dumps(str(ROOT / ('init/' + name + '.rs'))) + '] mod ' + name + ';\n'
-                    for name in ('main_globals', 'main_printk', 'main_setup', 'main_rodata')) +
+                    for name in ('main_globals', 'main_printk', 'main_rodata')) +
+            '#[cfg(any(CONFIG_STRICT_KERNEL_RWX,CONFIG_STRICT_MODULE_RWX))]\n'
+            '#[path=' + json.dumps(str(ROOT / 'init/main_setup.rs')) + '] mod main_setup;\n' +
             'pub use main_globals::*;\n'
             '#[no_mangle] pub unsafe extern "C" fn rust_set(value: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {\n'
             '#[cfg(any(CONFIG_STRICT_KERNEL_RWX,CONFIG_STRICT_MODULE_RWX))]\n'
@@ -105,6 +107,10 @@ class InitMainRodata(unittest.TestCase):
                         with self.subTest(arm=arm, changes=changes, optimization=optimization):
                             flags = self.rust_config(['--edition=2021', '-Dwarnings', '-Cpanic=abort',
                                 '-Coverflow-checks=yes', '-Copt-level=' + optimization, *RUST_KCFI], settings)
+                            # Execute the ARM option parser against x86 host
+                            # subsystem observers; native ARM verifies its own
+                            # ptdump backend below.
+                            flags += ['--cfg=CONFIG_X86']
                             if arm:
                                 flags += ['--cfg=CONFIG_ARM64']
                             ffi = work / 'libffi.rlib'
@@ -118,7 +124,8 @@ class InitMainRodata(unittest.TestCase):
                                  '-O' + optimization, '-c', FIXTURE / 'oracle.c', '-o', oracle], cwd=work, env=env)
                             run(['llvm-objcopy', '--strip-debug', '--remove-section=.discard.addressable', oracle], cwd=work, env=env)
                             driver = work / 'driver.o'
-                            run([*host_flags, *cfg, '-O' + optimization, '-c', FIXTURE / 'driver.c', '-o', driver], cwd=work, env=env)
+                            run([*host_flags, *cfg, '-I' + str(work), '-O' + optimization,
+                                 '-c', FIXTURE / 'driver.c', '-o', driver], cwd=work, env=env)
                             run(['llvm-objcopy', '--strip-debug', '--remove-section=.discard.addressable', driver], cwd=work, env=env)
                             binary = work / 'rodata'
                             run(['clang', *C_KCFI, driver, oracle, archive, '-no-pie', '-ldl', '-lpthread', '-lm',
@@ -129,26 +136,46 @@ class InitMainRodata(unittest.TestCase):
     def native(self, variable):
         build, work, env, reader, watch = self.prepare(variable)
         with watch:
-            generated = self.bindings(build, work, env, reader)
-            source = work / 'native.rs'
-            source.write_text(self.wrapper(generated))
+            self.original(work)
             flags = reader.native_flags(build, 'lib/.list_sort_rust.o.cmd', True)
             flags = [flag + ',linkage' if flag.startswith('-Zallow-features=') else flag for flag in flags]
-            obj, ir = work / 'native.o', work / 'native.ll'
-            run([*flags, '--crate-name=init_main_rodata', '--emit=obj=' + str(obj) + ',llvm-ir=' + str(ir),
-                 source], cwd=work, env=env)
-            expected = self.records(build / 'init/main.o', ((b'rodata', 1),))
-            self.assertEqual(self.records(obj, ((b'rodata', 1),)), expected)
-            self.assertEqual(print_records(obj), print_records(build / 'init/main.o'))
-            functions = ids(ir)
-            callback = next(value for name, value in functions.items() if 'set_debug_rodata' in name)
-            self.assertEqual(callback, functions['rust_set'])
-            symbols = run(['llvm-nm', '-u', obj], cwd=work, env=env).stdout
-            for name in (b'flush_module_init_free_work', b'jump_label_init_ro', b'mark_rodata_ro'):
-                self.assertIn(name, symbols)
-            for name in (b'arch_parse_debug_rodata', b'debug_checkwx', b' pr_warn', b' pr_info'):
-                self.assertNotIn(name, symbols)
-            self.assertEqual(b'rodata_full' in symbols, variable == 'INIT_MAIN_ARM64_BUILD')
+            cflags = reader.native_flags(build, 'init/.main.o.cmd', False)
+            # Donors have DEBUG_WX off. Also force its header branch on so the
+            # actual architecture-specific backend cannot hide uncompiled.
+            for debug_wx in (False, True):
+                with self.subTest(debug_wx=debug_wx):
+                    config = work / 'config.h'
+                    config.write_text('#undef CONFIG_DEBUG_WX\n' +
+                        ('#define CONFIG_DEBUG_WX 1\n' if debug_wx else ''))
+                    cfg = ['-include', str(config)]
+                    generated = self.bindings(build, work, env, reader, cfg)
+                    source = work / 'native.rs'
+                    source.write_text(self.wrapper(generated))
+                    obj, ir = work / 'native.o', work / 'native.ll'
+                    selected = self.rust_config(flags, {'DEBUG_WX': debug_wx})
+                    run([*selected, '--crate-name=init_main_rodata',
+                         '--emit=obj=' + str(obj) + ',llvm-ir=' + str(ir), source], cwd=work, env=env)
+                    original = work / 'original.o'
+                    run([*cflags, *cfg, '-I' + str(work), '-c', FIXTURE / 'oracle.c',
+                         '-o', original], cwd=work, env=env)
+                    expected = self.records(original, ((b'rodata', 1),))
+                    self.assertEqual(self.records(obj, ((b'rodata', 1),)), expected)
+                    self.assertEqual(print_records(obj), print_records(original))
+                    if not debug_wx:
+                        self.assertEqual(expected, self.records(build / 'init/main.o', ((b'rodata', 1),)))
+                        self.assertEqual(print_records(obj), print_records(build / 'init/main.o'))
+                    functions = ids(ir)
+                    callback = next(value for name, value in functions.items() if 'set_debug_rodata' in name)
+                    self.assertEqual(callback, functions['rust_set'])
+                    symbols = run(['llvm-nm', '-u', obj], cwd=work, env=env).stdout
+                    for name in (b'flush_module_init_free_work', b'jump_label_init_ro', b'mark_rodata_ro'):
+                        self.assertIn(name, symbols)
+                    for name in (b'arch_parse_debug_rodata', b'debug_checkwx', b' pr_warn', b' pr_info'):
+                        self.assertNotIn(name, symbols)
+                    arm = variable == 'INIT_MAIN_ARM64_BUILD'
+                    self.assertEqual(b'rodata_full' in symbols, arm)
+                    backend = b'ptdump_check_wx' if arm else b'ptdump_walk_pgd_level_checkwx'
+                    self.assertEqual(backend in symbols, debug_wx)
 
     def test_native_x86_records_and_canonical_interfaces(self):
         self.native('INIT_MAIN_X86_BUILD')

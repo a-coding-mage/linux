@@ -34,6 +34,17 @@ CFLAGS_REMOVE_helpers/helpers.o = -Wmissing-prototypes -Wmissing-declarations
 
 always-$(CONFIG_RUST) += bindings/bindings_generated.rs bindings/bindings_helpers_generated.rs
 obj-$(CONFIG_RUST) += bindings.o pin_init.o kernel.o
+# Keep explicit staged builds available. The Rust boot owner selects this
+# private crate so its metadata is built during prepare and its code is linked.
+targets += init_main_bindings.o bindings/init_main_generated.rs
+obj-$(CONFIG_RUST_INIT_MAIN) += init_main_bindings.o
+# prepare descends without need-builtin, before init/ consumes the metadata.
+always-$(CONFIG_RUST_INIT_MAIN) += init_main_bindings.o
+targets += bindings/init_mounts_generated.rs
+targets += bindings/init_version_generated.rs bindings/init_version_timestamp_generated.rs
+always-$(CONFIG_RUST_INIT_MOUNTS_INITRD) += bindings/init_mounts_generated.rs
+targets += bindings/init_noinitramfs_generated.rs
+always-$(CONFIG_RUST_INIT_NOINITRAMFS) += bindings/init_noinitramfs_generated.rs
 always-$(CONFIG_RUST) += exports_bindings_generated.$(rust-export-extension) \
                        exports_kernel_generated.$(rust-export-extension)
 
@@ -545,6 +556,35 @@ $(obj)/bindings/bindings_generated.rs: $(src)/bindings/bindings_helper.h \
     $(src)/bindgen_parameters FORCE
 	$(call if_changed_dep,bindgen)
 
+$(obj)/bindings/init_main_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_main_bindgen_parameters)
+$(obj)/bindings/init_main_generated.rs: $(src)/bindings/init_main.h \
+    $(src)/init_main_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
+$(obj)/bindings/init_mounts_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_mounts_bindgen_parameters)
+$(obj)/bindings/init_mounts_generated.rs: $(src)/bindings/init_mounts.h \
+    $(src)/init_mounts_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
+$(obj)/bindings/init_noinitramfs_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_noinitramfs_bindgen_parameters)
+$(obj)/bindings/init_noinitramfs_generated.rs: $(src)/bindings/init_noinitramfs.h \
+    $(src)/init_noinitramfs_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
+$(obj)/bindings/init_version_generated.rs $(obj)/bindings/init_version_timestamp_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_version_bindgen_parameters)
+$(obj)/bindings/init_version_generated.rs: private bindgen_target_cflags = -include $(objtree)/init/utsversion-tmp.h
+$(obj)/bindings/init_version_timestamp_generated.rs: private bindgen_target_cflags = -include $(objtree)/include/generated/utsversion.h
+$(obj)/bindings/init_version_generated.rs: $(src)/bindings/init_version.h \
+    $(src)/init_version_bindgen_parameters $(objtree)/init/utsversion-tmp.h FORCE
+	$(call if_changed_dep,bindgen)
+$(obj)/bindings/init_version_timestamp_generated.rs: $(src)/bindings/init_version.h \
+    $(src)/init_version_bindgen_parameters $(objtree)/include/generated/utsversion.h FORCE
+	$(call if_changed_dep,bindgen)
+
 $(obj)/uapi/uapi_generated.rs: private bindgen_target_flags = \
     $(shell grep -Ev '^#|^$$' $(src)/bindgen_parameters)
 $(obj)/uapi/uapi_generated.rs: $(src)/uapi/uapi_helper.h \
@@ -742,18 +782,23 @@ cmd_gendwarfksyms = $(if $(skip_gendwarfksyms),, \
 		$(if $(KBUILD_GENDWARFKSYMS_STABLE), --stable) \
 		$(if $(KBUILD_SYMTYPES), --symtypes $(@:.o=.symtypes),) \
 		$@ >> $(dot-target).cmd)
+# These versions live in the saved command file and must be regenerated when
+# the tool changes, including a switch between its C and Rust implementations.
+cmd_gen_gendwarfksyms_dep = $(if $(skip_gendwarfksyms),, { echo ; echo '$@: $$(wildcard scripts/gendwarfksyms/gendwarfksyms)' ; } >> $(dot-target).cmd)
 endif
 
 define rule_rustc_library
 	$(call cmd_and_fixdep,rustc_library)
 	$(call cmd,gen_objtooldep)
 	$(call cmd,gendwarfksyms)
+	$(call cmd,gen_gendwarfksyms_dep)
 endef
 
 define rule_rust_cc_library
 	$(call if_changed_rule,cc_o_c)
 	$(call cmd,force_checksrc)
 	$(call cmd,gendwarfksyms)
+	$(call cmd,gen_gendwarfksyms_dep)
 endef
 
 # helpers.o uses the same export mechanism as Rust libraries, so ensure symbol
@@ -821,6 +866,12 @@ $(obj)/bindings.o: $(src)/bindings/lib.rs \
     $(obj)/pin_init.o \
     $(obj)/bindings/bindings_generated.rs \
     $(obj)/bindings/bindings_helpers_generated.rs FORCE
+	+$(call if_changed_rule,rustc_library)
+
+$(obj)/init_main_bindings.o: private is-kernel-object := y
+$(obj)/init_main_bindings.o: private rustc_target_flags = --extern ffi --extern bindings
+$(obj)/init_main_bindings.o: $(src)/bindings/init_main.rs \
+    $(obj)/ffi.o $(obj)/bindings.o $(obj)/bindings/init_main_generated.rs FORCE
 	+$(call if_changed_rule,rustc_library)
 
 $(obj)/uapi.o: private rustc_target_flags = --extern ffi --extern pin_init

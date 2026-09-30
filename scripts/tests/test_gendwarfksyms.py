@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-2.0
-"""Full-program DWARF/ABI differentials against the unchanged C implementation."""
+"""Full-program DWARF/ABI differentials against the C implementation."""
 
 import itertools
 import os
@@ -342,6 +342,103 @@ class GendwarfksymsTests(unittest.TestCase):
             result = self.compare([obj], exports, ("--dump-versions",))
             self.assertNotIn(b"no information for symbol", result[2])
             self.assertIn(b"variant_part", result[3])
+
+    def test_rust_union_associated_method_dwarf4_dwarf5(self):
+        source = self.work / "rust_union_method.rs"
+        source.write_text(r'''
+        #[repr(C)] pub union Slot<T: Copy> { pub value: T, empty: () }
+        impl<T: Copy> Slot<T> {
+            #[inline]
+            pub fn copy_range(output: &mut [Self], input: &[T]) -> usize {
+                assert_eq!(output.len(), input.len());
+                unsafe {
+                    core::ptr::copy_nonoverlapping(input.as_ptr(), output.as_mut_ptr().cast::<T>(), input.len());
+                }
+                input.len()
+            }
+        }
+        #[used] pub static KEEP: fn(&mut [Slot<u8>], &[u8]) -> usize = Slot::<u8>::copy_range;
+        #[no_mangle] pub fn caller(output: &mut [Slot<u8>], input: &[u8]) -> usize {
+            Slot::copy_range(output, input).wrapping_add(1)
+        }
+        ''')
+        for version, optimize in itertools.product((4, 5), (0, 2)):
+            with self.subTest(version=version, optimize=optimize):
+                obj = self.work / f"rust-union-{version}-{optimize}.o"
+                result = subprocess.run([*shlex.split(os.environ.get("HOSTRUSTC", "rustc")),
+                    "--edition=2021", "--crate-name=union_methods", "--crate-type=lib", "--emit=obj",
+                    "-Dwarnings", "-Cdebuginfo=2", f"-Zdwarf-version={version}", f"-Copt-level={optimize}",
+                    source, "-o", obj], capture_output=True, env={**os.environ, "RUSTC_BOOTSTRAP": "1"})
+                self.assertEqual(result.returncode, 0, result.stderr)
+                symbols = subprocess.run(["llvm-nm", "--defined-only", obj], check=True, capture_output=True).stdout
+                names = [line.split()[-1] for line in symbols.splitlines() if b"copy_range" in line]
+                self.assertEqual(len(names), 1, names)
+                exports = names[0] + b"\n"
+                result = self.compare([obj], exports, ("--dump-versions",))
+                self.assertNotIn(b"no information for symbol", result[2])
+                self.assertNotIn(b"0x00000000", result[1])
+                self.assertIn(b"Slot<u8>", result[3])
+
+    def native_core_union_method(self, variable):
+        from rbtree_native import transport
+        supplied = os.environ.get(variable)
+        if not supplied:
+            self.skipTest(variable + " supplies a read-only native kernel build")
+        build = Path(supplied).resolve()
+        watch = transport.NativeWriteWatch(build)
+        with watch:
+            symbols = subprocess.run(["llvm-nm", "--defined-only", build / "rust/core.o"],
+                                     check=True, capture_output=True).stdout.splitlines()
+            exports = [line.split()[-1] for line in symbols if len(line.split()) == 3
+                       and line.split()[1] in (b"T", b"R", b"D", b"B")
+                       and not line.split()[-1].startswith((b"__pfx", b"__cfi", b"__odr_asan"))]
+            candidates = [name for name in exports if b"MaybeUninit" in name and b"copy_from_slice" in name]
+            demangled = subprocess.run(["llvm-cxxfilt", *candidates], check=True, capture_output=True).stdout.splitlines()
+            matched = [name for name, pretty in zip(candidates, demangled)
+                       if pretty == b"<core::mem::maybe_uninit::MaybeUninit<u8>>::copy_from_slice"]
+            self.assertEqual(len(matched), 1, demangled)
+            result = self.compare([build / "rust/core.o"], b"\n".join(exports) + b"\n")
+            self.assertNotIn(b"no information for symbol", result[2])
+            actual = dict(re.findall(rb"^#SYMVER (\S+) (0x[0-9a-f]{8})$", result[1], re.M))
+            saved = dict(re.findall(rb"^#SYMVER (\S+) (0x[0-9a-f]{8})$",
+                                  (build / "rust/.core.o.cmd").read_bytes(), re.M))
+            self.assertEqual(set(actual), set(exports))
+            self.assertNotEqual(actual[matched[0]], b"0x00000000")
+            self.assertIn(saved[matched[0]], (b"0x00000000", actual[matched[0]]))
+            # Historical donors retain the old zero version. A refreshed full
+            # build must carry the repaired value through modpost and linking.
+            if saved[matched[0]] != b"0x00000000":
+                from test_hexdump_abi import ElfRecords
+                versions = [row.split() for row in (build / "Module.symvers").read_bytes().splitlines()]
+                rows = [row for row in versions if row[1] == matched[0]]
+                self.assertEqual(rows, [[actual[matched[0]], matched[0], b"vmlinux", b"EXPORT_SYMBOL_GPL"]])
+                final = ElfRecords(build / "vmlinux")
+                symbols = [row for row in final.symbols if row[0] == b"__crc_" + matched[0] and row[1]]
+                self.assertEqual(len(symbols), 1)
+                _, section, value, _, _ = symbols[0]
+                offset = value - final.sections[section][3]
+                linked = int.from_bytes(final.section(section)[offset:offset + 4],
+                                        "little" if final.order == "<" else "big")
+                self.assertEqual(linked, int(actual[matched[0]], 16))
+            # Repair only the missing union-method version; keep every other
+            # actual core export's native checksum unchanged.
+            for name in exports:
+                if name != matched[0]:
+                    self.assertEqual(actual[name], saved[name], name)
+            boot_exports = b"system_state\nreset_devices\nloops_per_jiffy\nstatic_key_initialized\n"
+            result = self.compare([build / "init/main.o"], boot_exports)
+            self.assertEqual(result[2], b"")
+            actual = dict(re.findall(rb"^#SYMVER (\S+) (0x[0-9a-f]{8})$", result[1], re.M))
+            saved = dict(re.findall(rb"^#SYMVER (\S+) (0x[0-9a-f]{8})$",
+                                  (build / "init/.main.o.cmd").read_bytes(), re.M))
+            self.assertEqual(actual, {name: saved[name] for name in boot_exports.splitlines()})
+        self.assertEqual(watch.events, [], "native build changed during the read-only core audit")
+
+    def test_native_x86_core_union_method_version(self):
+        self.native_core_union_method("GENDWARF_NATIVE_X86_BUILD")
+
+    def test_native_arm64_core_union_method_version(self):
+        self.native_core_union_method("GENDWARF_NATIVE_ARM64_BUILD")
 
     def test_separate_debuglink_and_gnu_compressed_sections(self):
         original = self.compile()

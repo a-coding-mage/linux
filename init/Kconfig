@@ -2285,6 +2285,58 @@ config RUST_NATIVE_EXPORTS
 
 	  If unsure, say N to keep the original C export bridge.
 
+config RUST_INIT_MAIN
+	bool "Rust kernel boot control flow"
+	depends on RUST && (X86_64 || ARM64)
+	depends on HAS_SEPARATE_PREEMPT_RESCHED_BITS
+	depends on !PARAVIRT_XXL && !ARM64_PSEUDO_NMI
+	depends on !GCC_PLUGIN_LATENT_ENTROPY
+	default n
+	help
+	  Build init/main.o from the Rust translation of the kernel boot
+	  sequence. Shared trace-event macro expansion and the compiler's
+	  allocation-tag expression remain in small C companion objects.
+
+	  This staged option requires the native x86-64 or ARM64 interrupt
+	  paths. Paravirtual interrupt operations, ARM64 priority masking and
+	  latent-entropy plugin integration are not implemented by this owner.
+
+	  If unsure, say N to keep the original C boot implementation.
+
+config RUST_INIT_NOINITRAMFS
+	bool "Rust default root filesystem"
+	depends on RUST && !BLK_DEV_INITRD
+	default n
+	help
+	  Build init/noinitramfs.o from its Rust translation. This enables
+	  usermode helpers and creates the initial /dev, /dev/console and /root
+	  before mounting the root filesystem when initramfs is disabled.
+
+	  If unsure, say N to keep the original C implementation.
+
+config RUST_INIT_MOUNTS_INITRD
+	bool "Rust initrd boot component"
+	depends on RUST && BLK_DEV_INITRD
+	default n
+	help
+	  Build the initrd component of init/mounts.o from its Rust translation.
+	  This owns the initial RAM disk addresses, initrd boot options and
+	  legacy RAM disk loading sequence, with or without BLK_DEV_RAM.
+
+	  If unsure, say N to keep the original C initrd implementation.
+
+config RUST_INIT_VERSION
+	bool "Rust kernel version metadata"
+	depends on RUST && (X86_64 || ARM64)
+	default n
+	help
+	  Build the kernel version owners and early hostname parameter from
+	  their Rust translations. Preliminary weak version data is replaced
+	  with the final build version and timestamp just before linking,
+	  preserving the initial UTS namespace and build identity notes.
+
+	  If unsure, say N to keep the original C version owners.
+
 config RUST_VMLINUX_EXPORT
 	bool "Rust final vmlinux export metadata"
 	depends on RUST

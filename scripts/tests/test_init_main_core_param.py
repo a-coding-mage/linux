@@ -35,7 +35,7 @@ class InitMainCoreParameter(unittest.TestCase):
         return ('//! Actual initcall debug parameter and sole state owner.\n#![feature(linkage)]\n'
                 '#![allow(dead_code,missing_docs,non_camel_case_types,non_snake_case,non_upper_case_globals)]\n'
                 + ('extern crate self as kernel;\npub extern crate ffi;\n' if host else '') +
-                'pub mod bindings { include!(' + json.dumps(str(generated)) + '); }\n' +
+                '#[allow(improper_ctypes,unsafe_op_in_unsafe_fn)] pub mod bindings { include!(' + json.dumps(str(generated)) + '); }\n' +
                 ''.join('#[path=' + json.dumps(str(ROOT / ('init/' + name + '.rs'))) +
                         '] mod ' + name + ';\n' for name in ('main_globals', 'main_core_param')) +
                 'pub use main_globals::*;\n')

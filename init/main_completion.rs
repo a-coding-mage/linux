@@ -40,6 +40,7 @@ const fn initial_completion() -> bindings::completion {
 }
 
 #[used]
+#[allow(non_upper_case_globals)]
 #[link_section = ".init.data"]
 #[linkage = "internal"]
 pub(super) static mut kthreadd_done: bindings::completion = initial_completion();

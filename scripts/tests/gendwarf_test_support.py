@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-"""Build unchanged gendwarfksyms references, including isolated header prefixes.
+"""Build gendwarfksyms references, including isolated header prefixes.
 
 GENDWARF_PREFIX may name an extracted development package's usr directory;
 GENDWARF_CFLAGS and GENDWARF_LIBS override additional compiler/linker flags.
@@ -57,7 +57,7 @@ def require_c_headers():
 
 
 def build_c(directory):
-    """Compile all seven unchanged original translation units."""
+    """Compile all seven C translation units."""
     if os.environ.get("GENDWARFKSYMS_C"):
         return Path(os.environ["GENDWARFKSYMS_C"])
     require_c_headers()

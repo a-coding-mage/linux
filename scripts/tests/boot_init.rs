@@ -48,6 +48,113 @@ fn unload_module(name: &std::ffi::CStr) -> io::Result<()> {
     }
 }
 
+const VERSION_PLAN_MAGIC: &[u8] = b"LUPOS_VERSION_V1\0";
+
+struct VersionExpectation<'a> {
+    names: [&'a [u8]; 6],
+    proc_version: &'a [u8],
+}
+
+fn version_invalid(message: &'static str) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, message)
+}
+
+fn version_take<'a>(input: &mut &'a [u8], length: usize) -> io::Result<&'a [u8]> {
+    if length > input.len() {
+        return Err(version_invalid("truncated version plan"));
+    }
+    let (value, remaining) = input.split_at(length);
+    *input = remaining;
+    Ok(value)
+}
+
+fn parse_version_plan(plan: &[u8]) -> io::Result<VersionExpectation<'_>> {
+    let mut remaining = plan.strip_prefix(VERSION_PLAN_MAGIC)
+        .ok_or_else(|| version_invalid("invalid version plan signature"))?;
+    let mut names: [&[u8]; 6] = [&[]; 6];
+    for name in &mut names {
+        let length = version_take(&mut remaining, 2)?;
+        let length = u16::from_le_bytes([length[0], length[1]]) as usize;
+        *name = version_take(&mut remaining, length)?;
+        if name.len() > 64 || name.contains(&0) {
+            return Err(version_invalid("invalid expected uname string"));
+        }
+    }
+    let length = version_take(&mut remaining, 4)?;
+    let length = u32::from_le_bytes([length[0], length[1], length[2], length[3]]) as usize;
+    let proc_version = version_take(&mut remaining, length)?;
+    if !remaining.is_empty() || proc_version.is_empty() || proc_version.contains(&0) {
+        return Err(version_invalid("invalid expected proc version"));
+    }
+    Ok(VersionExpectation { names, proc_version })
+}
+
+fn check_version_data(expected: &VersionExpectation<'_>, hostname: Option<&[u8]>,
+                      names: &[[u8; 65]; 6], proc_version: &[u8]) -> io::Result<()> {
+    if hostname.is_some_and(|name| name.len() > 64 || name.contains(&0)) {
+        return Err(version_invalid("invalid expected hostname"));
+    }
+    for (index, actual) in names.iter().enumerate() {
+        let length = actual.iter().position(|byte| *byte == 0)
+            .ok_or_else(|| version_invalid("unterminated uname string"))?;
+        let required = if index == 1 { hostname.unwrap_or(expected.names[index]) }
+                       else { expected.names[index] };
+        // strscpy leaves bytes after its terminator untouched. Compare the C
+        // string, not nodename padding left from the configured initial name.
+        if &actual[..length] != required {
+            return Err(version_invalid("uname differs from final C version data"));
+        }
+    }
+    if proc_version != expected.proc_version {
+        return Err(version_invalid("proc version differs from final C version data"));
+    }
+    Ok(())
+}
+
+fn version_proc_mounted(mountinfo: &str) -> bool {
+    mountinfo.lines().any(|line| {
+        let Some((fields, filesystem)) = line.split_once(" - ") else { return false };
+        fields.split_whitespace().nth(4) == Some("/proc") &&
+            filesystem.split_whitespace().next() == Some("proc")
+    })
+}
+
+fn run_version_check() -> io::Result<()> {
+    let plan = fs::read("/expected-version")?;
+    let expected = parse_version_plan(&plan)?;
+    let hostname = match fs::read("/expected-hostname") {
+        Ok(bytes) => Some(bytes),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => None,
+        Err(error) => return Err(error),
+    };
+    // include/uapi/linux/utsname.h defines six consecutive char[65] fields.
+    // These are the native newuname syscall numbers from the two UAPI tables.
+    #[cfg(target_arch = "x86_64")]
+    const UNAME: std::ffi::c_long = 63;
+    #[cfg(target_arch = "aarch64")]
+    const UNAME: std::ffi::c_long = 160;
+    unsafe extern "C" {
+        fn syscall(number: std::ffi::c_long, ...) -> std::ffi::c_long;
+    }
+    let mut names = [[0u8; 65]; 6];
+    // SAFETY: newuname writes precisely this live six-field UAPI buffer.
+    if unsafe { syscall(UNAME, names.as_mut_ptr()) } != 0 {
+        return Err(io::Error::last_os_error());
+    }
+    let mounted = match fs::read_to_string("/proc/self/mountinfo") {
+        Ok(contents) => version_proc_mounted(&contents),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => false,
+        Err(error) => return Err(error),
+    };
+    if !mounted {
+        fs::create_dir_all("/proc")?;
+        // This path runs only from the isolated guest's PID 1. Existing cpuset
+        // fixtures may already have mounted proc before reaching this check.
+        cpuset_mount(c"proc", c"/proc", c"proc", None)?;
+    }
+    check_version_data(&expected, hostname.as_deref(), &names, &fs::read("/proc/version")?)
+}
+
 fn write_record(writer: &mut impl Write, message: &str) -> io::Result<()> {
     if message
         .bytes()
@@ -420,6 +527,12 @@ fn main() {
     if fs::exists("/cpuset-v1-setup").unwrap() {
         run_cpuset_v1(&mut log).unwrap();
     }
+    if fs::exists("/expected-version").unwrap() {
+        run_version_check().unwrap();
+        write_record(&mut log, "LUPOS_VERSION_CHECK_OK").unwrap();
+    } else {
+        assert!(!fs::exists("/expected-hostname").unwrap(), "hostname check requires a version plan");
+    }
     if fs::exists("/failslab-setup").unwrap() {
         let stack_filter = match fs::read("/failslab-setup").unwrap().as_slice() {
             b"failslab-v1\nstacktrace-filter=0\n" => false,
@@ -491,6 +604,88 @@ fn main() {
 mod tests {
     use super::*;
     use std::collections::VecDeque;
+
+    fn version_fixture() -> (Vec<u8>, [[u8; 65]; 6], Vec<u8>) {
+        let fields: [&[u8]; 6] = [b"Linux", b"fixture", b"7.2.0", b"#23 final", b"x86_64", b"(none)"];
+        let proc_version = b"Linux version 7.2.0 (builder@host) (compiler) #23 final\n".to_vec();
+        let mut plan = VERSION_PLAN_MAGIC.to_vec();
+        let mut names = [[0; 65]; 6];
+        for (index, field) in fields.iter().enumerate() {
+            plan.extend_from_slice(&(field.len() as u16).to_le_bytes());
+            plan.extend_from_slice(field);
+            names[index][..field.len()].copy_from_slice(field);
+        }
+        plan.extend_from_slice(&(proc_version.len() as u32).to_le_bytes());
+        plan.extend_from_slice(&proc_version);
+        (plan, names, proc_version)
+    }
+
+    #[test]
+    fn version_plan_requires_exact_complete_binary_data() {
+        let (plan, _, _) = version_fixture();
+        parse_version_plan(&plan).unwrap();
+        for end in 0..plan.len() {
+            assert!(parse_version_plan(&plan[..end]).is_err());
+        }
+        for changed in [0, VERSION_PLAN_MAGIC.len(), VERSION_PLAN_MAGIC.len() + 1] {
+            let mut bad = plan.clone();
+            bad[changed] ^= 0x80;
+            assert!(parse_version_plan(&bad).is_err());
+        }
+        let mut bad = plan.clone();
+        bad.push(0);
+        assert!(parse_version_plan(&bad).is_err());
+        bad = plan.clone();
+        bad[VERSION_PLAN_MAGIC.len() + 2] = 0;
+        assert!(parse_version_plan(&bad).is_err());
+        bad = plan.clone();
+        *bad.last_mut().unwrap() = 0;
+        assert!(parse_version_plan(&bad).is_err());
+    }
+
+    #[test]
+    fn version_check_covers_all_uname_fields_and_exact_proc_bytes() {
+        let (plan, names, proc_version) = version_fixture();
+        let expected = parse_version_plan(&plan).unwrap();
+        check_version_data(&expected, None, &names, &proc_version).unwrap();
+        for index in 0..6 {
+            let mut bad = names;
+            bad[index][0] ^= 0x20;
+            assert!(check_version_data(&expected, None, &bad, &proc_version).is_err());
+            bad[index] = [b'x'; 65];
+            assert!(check_version_data(&expected, None, &bad, &proc_version).is_err());
+        }
+        assert!(check_version_data(&expected, None, &names, &proc_version[..proc_version.len() - 1]).is_err());
+        let mut changed = proc_version.clone();
+        changed[0] ^= 0x20;
+        assert!(check_version_data(&expected, None, &names, &changed).is_err());
+    }
+
+    #[test]
+    fn version_hostname_checks_empty_and_maximum_without_padding_assumptions() {
+        let (plan, mut names, proc_version) = version_fixture();
+        let expected = parse_version_plan(&plan).unwrap();
+        for length in [0, 1, 63, 64] {
+            let hostname = vec![b'z'; length];
+            names[1] = [0xa5; 65];
+            names[1][..length].copy_from_slice(&hostname);
+            names[1][length] = 0;
+            check_version_data(&expected, Some(&hostname), &names, &proc_version).unwrap();
+        }
+        for bad in [vec![b'z'; 65], b"bad\0name".to_vec()] {
+            assert!(check_version_data(&expected, Some(&bad), &names, &proc_version).is_err());
+        }
+        assert!(check_version_data(&expected, Some(b"wrong"), &names, &proc_version).is_err());
+    }
+
+    #[test]
+    fn version_proc_detection_requires_exact_mountpoint_and_filesystem() {
+        assert!(version_proc_mounted("12 1 0:3 / /proc rw - proc proc rw\n"));
+        for wrong in ["", "bad record", "12 1 0:3 / /proc-other rw - proc proc rw\n",
+                      "12 1 0:3 / /proc rw - ext2 /dev/vda rw\n"] {
+            assert!(!version_proc_mounted(wrong));
+        }
+    }
 
     #[test]
     fn cpuset_runtime_requires_bash_and_every_busybox_applet_in_guest() {

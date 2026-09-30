@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-2.0-only
-"""Boot an x86-64 or ARM64 kernel with a Rust-generated initramfs."""
+"""Boot an x86-64 or ARM64 kernel with generated RAM or disk root filesystems."""
 
 import argparse
 import hashlib
@@ -10,6 +10,8 @@ from pathlib import Path
 import re
 import selectors
 import shlex
+import shutil
+import stat
 import struct
 import subprocess
 import sys
@@ -31,6 +33,178 @@ CPUSET_MARKERS = (
     b"LUPOS_CPUSET_V1_HOTPLUG_OK",
     b"LUPOS_CPUSET_V1_CLEANUP_OK cpu1=online",
 )
+LEGACY_INITRD_CONFIG = ("BLOCK", "BLK_DEV_INITRD", "BLK_DEV_RAM")
+ROOT_DISK_CONFIG = ("BLOCK", "VIRTIO", "VIRTIO_BLK")
+LEGACY_RDINIT = "/__lupos_missing_rdinit__"
+
+
+def initramfs_entries(archive):
+    """Decode the generator's newc/crc records with bounded names and payloads."""
+    result = []
+    offset = 0
+    while True:
+        header = archive[offset:offset + 110]
+        if len(header) != 110 or header[:6] not in (b"070701", b"070702"):
+            raise ValueError("invalid or truncated initramfs header")
+        if not re.fullmatch(b"[0-9a-fA-F]{104}", header[6:]):
+            raise ValueError("invalid initramfs header fields")
+        fields = [int(header[6 + index * 8:14 + index * 8], 16) for index in range(13)]
+        offset += 110
+        name_size, data_size = fields[11], fields[6]
+        name_bytes = archive[offset:offset + name_size]
+        if not name_size or len(name_bytes) != name_size or not name_bytes.endswith(b"\0"):
+            raise ValueError("invalid or truncated initramfs name")
+        name, _, padding = name_bytes.partition(b"\0")
+        if any(padding):
+            raise ValueError("invalid initramfs name padding")
+        offset = (offset + name_size + 3) & ~3
+        data_offset = offset
+        data = archive[offset:offset + data_size]
+        if len(data) != data_size:
+            raise ValueError("truncated initramfs payload")
+        # gen_init_cpio emits CRCs for regular-file payloads only.
+        if header[:6] == b"070702" and stat.S_ISREG(fields[1]) and sum(data) & 0xffffffff != fields[12]:
+            raise ValueError("invalid initramfs file checksum")
+        offset = (offset + data_size + 3) & ~3
+        result.append((name, fields, data, data_offset))
+        if name == b"TRAILER!!!":
+            if len(archive) % 512 or offset > len(archive) or any(archive[offset:]):
+                raise ValueError("invalid initramfs trailer padding")
+            return result
+
+
+def legacy_initrd(archive, image):
+    """Populate ext2 directly from generated CPIO, without host mounts/mknod."""
+    records = initramfs_entries(archive.read_bytes())[:-1]
+    paths, regular = {}, {}
+
+    def argument(value):
+        # debugfs has its own command parser. The manifest uses whitespace-
+        # delimited paths; reject metacharacters instead of inventing quoting.
+        value = os.fsdecode(value)
+        if not value or any(character.isspace() or character in '\\"\x00' for character in value):
+            raise ValueError("unsupported legacy initrd path: " + repr(value))
+        return value
+
+    for name, fields, data, _ in records:
+        path = "/" + argument(name).lstrip("/")
+        if ".." in Path(path).parts or str(Path(path)) != path or path == LEGACY_RDINIT:
+            raise ValueError("invalid legacy initrd destination: " + path)
+        if path in paths and not (stat.S_ISDIR(fields[1]) and stat.S_ISDIR(paths[path][0][1])):
+            raise ValueError("duplicate legacy initrd destination: " + path)
+        paths[path] = fields, data
+        if stat.S_ISREG(fields[1]):
+            key = fields[7], fields[8], fields[0]
+            regular.setdefault(key, []).append((path, fields, data))
+        elif stat.S_ISLNK(fields[1]):
+            argument(data.rstrip(b"\0"))
+        elif stat.S_IFMT(fields[1]) not in (stat.S_IFDIR, stat.S_IFCHR, stat.S_IFBLK, stat.S_IFIFO, stat.S_IFSOCK):
+            raise ValueError("unsupported legacy initrd inode type")
+    for path in paths:
+        for parent in Path(path).parents:
+            if str(parent) != "/" and (str(parent) not in paths or not stat.S_ISDIR(paths[str(parent)][0][1])):
+                raise ValueError("legacy initrd parent is not a directory: " + str(parent))
+    for group in regular.values():
+        _, first, _ = group[0]
+        if len(group) != first[4] or any(fields[1:6] != first[1:6] for _, fields, _ in group):
+            raise ValueError("inconsistent legacy initrd hardlink metadata")
+        if len({data for _, _, data in group if data}) > 1:
+            raise ValueError("inconsistent legacy initrd hardlink payloads")
+
+    # Reserve space for indirect blocks, inode tables, extra directories and
+    # writes made by the unchanged guest fixture after mounting the root rw.
+    payload = sum(max(len(data) for _, _, data in group) for group in regular.values())
+    size_kib = ((payload * 5 // 4 + len(paths) * 4096 + (16 << 20) + (1 << 20) - 1) >> 20) * 1024
+    image.parent.mkdir(parents=True, exist_ok=True)
+    with image.open("wb") as output:
+        output.truncate(size_kib * 1024)
+    environment = {**os.environ, "LC_ALL": "C"}
+    subprocess.run(["mkfs.ext2", "-q", "-F", "-b", "1024", "-I", "256", "-O", "none", "-m", "0",
+                    "-N", str(max(128, len(paths) * 2 + 32)), str(image)],
+                   check=True, capture_output=True, env=environment)
+    folder = image.parent / "legacy-initrd-inputs"
+    folder.mkdir(exist_ok=True)
+    empty = folder / "empty"
+    empty.write_bytes(b"")
+    commands = []
+    for path, (fields, _) in sorted(paths.items(), key=lambda item: (item[0].count("/"), item[0])):
+        if stat.S_ISDIR(fields[1]) and path != "/":
+            commands.append("mkdir " + path)
+    for index, group in enumerate(regular.values()):
+        path, fields, _ = group[0]
+        source = folder / str(index)
+        source.write_bytes(max((data for _, _, data in group), key=len))
+        commands.append(f"write {argument(str(source))} {path}")
+        commands.extend(f"ln {path} {other}" for other, _, _ in group[1:])
+        commands.append(f"sif {path} links_count {fields[4]}")
+    for path, (fields, data) in paths.items():
+        mode = fields[1]
+        if stat.S_ISLNK(mode):
+            commands.append(f"symlink {path} {argument(data.rstrip(bytes([0])))}")
+        elif stat.S_ISCHR(mode) or stat.S_ISBLK(mode):
+            parent, name = str(Path(path).parent), Path(path).name
+            kind = "c" if stat.S_ISCHR(mode) else "b"
+            commands.extend((f"cd {parent}", f"mknod {name} {kind} {fields[9]} {fields[10]}", "cd /"))
+        elif stat.S_ISFIFO(mode) or stat.S_ISSOCK(mode):
+            # With ext2's filetype feature disabled, the inode mode alone
+            # identifies empty FIFO/socket objects; no host special file exists.
+            commands.append(f"write {argument(str(empty))} {path}")
+        for field, value in (("mode", f"0{mode:o}"), ("uid", fields[2]), ("gid", fields[3]),
+                             ("atime", fields[5]), ("mtime", fields[5]), ("ctime", fields[5])):
+            commands.append(f"sif {path} {field} {value}")
+    batch = folder / "commands"
+    batch.write_text("\n".join(commands) + "\n")
+    result = subprocess.run(["debugfs", "-w", "-f", str(batch), str(image)],
+                            check=True, capture_output=True, env=environment)
+    # debugfs can report a failed command while returning status zero.
+    if not re.fullmatch(rb"debugfs [^\n]+\n", result.stderr):
+        raise ValueError("legacy initrd population failed: " + result.stderr.decode(errors="replace"))
+    return size_kib
+
+
+def verify_legacy_initrd(console, requested):
+    """Require the legacy load and root pivot before the existing PID 1 checks."""
+    if not requested:
+        return
+    patterns = (
+        rb"RAMDISK: ext2 filesystem found at block 0",
+        rb"using deprecated initrd support, will be removed in January 2027; .*",
+        rb"VFS: Mounted root \((?:ext2|ext4) filesystem\) on device 1:0\.",
+        rb"VFS: Pivoted into new rootfs",
+        rb"Run /init as init process",
+        MARKER,
+    )
+    prefixes = (b"RAMDISK: ext2 filesystem found", b"using deprecated initrd support",
+                b"VFS: Mounted root", b"VFS: Pivoted into new rootfs", b"Run /init as init process", MARKER)
+    verify_root_events(console, prefixes, patterns)
+
+
+def verify_root_disk(console, requested):
+    """Require virtio discovery and root handoff with no initrd boot path."""
+    if not requested:
+        return
+    if b"RAMDISK: ext2 filesystem found" in console or b"using deprecated initrd support" in console:
+        raise ValueError("disk-root boot unexpectedly used a legacy initrd")
+    prefixes = (b"[vda]", b"VFS: Mounted root", b"VFS: Pivoted into new rootfs",
+                b"Run /init as init process", MARKER)
+    patterns = (
+        rb"virtio_blk [^:]+: \[vda\] [1-9][0-9]* 512-byte logical blocks.*",
+        rb"VFS: Mounted root \((?:ext2|ext4) filesystem\) on device (?!1:)[1-9][0-9]*:0\.",
+        rb"VFS: Pivoted into new rootfs", rb"Run /init as init process", MARKER,
+    )
+    verify_root_events(console, prefixes, patterns)
+
+
+def verify_root_events(console, prefixes, patterns):
+    console = normalize_console_transport(console)
+    events = []
+    for line in console.splitlines():
+        line = re.sub(rb"^\[\s*\d+\.\d+\]\s*", b"", line.strip(), count=1)
+        for index, (prefix, pattern) in enumerate(zip(prefixes, patterns)):
+            if prefix in line:
+                events.append(index if re.fullmatch(pattern, line) else -1)
+    if events != list(range(len(patterns))):
+        raise ValueError("guest did not complete root loading and namespace handoff")
 
 
 def cpuset_interpreter(data, arch):
@@ -245,16 +419,38 @@ def init_command(compiler, arch, output):
     return command
 
 
-def qemu_command(qemu, arch, kernel, archive, data=None, cpuset=False):
+def qemu_command(qemu, arch, kernel, archive, data=None, cpuset=False,
+                 cpu=None, kernel_args=(), ramdisk_kib=None, root_disk=False):
     """Keep the emulated machine, kernel console and guest target consistent."""
     _, _, machine, console = architecture(arch)
+    if cpu is not None:
+        if "-cpu" in machine:
+            machine[machine.index("-cpu") + 1] = cpu
+        else:
+            machine += ["-cpu", cpu]
+    if root_disk and ramdisk_kib is not None:
+        raise ValueError("root disk and legacy initrd are mutually exclusive")
+    if root_disk and "," in str(archive):
+        raise ValueError("root disk image path must not contain commas")
+    root_args = (["rdinit=" + LEGACY_RDINIT, "root=/dev/vda", "rootfstype=ext2", "rw", "init=/init"]
+                 if root_disk else
+                 ["rdinit=" + LEGACY_RDINIT, "root=/dev/ram0", "rootfstype=ext2", "rw",
+                  "init=/init", "ramdisk_size=" + str(ramdisk_kib)] if ramdisk_kib is not None
+                 else ["rdinit=/init"])
+    command_line = [f"console={console}", *root_args, "panic=-1", "nokaslr",
+                    "printk.devkmsg=on", "loglevel=7", *kernel_args]
     command = shlex.split(qemu or "qemu-system-" + arch) + machine + [
         "-accel", "tcg", "-m", "256M", "-smp",
         "2,sockets=1,cores=2,threads=1" if cpuset else "2",
         "-display", "none", "-serial", "stdio", "-monitor", "none",
         "-nic", "none", "-no-reboot", "-kernel", str(kernel),
-        "-initrd", str(archive),
-        "-append", f"console={console} rdinit=/init panic=-1 nokaslr printk.devkmsg=on loglevel=7"]
+        "-append", " ".join(command_line)]
+    if root_disk:
+        transport = "virtio-blk-pci" if arch == "x86_64" else "virtio-blk-device"
+        command += ["-drive", f"file={archive},format=raw,if=none,id=lupos-root,snapshot=on",
+                    "-device", transport + ",drive=lupos-root"]
+    else:
+        command += ["-initrd", str(archive)]
     if data:
         command += ["-L", str(data.resolve())]
     return command
@@ -354,6 +550,9 @@ def main():
     parser.add_argument("--qemu", default=os.environ.get("QEMU"),
                         help="QEMU command (defaults to QEMU or the guest's qemu-system binary)")
     parser.add_argument("--qemu-data", type=Path, help="optional QEMU firmware directory")
+    parser.add_argument("--cpu", help="explicit QEMU CPU model, overriding the architecture default")
+    parser.add_argument("--kernel-arg", action="append", default=[],
+                        help="append a kernel boot argument (repeatable)")
     parser.add_argument("--timeout", type=float, default=60)
     parser.add_argument("--module", type=Path, help="optional uncompressed module to load inside the VM")
     parser.add_argument("--preload-module", type=Path, action="append", default=[],
@@ -370,6 +569,11 @@ def main():
                         help="explicit target root containing Bash, static BusyBox and their ELF dependencies")
     parser.add_argument("--extra-initramfs-manifest", type=Path,
                         help="append fixture entries in gen_init_cpio manifest syntax")
+    root_mode = parser.add_mutually_exclusive_group()
+    root_mode.add_argument("--legacy-initrd", action="store_true",
+                        help="boot the same fixtures from an ext2 RAM disk through prepare_namespace")
+    root_mode.add_argument("--root-disk", action="store_true",
+                          help="boot the same fixtures from a virtio disk with initramfs support disabled")
     args = parser.parse_args()
     if args.cpuset_userspace_root is not None and not args.cpuset_v1_selftests:
         parser.error("--cpuset-userspace-root requires --cpuset-v1-selftests")
@@ -399,6 +603,30 @@ def main():
         if args.arch != "x86_64" and args.cpuset_userspace_root is None:
             parser.error("cpuset-v1 selftests require --cpuset-userspace-root for ARM userspace")
         required.extend("CONFIG_" + name + "=y" for name in CPUSET_CONFIG)
+    if args.legacy_initrd:
+        required.extend("CONFIG_" + name + "=y" for name in LEGACY_INITRD_CONFIG)
+        if "CONFIG_INITRAMFS_FORCE=y" in configuration:
+            parser.error("--legacy-initrd requires CONFIG_INITRAMFS_FORCE to be disabled")
+    if args.root_disk:
+        required.extend("CONFIG_" + name + "=y" for name in ROOT_DISK_CONFIG)
+        required.extend(["CONFIG_PCI=y", "CONFIG_VIRTIO_PCI=y"] if args.arch == "x86_64"
+                        else ["CONFIG_VIRTIO_MMIO=y"])
+        if "CONFIG_BLK_DEV_INITRD=y" in configuration:
+            parser.error("--root-disk requires CONFIG_BLK_DEV_INITRD to be disabled")
+        if "," in str(work):
+            parser.error("--root-disk requires an output path without commas")
+    if args.legacy_initrd or args.root_disk:
+        option = "--root-disk" if args.root_disk else "--legacy-initrd"
+        if not ("CONFIG_EXT2_FS=y" in configuration or
+                {"CONFIG_EXT4_FS=y", "CONFIG_EXT4_USE_FOR_EXT2=y"} <= set(configuration)):
+            parser.error(option + " requires built-in EXT2_FS or EXT4_FS with EXT4_USE_FOR_EXT2")
+        reserved = {"root", "rootfstype", "init", "rdinit", "noinitrd", "ramdisk_size",
+                    "ramdisk_start", "brd.rd_size", "initrd", "initrdmem", "ro", "rw", "--"}
+        if any(token.split("=", 1)[0] in reserved for argument in args.kernel_arg for token in argument.split()):
+            parser.error(option + " owns root, initrd and RAM disk boot arguments")
+        for tool in ("mkfs.ext2", "debugfs"):
+            if shutil.which(tool) is None:
+                parser.error(option + " requires " + tool)
     for setting in required:
         if setting not in configuration:
             parser.error(f"the requested boot checks require {setting}")
@@ -477,9 +705,18 @@ def main():
     archive = work / "initramfs.cpio"
     subprocess.run([str(generator), "-t", "0", "-c", "-o", str(archive),
                     str(manifest)], check=True)
+    ramdisk_kib = None
+    if args.legacy_initrd or args.root_disk:
+        image = work / ("root.ext2" if args.root_disk else "initrd.ext2")
+        size_kib = legacy_initrd(archive, image)
+        if args.legacy_initrd:
+            ramdisk_kib = size_kib
+        archive = image
 
     command = qemu_command(args.qemu, args.arch, kernel, archive, args.qemu_data,
-                           cpuset=args.cpuset_v1_selftests)
+                           cpuset=args.cpuset_v1_selftests, cpu=args.cpu,
+                           kernel_args=args.kernel_arg, ramdisk_kib=ramdisk_kib,
+                           root_disk=args.root_disk)
     log_path = work / "console.log"
     deadline = time.monotonic() + args.timeout
     found = False
@@ -522,9 +759,13 @@ def main():
                              reload=args.reload_modules)
         verify_failslab_setup(log_path.read_bytes(), args.prepare_failslab)
         verify_cpuset_events(log_path.read_bytes(), args.cpuset_v1_selftests)
+        verify_legacy_initrd(log_path.read_bytes(), args.legacy_initrd)
+        verify_root_disk(log_path.read_bytes(), args.root_disk)
     except ValueError as error:
         raise SystemExit(f"{error}; console output: {log_path}") from error
-    print(f"Kernel boot and Rust-generated initramfs checks passed; console: {log_path}")
+    medium = ("ext2 root disk" if args.root_disk else "legacy ext2 initrd" if args.legacy_initrd
+              else "Rust-generated initramfs")
+    print(f"Kernel boot and {medium} checks passed; console: {log_path}")
     if args.cpuset_v1_selftests:
         print("Original cpuset-v1 base/hotplug tests and restored CPU/hierarchy state passed.")
     if args.prepare_failslab:

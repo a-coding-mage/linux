@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
 use ffi::c_char;
 
+// Canonical kernel_param recursively contains the kernel's empty lock key.
+#[allow(improper_ctypes)]
 unsafe extern "C" {
     fn original_parameter() -> *const bindings::kernel_param;
     fn original_reset(value: bool);

@@ -2,6 +2,11 @@
 /* Observe the original subsystem calls, not physical page protection. */
 #include <linux/init.h>
 #include <linux/string.h>
+#include <linux/mm.h>
+#include <linux/moduleloader.h>
+#include <linux/jump_label.h>
+#include <linux/ptdump.h>
+#include <linux/rodata_test.h>
 #include <linux/stdarg.h>
 
 extern int printf(const char *, ...);
@@ -22,12 +27,19 @@ static char log[1024];
 static size_t used;
 #define CHECK(condition) do { if (!(condition)) { printf("FAIL %d\n", __LINE__); exit(90); } } while (0)
 static void event(char value) { CHECK(used + 1 < sizeof(log)); log[used++] = value; log[used] = 0; }
+#ifdef CONFIG_MODULES
 void flush_module_init_free_work(void) { event('F'); }
+#endif
+#ifdef CONFIG_JUMP_LABEL
 void jump_label_init_ro(void) { event('J'); }
+#endif
 void mark_rodata_ro(void) { event('M'); }
 bool ptdump_check_wx(void) { event('W'); return true; }
+#ifdef CONFIG_DEBUG_RODATA_TEST
 void rodata_test(void) { event('T'); }
+#endif
 
+#ifdef CONFIG_PRINTK
 __attribute__((force_align_arg_pointer))
 int _printk(const char *format, ...)
 {
@@ -39,6 +51,7 @@ int _printk(const char *format, ...)
 	used += length;
 	return length;
 }
+#endif
 
 static void compare(char *value, bool enabled, bool full)
 {

@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--allowlist-type '^(uts_namespace|obs_kernel_param|pi_entry)$'
+--allowlist-var '^(RUST_VERSION_.*|init_user_ns|utsns_operations)$'
+--allowlist-function '^(sized_strscpy|strnlen|_printk)$'

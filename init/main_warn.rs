@@ -20,6 +20,10 @@ macro_rules! x86_warning {
     ($format:expr $(, $argument:expr)* $(,)?) => {{
         const FLAGS: u32 = $crate::bindings::BUGFLAG_WARNING
             | $crate::bindings::BUGFLAG_ARGS | ($crate::bindings::TAINT_WARN << 8);
+        // The native __WARN_validate_printf inline has an empty body, but its
+        // argument expressions are still evaluated before the trap arguments.
+        // Do not silently remove those effects from the original macro.
+        let _ = ($($argument),*);
         #[cfg(all(CONFIG_HAVE_STATIC_CALL_INLINE, not(MODULE)))]
         {
             #[used]

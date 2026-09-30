@@ -6,66 +6,105 @@
  * Author: Jean-Paul Saman <jean-paul.saman@nxp.com>
  */
 
-// C dependencies supplied by the surrounding kernel translation unit.
-use core::ffi::{c_char, c_int, c_uint};
+//! Default root filesystem creation when no initramfs support is configured.
 
-const KERN_WARNING: &[u8] = b"<4>";
-const S_IFCHR: c_uint = 0o020000;
-const S_IRUSR: c_uint = 0o400;
-const S_IWUSR: c_uint = 0o200;
+#[allow(
+    clippy::all,
+    dead_code,
+    missing_docs,
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    improper_ctypes,
+    unreachable_pub,
+    unsafe_op_in_unsafe_fn
+)]
+mod bindings {
+    use kernel::ffi;
 
-extern "C" {
-    fn usermodehelper_enable();
-    fn init_mkdir(pathname: *const c_char, mode: c_uint) -> c_int;
-    fn init_mknod(
-        filename: *const c_char,
-        mode: c_uint,
-        dev: c_uint,
-    ) -> c_int;
-    fn new_encode_dev(dev: c_uint) -> c_uint;
-    fn printk(fmt: *const c_char, ...) -> c_int;
+    include!(concat!(
+        env!("OBJTREE"),
+        "/rust/bindings/init_noinitramfs_generated.rs"
+    ));
 }
 
-/*
- * Create a simple rootfs that is similar to the default initramfs
- */
-#[allow(non_snake_case)]
-unsafe fn default_rootfs() -> c_int {
-    let mut err: c_int;
+mod main_printk;
 
-    usermodehelper_enable();
-    err = init_mkdir(b"/dev\0".as_ptr() as *const c_char, 0o755);
-    if err < 0 {
-        return rootfs_error(err);
+use kernel::ffi::c_int;
+use main_printk::main_printk;
+
+#[link_section = ".init.text"]
+#[cfg_attr(
+    not(all(CONFIG_LTO_CLANG, CONFIG_HAVE_ARCH_PREL32_RELOCATIONS)),
+    linkage = "internal"
+)]
+#[cfg_attr(
+    all(CONFIG_LTO_CLANG, CONFIG_HAVE_ARCH_PREL32_RELOCATIONS),
+    export_name = "__initstub__kmod_noinitramfs__0_42_default_rootfsrootfs"
+)]
+unsafe extern "C" fn default_rootfs() -> c_int {
+    // SAFETY: the rootfs initcall runs during serialized boot. These are the
+    // original usermode-helper state transition and init syscall interfaces.
+    unsafe {
+        bindings::__usermodehelper_set_disable_depth(bindings::umh_disable_depth_UMH_ENABLED);
+        let mut error = bindings::init_mkdir(c"/dev".as_ptr().cast(), 0o755);
+        if error >= 0 {
+            // Inline MKDEV and new_encode_dev with their canonical unsigned
+            // dev_t widths; neither C inline defines an external symbol.
+            let device: bindings::dev_t = (5 << bindings::MINORBITS) | 1;
+            let major = device >> bindings::MINORBITS;
+            let minor = device & bindings::MINORMASK;
+            let encoded = (minor & 0xff) | (major << 8) | ((minor & !0xff) << 12);
+            error = bindings::init_mknod(
+                c"/dev/console".as_ptr().cast(),
+                (bindings::S_IFCHR | bindings::S_IRUSR | bindings::S_IWUSR) as bindings::umode_t,
+                encoded,
+            );
+            if error >= 0 {
+                error = bindings::init_mkdir(c"/root".as_ptr().cast(), 0o700);
+            }
+        }
+        if error < 0 {
+            main_printk!("default_rootfs", b"\x014Failed to create a rootfs\n\0");
+            error
+        } else {
+            0
+        }
     }
-
-    err = init_mknod(
-        b"/dev/console\0".as_ptr() as *const c_char,
-        S_IFCHR | S_IRUSR | S_IWUSR,
-        new_encode_dev(((5u32) << 20) | 1u32),
-    );
-    if err < 0 {
-        return rootfs_error(err);
-    }
-
-    err = init_mkdir(b"/root\0".as_ptr() as *const c_char, 0o700);
-    if err < 0 {
-        return rootfs_error(err);
-    }
-
-    0
 }
 
-unsafe fn rootfs_error(err: c_int) -> c_int {
-    let message = b"Failed to create a rootfs\n\0";
-    let mut format = [0u8; 3 + 27];
-    format[..3].copy_from_slice(KERN_WARNING);
-    format[3..].copy_from_slice(message);
-    printk(format.as_ptr() as *const c_char);
-    err
-}
+// Preserve rootfs_initcall's original source identity, ordering and relocation
+// representation. Its callback and record are reclaimed with init memory.
+#[cfg(CONFIG_HAVE_ARCH_PREL32_RELOCATIONS)]
+#[used]
+#[link_section = ".discard.addressable"]
+static ADDRESSABLE: unsafe extern "C" fn() -> c_int = default_rootfs;
+#[cfg(all(CONFIG_HAVE_ARCH_PREL32_RELOCATIONS, not(CONFIG_LTO_CLANG)))]
+core::arch::global_asm!(
+    ".pushsection .initcallrootfs.init,\"a\"",
+    "__initcall__kmod_noinitramfs__0_42_default_rootfsrootfs:",
+    ".long {callback} - .",
+    ".popsection",
+    callback = sym default_rootfs,
+);
+#[cfg(all(CONFIG_HAVE_ARCH_PREL32_RELOCATIONS, CONFIG_LTO_CLANG))]
+core::arch::global_asm!(
+    ".pushsection .initcallrootfs.init..kmod_noinitramfs__0_42_default_rootfs,\"a\"",
+    "__initcall__kmod_noinitramfs__0_42_default_rootfsrootfs:",
+    ".long {callback} - .",
+    ".popsection",
+    callback = sym default_rootfs,
+);
 
-// Equivalent of rootfs_initcall(default_rootfs); registration is provided by
-// the surrounding kernel build and initialization infrastructure.
+#[cfg(not(CONFIG_HAVE_ARCH_PREL32_RELOCATIONS))]
+#[used]
+#[linkage = "internal"]
+#[export_name = "__initcall__kmod_noinitramfs__0_42_default_rootfsrootfs"]
+#[cfg_attr(not(CONFIG_LTO_CLANG), link_section = ".initcallrootfs.init")]
+#[cfg_attr(
+    CONFIG_LTO_CLANG,
+    link_section = ".initcallrootfs.init..kmod_noinitramfs__0_42_default_rootfs"
+)]
+static mut INITCALL: unsafe extern "C" fn() -> c_int = default_rootfs;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

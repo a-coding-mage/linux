@@ -2515,9 +2515,28 @@ Most of the migration is still outstanding. In particular:
   target-kernel C objects still take precedence over adjacent Rust files.
   Their Rust definitions, shared types, configuration handling, exported
   symbols, and module boundaries must be repaired before selecting them.
-* Some translated files omit core behavior. For example,
-  ``init/main.rs::start_kernel`` currently panics instead of initializing
-  and starting the kernel.
+* Some translated files omit core behavior. The former panic placeholder in
+  ``init/main.rs::start_kernel`` has now been replaced by the original startup
+  sequence. Its default-off ``RUST_INIT_MAIN`` integration passes native
+  combined-owner and focused original-C checks on x86-64 and ARM64. Selected
+  full image/module builds and boot/module reload gates now pass on both,
+  including 788 passing library/math KTAP case executions without skips.
+  All 94 focused init tests pass without skips. Additional builds with tracing,
+  lockdep, stack protection and random stack offsets pass; x86-64 and ARM64
+  guests each pass the seven library suites twice with random offsets both
+  enabled and disabled (912 case executions). ARM64 also enables pointer
+  authentication. Its debug guests require ``arm64.nomops`` on the installed
+  QEMU 8.2.2: an otherwise identical original-C control reproduces the same
+  emulator SETM fault and passes with the option. This does not establish MOPS
+  coverage on a fixed emulator. Canonical tracepoint macros and compiler
+  allocation metadata retain C companion boundaries.
+* The default-off ``RUST_INIT_MOUNTS_INITRD`` selects the repaired legacy initrd
+  owner, preserving its address globals, boot options and cleanup behavior.
+  Both native architecture builds pass with RAM disk support on/off, and
+  complete selected images load an ext2 initrd, mount and pivot into the root
+  filesystem, then pass the same 788 library/math case executions and module
+  reload checks. ARM64 uses the emulator option described above. Other mount
+  and initramfs components still select their original C owners.
 * Architecture build files and translated selftests need integration and
   behavioral verification.
   The polynomial, integer-power, integer-root, GCD, rational,

@@ -532,6 +532,37 @@ class GendwarfEngineAuditTests(unittest.TestCase):
         for order in (roots, list(reversed(roots))):
             self.compare([order], options=("--dump-dies", "--dump-versions"))
 
+    def test_exported_union_method_declaration_with_origin_and_specification(self):
+        # Rust associates methods with its union DIE. A concrete optimized
+        # body can point through an abstract origin/specification to this
+        # complete declaration, just as core::MaybeUninit::copy_from_slice
+        # does. Every supported container must expose the same signature.
+        checksums = []
+        for width in (4, 8):
+            expected = None
+            for container in (0x39, 0x02, 0x13, 0x17):  # namespace/class/struct/union
+                declaration = dwarf_node("decl", 0x2e, b"method", "integer", attrs=[
+                    (0x6e, 8, b"exported"), (0x3c, 0x19, None)], children=[
+                        dwarf_node("argument", 0x05, target="pointer")])
+                roots = [dwarf_node("integer", 0x24, b"integer", attrs=[(0x0b, 0x0b, width)]),
+                         dwarf_node("pointer", 0x0f, target="integer"),
+                         dwarf_node("namespace", 0x39, b"outer", children=[
+                             dwarf_node("container", container, b"Owner", children=[declaration])]),
+                         dwarf_node("origin", 0x2e, attrs=[(0x47, 0x13, "decl"), (0x20, 0x0b, 1)]),
+                         dwarf_node("body", 0x2e, attrs=[(0x31, 0x13, "origin")])]
+                for order in (roots, list(reversed(roots))):
+                    for options in ((), ("--stable",), ("--dump-dies", "--dump-versions")):
+                        with self.subTest(width=width, container=container, options=options):
+                            result = self.compare([order], options=options)
+                            self.assertNotIn(b"no information for symbol", result[2])
+                            self.assertNotIn(b"0x00000000", result[1])
+                            actual = result[1], result[3]
+                            if expected is None:
+                                expected = actual
+                            self.assertEqual(actual, expected)
+            checksums.append(expected[0])
+        self.assertNotEqual(*checksums, "the discovered parameter/return type must affect its version")
+
     def test_repeated_units_and_recursive_aggregate_state_transitions(self):
         units = []
         for index in range(4):

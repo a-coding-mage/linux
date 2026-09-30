@@ -58,6 +58,7 @@ class InitMainBindings(unittest.TestCase):
                     flags = ['-UMODULE', *(['-DMODULE=7'] if module else [])]
                     header = work / 'probe.h'
                     header.write_text('#include ' + json.dumps(str(HEADER)) + '\n' +
+                        '#ifndef core_param\n#error moduleparam.h lost the built-in context\n#endif\n' +
                         ('#if !defined(MODULE) || MODULE != 7\n#error MODULE was not restored\n#endif\n'
                          if module else '#ifdef MODULE\n#error MODULE was introduced\n#endif\n'))
                     generated = work / 'generated.rs'

@@ -791,7 +791,7 @@ impl Engine<'_> {
                 ));
             }
             match node.tag() {
-                DW_TAG_namespace | DW_TAG_class_type | DW_TAG_structure_type => {
+                DW_TAG_namespace | DW_TAG_class_type | DW_TAG_structure_type | DW_TAG_union_type => {
                     stack.extend(node.children()?.into_iter().rev());
                 }
                 DW_TAG_subprogram | DW_TAG_variable => {

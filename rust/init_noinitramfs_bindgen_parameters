@@ -1,0 +1,4 @@
+# Canonical declarations for the built-in init/noinitramfs.rs owner.
+--allowlist-item '^(dev_t|umode_t|umh_disable_depth|pi_entry)$'
+--allowlist-item '^(MINORBITS|MINORMASK|S_IFCHR|S_IRUSR|S_IWUSR)$'
+--allowlist-item '^(__usermodehelper_set_disable_depth|init_mkdir|init_mknod|_printk)$'

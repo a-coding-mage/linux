@@ -1,71 +1,111 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/init/version.c
- *
- *  Copyright (C) 1992  Theodore Ts'o
- *
- *  May be freely distributed as part of Linux.
- */
+/* Copyright (C) 1992 Theodore Ts'o */
+//! Preliminary version owner and the early hostname parameter.
+//!
+//! The build supplies bindings generated with its temporary UTS_VERSION. Final
+//! version-timestamp.o replaces the two weak data symbols during the last link.
 
-// Dependencies supplied by the surrounding kernel translation unit:
-// generated/compile.h, linux/build-salt.h, linux/elfnote-lto.h,
-// linux/export.h, linux/init.h, linux/printk.h, linux/uts.h,
-// linux/utsname.h, and linux/proc_ns.h.
-
-extern "C" {
-    static mut init_uts_ns: uts_namespace;
-    fn strscpy(dst: *mut kernel::ffi::c_char, src: *const kernel::ffi::c_char, count: usize) -> isize;
-    fn pr_warn(format: *const kernel::ffi::c_char, ...);
+#[allow(
+    clippy::all, dead_code, missing_docs, non_camel_case_types, non_snake_case,
+    non_upper_case_globals, improper_ctypes, unsafe_op_in_unsafe_fn, unreachable_pub
+)]
+mod bindings {
+    use kernel::ffi;
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/init_version_generated.rs"));
 }
 
-// The following type and constants are supplied by the corresponding kernel
-// dependencies.
-#[allow(non_camel_case_types)]
-type uts_namespace = crate::uts_namespace;
+mod version_data;
+#[path = "main_setup.rs"]
+mod main_setup;
+#[path = "main_printk.rs"]
+mod main_printk;
+#[path = "../rust/ffi_export.rs"]
+mod ffi_export;
 
-unsafe fn early_hostname(arg: *mut kernel::ffi::c_char) -> kernel::ffi::c_int {
-    let bufsize: usize = core::mem::size_of_val(&(*core::ptr::addr_of!(init_uts_ns)).name.nodename);
-    let maxlen: usize = bufsize - 1;
-    let arglen: isize;
+use core::ptr;
+use kernel::ffi::{c_char, c_int};
 
-    arglen = strscpy(
-        (*core::ptr::addr_of_mut!(init_uts_ns)).name.nodename.as_mut_ptr(),
-        arg,
-        bufsize,
-    );
-    if arglen < 0 {
-        pr_warn(
-            b"hostname parameter exceeds %zd characters and will be truncated\0".as_ptr() as *const kernel::ffi::c_char,
-            maxlen,
-        );
+#[link_section = ".init.text"]
+unsafe extern "C" fn early_hostname(arg: *mut c_char) -> c_int {
+    let bufsize = bindings::RUST_VERSION_NODENAME_SIZE as usize;
+    // SAFETY: early option parsing supplies a live C string and serializes
+    // mutation of the canonical namespace. Its nodename array has bufsize
+    // bytes. The fortified wrapper knows this destination bound but not the
+    // source object's size. Its bounded scan reduces the copy count, preserving
+    // the bytes after a short string's terminator just as the C callback does.
+    unsafe {
+        let destination = ptr::addr_of_mut!(init_uts_ns.name.nodename).cast::<c_char>();
+        let count = if bindings::RUST_VERSION_FORTIFY != 0 {
+            let length = bindings::strnlen(arg, bufsize);
+            if length == bufsize { bufsize } else { length + 1 }
+        } else {
+            bufsize
+        };
+        if bindings::sized_strscpy(destination, arg, count) < 0 {
+            main_printk::main_printk!(
+                "early_hostname",
+                b"\x014hostname parameter exceeds %zd characters and will be truncated\0",
+                bufsize - 1,
+            );
+        }
     }
     0
 }
 
-// Equivalent to early_param("hostname", early_hostname).
+main_setup::setup_param!("hostname", early_hostname_parameter, Some(early_hostname), 1);
 
-pub static linux_proc_banner: &[u8] = concat!(
-    "%s version %s",
-    " (", LINUX_COMPILE_BY, "@", LINUX_COMPILE_HOST, ")",
-    " (", LINUX_COMPILER, ") %s\n",
-).as_bytes();
-
-// BUILD_SALT;
-// BUILD_LTO_INFO;
-
-/*
- * init_uts_ns and linux_banner contain the build version and timestamp,
- * which are really fixed at the very last step of build process.
- * They are compiled with __weak first, and without __weak later.
- */
-
+/// Build identity template consumed by /proc/version.
+#[allow(non_upper_case_globals)]
 #[no_mangle]
-pub static mut init_uts_ns_definition: uts_namespace = unsafe { core::mem::zeroed() };
+pub static linux_proc_banner: [u8; bindings::RUST_VERSION_PROC_BANNER.len()] =
+    *bindings::RUST_VERSION_PROC_BANNER;
+
+/// Preliminary initial UTS namespace; the final timestamp object overrides it.
+#[allow(non_upper_case_globals)]
 #[no_mangle]
-pub static linux_banner: &[u8] = b"";
+#[linkage = "weak"]
+pub static mut init_uts_ns: bindings::uts_namespace =
+    // SAFETY: the pointer names this static for the self-linked namespace lists.
+    unsafe { version_data::namespace(ptr::addr_of_mut!(init_uts_ns)) };
+ffi_export::export_symbol!(init_uts_ns, init_uts_ns, "GPL", "");
 
-// version-timestamp.c is translated and supplied separately.
+/// Preliminary boot banner, replaced by the final timestamp object.
+#[allow(non_upper_case_globals)]
+#[no_mangle]
+#[linkage = "weak"]
+pub static linux_banner: [u8; bindings::RUST_VERSION_BANNER.len()] =
+    *bindings::RUST_VERSION_BANNER;
 
-// Equivalent to EXPORT_SYMBOL_GPL(init_uts_ns).
+/// ELF notes use native-endian words and independent four-byte padding.
+#[repr(C, align(4))]
+struct LinuxNote<const D: usize> {
+    namesz: u32,
+    descsz: u32,
+    kind: u32,
+    name: [u8; 8],
+    desc: [u8; D],
+}
+
+impl<const D: usize> LinuxNote<D> {
+    const fn new(kind: u32, value: &[u8]) -> Self {
+        assert!(D % 4 == 0 && value.len() <= D && value.len() <= u32::MAX as usize);
+        let mut desc = [0; D];
+        let mut index = 0;
+        while index < value.len() {
+            desc[index] = value[index];
+            index += 1;
+        }
+        Self { namesz: 6, descsz: value.len() as u32, kind, name: *b"Linux\0\0\0", desc }
+    }
+}
+
+#[used]
+#[link_section = ".note.Linux"]
+static BUILD_SALT: LinuxNote<{ (bindings::RUST_VERSION_BUILD_SALT.len() + 3) & !3 }> =
+    LinuxNote::new(0x100, bindings::RUST_VERSION_BUILD_SALT);
+
+#[used]
+#[link_section = ".note.Linux"]
+static BUILD_LTO_INFO: LinuxNote<4> = LinuxNote::new(0x101, &(cfg!(CONFIG_LTO) as i32).to_ne_bytes());
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

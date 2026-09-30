@@ -1,0 +1,4 @@
+# Canonical declarations for the built-in init/do_mounts_initrd.rs owner.
+--allowlist-item '^(phys_addr_t|dev_t|umode_t|obs_kernel_param|pi_entry)$'
+--allowlist-item '^(MINORBITS|MINORMASK|S_IFBLK|Root_RAM0)$'
+--allowlist-item '^(memparse|init_unlink|init_mknod|rd_load_image|_printk)$'

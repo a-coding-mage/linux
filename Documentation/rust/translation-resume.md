@@ -1,5 +1,221 @@
 # Reboot handoff — C-to-Rust migration
 
+## Active continuation — 2026-09-30–10-01
+
+Work resumed in the existing `vendor/linux` checkout on
+`feat/rust-translation-lupos`, initially clean at `416b0e5ed`. The earlier
+temporary toolchain links were absent after reboot; the saved tools were
+verified and their compatibility links restored. No source clone, branch
+switch, commit, or new orchestration script was used. The full translation
+goal remains active and incomplete.
+
+Fresh config-only output directories `/tmp/lupos-build-20260930/{x86,arm64}`
+both pass complete image/module builds from this checkout with Rust 1.85,
+strict warnings, KCFI and DWARF module versions. The retained Sep 25 donors
+were not rebuilt. Both fresh guests pass load/unload/reload of KUnit and
+base64, UUID, list_sort, sort, glob, cmdline and original printf suites.
+The original KUnit parser independently accepts all 28 top-level suite
+blocks: 228 passing case executions per architecture, 456 combined, with
+zero failures or skips. Results are in `logs/{x86,arm64}-suites/run-*.json`;
+`logs/first-build-boot.sha256` records image/config/console hashes before
+the later helper rebuild. These remain mixed kernels with the original C
+boot owner, not proof of a full Rust boot.
+
+The staged rodata repair now resolves x86's real ptdump macro alias and tests
+DEBUG_WX on both native architectures. Its original-C comparisons and the
+existing completion/bootconfig suites pass together (8 tests, 97.434 seconds,
+`/tmp/lupos-init-rodata-integration.log`). Bootconfig, completion and rodata
+are wired into the staged owner. Initcall level parsing/iteration and basic
+setup pass 5 groups (113.669 seconds, `/tmp/init-main-levels-fourth.log`):
+480 behavior comparisons, 24 paired allocation failures, and native allocator
+metadata checks on both architectures. The compiler allocation bridge retains
+canonical token/tag generation; its source attribution names the new bridge.
+Typed allocation execution still needs the requisite newer Clang.
+
+The complete init-task prefix and post-freeable lifecycle pass 3 groups
+(139.542 seconds, `logs/init-main-kernel-init-full-first.log`) and independent
+source review. Freeable initialization passes native and original-C parity
+checks, including multiword nodemasks, refcount saturation and IRQ/seqcount
+state. Its 21,600 comparisons are recorded in `/tmp/lupos-init-freeable-fourth.log`
+and `/tmp/lupos-init-freeable-multiword.log`. Init-task creation, CPU pinning,
+completion and idle handoff pass 3 groups (`/tmp/init-main-rest-third.log`).
+Single-initcall repair, actual architecture preempt counters, warning and
+trace dispatch are implemented and tested; the shared tracepoint infrastructure
+still uses its canonical C macro owner.
+
+The IRQ/typed-seqcount helper image/module rebuilds both finished successfully.
+Their fresh guests additionally pass seven original math suites twice per
+architecture: 166 case executions each, 332 combined. All 28 KTAP blocks pass
+the original parser in `logs/{x86,arm64}-math-suites/run-*.json`. The console
+audit (`logs/math-console-audit.log`) checks the four expected int_log zero-input
+warnings per architecture, two successful original div64 runs and all three
+muldiv variants twice with zero reported errors. Together with the first
+seven suites this is 788 passing KTAP case executions. The earlier x86 math
+preflight requested built-in cordic as a module; the corrected run uses the
+actual configuration and retains the failed preflight log.
+
+The staged main crate now compiles as a whole on both architectures using the
+production boot binding source and explicit allowlist (2 tests, 5.109 seconds,
+`logs/init-main-integration-production-bindings-second.log`). Its explicit
+Kbuild target `rust/init_main_bindings.o` and metadata also build on both
+architectures (`logs/{x86,arm64}-boot-bindings-build.log`). These compilation
+checks do not yet select or boot a Rust init owner.
+
+The panic placeholder has now been replaced by the actual startup sequence.
+Its native entry checks pass on both architectures, preserving the original
+C void function's CFI identity, init lifetime and noreturn behavior without
+early stack-protector/ASAN instrumentation. Original-C startup ordering passes
+2,688 comparisons (`/tmp/lupos-init-start-host-fourth.log`). NUMA/canary native
+variants and x86 execution checks pass, including 4,160 NUMA comparisons and
+120 canary executions. Random-stack-offset state, early parsing and late init
+are now wired after 17 native variants and 40,992 option checks pass. The
+combined Rust owner plus actual
+allocation/tracepoint companions passes the whole-object audit on both
+architectures (2 tests, 9.108 seconds, `logs/init-main-combined-second.log`):
+global state, all original public function bindings/lifetimes/CFI identities,
+exports, setup callback records and the core parameter. The expanded audit
+also checks private lifecycle callback CFI/lifetimes and startup instrumentation.
+
+`RUST_INIT_MAIN` is now a default-off Kconfig/Kbuild option. Both current outputs
+select it and pass full image/module builds plus boot and module reload checks.
+The seven library and seven math suites pass 394 cases per architecture, 788
+combined, without skips. Original div64/muldiv diagnostic checks also pass;
+only the four expected int_log zero warnings occur per architecture. Results
+are in `logs/{x86,arm64}-rust-main-{suites,math-suites}` and
+`logs/rust-main-math-console-audit.log`. The first selected hashes are retained
+in `logs/rust-main-first-selected-boot.sha256`.
+
+The initial selected attempt caught duplicate Rust feature attributes; Kbuild
+now supplies the owner-local features once. The private boot binding object
+also needs `always-y` to build during prepare before init consumes its metadata.
+The real prepare regression starts with missing outputs and passes both host
+languages on both target architectures. The canonical header now keeps MODULE
+undefined through all built-in includes and restores its incoming value at the
+end, eliminating mixed-mode macro redefinitions. The final combined binding,
+prepare and owner gate passes 8 tests (`/tmp/init-main-coherent-build-final.log`).
+Both full coherent-header rebuilds and their combined 14-suite guests pass:
+394 case executions per architecture, 788 combined, without failures or skips.
+The original parser's 56 top-level results are in
+`logs/{x86,arm64}-rust-main-coherent-suites`; the console audit and exact artifact
+hashes are in `logs/rust-main-coherent-{console-audit.log,boot.sha256}`.
+Both ordinary image/module no-op builds also pass without changing the hashes.
+The final unified init-main discovery passes all 94 tests in 837.659 seconds,
+without skips (`/tmp/lupos-init-main-regression-final.log`).
+
+Separate config-only `*-rust-main-debug` builds pass with stack protection,
+random stack offsets, tracing and lockdep, plus ARM64 pointer authentication.
+The runner now accepts explicit `--cpu` and repeatable `--kernel-arg` options;
+30 architecture/runner tests pass without skips. Both architectures pass the
+seven library suites with module reload and random stack offsets set to both
+on and off: 228 case executions per guest, 912 total. Consoles verify actual
+initcall tracing and the Rust random-stack late init; ARM64 detects address
+authentication. The expanded native owner audit passes four tests, checking
+assembly trace trampolines by their bytes, relocations and absolute KCFI IDs
+instead of incorrectly expecting compiler function prefixes. Logs include
+`logs/init-main-debug-owner-audit-third.log` and
+`logs/rust-main-debug-on-off-boot.sha256`.
+
+ARM64 debug runs need `arm64.nomops` with the installed QEMU 8.2.2. Without it,
+both the Rust owner and an otherwise identical original-C control pass the
+first 114 library cases, then fault in MOPS SETM at `__memset+0x10` when KUnit
+reloads. The original-C control passes all 228 cases with `arm64.nomops`.
+The installed emulator disassembly contains the faulty stage-length argument
+fixed by upstream's October 2024
+[SETM arithmetic-underflow patch](https://www.mail-archive.com/qemu-devel%40nongnu.org/msg1073852.html),
+included in the [QEMU 8.2.8 stable release](https://lists.nongnu.org/archive/html/qemu-devel/2024-11/msg04076.html).
+Evidence:
+`/tmp/lupos-qemu-setm-disassembly.log` and the preserved
+`logs/arm64-{c,rust}-main-debug-on*` consoles. No kernel workaround is added;
+MOPS execution under this debug configuration remains unvalidated on a fixed
+emulator. The earlier coherent baseline guests did pass without this option.
+An additional ARM64 run with `--cpu max,pauth=off` and `arm64.nomops` passes
+228 cases without authentication feature detection or unexpected warnings
+(`logs/arm64-rust-main-debug-pauth-off-nomops*`). This checks the kernel's
+alternative path on a CPU without pointer authentication using the same image.
+
+The builds exposed a pre-existing zero-CRC export from Rust core's
+`MaybeUninit<u8>::copy_from_slice`: both C and Rust gendwarf implementations
+omitted union containers from their exported-symbol traversal. Both now visit
+unions, retaining the export and all other CRCs. Four focused tests, 87 broader
+DWARF/host tests and four real Kbuild dependency tests pass. Rust library saved
+commands now depend on the versioning tool, so replacing it refreshes versions
+and the following build is a no-op. The fresh Oct 1 builds carry the repaired
+`0x5ceedc1a` value through the saved core command, `Module.symvers` and final
+linked CRC on both architectures (2 tests,
+`/tmp/lupos-build-20261001/logs/refreshed-core-final-crc-audit.log`). The historical
+zero-CRC evidence is preserved.
+
+The adjacent legacy initrd owner is now selected by default-off
+`RUST_INIT_MOUNTS_INITRD`. Its native and original-C comparisons cover RAM disk
+support on/off, boot address ownership, all three boot-option records, parser
+behavior, original warnings and cleanup ordering. Real Kbuild tests pass for
+both architectures and both host languages, including C-to-Rust-to-C object,
+assembly and IR selection, dependency changes and no-op builds (5 tests,
+`/tmp/init-mounts-build-third.log`). Completed-image audits confirm the original
+archive component ordering, unique global/function owners, C ABI/KCFI and
+setup records without changing either build output.
+
+Fresh config-only `/tmp/lupos-build-20261001/{x86,arm64}-rust-initrd` outputs
+select both Rust boot owners and enable block devices, RAM disks and ext2
+alongside the debug settings. Both full image/module builds pass without the
+old missing-DWARF warning. The existing boot runner's `--legacy-initrd` mode
+constructs ext2 from the real generated CPIO without privileged host mounts
+or device creation, retaining file ownership, hardlinks and device metadata.
+All 36 runner tests and 16 original generator comparisons pass. Both guests
+then load the ext2 image through the Rust initrd owner, mount and pivot to the
+root filesystem, start the same PID 1 fixture and pass the 14 library/math
+suites plus module reload: 394 case executions each, 788 combined, zero skips.
+Original div64/muldiv checks pass; the only four kernel WARN records per guest
+are the expected int_log zero inputs. ARM retains `arm64.nomops` for the known
+emulator fault. Logs, per-block original KUnit parser results and artifact
+hashes are under `/tmp/lupos-build-20261001/logs/*rust-initrd*`.
+
+Normal initramfs controls also pass on both images with `noinitrd`,
+`initrdmem=1` and `initrd=2`: all three options are recognized, the missing-comma
+early arguments retain the supplied image addresses, and the original
+`noinitrd` warning occurs exactly once. Each guest passes the seven library
+suites twice (228 cases, no skips). Evidence is in
+`logs/{x86,arm64}-rust-initrd-cpio-options*` with saved hashes.
+
+Adding the disabled version selector caused an expected configuration refresh:
+the only `.config` change was `# CONFIG_RUST_INIT_VERSION is not set`, but
+both original C and translated Rust Kconfig replace `include/generated/rustc_cfg`
+when synchronizing configuration. Rust module metadata and the common module
+object explicitly depend on that file, so their objects and modules rebuilt
+once. All eight module payloads in each earlier CPIO archive and all twenty in
+each earlier legacy ext2 image still match the resulting `.ko` files byte for
+byte. Subsequent image-and-module builds with the identical pinned arguments
+are genuine no-ops on both architectures: no configuration refresh, compilation
+or linking, and all 111 tracked artifact hashes remain unchanged (56 x86,
+55 ARM64, including images, module metadata, modules, configuration and symbol
+versions). Evidence is in `logs/{x86,arm64}-rust-initrd-selectors-config-refresh.log`
+and `logs/{x86,arm64}-rust-initrd-genuine-noop{.log,.before.sha256,.after.sha256}`.
+
+The preliminary/final version owners now have default-off `RUST_INIT_VERSION`
+selection. Canonical namespace state, all self links, fixed banner arrays,
+weak/strong override, build notes, GPL export, hostname record and CFI match
+the original native objects. The bindgen input retains a second named view of
+the same namespace-tree union arm because bindgen 0.71 drops its anonymous
+tagged form; the canonical C header is unchanged and complete object layout
+and relocations are checked. Hostname behavior passes 16,448 original-C cases.
+Six combined tests also cover native two-stage Kbuild, dependency changes,
+no-op timestamps and C-to-Rust-to-C selection. Final timestamp generation stays
+outside ordinary prepare and preliminary-owner builds
+(`/tmp/lupos-init-version-combined.log`).
+
+The no-initramfs fallback now has default-off `RUST_INIT_NOINITRAMFS`, preserving
+the original object slot, usermode-helper transition, syscall ABI and rootfs
+initcall registration. It passes 24 native variants, 2,744 original-C behavior
+comparisons and real Kconfig/prepare/dependency/provider-transition tests.
+The existing boot runner now has a `--root-disk` mode using the same ext2
+fixture and a temporary QEMU snapshot, with no initrd supplied. All 55 runner
+and generator tests pass. Fresh config-only
+`/tmp/lupos-build-20261001/{x86,arm64}-rust-noinitramfs` builds select Rust main,
+version and no-initramfs owners with built-in virtio block transport and ext2;
+full image/module builds and root-disk runtime validation are in progress.
+These kernels still contain the untranslated C subsystems and explicit
+compiler/tracepoint C boundaries; the full migration goal is incomplete.
+
 ## Active continuation — 2026-09-25
 
 The full translation goal remains active and incomplete. The current turn found
