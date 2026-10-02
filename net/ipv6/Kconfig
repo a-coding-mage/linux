@@ -358,3 +358,14 @@ config RUST_INET6_AH
 	  and narrow C macro/inline wrappers retain the configured ABI.
 	  The unchanged ah6.c remains the provider when this option is off.
 	  Supports both built-in and modular INET6_AH configurations.
+
+config RUST_IPV6_GRE
+	bool "Rust GRE over IPv6 implementation"
+	depends on RUST && IPV6_GRE != n
+	help
+	  Build the GRE, GRE TAP and ERSPAN over IPv6 provider from Rust.
+	  Tunnel lookup, packet processing, ioctl/netlink configuration,
+	  namespace lifecycle and registration policy live in Rust.
+	  Generated configured declarations and narrow macro/header-inline
+	  wrappers preserve the kernel ABI. The original ip6_gre.c remains
+	  available when this option is off. Supports built-in and modules.

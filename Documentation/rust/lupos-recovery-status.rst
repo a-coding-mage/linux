@@ -141,14 +141,38 @@ Replaying the exact saved Kbuild command with only private source/output path
 substitutions reproduces the old gate failure and accepts the fixed object with
 zero panic imports/relocations. Overflow checks, warning policy, original C
 sources and tests are unchanged. The before object is retained as a negative
-control. A complete fixed-kernel rebuild and final audit remain pending; no
-runtime or original-C test pass is inferred from these checks.
+control. The fixed kernel has now passed the original four targets, exact no-op,
+unchanged native table/ownership/import audits and the before-object negative
+control. No original-C runtime pass is inferred from those build checks.
+
+Reconstructed IPv6 GRE provider
+-------------------------------
+
+``net/ipv6/ip6_gre.rs`` is reconstructed from the complete retained C unit behind
+``RUST_IPV6_GRE``. GRE, GRE TAP and IPv6 ERSPAN packet paths, tunnel lookup,
+ioctl/netlink configuration, namespace lifetime and registration are implemented
+in Rust. Generated declarations and narrow macro/inline, bitfield and compiler
+metadata boundaries preserve the configured C ABI. Original C/tests remain intact.
+
+Private canonical-command checks pass bindgen, strict C/Rust compilation and
+relocatable linking for built-in and module modes. Original-C/Rust oracles match
+192 size/alignment/offset values. Each mode's table audit matches 54 relocations
+per C/Rust/combined object, complete scalar/null bytes, const/read-mostly placement
+and module metadata. Actual module entry aliases call the Rust implementations.
+No private-helper or panic imports remain; compiler-generated memmove is an
+ordinary kernel dependency. Independent source review found no further mismatch.
+
+These are supplemental object/ABI checks. Actual Kbuild/modpost/BTF, complete
+feature configurations, runtime ownership and original C-suite acceptance remain
+pending. The complete original BPF tunnel and tc_tunnel runners, compiled through
+their original Makefiles with supported tools, are required with matched C
+controls. No historical GRE execution result is reused by this reconstruction.
 
 Remaining work and priority
 ---------------------------
 
-IPv6 GRE and virtio-9p reconstructions and their acceptance
-remain separate work. Device-driver translation is deferred until core kernel,
+Virtio-9p reconstruction and the outstanding native/runtime validation of all
+new providers remain separate work. Device-driver translation is deferred until core kernel,
 memory, filesystems and networking. Existing driver candidates are preserved;
 unchanged C drivers may still supply build dependencies or test fixtures.
 

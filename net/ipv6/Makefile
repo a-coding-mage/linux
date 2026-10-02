@@ -73,3 +73,10 @@ ah6-y := ah6_rust.o ah6_helpers.o
 $(obj)/ah6_rust.o: $(src)/ah6.rs $(objtree)/rust/bindings/ah6_generated.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
 endif
+
+ifeq ($(CONFIG_RUST_IPV6_GRE),y)
+# Preserve ip6_gre.o/ip6_gre.ko ownership and original module aliases.
+ip6_gre-y := ip6_gre_rust.o ip6_gre_helpers.o
+$(obj)/ip6_gre_rust.o: $(src)/ip6_gre.rs $(objtree)/rust/bindings/ip6_gre_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif
