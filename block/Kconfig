@@ -218,6 +218,15 @@ config BLK_INLINE_ENCRYPTION_FALLBACK
 	  by falling back to the kernel crypto API when inline
 	  encryption hardware is not present.
 
+config RUST_BLK_CRYPTO_FALLBACK
+	bool "Rust provider for blk-crypto fallback"
+	depends on RUST && BLK_INLINE_ENCRYPTION_FALLBACK
+	default n
+	help
+	  Replace blk-crypto-fallback.c with its Rust translation while using
+	  the same kernel crypto API and original C ABI. The retained C
+	  provider is selected when this option is disabled.
+
 source "block/partitions/Kconfig"
 
 config BLK_PM

@@ -925,3 +925,5 @@ include $(srctree)/fs/unicode/utf8-norm-bindgen.mk
 include $(srctree)/sound/core/timer-bindgen.mk
 
 endif # CONFIG_RUST
+
+include $(srctree)/block/blk-crypto-fallback-bindgen.mk

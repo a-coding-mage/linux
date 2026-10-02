@@ -51,4 +51,17 @@ obj-$(CONFIG_BLK_PM)		+= blk-pm.o
 obj-$(CONFIG_BLK_INLINE_ENCRYPTION)	+= blk-crypto.o blk-crypto-profile.o \
 					   blk-crypto-sysfs.o
 obj-$(CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK)	+= blk-crypto-fallback.o
+
+ifeq ($(CONFIG_RUST_BLK_CRYPTO_FALLBACK),y)
+# Keep the original archive slot; retained C remains the default provider.
+obj-y += blk-crypto-fallback-helpers.o
+$(objtree)/rust/bindings/blk_crypto_fallback_generated.rs: FORCE
+	+$(Q)$(MAKE) $(build)=rust rust/bindings/blk_crypto_fallback_generated.rs
+$(obj)/blk-crypto-fallback.o: $(src)/blk-crypto-fallback.rs $(objtree)/rust/bindings/blk_crypto_fallback_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/blk-crypto-fallback.s: $(src)/blk-crypto-fallback.rs $(objtree)/rust/bindings/blk_crypto_fallback_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/blk-crypto-fallback.ll: $(src)/blk-crypto-fallback.rs $(objtree)/rust/bindings/blk_crypto_fallback_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 obj-$(CONFIG_BLOCK_HOLDER_DEPRECATED)	+= holder.o

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'bio|bio_vec|bvec_iter|bio_set|bio_crypt_ctx|bio_fallback_crypt_ctx|blk_crypto_fallback_keyslot|blk_crypto_iv|blk_crypto_key|blk_crypto_keyslot|blk_crypto_profile|blk_crypto_ll_ops|blk_crypto_mode|blk_crypto_mode_num|scatterlist|mempool_t|kmem_cache|work_struct|workqueue_struct|crypto_sync_skcipher|skcipher_request|blk_status_t|rust_bcf_.*'
+--allowlist-function 'rust_bcf_.*|bio_alloc_bioset|bio_put|bio_endio|__bio_add_page|submit_bio|sg_init_table|crypto_skcipher_encrypt|crypto_skcipher_decrypt|crypto_alloc_sync_skcipher|bio_crypt_dun_increment|blk_crypto_keyslot_index|blk_crypto_get_keyslot|blk_crypto_put_keyslot|__blk_crypto_evict_key|blk_crypto_profile_init|blk_crypto_profile_destroy|mempool_free_bulk|mempool_free|mempool_destroy|kmem_cache_destroy|kfree|destroy_workqueue|bioset_init|bioset_exit|get_random_bytes'
+--allowlist-var 'rust_bcf_.*|RUST_BCF_.*|BLK_ENCRYPTION_MODE_.*|BLK_CRYPTO_KEY_TYPE_RAW|BLK_CRYPTO_MAX_RAW_KEY_SIZE|BLK_CRYPTO_MAX_IV_SIZE|BIO_MAX_VECS|BIOSET_NEED_BVECS|ENOMEM|ENOENT|ENOPKG|blk_crypto_modes'
