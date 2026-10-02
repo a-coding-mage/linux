@@ -264,7 +264,7 @@ $(OUTPUT)/rmap: LDLIBS += -lnuma
 
 local_config.mk local_config.h_gen: check_config.sh
 	$(call msg,CHK,config,$@)
-	$(Q)CC="$(CC)" CFLAGS="$(CFLAGS)" ./check_config.sh
+	$(Q)CC="$(CC)" CFLAGS="$(filter-out -no-pie,$(CFLAGS))" ./check_config.sh
 
 EXTRA_CLEAN += local_config.mk local_config.h_gen
 

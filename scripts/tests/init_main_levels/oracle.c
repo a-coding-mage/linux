@@ -7,6 +7,7 @@
 #undef saved_command_line_len
 #undef do_one_initcall
 #include <linux/ctype.h>
+#include "../init_main_fortify_observer.h"
 
 struct event { int kind; int argument; char value[160]; };
 static struct event events[1024];
@@ -15,6 +16,16 @@ static bool fail_allocation, mutate_entry;
 static char saved[2048], allocated[2048];
 char *original_saved_command_line;
 unsigned int original_saved_command_line_len;
+
+void fixture_trace(const char *name);
+void fixture_ctors(void);
+char *original_parse_args(const char *name, char *line,
+		const struct kernel_param *parameters, unsigned int count,
+		s16 minimum, s16 maximum, void *argument, parse_unknown_fn unknown);
+char *fixture_reset(const char *line, bool fail, bool mutate, unsigned int length);
+const struct event *fixture_events(void);
+unsigned int fixture_event_count(void);
+void fixture_original(unsigned int mode);
 
 static void record(int kind, int argument, const char *value)
 {

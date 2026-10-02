@@ -8,6 +8,19 @@ config BINARY_PRINTF
 
 menu "Library routines"
 
+config RUST_SCATTERLIST
+	bool "Rust implementation of scatterlist helpers"
+	depends on RUST
+	default n
+	help
+	  Use the Rust scatterlist allocation, iteration, copying and iterator
+	  extraction implementation through the original C interfaces. Layouts
+	  come from the generated kernel bindings; header-only allocation and
+	  mapping primitives remain in a small C bridge. The original C provider
+	  remains the default, independently of HOST_TOOLS_LANG.
+
+	  Rebuild dependent modules after switching when using DWARF versions.
+
 config RUST_EARLYCPIO
 	bool "Rust implementation of the early CPIO parser"
 	depends on RUST

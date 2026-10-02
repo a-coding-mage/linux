@@ -44,11 +44,12 @@ class InitMainFreeable(unittest.TestCase):
             '#include ' + json.dumps(str(ROOT / ('rust/helpers/' + name + '.c'))) + '\n'
             for name in ('task', 'spinlock', 'refcount')))
         helpers = work / 'helpers.rs'
+        helper_flags = support.helper_bindgen_flags(reader, build)
         run([*shlex.split(os.environ.get('BINDGEN', saved[0])), helper_input,
              '--use-core', '--rust-target=1.85', '--ctypes-prefix=kernel::ffi',
              '--no-layout-tests', '--no-doc-comments', '--blocklist-type=.*',
              '--allowlist-function=^rust_helper_(get_current|spin_lock|spin_unlock|refcount_inc)$',
-             '-o', helpers, '--', *flags, *extra], cwd=work, env=env)
+             '-o', helpers, '--', *helper_flags, *extra], cwd=work, env=env)
         helpers.write_text(re.sub(r'pub fn rust_helper_(\w+)',
             r'#[link_name="rust_helper_\1"] pub fn \1', helpers.read_text()))
         return generated, helpers
@@ -166,7 +167,7 @@ class InitMainFreeable(unittest.TestCase):
             c.write_text('#define __rust_helper\n' + ''.join('#include ' +
                 json.dumps(str(ROOT / ('rust/helpers/' + name + '.c'))) + '\n'
                 for name in ('interrupt', 'seqlock')))
-            cflags = reader.native_flags(build, 'init/.main.o.cmd', False)
+            cflags = support.helper_cflags(reader, build)
             run([*cflags, '-c', c, '-o', work / 'primitives.o'], cwd=work, env=env)
 
     def test_native_x86_canonical_init_task_interfaces(self):

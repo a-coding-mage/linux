@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SYSVIPC_MSG
+	bool "Rust System V message queues"
+	depends on RUST && SYSVIPC
+	help
+	  Build ipc/msg.o from its Rust translation. Queue creation, message
+	  transfer, msgctl, namespace lifecycle, compatibility ABI conversion
+	  and proc reporting are owned by Rust. Only kernel macro, static-inline
+	  and syscall declaration boundaries use the dedicated C helper object.
+	  The original C provider is retained when this option is disabled.

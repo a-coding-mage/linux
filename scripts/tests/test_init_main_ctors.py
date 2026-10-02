@@ -74,6 +74,9 @@ class InitMainConstructors(unittest.TestCase):
                     '#undef CONFIG_CONSTRUCTORS\n#undef CONFIG_UML\n' +
                     ('#define CONFIG_CONSTRUCTORS 1\n' if enabled else '') +
                     ('#define CONFIG_UML 1\n' if uml else '') + '''
+void reset(bool change);
+unsigned int result(void);
+void original_ctors(void);
 static unsigned int events, count;
 static bool mutate;
 extern ctor_fn_t callbacks[3];

@@ -30,9 +30,10 @@ basetarget = $(basename $(notdir $@))
 depfile = $(subst $(comma),_,$(dot-target).d)
 
 ###
-# Check if both arguments has same arguments. Result is empty string if equal.
-arg-check = $(strip $(filter-out $(cmd_$(1)), $(cmd_$@)) \
-                    $(filter-out $(cmd_$@),   $(cmd_$(1))) )
+# Compare the command strings, preserving the order of compiler/linker flags.
+# Word-set comparisons miss changes such as -Dname -Uname becoming -Uname -Dname.
+arg-check = $(strip $(subst $(cmd_$(1)),,$(cmd_$@)) \
+                    $(subst $(cmd_$@),,$(cmd_$(1))))
 
 ###
 # Escape single quote for use in echo statements

@@ -3,6 +3,7 @@
 #define parse_early_param original_early_param
 #define boot_command_line original_boot_command_line
 #include "canonical.h"
+#include "../init_main_fortify_observer.h"
 
 char boot_command_line[COMMAND_LINE_SIZE];
 extern unsigned int parser_calls;
@@ -52,6 +53,12 @@ int _printk(const char *format, ...)
 	va_end(args);
 	return 0;
 }
+
+void original_early_reset(void);
+unsigned int original_event_count(void);
+unsigned int original_parser_calls(void);
+const struct event *original_events(void);
+int original_early_callback(char *parameter, char *value);
 
 #include "original.inc"
 

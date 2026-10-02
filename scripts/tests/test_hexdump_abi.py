@@ -228,6 +228,19 @@ class HexdumpAbiTests(unittest.TestCase):
                         *flags, self.wrapper, "-o", output], check=True)
         return output
 
+    def test_validated_groups_do_not_import_zero_division_panics(self):
+        for optimization in ("2", "s"):
+            for printk in (False, True):
+                flags = ("--cfg=CONFIG_PRINTK",) if printk else ()
+                image = self.rust_object(
+                    f"nonzero-group-{optimization}-{printk}.o", flags, optimization)
+                undefined = [name for name, section, *_ in ElfRecords(image).symbols
+                             if section == 0]
+                self.assertFalse(
+                    [name for name in undefined
+                     if b"panic_const_div_by_zero" in name or b"panic_const_rem_by_zero" in name],
+                    "validated nonzero groups must not add unreachable division panic paths")
+
     def test_hex_to_bin_machine_code_has_no_input_branches_or_loads(self):
         objdump = shlex.split(os.environ.get("OBJDUMP", "objdump"))
         for optimization in ("1", "2", "3", "s", "z"):

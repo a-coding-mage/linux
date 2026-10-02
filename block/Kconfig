@@ -26,6 +26,15 @@ menuconfig BLOCK
 
 if BLOCK
 
+config RUST_BLK_MQ_SCHED
+	bool "Rust blk-mq scheduling framework"
+	depends on RUST
+	help
+	  Build the Rust implementation of the blk-mq scheduling framework.
+	  The retained C implementation remains the default. This replaces
+	  scheduler dispatch and resource lifecycle operations, preserving
+	  their C interfaces and using configuration-specific header bindings.
+
 config BLOCK_LEGACY_AUTOLOAD
 	bool "Legacy autoloading support"
 	default y

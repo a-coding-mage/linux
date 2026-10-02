@@ -23,7 +23,7 @@ struct task_struct *rust_helper_get_current(void);
 
 static struct srcu_ctr counters;
 struct srcu_struct tracepoint_srcu = { .srcu_ctrp = &counters };
-DEFINE_PER_CPU_READ_MOSTLY(int, cpu_number);
+DEFINE_PER_CPU_CACHE_HOT(int, cpu_number);
 struct cpumask __cpu_online_mask;
 struct static_call_key __SCK__WARN_trap;
 static struct tracepoint *points[] = { &__tracepoint_initcall_start, &__tracepoint_initcall_finish, &__tracepoint_initcall_level };

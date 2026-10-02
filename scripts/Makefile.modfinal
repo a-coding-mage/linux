@@ -108,6 +108,39 @@ else
 	$(call if_changed_rule,cc_o_c)
 endif
 
+# Rust DWARF is intentionally excluded from BTF. Keep canonical C metadata
+# available as a separate debug oracle for an otherwise all-Rust module. These
+# objects must never become inputs to the actual module link below.
+ifeq ($(CONFIG_DEBUG_INFO_BTF_MODULES)$(CONFIG_RUST_MODULE_METADATA)$(CONFIG_RUST_MODULE_COMMON),yyy)
+module-btf-oracle := y
+
+quiet_cmd_module_btf_metadata = CC [BTF] $@
+      cmd_module_btf_metadata = \
+	$(CC) $(c_flags) -fmacro-prefix-map=$<=$(patsubst %.h,%.c,$<) \
+		-x c -c -o $@ $<
+
+$(modules:%.o=%.mod.btf.o): modname = $(notdir $(patsubst %.mod.btf.o,%,$@))
+$(modules:%.o=%.mod.btf.o): %.mod.btf.o: %.mod.h FORCE
+	$(call if_changed_dep,module_btf_metadata)
+
+.module-common.btf.o: $(srctree)/scripts/module-common.c FORCE
+	$(call if_changed_rule,cc_o_c)
+
+quiet_cmd_module_btf_oracle = LD [BTF] $@
+      cmd_module_btf_oracle = \
+	: '$(call escsq,$(PAHOLE) $(PAHOLE_FLAGS) $(RESOLVE_BTFIDS) $(RESOLVE_BTFIDS_FLAGS))'; \
+	$(LD) -r $(KBUILD_LDFLAGS) \
+		$(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE) \
+		-T $(objtree)/scripts/module.lds -o $@ $(filter %.o, $^)
+
+$(modules:%.o=%.btf-oracle.elf): %.btf-oracle.elf: %.o %.mod.btf.o \
+		.module-common.btf.o $(objtree)/scripts/module.lds \
+		$(wildcard $(objtree)/vmlinux) FORCE
+	+$(call if_changed,module_btf_oracle)
+
+targets += $(modules:%.o=%.mod.btf.o) $(modules:%.o=%.btf-oracle.elf) .module-common.btf.o
+endif
+
 ifneq ($(WARN_ON_UNUSED_TRACEPOINTS),)
 cmd_check_tracepoint = $(objtree)/scripts/tracepoint-update --module $<;
 endif
@@ -123,14 +156,19 @@ quiet_cmd_btf_ko = BTF [M] $@
 	if [ ! -f $(objtree)/vmlinux ]; then				\
 		printf "Skipping BTF generation for %s due to unavailability of vmlinux\n" $@ 1>&2; \
 	else	\
-		$(CONFIG_SHELL) $(srctree)/scripts/gen-btf.sh --btf_base $(objtree)/vmlinux $@; \
+		$(CONFIG_SHELL) $(srctree)/scripts/gen-btf.sh --btf_base $(objtree)/vmlinux \
+			$(if $(module-btf-oracle),--btf_metadata_oracle $(@:.ko=.btf-oracle.elf)) $@ \
+			|| { status=$$?; rm -f $@; exit $$status; }; \
 	fi;
 
 # Re-generate module BTFs if either module's .ko or vmlinux changed
-%.ko: %.o %.mod.o .module-common.o $(objtree)/scripts/module.lds $(and $(CONFIG_DEBUG_INFO_BTF_MODULES),$(KBUILD_BUILTIN),$(objtree)/vmlinux) FORCE
+%.ko: %.o %.mod.o .module-common.o $(objtree)/scripts/module.lds \
+		$(and $(CONFIG_DEBUG_INFO_BTF_MODULES),$(KBUILD_BUILTIN),$(objtree)/vmlinux) \
+		$(if $(CONFIG_DEBUG_INFO_BTF_MODULES),$(srctree)/scripts/gen-btf.sh) \
+		$(if $(module-btf-oracle),%.btf-oracle.elf $(srctree)/scripts/check-module-btf-oracle.sh) FORCE
 	+$(call if_changed,ld_ko_o)
 ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-	+$(if $(newer-prereqs),$(call cmd,btf_ko))
+	+$(if $(call if-changed-cond,ld_ko_o),$(call cmd,btf_ko))
 endif
 	+$(call cmd,check_tracepoint)
 

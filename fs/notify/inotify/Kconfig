@@ -15,3 +15,13 @@ config INOTIFY_USER
 	  For more information, see <file:Documentation/filesystems/inotify.rst>
 
 	  If unsure, say Y.
+
+config RUST_INOTIFY_USER
+	bool "Rust inotify userspace implementation"
+	depends on RUST && INOTIFY_USER
+	help
+	  Build inotify_user.o from its Rust translation. Watch descriptors,
+	  user event delivery, syscalls, group allocation and initialization
+	  are implemented in Rust. Configured kernel macro, header-inline and
+	  syscall declaration boundaries use a dedicated C helper object.
+	  The original C provider remains available when this option is off.

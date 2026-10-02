@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--opaque-type 'mem_cgroup|pglist_data|folio|page|inode|task_struct|vm_area_struct|mm_struct|super_block|file|dentry|address_space_operations|writeback_control|bdi_writeback|backing_dev_info'
+--allowlist-type 'lruvec|lru_gen_folio|xa_node|list_lru|list_lru_one|list_head|lock_class_key|shrinker|shrink_control|address_space'
+--allowlist-function 'rust_ws_.*|list_lru_add_obj|list_lru_del_obj|list_lru_isolate|xa_delete_node|inode_lru_list_add|shrinker_alloc|shrinker_free|shrinker_register|lruvec_lru_size'
+--allowlist-var 'RUST_WS_.*|ANON_AND_FILE|WORKINGSET_.*|NR_ACTIVE_FILE|NR_INACTIVE_FILE|NR_ACTIVE_ANON|NR_INACTIVE_ANON|NR_SLAB_RECLAIMABLE_B|NR_SLAB_UNRECLAIMABLE_B|NR_LRU_LISTS|MAX_NR_ZONES|MAX_NR_GENS|SHRINK_EMPTY|SHRINKER_NUMA_AWARE|SHRINKER_MEMCG_AWARE|ENOMEM|LRU_RETRY|LRU_REMOVED_RETRY'

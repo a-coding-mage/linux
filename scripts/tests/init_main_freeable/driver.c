@@ -1,12 +1,25 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include "canonical.h"
 #include <linux/stdarg.h>
+/* The included Rust-only helper definitions have no public C header. */
+refcount_t rust_helper_REFCOUNT_INIT(int n);
+void rust_helper_refcount_set(refcount_t *r, int n);
+void rust_helper_refcount_inc(refcount_t *r);
+void rust_helper_refcount_dec(refcount_t *r);
+bool rust_helper_refcount_dec_and_test(refcount_t *r);
 #include "refcount-helper.inc"
 
 extern int printf(const char *, ...);
 extern int vsnprintf(char *, size_t, const char *, va_list);
 extern void exit(int) __attribute__((noreturn));
 extern char *rust_freeable(char *, bool);
+
+struct task_struct *rust_helper_get_current(void);
+void rust_helper_spin_lock(spinlock_t *lock);
+void rust_helper_spin_unlock(spinlock_t *lock);
+void fixture_pre_smp(void);
+void fixture_basic_setup(void);
+void fixture_console(void);
 
 #define CHECK(condition) do { if (!(condition)) { printf("FAIL %d\n", __LINE__); exit(90); } } while (0)
 static struct task_struct task;
@@ -196,7 +209,8 @@ static void reset(bool has_pid, unsigned int count, unsigned long flags)
 static void compare(char *command, bool explicit, bool has_pid, unsigned int count,
 		    unsigned long flags)
 {
-	char expected[sizeof(log)];
+	/* Serial fixture scratch; keep the kernel frame-size diagnostic enabled. */
+	static char expected[sizeof(log)];
 	expected_command = command;
 	reset(has_pid, count, flags);
 	ramdisk_execute_command = command;

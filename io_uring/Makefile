@@ -26,3 +26,14 @@ obj-$(CONFIG_PROC_FS) += fdinfo.o
 obj-$(CONFIG_IO_URING_MOCK_FILE) += mock_file.o
 obj-$(CONFIG_IO_URING_BPF) += bpf_filter.o
 obj-$(CONFIG_IO_URING_BPF_OPS) += bpf-ops.o
+
+# Preserve rw.o's external ABI while selecting exactly one implementation.
+ifeq ($(CONFIG_RUST_IO_URING_RW),y)
+obj-$(CONFIG_IO_URING) += rw_helpers.o
+$(obj)/rw.o: $(src)/rw.rs $(objtree)/rust/bindings/io_uring_rw_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/rw.s: $(src)/rw.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/rw.ll: $(src)/rw.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif

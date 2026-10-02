@@ -5,7 +5,20 @@
 #define saved_command_line_len original_saved_command_line_len
 #define cmdline_has_extra_options original_cmdline_has_extra_options
 #include "canonical.h"
+#include "../init_main_fortify_observer.h"
 #include <linux/ctype.h>
+void original_prepare(char *boot, char *extra, char *args, size_t offset);
+void original_setup(char *arch);
+char *original_saved(void);
+char *original_static(void);
+char *original_extra(void);
+unsigned int original_length(void);
+int original_init(char *value, bool ramdisk);
+const char *original_arg(unsigned int index);
+char *original_execute(void);
+char *original_rdinit(void);
+bool original_rdinit_set(void);
+
 #include "original.inc"
 
 void original_prepare(char *boot, char *extra, char *args, size_t offset)

@@ -177,6 +177,66 @@ class BootArchitectureTests(unittest.TestCase):
                 b"LUPOS_RUST_MODULE_RELOAD_OK 0", b"LUPOS_RUST_MODULE_RELOAD_OK 1",
                 b"LUPOS_RUST_MODULE_RELOAD_OK 2", boot.MARKER]
 
+    def test_expected_init_errno_has_distinct_exact_events_and_reexecutes(self):
+        for preloads in (0, 2):
+            for reload in (False, True):
+                events = [f"LUPOS_RUST_PRELOAD_OK {i}".encode() for i in range(preloads)]
+                events += [b"LUPOS_RUST_MODULE_INIT_ERRNO_OK 11"]
+                if reload:
+                    events += [f"LUPOS_RUST_MODULE_UNLOAD_OK {i}".encode() for i in reversed(range(preloads))]
+                    events += [f"LUPOS_RUST_MODULE_RELOAD_OK {i}".encode() for i in range(preloads)]
+                    events += [b"LUPOS_RUST_MODULE_REINIT_ERRNO_OK 11"]
+                events += [boot.MARKER]
+                kwargs = dict(preloads=preloads, module=True, reload=reload, module_init_errno=11)
+                good = b"\n".join(events) + b"\n"
+                boot.verify_module_events(good, **kwargs)
+                for index, event in enumerate(events):
+                    for changed in (events[:index] + events[index + 1:],
+                                    events[:index] + [event, event] + events[index + 1:]):
+                        with self.subTest(preloads=preloads, reload=reload, index=index), self.assertRaises(ValueError):
+                            boot.verify_module_events(b"\n".join(changed) + b"\n", **kwargs)
+                for bad in (good.replace(b"ERRNO_OK 11", b"ERRNO_OK 12"),
+                            good.replace(b"LUPOS_RUST_MODULE_INIT_ERRNO_OK 11", b"LUPOS_RUST_MODULE_LOAD_OK"),
+                            good.replace(boot.MARKER, b"LUPOS_RUST_MODULE_UNLOAD_OK " + str(preloads).encode() + b"\n" + boot.MARKER)):
+                    with self.assertRaises(ValueError):
+                        boot.verify_module_events(bad, **kwargs)
+                with self.assertRaises(ValueError):
+                    boot.verify_module_events(good, preloads=preloads, module=True, reload=reload)
+
+    def test_expected_init_errno_requires_module_and_valid_errno_before_writes(self):
+        for extra in (["--module-init-errno", "11"],
+                      *(["--module", "test.ko", "--module-init-errno", number] for number in ("0", "-11", "4096"))):
+            with mock.patch.object(sys, "argv", ["boot_kernel", "--build", "/missing-build", *extra]), \
+                 mock.patch.object(boot.subprocess, "run") as run, \
+                 redirect_stderr(io.StringIO()) as error, self.assertRaises(SystemExit) as caught:
+                boot.main()
+            self.assertEqual(caught.exception.code, 2)
+            self.assertIn("--module-init-errno requires", error.getvalue())
+            run.assert_not_called()
+
+    def test_expected_init_errno_manifest_excludes_failed_module_from_reload_plan(self):
+        with tempfile.TemporaryDirectory(prefix="boot-init-errno-") as tmp:
+            build = Path(tmp)
+            for name in ("arch/x86/boot/bzImage", "usr/gen_init_cpio", "dependency.ko", "test.ko"):
+                path = build / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"must not execute")
+            (build / ".config").write_text("CONFIG_MULTIUSER=y\nCONFIG_PRINTK=y\nCONFIG_X86_64=y\n"
+                                          "CONFIG_MODULES=y\nCONFIG_MODULE_UNLOAD=y\nCONFIG_PROC_FS=y\n")
+            args = ["boot_kernel", "--build", tmp, "--module", str(build / "test.ko"),
+                    "--preload-module", str(build / "dependency.ko"), "--reload-modules",
+                    "--module-init-errno", "11"]
+            with mock.patch.object(sys, "argv", args), mock.patch.object(boot.subprocess, "run"), \
+                 mock.patch.object(boot, "module_name", side_effect=["dependency", "rbtree_test"]), \
+                 mock.patch.object(boot.subprocess, "Popen", side_effect=RuntimeError("stop before QEMU")), \
+                 self.assertRaisesRegex(RuntimeError, "stop before QEMU"):
+                boot.main()
+            work = build / "rust-boot-test"
+            self.assertEqual((work / "module-init-errno").read_text(), "rbtree_test\t11\n")
+            self.assertEqual((work / "reload-plan").read_text(), "/preload-module.0\tdependency\n")
+            self.assertIn(f"file /module-init-errno {work}/module-init-errno 0600 0 0\n",
+                          (work / "manifest").read_text())
+
     def test_extra_initramfs_entries_reach_generator_and_missing_input_fails_early(self):
         with tempfile.TemporaryDirectory(prefix="boot-extra-manifest-") as tmp:
             build = Path(tmp)
@@ -321,7 +381,7 @@ class BootArchitectureTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
             result = subprocess.run([binary], capture_output=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout.decode() + result.stderr.decode())
-            self.assertIn(b"17 passed; 0 failed", result.stdout)
+        self.assertIn(b"23 passed; 0 failed", result.stdout)
         source = (boot.ROOT / "scripts/tests/boot_init.rs").read_text().split("#[cfg(test)]", 1)[0]
         self.assertNotIn("println!", source)
         self.assertNotIn("io::stdout", source)
@@ -845,6 +905,62 @@ class RootDiskTests(unittest.TestCase):
                     run.assert_not_called()
                     popen.assert_not_called()
                     self.assertFalse((build / 'rust-boot-test').exists())
+
+    def test_initrd_enabled_disk_mode_requires_initrd_and_builtin_transport(self):
+        for arch in ('x86_64', 'aarch64'):
+            good = self.configuration(arch) + ['CONFIG_BLK_DEV_INITRD=y']
+            invalid = [[setting for setting in good if setting != missing]
+                       for missing in good if any(name in missing for name in ('BLK_DEV_INITRD', 'BLOCK', 'VIRTIO', 'EXT2'))]
+            for configuration in invalid:
+                with self.subTest(arch=arch, configuration=configuration), tempfile.TemporaryDirectory() as directory:
+                    build = self.artifacts(directory, arch, configuration)
+                    with mock.patch.object(sys, 'argv', ['boot_kernel', '--build', directory, '--arch', arch,
+                                                        '--root-disk-initrd-enabled']), \
+                         mock.patch.object(boot.subprocess, 'run') as run, \
+                         mock.patch.object(boot.subprocess, 'Popen') as popen, \
+                         redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as failure:
+                        boot.main()
+                    self.assertEqual(failure.exception.code, 2)
+                    run.assert_not_called()
+                    popen.assert_not_called()
+                    self.assertFalse((build / 'rust-boot-test').exists())
+
+    def test_initrd_enabled_disk_mode_preserves_transport_and_mode_exclusion(self):
+        for arch, device in (('x86_64', 'virtio-blk-pci'), ('aarch64', 'virtio-blk-device')):
+            with self.subTest(arch=arch), tempfile.TemporaryDirectory() as directory:
+                configuration = self.configuration(arch) + ['CONFIG_BLK_DEV_INITRD=y']
+                build = self.artifacts(directory, arch, configuration)
+                with mock.patch.object(sys, 'argv', ['boot_kernel', '--build', directory, '--arch', arch,
+                                                    '--root-disk-initrd-enabled', '--cpu', 'max']), \
+                     mock.patch.object(boot.subprocess, 'run'), \
+                     mock.patch.object(boot.shutil, 'which', return_value='/tools/present'), \
+                     mock.patch.object(boot, 'legacy_initrd', return_value=32768) as generate, \
+                     mock.patch.object(boot.subprocess, 'Popen', side_effect=RuntimeError('before QEMU')) as popen, \
+                     self.assertRaisesRegex(RuntimeError, 'before QEMU'):
+                    boot.main()
+                work = build / 'rust-boot-test'
+                generate.assert_called_once_with(work / 'initramfs.cpio', work / 'root.ext2')
+                command = popen.call_args.args[0]
+                self.assertNotIn('-initrd', command)
+                self.assertEqual(command[command.index('-device') + 1], device + ',drive=lupos-root')
+                self.assertEqual(command[command.index('-drive') + 1],
+                                 f'file={work / "root.ext2"},format=raw,if=none,id=lupos-root,snapshot=on')
+                options = command[command.index('-append') + 1].split()
+                for option in ('root=/dev/vda', 'rootfstype=ext2', 'rw', 'init=/init',
+                               'rdinit=' + boot.LEGACY_RDINIT):
+                    self.assertIn(option, options)
+                self.assertFalse(any(option.startswith('ramdisk_size=') for option in options))
+        for other in ('--root-disk', '--legacy-initrd'):
+            with self.subTest(other=other), \
+                 mock.patch.object(sys, 'argv', ['boot_kernel', '--build', '/unused',
+                                                '--root-disk-initrd-enabled', other]), \
+                 mock.patch.object(boot.subprocess, 'run') as run, \
+                 mock.patch.object(boot.subprocess, 'Popen') as popen, \
+                 redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as failure:
+                boot.main()
+            self.assertEqual(failure.exception.code, 2)
+            run.assert_not_called()
+            popen.assert_not_called()
 
     def test_disk_image_reaches_matching_virtio_device_with_snapshot_and_no_initrd(self):
         for arch, device in (('x86_64', 'virtio-blk-pci'), ('aarch64', 'virtio-blk-device')):

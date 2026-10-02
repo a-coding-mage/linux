@@ -119,6 +119,60 @@ fn version_proc_mounted(mountinfo: &str) -> bool {
     })
 }
 
+fn ensure_proc_mounted() -> io::Result<()> {
+    let mounted = match fs::read_to_string("/proc/self/mountinfo") {
+        Ok(contents) => version_proc_mounted(&contents),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => false,
+        Err(error) => return Err(error),
+    };
+    if !mounted {
+        fs::create_dir_all("/proc")?;
+        // Only used by PID 1 in the isolated guest. Another fixture may have
+        // mounted proc before the version or failed-module-init checks.
+        cpuset_mount(c"proc", c"/proc", c"proc", None)?;
+    }
+    Ok(())
+}
+
+struct ModuleInitExpectation<'a> {
+    name: &'a str,
+    errno: i32,
+}
+
+fn parse_module_init_expectation(plan: &str) -> io::Result<ModuleInitExpectation<'_>> {
+    let (name, number) = plan.strip_suffix('\n').and_then(|line| line.split_once('\t'))
+        .ok_or_else(|| io::Error::other("invalid module init errno plan"))?;
+    let errno = number.parse::<i32>().map_err(|_| io::Error::other("invalid module init errno"))?;
+    if name.is_empty() || !name.bytes().all(|byte| byte.is_ascii_alphanumeric() || byte == b'_')
+        || !(1..=4095).contains(&errno) || number != errno.to_string()
+    {
+        return Err(io::Error::other("invalid module init expectation"));
+    }
+    Ok(ModuleInitExpectation { name, errno })
+}
+
+fn check_module_absent(name: &str, modules: &str) -> io::Result<()> {
+    if modules.lines().any(|line| line.split_whitespace().next() == Some(name)) {
+        return Err(io::Error::other(format!("expected failed-init module {name} to be absent")));
+    }
+    Ok(())
+}
+
+fn check_module_init_errno(result: io::Result<()>, expected: i32) -> io::Result<()> {
+    match result {
+        Err(error) if error.raw_os_error() == Some(expected) => Ok(()),
+        Err(error) => Err(io::Error::other(format!("module init expected errno {expected}, got {error}"))),
+        Ok(()) => Err(io::Error::other("module init unexpectedly succeeded")),
+    }
+}
+
+fn run_expected_module_init(expected: &ModuleInitExpectation<'_>) -> io::Result<()> {
+    ensure_proc_mounted()?;
+    check_module_absent(expected.name, &fs::read_to_string("/proc/modules")?)?;
+    check_module_init_errno(load_module(&fs::read("/test-module.ko")?), expected.errno)?;
+    check_module_absent(expected.name, &fs::read_to_string("/proc/modules")?)
+}
+
 fn run_version_check() -> io::Result<()> {
     let plan = fs::read("/expected-version")?;
     let expected = parse_version_plan(&plan)?;
@@ -141,17 +195,7 @@ fn run_version_check() -> io::Result<()> {
     if unsafe { syscall(UNAME, names.as_mut_ptr()) } != 0 {
         return Err(io::Error::last_os_error());
     }
-    let mounted = match fs::read_to_string("/proc/self/mountinfo") {
-        Ok(contents) => version_proc_mounted(&contents),
-        Err(error) if error.kind() == io::ErrorKind::NotFound => false,
-        Err(error) => return Err(error),
-    };
-    if !mounted {
-        fs::create_dir_all("/proc")?;
-        // This path runs only from the isolated guest's PID 1. Existing cpuset
-        // fixtures may already have mounted proc before reaching this check.
-        cpuset_mount(c"proc", c"/proc", c"proc", None)?;
-    }
+    ensure_proc_mounted()?;
     check_version_data(&expected, hostname.as_deref(), &names, &fs::read("/proc/version")?)
 }
 
@@ -501,6 +545,68 @@ fn run_cpuset_v1(log: &mut impl Write) -> io::Result<()> {
     write_record(log, "LUPOS_CPUSET_V1_CLEANUP_OK cpu1=online")
 }
 
+fn parse_userspace_plan(plan: &str) -> io::Result<usize> {
+    let count = plan.strip_prefix("userspace-v1\n").and_then(|value| value.strip_suffix('\n'))
+        .ok_or_else(|| io::Error::other("invalid userspace test plan"))?;
+    let number = count.parse::<usize>().map_err(|_| io::Error::other("invalid userspace test count"))?;
+    if !(1..=256).contains(&number) || number.to_string() != count {
+        return Err(io::Error::other("invalid userspace test count"));
+    }
+    Ok(number)
+}
+
+fn userspace_output(log: &mut impl Write, index: usize, status: i32,
+                    stdout: &[u8], stderr: &[u8]) -> io::Result<()> {
+    // Hex-encoded bounded records preserve arbitrary output bytes and prevent
+    // test output from being interpreted as a boot success marker.
+    for (stream, bytes) in [("STDOUT", stdout), ("STDERR", stderr)] {
+        for (sequence, chunk) in bytes.chunks(256).enumerate() {
+            let hex: String = chunk.iter().map(|byte| format!("{byte:02x}")).collect();
+            write_record(log, &format!("LUPOS_USERSPACE_{stream} {index} {sequence} {hex}"))?;
+            // printk console consumers drain asynchronously. A burst of large
+            // completed-test output can overwrite their ring before delivery.
+            // Pace reporting only, after the original executable has exited;
+            // keep every byte and the host's strict sequence/length checks.
+            std::thread::sleep(std::time::Duration::from_millis(50));
+        }
+    }
+    write_record(log, &format!("LUPOS_USERSPACE_EXIT {index} {status} {} {}", stdout.len(), stderr.len()))
+}
+
+fn userspace_status(status: i32) -> io::Result<()> {
+    if status == 0 { Ok(()) }
+    else { Err(io::Error::other(format!("userspace test failed or skipped: wait status {status}"))) }
+}
+
+fn run_userspace_tests(log: &mut impl Write) -> io::Result<()> {
+    use std::os::unix::process::ExitStatusExt;
+    let count = parse_userspace_plan(&fs::read_to_string("/userspace-plan")?)?;
+    ensure_proc_mounted()?;
+    let mut first_failure = None;
+    for index in 0..count {
+        write_record(log, &format!("LUPOS_USERSPACE_BEGIN {index}"))?;
+        let path = format!("/userspace-tests/{index}");
+        let result = std::process::Command::new(path).env_clear().env("LC_ALL", "C").output();
+        let status = match result {
+            Ok(output) => {
+                let status = output.status.into_raw();
+                userspace_output(log, index, status, &output.stdout, &output.stderr)?;
+                status
+            }
+            Err(error) => {
+                // Exit 127 is reserved here for an executable that could not
+                // be launched, with the actual OS error retained on stderr.
+                userspace_output(log, index, 127 << 8, b"", error.to_string().as_bytes())?;
+                127 << 8
+            }
+        };
+        if let Err(error) = userspace_status(status) {
+            if first_failure.is_none() { first_failure = Some(error); }
+        }
+    }
+    match first_failure { Some(error) => Err(error), None => Ok(()) }
+}
+
 fn main() {
     assert_eq!(std::process::id(), 1);
     // Console TTY writes can interleave with a module's printk output even
@@ -557,6 +663,12 @@ fn main() {
         );
         write_record(&mut log, &format!("LUPOS_RUST_MODULE_REJECT_OK {index}")).unwrap();
     }
+    let init_errno_plan = match fs::read_to_string("/module-init-errno") {
+        Ok(plan) => Some(plan),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => None,
+        Err(error) => panic!("cannot read module init errno plan: {error}"),
+    };
+    let expected_init = init_errno_plan.as_deref().map(|plan| parse_module_init_expectation(plan).unwrap());
     let mut loaded_paths = Vec::new();
     for index in 0.. {
         let path = format!("/preload-module.{index}");
@@ -567,7 +679,10 @@ fn main() {
         loaded_paths.push(path);
         write_record(&mut log, &format!("LUPOS_RUST_PRELOAD_OK {index}")).unwrap();
     }
-    if fs::exists("/test-module.ko").unwrap() {
+    if let Some(expected) = &expected_init {
+        run_expected_module_init(expected).unwrap();
+        write_record(&mut log, &format!("LUPOS_RUST_MODULE_INIT_ERRNO_OK {}", expected.errno)).unwrap();
+    } else if fs::exists("/test-module.ko").unwrap() {
         load_module(&fs::read("/test-module.ko").unwrap()).unwrap();
         loaded_paths.push("/test-module.ko".to_owned());
         write_record(&mut log, "LUPOS_RUST_MODULE_LOAD_OK").unwrap();
@@ -591,6 +706,22 @@ fn main() {
             load_module(&fs::read(path).unwrap()).unwrap();
             write_record(&mut log, &format!("LUPOS_RUST_MODULE_RELOAD_OK {index}")).unwrap();
         }
+        if let Some(expected) = &expected_init {
+            run_expected_module_init(expected).unwrap();
+            write_record(&mut log, &format!("LUPOS_RUST_MODULE_REINIT_ERRNO_OK {}", expected.errno)).unwrap();
+        }
+    }
+    if fs::exists("/userspace-plan").unwrap() {
+        if let Err(error) = run_userspace_tests(&mut log) {
+            // Keep diagnostics on the same printk stream as the output records.
+            // A PID 1 panic writes directly to the console and can interleave
+            // with printk records still being drained to a slow serial port.
+            write_record(&mut log, &format!("LUPOS_GUEST_TEST_ERROR {error:?}")).unwrap();
+            write_record(&mut log, "LUPOS_GUEST_TESTS_FAILED").unwrap();
+            loop {
+                std::thread::sleep(Duration::from_secs(60));
+            }
+        }
     }
     write_record(&mut log, "LUPOS_RUST_BUILD_BOOT_OK").unwrap();
     // The runner stops the VM after receiving the marker. Keeping PID 1 alive
@@ -604,6 +735,77 @@ fn main() {
 mod tests {
     use super::*;
     use std::collections::VecDeque;
+
+    #[test]
+    fn userspace_plan_is_exact_and_bounded() {
+        assert_eq!(parse_userspace_plan("userspace-v1\n4\n").unwrap(), 4);
+        assert_eq!(parse_userspace_plan("userspace-v1\n256\n").unwrap(), 256);
+        for plan in ["", "userspace-v1\n0\n", "userspace-v1\n257\n", "userspace-v1\n01\n",
+                     "userspace-v1\n+1\n", "userspace-v1\n1", "userspace-v1\n1\n\n",
+                     "userspace-v1\n-1\n", "userspace-v1\n1\0\n"] {
+            assert!(parse_userspace_plan(plan).is_err(), "{plan:?}");
+        }
+    }
+
+    #[test]
+    fn userspace_skip_signal_and_nonzero_are_failures() {
+        userspace_status(0).unwrap();
+        for status in [1 << 8, 4 << 8, 127 << 8, 9, 11 | 128, 65535, -1] {
+            assert!(userspace_status(status).is_err());
+        }
+    }
+
+    #[test]
+    fn userspace_output_preserves_bytes_and_exit_in_bounded_records() {
+        let mut writer = Writer::default();
+        userspace_output(&mut writer, 2, 4 << 8, b"pass\n\0\xff", b"warning\r\n").unwrap();
+        assert_eq!(writer.calls, [
+            b"<6>LUPOS_USERSPACE_STDOUT 2 0 706173730a00ff\n".to_vec(),
+            b"<6>LUPOS_USERSPACE_STDERR 2 0 7761726e696e670d0a\n".to_vec(),
+            b"<6>LUPOS_USERSPACE_EXIT 2 1024 7 9\n".to_vec(),
+        ]);
+        let mut writer = Writer::default();
+        userspace_output(&mut writer, 0, 0, &vec![0xff; 257], b"").unwrap();
+        assert_eq!(writer.calls.len(), 3);
+        assert!(writer.calls[0].len() < 600);
+        assert_eq!(writer.calls[1], b"<6>LUPOS_USERSPACE_STDOUT 0 1 ff\n");
+        assert_eq!(writer.calls[2], b"<6>LUPOS_USERSPACE_EXIT 0 0 257 0\n");
+    }
+
+    #[test]
+    fn module_init_plan_requires_exact_name_and_positive_errno() {
+        let expected = parse_module_init_expectation("rbtree_test\t11\n").unwrap();
+        assert_eq!(expected.name, "rbtree_test");
+        assert_eq!(expected.errno, 11);
+        for plan in ["rbtree_test\t0\n", "rbtree_test\t-11\n", "rbtree_test\t4096\n",
+                     "rbtree_test\t011\n", "rbtree_test\t+11\n", "rbtree_test\t11",
+                     "rbtree_test\t11\n\n", "rbtree_test\t11\textra\n", "\t11\n",
+                     "rbtree test\t11\n", "rbtree_test\0\t11\n"] {
+            assert!(parse_module_init_expectation(plan).is_err(), "{plan:?}");
+        }
+    }
+
+    #[test]
+    fn module_init_errno_rejects_success_and_every_other_error() {
+        check_module_init_errno(Err(io::Error::from_raw_os_error(11)), 11).unwrap();
+        assert!(check_module_init_errno(Ok(()), 11).is_err());
+        for errno in [1, 2, 12, 17, 22, 129] {
+            assert!(check_module_init_errno(Err(io::Error::from_raw_os_error(errno)), 11).is_err());
+        }
+        assert!(check_module_init_errno(Err(io::Error::other("no raw errno")), 11).is_err());
+    }
+
+    #[test]
+    fn module_init_absence_checks_exact_loaded_module_name() {
+        for modules in ["", "rbtree_test_other 12 0 - Live 0x0\n",
+                        "other 12 0 rbtree_test, Live 0x0\n"] {
+            check_module_absent("rbtree_test", modules).unwrap();
+        }
+        for modules in ["rbtree_test 12 0 - Live 0x0\n",
+                        "other 12 0 - Live 0x0\nrbtree_test 12 0 - Loading 0x0\n"] {
+            assert!(check_module_absent("rbtree_test", modules).is_err());
+        }
+    }
 
     fn version_fixture() -> (Vec<u8>, [[u8; 65]; 6], Vec<u8>) {
         let fields: [&[u8]; 6] = [b"Linux", b"fixture", b"7.2.0", b"#23 final", b"x86_64", b"(none)"];

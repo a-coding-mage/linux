@@ -10,5 +10,6 @@ include ../../Makefile.config
 TOOL = ec
 TOOL_OBJS = \
 	ec_access.o
+TOOL_RUST_SOURCE = ec_access.rs
 
 include ../../Makefile.rules

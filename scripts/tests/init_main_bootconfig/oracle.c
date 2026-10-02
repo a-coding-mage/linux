@@ -4,6 +4,15 @@
 #define saved_command_line_len original_saved_command_line_len
 #include "canonical.h"
 #include <linux/unaligned.h>
+void original_setup(const char *command);
+char *original_extra(void);
+char *original_args(void);
+size_t original_offset(void);
+bool original_found(void);
+void *original_trailer(size_t *size);
+void original_exit(void);
+int original_warn(void);
+
 #include "original.inc"
 
 void original_setup(const char *command)

@@ -48,10 +48,11 @@ extern "C" { fn fixture_condition(value: kernel::ffi::c_int) -> bool; fn fixture
             env['OBJTREE'] = str(build)
             cflags = reader.native_flags(build, 'init/.main.o.cmd', False)
             rflags = reader.native_flags(build, 'lib/.list_sort_rust.o.cmd', True)
+            donor_verbose = '--cfg=CONFIG_DEBUG_BUGVERBOSE' in rflags
             for bug, verbose in ((True, True), (True, False), (False, False)):
                 # Native kernel's warn_flags! reflects the compiled kernel's
                 # verbose configuration. Only x86's local macro varies it.
-                if 'ARM64' in variable and bug and not verbose:
+                if 'ARM64' in variable and bug and verbose != donor_verbose:
                     continue
                 with self.subTest(bug=bug, verbose=verbose):
                     config = work / 'config.h'
@@ -111,7 +112,8 @@ extern "C" { fn fixture_condition(value: kernel::ffi::c_int) -> bool; fn fixture
             linker.write_text('SECTIONS { /DISCARD/ : { *(.discard.*) } } INSERT AFTER .bss;\n')
             for bug in (False, True):
                 config = work / 'config.h'
-                config.write_text('#undef CONFIG_BUG\n' + ('#define CONFIG_BUG 1\n' if bug else '#undef CONFIG_GENERIC_BUG\n'))
+                config.write_text('#undef CONFIG_DEBUG_BUGVERBOSE\n#define CONFIG_DEBUG_BUGVERBOSE 1\n'
+                    '#undef CONFIG_BUG\n' + ('#define CONFIG_BUG 1\n' if bug else '#undef CONFIG_GENERIC_BUG\n'))
                 extra = ['-include', str(config)]
                 generated = self.bindings(build, work, env, reader, extra)
                 wrapper = work / 'wrapper.rs'

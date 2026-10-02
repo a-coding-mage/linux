@@ -112,7 +112,7 @@ void original_canary(void) { boot_init_stack_canary(); fixture_finish_canary(); 
                         self.assertIn('msr sctlr_el1, ${0}', ir)
                         self.assertIn('isb', ir)
                         helper = work / 'cpu.o'
-                        run([*cflags, *extra, '-D__rust_helper=', '-c', ROOT / 'rust/helpers/cpu.c',
+                        run([*support.helper_cflags(reader, build), *extra, '-D__rust_helper=', '-c', ROOT / 'rust/helpers/cpu.c',
                              '-o', helper], cwd=work, env=env)
                         helper_image = ElfRecords(helper)
                         self.assertIn(b'.altinstructions', helper_image.names)

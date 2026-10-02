@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/*
- *      crc16.c
- */
+//! Table-driven CRC-16 with the original C ABI and module metadata.
+
+#[path = "../../rust/ffi_export.rs"]
+mod ffi_export;
 
 /** CRC table for the CRC-16. The poly is 0x8005 (x^16 + x^15 + x^2 + 1) */
+#[rustfmt::skip]
 static CRC16_TABLE: [u16; 256] = [
 	0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
 	0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
@@ -39,25 +41,52 @@ static CRC16_TABLE: [u16; 256] = [
 	0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040,
 ];
 
-/**
- * crc16 - compute the CRC-16 for the data buffer
- * @crc:\tprevious CRC value
- * @p:\t\tdata pointer
- * @len:\tnumber of bytes in the buffer
- *
- * Returns the updated CRC value.
- */
-pub unsafe fn crc16(mut crc: u16, mut p: *const u8, mut len: usize) -> u16 {
-	while len != 0 {
-		crc = (crc >> 8) ^ CRC16_TABLE[((crc & 0xff) as usize) ^ (*p as usize)];
-		p = p.add(1);
-		len -= 1;
-	}
-	crc
+/// Update `crc` with `len` bytes using polynomial 0x8005 (reflected 0xa001).
+///
+/// # Safety
+///
+/// When `len` is nonzero, `p` must point to `len` initialized, readable bytes
+/// in a single live allocation, without concurrent writes during the call.
+/// No alignment beyond one byte is required. With zero length, `p` may be null.
+#[no_mangle]
+pub unsafe extern "C" fn crc16(mut crc: u16, mut p: *const u8, mut len: usize) -> u16 {
+    while len != 0 {
+        // SAFETY: The caller provides the remaining readable bytes.
+        crc = (crc >> 8) ^ CRC16_TABLE[((crc & 0xff) as usize) ^ (unsafe { *p } as usize)];
+        // SAFETY: The last increment reaches at most one-past-end.
+        p = unsafe { p.add(1) };
+        len -= 1;
+    }
+    crc
 }
 
-// EXPORT_SYMBOL(crc16);
-// MODULE_DESCRIPTION("CRC16 calculations");
-// MODULE_LICENSE("GPL");
+ffi_export::export_symbol!(crc16, crc16, "", "");
+
+#[cfg(MODULE)]
+const MODINFO: &str = "description=CRC16 calculations\0license=GPL\0";
+#[cfg(not(MODULE))]
+const MODINFO: &str = concat!(
+    "crc16.description=CRC16 calculations\0crc16.license=GPL\0crc16.file=",
+    env!("RUST_MODFILE"),
+    "\0",
+);
+
+// As in C, .modinfo is a sequence of NUL-terminated strings, not references.
+#[used]
+#[link_section = ".modinfo"]
+static MODULE_INFO: [u8; MODINFO.len()] = {
+    let mut bytes = [0; MODINFO.len()];
+    let mut i = 0;
+    while i < bytes.len() {
+        bytes[i] = MODINFO.as_bytes()[i];
+        i += 1;
+    }
+    bytes
+};
+
+// This stateless library has no init or exit function, just as in C.
+#[cfg(MODULE)]
+#[used]
+static __IS_RUST_MODULE: () = ();
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

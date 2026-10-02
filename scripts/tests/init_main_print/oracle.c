@@ -2,6 +2,9 @@
 #include "canonical.h"
 #include "original.inc"
 
+void original_print(const char *line);
+int original_argument_evaluation(int *value);
+
 void original_print(const char *line)
 {
 	print_kernel_cmdline(line);

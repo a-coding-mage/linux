@@ -123,7 +123,7 @@ class InitMainRandomKstack(unittest.TestCase):
                         self.assertIn(b'.initcall7.init..kmod_main__0_810_random_kstack_init', ordering)
                     if 'RANDOMIZE_KSTACK_OFFSET' in enabled and 'JUMP_LABEL' not in enabled:
                         helper = work / 'jump_label.o'
-                        run([*cflags, *extra, '-D__rust_helper=', '-c', ROOT / 'rust/helpers/jump_label.c',
+                        run([*support.helper_cflags(reader, build), *extra, '-D__rust_helper=', '-c', ROOT / 'rust/helpers/jump_label.c',
                              '-o', helper], cwd=work, env=env)
                         symbols = run(['llvm-nm', helper], cwd=work, env=env).stdout
                         self.assertIn(b'T rust_helper_static_key_enable', symbols)
@@ -175,7 +175,7 @@ class InitMainRandomKstack(unittest.TestCase):
                                 # kernel implementation, without replacing its checks.
                                 run([*cflags, *extra, '-O2', '-c', original, '-o', obj], cwd=work, env=env)
                                 helper = work / 'helper.o'
-                                run([*cflags, *extra, '-D__rust_helper=', '-c', ROOT / 'rust/helpers/jump_label.c',
+                                run([*support.helper_cflags(reader, build), *extra, '-D__rust_helper=', '-c', ROOT / 'rust/helpers/jump_label.c',
                                      '-o', helper], cwd=work, env=env)
                                 for owner in (obj, archive):
                                     binary = work / 'compare'

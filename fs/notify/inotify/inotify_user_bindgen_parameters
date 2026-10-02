@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--opaque-type 'inode|file|task_struct|mem_cgroup|kmem_cache|user_namespace|ucounts|super_block|dentry|seq_file|mutex|spinlock|rw_semaphore'
+--allowlist-type 'fsnotify_obj_type|inotify_event|inotify_event_info|inotify_inode_mark|fsnotify_group|fsnotify_mark|fsnotify_event|file_operations|path|fd|wait_queue_entry|poll_table_struct|sysinfo|ctl_table'
+--allowlist-function 'rust_inotify_.*|inotify_handle_inode_event|inotify_show_fdinfo|fsnotify_fasync|noop_llseek|fsnotify_alloc_group|fsnotify_destroy_group|fsnotify_destroy_event|fsnotify_peek_first_event|fsnotify_remove_first_event|fsnotify_init_mark|fsnotify_get_mark|fsnotify_put_mark|fsnotify_recalc_mask|fsnotify_find_mark|fsnotify_add_mark_locked|fsnotify_destroy_mark|idr_alloc_cyclic|idr_find|idr_remove|idr_preload|fdget|path_permission|path_put|add_wait_queue|remove_wait_queue|wait_woken|anon_inode_getfd|si_meminfo|register_sysctl_sz|proc_doulongvec_minmax|proc_dointvec_minmax'
+--allowlist-var 'RUST_INOTIFY_.*|IN_.*|ALL_INOTIFY_BITS|FS_.*|FSNOTIFY_.*|UCOUNT_INOTIFY_.*|TASK_INTERRUPTIBLE|MAX_SCHEDULE_TIMEOUT|O_CLOEXEC|O_NONBLOCK|O_RDONLY|EPOLLIN|EPOLLRDNORM|LOOKUP_FOLLOW|LOOKUP_DIRECTORY|MAY_READ|FIONREAD|EINVAL|ENOENT|EEXIST|ENOMEM|ENOSPC|EBADF|EMFILE|EFAULT|EAGAIN|ERESTARTSYS|ENOTTY|inotify_fsnotify_ops|sysctl_vals'

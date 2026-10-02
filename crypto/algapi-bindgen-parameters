@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--opaque-type 'module|task_struct|seq_file|sk_buff|crypto_tfm|rw_semaphore|blocking_notifier_head|notifier_block|work_struct|completion'
+--allowlist-type 'crypto_alg|crypto_instance|crypto_template|crypto_spawn|crypto_larval|crypto_type|crypto_queue|crypto_async_request|crypto_attr_type|crypto_attr_alg|rtattr|notifier_block|list_head|hlist_head'
+--allowlist-function 'rust_algapi_.*|crypto_mod_get|crypto_mod_put|crypto_larval_alloc|crypto_schedule_test|crypto_find_alg|crypto_destroy_alg|crypto_shoot_alg|__crypto_alloc_tfm|blocking_notifier_chain_register|blocking_notifier_chain_unregister|blocking_notifier_call_chain|down_write|up_write|down_read|up_read|complete_all|flush_work|kfree|strcmp|snprintf|panic'
+--allowlist-var 'crypto_alg_sem|crypto_alg_list|crypto_chain|CRYPTO_.*|CRYPTOA_.*|MAX_ALGAPI_.*|MAX_CIPHER_.*|RUST_ALGAPI_.*|EINVAL|ENOENT|EEXIST|EAGAIN|ENOMEM|ENOSPC|EINPROGRESS|EBUSY|ENAMETOOLONG|ECANCELED'

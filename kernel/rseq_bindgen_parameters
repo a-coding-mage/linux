@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0+
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--opaque-type 'task_struct|pt_regs|inode|file|seq_file|dentry|hrtimer'
+--allowlist-type 'rseq|rseq_cpu_id_state|rseq_flags|rseq_cs_flags|rseq_cs|rseq_slice_ctrl|rseq_data|rseq_ids|rseq_event|rseq_slice|rseq_slice_state|rseq_stats|slice_timer|rust_rseq_user_write|file_operations'
+--allowlist-function 'rust_rseq_.*|force_sig|force_sigsegv|kstrtobool|kstrtobool_from_user|kstrtouint_from_user|single_open|single_release|seq_read|seq_lseek|seq_printf|ktime_get_mono_fast_ns|hrtimer_setup|hrtimer_try_to_cancel'
+--allowlist-var 'RSEQ_.*|RUST_NR_RSEQ_SLICE_YIELD|PR_RSEQ_.*|PF_EXITING|SIGSEGV|EFAULT|EINVAL|EPERM|EBUSY|ENOTSUPP|ENXIO|ERANGE|CLOCK_MONOTONIC|HRTIMER_.*|NSEC_PER_USEC'

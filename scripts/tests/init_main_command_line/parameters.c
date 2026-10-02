@@ -7,6 +7,10 @@ int console_printk[4];
 unsigned int reset_devices;
 #include "parameters.inc"
 
+int original_parameter(unsigned int callback, char *value, int level, unsigned int reset);
+int original_console(unsigned int index);
+unsigned int original_reset(void);
+
 int original_parameter(unsigned int callback, char *value, int level, unsigned int reset)
 {
 	console_printk[0] = level;

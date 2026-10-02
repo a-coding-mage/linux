@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--opaque-type 'sock|net|net_device|user_namespace|proto|proto_ops|inet_connection_sock_af_ops|dst_entry|sk_buff|task_struct|file|socket|page|iov_iter'
+--allowlist-type 'sockptr_t|ip6_ra_chain|ipv6_pinfo|ipv6_txoptions|ipv6_opt_hdr|ipv6_rt_hdr|ipv6_sr_hdr|group_source_req|compat_group_source_req|group_filter|compat_group_filter|group_req|compat_group_req|sockaddr_in6|msghdr|flowi6|ipcm6_cookie|ipv6_mreq|ip6_mtuinfo|in6_flowlabel_req|in6_pktinfo'
+--allowlist-function 'rust_ip6_.*|kfree|ip_setsockopt|ip_getsockopt|nf_setsockopt|nf_getsockopt|ipv6_sock_mc_join_ssm|ip6_mc_source|ip6_mc_msfilter|ipv6_sock_mc_join|ipv6_sock_mc_drop|ipv6_renew_options|seg6_validate_srh|sockopt_ns_capable|ip6_sock_set_addr_preferences|dev_get_by_index_rcu|dev_get_by_index|__ipv6_sock_mc_close|__ipv6_sock_ac_close|sock_prot_inuse_add|tcp_sync_mss|inet6_cleanup_sock|ip6_datagram_send_ctl|ipv6_sock_ac_join|ipv6_sock_ac_drop|ipv6_flowlabel_opt|ip6_mc_msfget|ip6_datagram_recv_ctl|put_cmsg|ip6_dst_hoplimit|ipv6_flowlabel_opt_get'
+--allowlist-var 'RUST_IP6_.*|IPV6_.*|INET_FLAGS_.*|INET_ECN_MASK|MCAST_.*|SOCK_RAW|SOCK_STREAM|AF_INET6|PF_INET6|PF_INET|SOL_IP|SOL_IPV6|IPPROTO_UDP|IPPROTO_TCP|IPPROTO_RAW|TCP_ESTABLISHED|TCPF_LISTEN|TCPF_CLOSE|CAP_NET_RAW|CAP_NET_ADMIN|ENOPROTOOPT|ENOMEM|EADDRINUSE|ENOBUFS|EINVAL|EFAULT|EADDRNOTAVAIL|EPERM|ENODEV|EBUSY|ENOTCONN|EPROTO|sysctl_mld_max_msf|tcpv6_prot|tcp_prot|udp_prot|ipv4_specific|inet_stream_ops|inet_dgram_ops'

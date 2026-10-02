@@ -8,6 +8,7 @@
 #include <linux/memblock.h>
 #include <linux/stdarg.h>
 #include <linux/string.h>
+#include "init_main_fortify_observer.h"
 
 extern int printf(const char *, ...);
 extern int vsnprintf(char *, size_t, const char *, va_list);
@@ -66,7 +67,8 @@ void *__memblock_alloc_or_panic(phys_addr_t size, phys_addr_t align, const char 
 __attribute__((force_align_arg_pointer))
 int _printk(const char *format, ...)
 {
-	char buffer[2048];
+	/* Serial fixture logging does not need a kernel-sized stack buffer. */
+	static char buffer[2048];
 	va_list arguments;
 	va_start(arguments, format);
 	int result = vsnprintf(buffer, sizeof(buffer), format, arguments);

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--opaque-type 'module|task_struct|seq_file|rw_semaphore|key_user|key_type|key_tag|watch_list|crypto_sig|crypto_akcipher|asymmetric_key_id'
+--allowlist-type 'public_key|public_key_signature|kernel_pkey_params|kernel_pkey_query|asymmetric_key_subtype|key|kernel_pkey_operation|asymmetric_payload_bits'
+--allowlist-function 'rust_pkey_.*|crypto_alloc_sig|crypto_alloc_akcipher|crypto_akcipher_sync_encrypt|crypto_akcipher_sync_decrypt|public_key_signature_free|kfree_sensitive|kfree|seq_printf|strcmp|strncmp|snprintf|sized_strscpy'
+--allowlist-var 'CRYPTO_MAX_ALG_NAME|KEYCTL_SUPPORTS_.*|EINVAL|ENOMEM|ENOPKG|EKEYREJECTED|asym_crypto'

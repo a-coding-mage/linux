@@ -11,6 +11,14 @@ asymmetric_keys-y := \
 	signature.o
 
 obj-$(CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE) += public_key.o
+ifeq ($(CONFIG_RUST_PUBLIC_KEY),y)
+# Keep the original public_key module and built-in archive position.
+public_key-y := public_key_rust.o public_key_helpers.o
+RUSTFLAGS_public_key_rust.o += -Zfunction-sections=n
+$(obj)/public_key_rust.o: $(src)/public_key.rs $(objtree)/rust/bindings/public_key_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif
+
 
 #
 # X.509 Certificate handling

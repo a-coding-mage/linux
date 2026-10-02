@@ -13,6 +13,19 @@ obj-y		:= bdev.o fops.o bio.o elevator.o blk-core.o blk-sysfs.o \
 			genhd.o ioprio.o badblocks.o partitions/ blk-rq-qos.o \
 			disk-events.o blk-ia-ranges.o early-lookup.o
 
+ifeq ($(CONFIG_RUST_BLK_MQ_SCHED),y)
+# Preserve the original archive slot and keep blk-mq-sched.c as the default.
+obj-y += blk-mq-sched-rust.o
+$(objtree)/rust/bindings/blk_mq_sched_generated.rs: FORCE
+	+$(Q)$(MAKE) $(build)=rust rust/bindings/blk_mq_sched_generated.rs
+$(obj)/blk-mq-sched.o: $(src)/blk-mq-sched_rust.rs $(objtree)/rust/bindings/blk_mq_sched_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/blk-mq-sched.s: $(src)/blk-mq-sched_rust.rs $(objtree)/rust/bindings/blk_mq_sched_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/blk-mq-sched.ll: $(src)/blk-mq-sched_rust.rs $(objtree)/rust/bindings/blk_mq_sched_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
+
 obj-$(CONFIG_BLK_ERROR_INJECTION) += error-injection.o
 obj-$(CONFIG_BLK_DEV_BSG_COMMON) += bsg.o
 obj-$(CONFIG_BLK_DEV_BSGLIB)	+= bsg-lib.o

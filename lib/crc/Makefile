@@ -6,6 +6,19 @@ obj-$(CONFIG_CRC4) += crc4.o
 obj-$(CONFIG_CRC7) += crc7.o
 obj-$(CONFIG_CRC8) += crc8.o
 obj-$(CONFIG_CRC16) += crc16.o
+ifeq ($(CONFIG_RUST_CRC16),y)
+# Retain the original tristate and crc16.ko name while selecting Rust for all
+# original-object inspection targets, despite the same-basename C source.
+RUST_ALLOWED_FEATURES_crc16.o := $(if $(CONFIG_PPC),asm_experimental_arch)
+$(obj)/crc16.o: $(src)/crc16.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+
+$(obj)/crc16.s: $(src)/crc16.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+
+$(obj)/crc16.ll: $(src)/crc16.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 obj-$(CONFIG_CRC_CCITT) += crc-ccitt.o
 obj-$(CONFIG_CRC_ITU_T) += crc-itu-t.o
 

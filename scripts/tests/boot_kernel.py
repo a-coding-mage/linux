@@ -18,10 +18,14 @@ import sys
 import time
 
 from kernel_console import normalize_console_transport
+from userspace_transport import (prepare_userspace_tests, userspace_test_manifest,
+                                 userspace_test_results, save_userspace_results,
+                                 require_userspace_success, archive_previous_userspace_results)
 
 
 ROOT = Path(__file__).resolve().parents[2]
 MARKER = b"LUPOS_RUST_BUILD_BOOT_OK"
+USERSPACE_FAILURE_MARKER = b"LUPOS_GUEST_TESTS_FAILED"
 FAILSLAB_MARKER = b"LUPOS_FAILSLAB_SETUP_OK"
 FAILSLAB_CONFIG = ("FAULT_INJECTION", "FAILSLAB", "FAULT_INJECTION_DEBUG_FS", "DEBUG_FS", "SYSFS")
 CPUSET_CONFIG = ("SMP", "SCHED_SMT", "CGROUPS", "CPUSETS", "CPUSETS_V1", "PROC_PID_CPUSET",
@@ -502,17 +506,24 @@ def module_name(path):
     return name.decode("ascii").replace("-", "_")
 
 
-def verify_module_events(console, *, preloads=0, module=False, rejected=0, reload=False):
+def verify_module_events(console, *, preloads=0, module=False, rejected=0, reload=False,
+                         module_init_errno=None):
     """Require requested actions, not just PID 1's final optional-fixture marker."""
     console = normalize_console_transport(console)
     expected = [f"LUPOS_RUST_MODULE_REJECT_OK {index}" for index in range(rejected)]
     expected += [f"LUPOS_RUST_PRELOAD_OK {index}" for index in range(preloads)]
-    if module:
+    if module_init_errno is not None:
+        if not module or not 1 <= module_init_errno <= 4095:
+            raise ValueError("expected module init errno requires a module and errno 1..4095")
+        expected.append(f"LUPOS_RUST_MODULE_INIT_ERRNO_OK {module_init_errno}")
+    elif module:
         expected.append("LUPOS_RUST_MODULE_LOAD_OK")
     if reload:
-        count = preloads + int(module)
+        count = preloads + int(module and module_init_errno is None)
         expected += [f"LUPOS_RUST_MODULE_UNLOAD_OK {index}" for index in reversed(range(count))]
         expected += [f"LUPOS_RUST_MODULE_RELOAD_OK {index}" for index in range(count)]
+        if module_init_errno is not None:
+            expected.append(f"LUPOS_RUST_MODULE_REINIT_ERRNO_OK {module_init_errno}")
     expected.append(MARKER.decode())
     prefixes = (b"LUPOS_RUST_MODULE_", b"LUPOS_RUST_PRELOAD_", MARKER)
     actual = []
@@ -555,6 +566,8 @@ def main():
                         help="append a kernel boot argument (repeatable)")
     parser.add_argument("--timeout", type=float, default=60)
     parser.add_argument("--module", type=Path, help="optional uncompressed module to load inside the VM")
+    parser.add_argument("--module-init-errno", type=int,
+                        help="require --module init to fail with this exact errno and leave no loaded module")
     parser.add_argument("--preload-module", type=Path, action="append", default=[],
                         help="load this dependency before --module, in argument order (repeatable)")
     parser.add_argument("--reload-modules", action="store_true",
@@ -567,6 +580,8 @@ def main():
                         help="run unchanged legacy cpuset base/hotplug selftests inside the guest")
     parser.add_argument("--cpuset-userspace-root", type=Path,
                         help="explicit target root containing Bash, static BusyBox and their ELF dependencies")
+    parser.add_argument("--userspace-test", type=Path, action="append", default=[],
+                        help="run an unchanged static ELF test in the guest, in argument order (repeatable)")
     parser.add_argument("--extra-initramfs-manifest", type=Path,
                         help="append fixture entries in gen_init_cpio manifest syntax")
     root_mode = parser.add_mutually_exclusive_group()
@@ -574,7 +589,13 @@ def main():
                         help="boot the same fixtures from an ext2 RAM disk through prepare_namespace")
     root_mode.add_argument("--root-disk", action="store_true",
                           help="boot the same fixtures from a virtio disk with initramfs support disabled")
+    root_mode.add_argument("--root-disk-initrd-enabled", action="store_true",
+                          help="boot a virtio disk without supplying an initrd to an initrd-enabled kernel")
     args = parser.parse_args()
+    args.root_disk = args.root_disk or args.root_disk_initrd_enabled
+    if args.module_init_errno is not None:
+        if args.module is None or not 1 <= args.module_init_errno <= 4095:
+            parser.error("--module-init-errno requires --module and an errno in 1..4095")
     if args.cpuset_userspace_root is not None and not args.cpuset_v1_selftests:
         parser.error("--cpuset-userspace-root requires --cpuset-v1-selftests")
     build = args.build.resolve()
@@ -586,13 +607,22 @@ def main():
         if not artifact.is_file():
             parser.error(f"missing build artifact: {artifact}")
     configuration = (build / ".config").read_text().splitlines()
+    try:
+        userspace_tests = prepare_userspace_tests(args.userspace_test, args.arch, configuration)
+    except (OSError, ValueError, struct.error) as error:
+        parser.error(str(error))
     required = ["CONFIG_MULTIUSER=y", "CONFIG_PRINTK=y",
                 "CONFIG_ARM64=y" if args.arch == "aarch64" else "CONFIG_X86_64=y"]
-    loaded = args.preload_module + ([args.module] if args.module else [])
-    if loaded or args.reject_module:
+    if userspace_tests:
+        required.extend(("CONFIG_BINFMT_ELF=y", "CONFIG_PROC_FS=y"))
+    requested = args.preload_module + ([args.module] if args.module else [])
+    loaded = args.preload_module + ([args.module] if args.module and args.module_init_errno is None else [])
+    if requested or args.reject_module:
         required.append("CONFIG_MODULES=y")
+    if args.module_init_errno is not None:
+        required.append("CONFIG_PROC_FS=y")
     if args.reload_modules:
-        if not loaded:
+        if not requested:
             parser.error("--reload-modules requires --module or --preload-module")
         required.append("CONFIG_MODULE_UNLOAD=y")
     if args.reject_module:
@@ -611,7 +641,9 @@ def main():
         required.extend("CONFIG_" + name + "=y" for name in ROOT_DISK_CONFIG)
         required.extend(["CONFIG_PCI=y", "CONFIG_VIRTIO_PCI=y"] if args.arch == "x86_64"
                         else ["CONFIG_VIRTIO_MMIO=y"])
-        if "CONFIG_BLK_DEV_INITRD=y" in configuration:
+        if args.root_disk_initrd_enabled:
+            required.append("CONFIG_BLK_DEV_INITRD=y")
+        elif "CONFIG_BLK_DEV_INITRD=y" in configuration:
             parser.error("--root-disk requires CONFIG_BLK_DEV_INITRD to be disabled")
         if "," in str(work):
             parser.error("--root-disk requires an output path without commas")
@@ -630,7 +662,7 @@ def main():
     for setting in required:
         if setting not in configuration:
             parser.error(f"the requested boot checks require {setting}")
-    for artifact in loaded + args.reject_module:
+    for artifact in requested + args.reject_module:
         if not artifact.is_file():
             parser.error(f"missing module fixture: {artifact}")
         if any(character.isspace() for character in str(artifact.resolve())):
@@ -646,13 +678,15 @@ def main():
         if extra_entries and not extra_entries.endswith("\n"):
             extra_entries += "\n"
     reload_names = []
-    if args.reload_modules:
+    module_names = []
+    if args.reload_modules or args.module_init_errno is not None:
         try:
-            reload_names = [module_name(path) for path in loaded]
+            module_names = [module_name(path) for path in requested]
+            reload_names = module_names[:len(loaded)]
         except (OSError, ValueError, struct.error) as error:
             parser.error(str(error))
-        if len(set(reload_names)) != len(reload_names):
-            parser.error("reload module names must be distinct")
+        if len(set(module_names)) != len(module_names):
+            parser.error("requested module names must be distinct")
     userspace = None
     if args.cpuset_v1_selftests:
         try:
@@ -660,6 +694,7 @@ def main():
         except (OSError, ValueError, struct.error, subprocess.SubprocessError) as error:
             parser.error(str(error))
     work.mkdir(parents=True, exist_ok=True)
+    archive_previous_userspace_results(work)
 
     init = work / "init"
     compiler_env = os.environ.copy()
@@ -681,8 +716,16 @@ def main():
         "slink /symlink /fixture 0777 0 0\n")
     if userspace is not None:
         entries += cpuset_manifest(work, userspace)
+    elif userspace_tests:
+        # Command::output uses /dev/null for stdin; cpuset stages this already.
+        entries += "nod /dev/null 0666 0 0 c 1 3\n"
+    entries += userspace_test_manifest(work, userspace_tests)
     if args.module:
         entries += f"file /test-module.ko {args.module.resolve()} 0600 0 0\n"
+    if args.module_init_errno is not None:
+        plan = work / "module-init-errno"
+        plan.write_text(f"{module_names[-1]}\t{args.module_init_errno}\n")
+        entries += f"file /module-init-errno {plan} 0600 0 0\n"
     guest_paths = []
     if args.prepare_failslab:
         setup = work / "failslab-setup"
@@ -692,7 +735,7 @@ def main():
     for index, module in enumerate(args.preload_module):
         guest_paths.append(f"/preload-module.{index}")
         entries += f"file {guest_paths[-1]} {module.resolve()} 0600 0 0\n"
-    if args.module:
+    if args.module and args.module_init_errno is None:
         guest_paths.append("/test-module.ko")
     if args.reload_modules:
         plan = work / "reload-plan"
@@ -720,6 +763,7 @@ def main():
     log_path = work / "console.log"
     deadline = time.monotonic() + args.timeout
     found = False
+    userspace_failed = False
     tail = b""
     with log_path.open("wb") as log, selectors.DefaultSelector() as selector:
         process = subprocess.Popen(command, stdout=subprocess.PIPE,
@@ -741,6 +785,10 @@ def main():
                 if MARKER + b"\n" in tail or MARKER + b"\r\n" in tail:
                     found = True
                     break
+                if (USERSPACE_FAILURE_MARKER + b"\n" in tail or
+                        USERSPACE_FAILURE_MARKER + b"\r\n" in tail):
+                    userspace_failed = True
+                    break
         finally:
             if process.poll() is None:
                 process.terminate()
@@ -750,13 +798,27 @@ def main():
                 process.kill()
                 process.wait()
             process.stdout.close()
+    userspace_results = []
+    try:
+        userspace_results = userspace_test_results(log_path.read_bytes(), len(userspace_tests))
+        if userspace_tests:
+            save_userspace_results(work, userspace_results)
+    except ValueError as error:
+        raise SystemExit(f"{error}; console output: {log_path}") from error
+    if userspace_failed:
+        try:
+            require_userspace_success(userspace_results)
+        except ValueError as error:
+            raise SystemExit(f"{error}; console output: {log_path}") from error
+        raise SystemExit(f"userspace fixture reported failure; console output: {log_path}")
     if not found:
         print(tail.decode(errors="replace"), file=sys.stderr)
         raise SystemExit(f"kernel boot check failed; console output: {log_path}")
     try:
+        require_userspace_success(userspace_results)
         verify_module_events(log_path.read_bytes(), preloads=len(args.preload_module),
                              module=args.module is not None, rejected=len(args.reject_module),
-                             reload=args.reload_modules)
+                             reload=args.reload_modules, module_init_errno=args.module_init_errno)
         verify_failslab_setup(log_path.read_bytes(), args.prepare_failslab)
         verify_cpuset_events(log_path.read_bytes(), args.cpuset_v1_selftests)
         verify_legacy_initrd(log_path.read_bytes(), args.legacy_initrd)
@@ -766,16 +828,22 @@ def main():
     medium = ("ext2 root disk" if args.root_disk else "legacy ext2 initrd" if args.legacy_initrd
               else "Rust-generated initramfs")
     print(f"Kernel boot and {medium} checks passed; console: {log_path}")
+    if userspace_tests:
+        print(f"All {len(userspace_tests)} userspace test binaries exited zero; results: {work / 'userspace-results.json'}")
     if args.cpuset_v1_selftests:
         print("Original cpuset-v1 base/hotplug tests and restored CPU/hierarchy state passed.")
     if args.prepare_failslab:
         print("Scoped FAILSLAB controls verified inside the VM before module loading.")
-    if args.module:
+    if args.module_init_errno is not None:
+        print(f"Module init returned expected errno {args.module_init_errno} and left no loaded module.")
+    elif args.module:
         print("Module load passed inside the VM.")
     if args.preload_module:
         print(f"Loaded {len(args.preload_module)} prerequisite module(s) in order inside the VM.")
     if args.reload_modules:
         print("Module unload and reload passed inside the VM.")
+        if args.module_init_errno is not None:
+            print("Expected failing module init executed again and left no loaded module.")
     if args.reject_module:
         print(f"Signature enforcement rejected {len(args.reject_module)} module fixture(s) inside the VM.")
 

@@ -8,6 +8,9 @@
 #endif
 #include "original.inc"
 
+int original_set(char *value);
+void original_mark(void);
+
 int original_set(char *value)
 {
 #if defined(CONFIG_STRICT_KERNEL_RWX) || defined(CONFIG_STRICT_MODULE_RWX)

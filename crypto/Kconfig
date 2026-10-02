@@ -61,6 +61,15 @@ config CRYPTO_ALGAPI
 config CRYPTO_ALGAPI2
 	tristate
 
+config RUST_CRYPTO_ALGAPI
+	bool "Rust cryptographic algorithm registration API"
+	depends on RUST && CRYPTO_ALGAPI2
+	default n
+	help
+	  Build the Rust implementation of the low-level cryptographic
+	  algorithm registration, template, spawn and request queue API.
+	  The original C provider remains available when this is disabled.
+
 config CRYPTO_AEAD
 	tristate
 	select CRYPTO_AEAD2

@@ -2,6 +2,15 @@
 include ../scripts/Makefile.include
 include ../scripts/Makefile.arch
 
+# Select the native x86 decoder provider; the perf tests remain C sources.
+HOST_TOOLS_LANG ?= rust
+ifneq ($(HOST_TOOLS_LANG),c)
+ifneq ($(HOST_TOOLS_LANG),rust)
+$(error HOST_TOOLS_LANG must be 'c' or 'rust')
+endif
+endif
+export HOST_TOOLS_LANG
+
 # The default target of this Makefile is...
 all:
 
@@ -483,6 +492,11 @@ ifdef ASCIIDOC8
 endif
 
 EXTLIBS := $(call filter-out,$(EXCLUDE_EXTLIBS),$(EXTLIBS))
+ifeq ($(HOST_TOOLS_LANG),rust)
+# Resolve the decoder and its Rust runtime at the final link. Putting the
+# staticlib into a partial-link aggregate duplicates perf's other Rust runtime.
+EXTLIBS += $(OUTPUT)util/intel-pt-decoder/insn_host.a
+endif
 LIBS = -Wl,--whole-archive $(PERFLIBS) $(EXTRA_PERFLIBS) -Wl,--no-whole-archive -Wl,--start-group $(EXTLIBS) -Wl,--end-group
 
 PERFLIBS_PY := $(call filter-out,$(LIBPERF_BENCH) $(LIBPERF_TEST),$(PERFLIBS))

@@ -1,5 +1,57 @@
 perf-util-y += intel-pt-pkt-decoder.o intel-pt-insn-decoder.o intel-pt-log.o intel-pt-decoder.o
 
+ifneq ($(HOST_TOOLS_LANG),c)
+# Keep the original perf C callers and tests, and reuse the kernel decoder's
+# existing native ABI. This archive supplies both insn_* and inat_* symbols.
+# Until target-aware bindings are provided, reject mismatched C/Rust targets.
+ifneq ($(strip $(CROSS_COMPILE)),)
+$(error The Rust perf decoder currently supports native x86_64 GNU/Linux builds only; use HOST_TOOLS_LANG=c for a C control)
+endif
+ifneq ($(filter --target%,$(rust_flags)),)
+$(error The Rust perf decoder does not accept a cross Rust target yet)
+endif
+insn_host_cc_abi := $(shell printf '' | $(CC) $(CFLAGS) -dM -E -x c - | $(AWK) '$$2 == "__x86_64__" { x = 1 } $$2 == "__LP64__" { p = 1 } $$2 == "__linux__" { l = 1 } END { if (x && p && l) print 1 }')
+ifneq ($(insn_host_cc_abi),1)
+$(error The Rust perf decoder requires a native LP64 x86 Linux C target)
+endif
+ifneq ($(shell $(RUSTC) -vV | sed -n 's/^host: //p'),x86_64-unknown-linux-gnu)
+$(error The Rust perf decoder requires a native x86_64-unknown-linux-gnu Rust compiler)
+endif
+
+# Build the archive here, but resolve it through EXTLIBS at the final link.
+$(OUTPUT)util/intel-pt-decoder/perf-util-in.o: $(OUTPUT)util/intel-pt-decoder/insn_host.a
+
+BINDGEN ?= bindgen
+quiet_cmd_insn_bindgen = BINDGEN $@
+      cmd_insn_bindgen = $(BINDGEN) $< --output $@ \
+	--allowlist-type 'insn|insn_field|insn_mode' --newtype-enum insn_mode \
+	--use-core --ctypes-prefix core::ffi --no-layout-tests --no-doc-comments \
+	--no-debug '.*' --rust-target 1.85 -- \
+	--target=x86_64-linux-gnu -I$(srctree)/tools/arch/x86/include -I$(srctree)/tools/include \
+	-MMD -MF $(depfile) -MT $@
+
+$(OUTPUT)util/intel-pt-decoder/insn_host_bindings.rs: $(srctree)/tools/arch/x86/include/asm/insn.h FORCE
+	$(call rule_mkdir)
+	$(call if_changed_dep,insn_bindgen)
+
+quiet_cmd_insn_host = RUSTC   $@
+# tools/build/fixdep does not parse rustc's env-dep comments. The binding path is
+# already an explicit prerequisite and part of the tracked command below.
+      cmd_insn_host = INSN_HOST_BINDINGS=$(abspath $(OUTPUT)util/intel-pt-decoder/insn_host_bindings.rs) \
+	$(RUSTC) $(rust_flags) --edition=2021 -O -Dwarnings \
+	--crate-type=staticlib -Cpanic=abort --target=x86_64-unknown-linux-gnu \
+	--check-cfg='cfg(CONFIG_X86_64)' $(if $(filter y,$(CONFIG_X86_64)),--cfg CONFIG_X86_64) \
+	--emit=dep-info=$(depfile),link=$@ $< && \
+	sed -i '/^$(pound) env-dep:/d' $(depfile)
+
+$(OUTPUT)util/intel-pt-decoder/insn_host.a: $(srctree)/arch/x86/tools/insn_host.rs $(OUTPUT)util/intel-pt-decoder/insn_host_bindings.rs FORCE
+	$(call rule_mkdir)
+	$(call if_changed_dep,insn_host)
+
+# Generated headers are not obj-y members; load their tracked dependencies too.
+-include $(OUTPUT)util/intel-pt-decoder/.insn_host_bindings.rs.cmd
+-include $(OUTPUT)util/intel-pt-decoder/.insn_host.a.cmd
+else
 inat_tables_script = $(srctree)/tools/arch/x86/tools/gen-insn-attr-x86.awk
 inat_tables_maps = $(srctree)/tools/arch/x86/lib/x86-opcode-map.txt
 
@@ -24,3 +76,4 @@ ifeq ($(CC_NO_CLANG), 1)
 endif
 
 CFLAGS_insn.o += -Wno-packed
+endif

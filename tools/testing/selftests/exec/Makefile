@@ -72,6 +72,7 @@ EXTRA_CLEAN := $(OUTPUT)/subdir.moved $(OUTPUT)/execveat.moved $(OUTPUT)/xxxxx*	
 LOCAL_HDRS += binfmt_misc_common.h
 
 include ../lib.mk
+include ../../../build/Build.include
 
 CHECK_EXEC_SAMPLES := $(top_srcdir)/samples/check-exec
 
@@ -115,12 +116,22 @@ $(OUTPUT)/binfmt_misc_interplimit: ../filesystems/utils.c
 # The struct_ops bpf objects are compiled against the running kernel's BTF.
 # CLANG/BPFTOOL/VMLINUX_BTF are set above next to the toolchain check;
 # override LIBBPF_CFLAGS/LDLIBS to point at a libbpf install.
-BPF_CFLAGS ?= -I$(OUTPUT)
+# Match the kernel header dialect for named anonymous members in BTF types.
+BPF_CFLAGS ?= -I$(OUTPUT) -fms-extensions -Wno-microsoft-anon-tag
 LIBBPF_CFLAGS ?=
 LIBBPF_LDLIBS ?= -lbpf -lelf -lz
 
-$(OUTPUT)/vmlinux.h:
-	$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
+quiet = $(if $(filter 1,$(V)),,quiet_)
+PHONY += FORCE
+FORCE:
+
+quiet_cmd_bpf_vmlinux = GEN     $@
+cmd_bpf_vmlinux = $(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
+
+$(OUTPUT)/vmlinux.h: $(VMLINUX_BTF) Makefile FORCE
+	$(call if_changed,bpf_vmlinux)
+
+-include $(OUTPUT)/.vmlinux.h.cmd
 
 # BPF_NO_KFUNC_PROTOTYPES: the programs declare the kfuncs they use themselves.
 $(OUTPUT)/%.bpf.o: %.bpf.c $(OUTPUT)/vmlinux.h
@@ -147,4 +158,6 @@ $(OUTPUT)/binfmt_loader_payload_static: binfmt_loader_payload.c binfmt_misc_comm
 $(OUTPUT)/binfmt_bpf_app: binfmt_bpf_app.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--dynamic-linker,'$$ORIGIN/binfmt_bpf_interp' $< -o $@
 
-EXTRA_CLEAN += $(OUTPUT)/vmlinux.h $(OUTPUT)/*.bpf.o
+EXTRA_CLEAN += $(OUTPUT)/vmlinux.h $(OUTPUT)/.vmlinux.h.cmd $(OUTPUT)/*.bpf.o
+
+.PHONY: FORCE

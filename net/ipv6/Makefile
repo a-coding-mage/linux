@@ -58,3 +58,10 @@ endif
 ifdef CONFIG_GCOV_PROFILE_NETFILTER
 GCOV_PROFILE_netfilter.o := y
 endif
+
+ifeq ($(CONFIG_RUST_IPV6_SOCKGLUE),y)
+ipv6-y += ipv6_sockglue_helpers.o
+RUSTFLAGS_ipv6_sockglue.o += -Zfunction-sections=n
+$(obj)/ipv6_sockglue.o: $(src)/ipv6_sockglue.rs $(objtree)/rust/bindings/ipv6_sockglue_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif

@@ -5,6 +5,7 @@
 #include <linux/bug.h>
 #include <linux/random.h>
 #include <linux/string.h>
+#include "init_main_fortify_observer.h"
 #include <linux/stdarg.h>
 #include <linux/kernel.h>
 

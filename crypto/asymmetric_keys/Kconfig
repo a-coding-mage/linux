@@ -23,6 +23,14 @@ config ASYMMETRIC_PUBLIC_KEY_SUBTYPE
 	  appropriate hash algorithms (such as SHA-1) must be available.
 	  ENOPKG will be reported if the requisite algorithm is unavailable.
 
+config RUST_PUBLIC_KEY
+	bool "Rust asymmetric public-key subtype"
+	depends on RUST && ASYMMETRIC_PUBLIC_KEY_SUBTYPE
+	default n
+	help
+	  Build the Rust implementation of public-key query, encryption,
+	  decryption, signing and verification with the existing key subtype ABI.
+
 config X509_CERTIFICATE_PARSER
 	tristate "X.509 certificate parser"
 	depends on ASYMMETRIC_PUBLIC_KEY_SUBTYPE

@@ -760,7 +760,13 @@ static inline void __kselftest_memset_safe(void *s, int c, size_t n)
 	for (; _metadata->trigger; _metadata->trigger = \
 			__bail(_assert, _metadata))
 
-#define is_signed_var(var)	(!!(((__typeof__(var))(-1)) < (__typeof__(var))1))
+/*
+ * The comma expression removes qualifiers such as _Atomic through lvalue
+ * conversion, without promoting narrow integers.
+ */
+#define is_signed_var(var) \
+	(!!(((__typeof__(((void)0, (var))))(-1)) < \
+	    (__typeof__(((void)0, (var))))1))
 
 #define __EXPECT(_expected, _expected_str, _seen, _seen_str, _t, _assert) do { \
 	/* Avoid multiple evaluation of the cases */ \

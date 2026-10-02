@@ -31,6 +31,7 @@ class InitMainParameters(unittest.TestCase):
             printf = (ROOT / 'lib/vsprintf.c').read_text()
             options = (ROOT / 'lib/cmdline.c').read_text()
             (work / 'parser.c').write_text('#include <linux/kernel.h>\n#include <linux/ctype.h>\n'
+                '#include <linux/string.h>\n'
                 '#include <linux/overflow.h>\n#include <linux/limits.h>\n#include ' +
                 json.dumps(str(ROOT / 'lib/kstrtox.h')) + '\n' +
                 function(integers, '_parse_integer_fixup_radix') + function(integers, '_parse_integer_limit') +

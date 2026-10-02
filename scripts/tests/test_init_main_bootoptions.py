@@ -102,6 +102,12 @@ pub unsafe extern "C" fn bootoptions_fixture(
                 '#undef BUG\n#define BUG() rust_helper_BUG()\n' + declarations +
                 ''.join(function(original, name) for name in (
                     'repair_env_string', 'obsolete_checksetup', 'set_init_arg', 'unknown_bootoption')) + '''
+void original_prepare(size_t arguments, size_t environment, size_t replacement, bool pending);
+int original_run(unsigned int mode, char *parameter, char *value);
+const char *original_argument(size_t index);
+const char *original_environment(size_t index);
+const char *original_panic(void);
+const char *original_panic_parameter(void);
 void original_prepare(size_t arguments, size_t environment, size_t replacement, bool pending)
 {
     size_t i;

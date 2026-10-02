@@ -137,6 +137,12 @@ obj-$(CONFIG_TORTURE_TEST) += torture.o
 
 obj-$(CONFIG_HAS_IOMEM) += iomem.o
 obj-$(CONFIG_RSEQ) += rseq.o
+ifeq ($(CONFIG_RUST_RSEQ),y)
+obj-y += rseq_helpers.o
+RUSTFLAGS_rseq.o += -Zfunction-sections=n
+$(obj)/rseq.o: $(src)/rseq.rs $(objtree)/rust/bindings/rseq_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif
 obj-$(CONFIG_WATCH_QUEUE) += watch_queue.o
 
 obj-$(CONFIG_RESOURCE_KUNIT_TEST) += resource_kunit.o

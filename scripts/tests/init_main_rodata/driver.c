@@ -58,8 +58,8 @@ static void compare(char *value, bool enabled, bool full)
 	char expected[sizeof(log)];
 	int (*volatile call)(char *) = original_set;
 	void (*volatile mark)(void) = original_mark;
-	bool expected_enabled = false;
 #if defined(CONFIG_STRICT_KERNEL_RWX) || defined(CONFIG_STRICT_MODULE_RWX)
+	bool expected_enabled = false;
 	rodata_enabled = original_rodata_enabled = enabled;
 #endif
 	rodata_full = original_rodata_full = full;

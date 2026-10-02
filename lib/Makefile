@@ -122,8 +122,15 @@ $(obj)/parser_rust.o: private __modname := parser
 else
 obj-y += parser.o
 endif
+ifeq ($(CONFIG_RUST_SCATTERLIST),y)
+scatterlist-provider := scatterlist_rust.o scatterlist_helpers.o
+RUSTFLAGS_scatterlist_rust.o += --extern bindings
+$(obj)/scatterlist_rust.o: modfile := lib/scatterlist
+else
+scatterlist-provider := scatterlist.o
+endif
 obj-y += debug_locks.o random32.o \
-	 bust_spinlocks.o kasprintf.o bitmap.o scatterlist.o
+	 bust_spinlocks.o kasprintf.o bitmap.o $(scatterlist-provider)
 ifeq ($(CONFIG_RUST_LIST_SORT),y)
 obj-y += list_sort_rust.o
 else

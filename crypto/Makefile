@@ -13,6 +13,12 @@ obj-$(CONFIG_CRYPTO_FIPS) += fips.o
 
 crypto_algapi-$(CONFIG_PROC_FS) += proc.o
 crypto_algapi-y := algapi.o scatterwalk.o $(crypto_algapi-y)
+ifeq ($(CONFIG_RUST_CRYPTO_ALGAPI),y)
+crypto_algapi-y += algapi-helpers.o
+RUSTFLAGS_algapi.o += -Zfunction-sections=n
+$(obj)/algapi.o: $(src)/algapi.rs $(objtree)/rust/bindings/crypto_algapi_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif
 obj-$(CONFIG_CRYPTO_ALGAPI2) += crypto_algapi.o
 
 obj-$(CONFIG_CRYPTO_AEAD2) += aead.o

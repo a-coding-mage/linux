@@ -3,6 +3,7 @@
  * memblock allocation and output formatting are instrumented host boundaries.
  * This does not model physical reservations or the complete early boot phase. */
 #include "canonical.h"
+#include "../init_main_fortify_observer.h"
 #include <linux/stdarg.h>
 
 extern int printf(const char *, ...);
@@ -68,7 +69,8 @@ void memblock_free(void *pointer, size_t size)
 __attribute__((force_align_arg_pointer))
 int _printk(const char *format, ...)
 {
-	char output[2048];
+	/* Serial host formatting scratch; preserve the strict frame-size check. */
+	static char output[2048];
 	va_list arguments;
 	va_start(arguments, format);
 	int result = vsnprintf(output, sizeof(output), format, arguments);
@@ -102,8 +104,9 @@ int main(int argc, char **argv)
 	bool rust = argv[1][0] == 'r';
 	unsigned int scenario = strtoul(argv[2], NULL, 10);
 	fail_at = strtoul(argv[3], NULL, 10);
-	unsigned char initrd[66048] __attribute__((aligned(16)));
-	char command[COMMAND_LINE_SIZE] = "bootconfig root=old -- user=old";
+	/* main runs once per fixture process; these buffers need not use its stack. */
+	static unsigned char initrd[66048] __attribute__((aligned(16)));
+	static char command[COMMAND_LINE_SIZE] = "bootconfig root=old -- user=old";
 	const char *text = "kernel { console = ttyS0; flag; quote = 'two words'; arr = one,two; }\ninit { name = value; bare; }\n";
 	if (scenario == 1) command[0] = 0;
 	if (scenario == 2) strcpy(command, "root=old -- bootconfig");

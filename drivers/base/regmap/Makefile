@@ -22,3 +22,15 @@ obj-$(CONFIG_REGMAP_I3C) += regmap-i3c.o
 obj-$(CONFIG_REGMAP_SPI_AVMM) += regmap-spi-avmm.o
 obj-$(CONFIG_REGMAP_MDIO) += regmap-mdio.o
 obj-$(CONFIG_REGMAP_FSI) += regmap-fsi.o
+
+ifeq ($(CONFIG_RUST_REGCACHE),y)
+# Exactly one owner occupies the original regcache.o archive slot.
+RUST_ALLOWED_FEATURES_regcache.o := linkage
+$(obj)/regcache.o: $(src)/regcache.rs $(objtree)/rust/bindings/regcache_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/regcache.s: $(src)/regcache.rs $(objtree)/rust/bindings/regcache_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/regcache.ll: $(src)/regcache.rs $(objtree)/rust/bindings/regcache_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+obj-$(CONFIG_REGMAP) += regcache-ffi.o
+endif

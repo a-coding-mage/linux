@@ -100,6 +100,7 @@ pid_t kernel_thread(int (*function)(void *), void *argument, const char *name, u
 	CHECK(lookup_count == 1);
 	return thread_pid_result;
 }
+unsigned int debug_smp_processor_id(void);
 unsigned int debug_smp_processor_id(void)
 {
 	CHECK(read_depth == 1 || count == 0);

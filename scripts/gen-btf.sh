@@ -27,16 +27,21 @@ set -e
 
 usage()
 {
-	echo "Usage: $0 [--btf_base <file>] <target ELF file>"
+	echo "Usage: $0 [--btf_base <file>] [--btf_metadata_oracle <file>] <target ELF file>"
 	exit 1
 }
 
 BTF_BASE=""
+BTF_METADATA_ORACLE=""
 
 while [ $# -gt 0 ]; do
 	case "$1" in
 	--btf_base)
 		BTF_BASE="$2"
+		shift 2
+		;;
+	--btf_metadata_oracle)
+		BTF_METADATA_ORACLE="$2"
 		shift 2
 		;;
 	-*)
@@ -69,10 +74,24 @@ esac
 gen_btf_data()
 {
 	btf1="${ELF_FILE}.BTF.1"
+	# A previous interrupted encoder must never supply a stale fallback result.
+	rm -f "${btf1}"
 	${PAHOLE} -J ${PAHOLE_FLAGS}			\
 		${BTF_BASE:+--btf_base ${BTF_BASE}}	\
 		--btf_encode_detached=${btf1}		\
 		"${ELF_FILE}"
+
+	# Pahole succeeds without an output when all CUs are excluded Rust DWARF.
+	# Never mask an encoder error or replace a present (even invalid) result.
+	if [ ! -e "${btf1}" ] && [ -n "${BTF_METADATA_ORACLE}" ]; then
+		echo "  BTF metadata oracle: ${ELF_FILE}"
+		${PAHOLE} -J ${PAHOLE_FLAGS}			\
+			--btf_base "${BTF_BASE}"			\
+			--btf_encode_detached="${btf1}"		\
+			"${BTF_METADATA_ORACLE}"
+		${CONFIG_SHELL:-/bin/sh} "$(dirname "$0")/check-module-btf-oracle.sh" \
+			"${btf1}" "${ELF_FILE}" "${BTF_METADATA_ORACLE}" "${BTF_BASE}"
+	fi
 
 	${RESOLVE_BTFIDS} ${RESOLVE_BTFIDS_FLAGS}	\
 		${BTF_BASE:+--btf_base ${BTF_BASE}}	\
@@ -131,6 +150,16 @@ trap cleanup EXIT
 BTFGEN_MODE="vmlinux"
 if [ -n "${BTF_BASE}" ]; then
 	BTFGEN_MODE="module"
+fi
+
+if [ -n "${BTF_METADATA_ORACLE}" ]; then
+	if [ -z "${BTF_BASE}" ] ||
+	   ! is_enabled CONFIG_DEBUG_INFO_BTF_MODULES ||
+	   ! is_enabled CONFIG_RUST_MODULE_METADATA ||
+	   ! is_enabled CONFIG_RUST_MODULE_COMMON; then
+		echo "BTF metadata oracle requires module BTF and both Rust metadata selectors" >&2
+		exit 1
+	fi
 fi
 
 gen_btf_data

@@ -148,7 +148,8 @@ int c_do_one_initcall(initcall_t);
             strings.write_text('#include <linux/string.h>\n#include <linux/bug.h>\n' + function((ROOT / 'lib/string.c').read_text(), 'strlcat'))
             for bug in (False, True):
                 config = work / 'config.h'
-                config.write_text('#undef CONFIG_BUG\n' + ('#define CONFIG_BUG 1\n' if bug else '#undef CONFIG_GENERIC_BUG\n'))
+                config.write_text('#undef CONFIG_DEBUG_BUGVERBOSE\n#define CONFIG_DEBUG_BUGVERBOSE 1\n'
+                    '#undef CONFIG_BUG\n' + ('#define CONFIG_BUG 1\n' if bug else '#undef CONFIG_GENERIC_BUG\n'))
                 extra = ['-include', str(config)]
                 generated = self.bindings(build, work, env, reader, extra)
                 source = work / 'wrapper.rs'

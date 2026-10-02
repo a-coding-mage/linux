@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0
+--allowlist-type '^(regmap|regmap_config|regmap_range_node|regcache_ops|reg_default)$'
+--allowlist-var '^(REGCACHE_.*|EINVAL|ENOMEM|ENOENT|regcache_.*_ops)$'
+--allowlist-function '^(rust_regcache_.*|regmap_readable|regmap_writeable|regmap_volatile|regmap_raw_read|regmap_read|regmap_async_complete|regmap_can_raw_write|_regmap_write|_regmap_raw_write|rb_first|rb_next|sort|bsearch|kfree)$'
+--no-default '.*'
+--opaque-type '^(device|regmap_bus|lock_class_key|hwspinlock|dentry)$'

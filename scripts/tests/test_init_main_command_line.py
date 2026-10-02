@@ -24,6 +24,19 @@ FIXTURE = ROOT / 'scripts/tests/init_main_command_line'
 HEADER = ROOT / 'rust/bindings/init_main.h'
 
 
+def helper_cflags(reader, build):
+    # Rust-only helpers deliberately have no C declarations. Replay their
+    # actual Kbuild command, rather than applying init/main.o's prototype
+    # requirements to a different target (see rust/Makefile).
+    return reader.native_flags(build, 'rust/helpers/.helpers.o.cmd', False)
+
+
+def helper_bindgen_flags(reader, build):
+    # Kbuild also has a distinct bindgen target for Rust-only helper bodies.
+    saved = reader.saved(build, 'rust/bindings/.bindings_helpers_generated.rs.cmd')
+    return transport.native_flags(saved[saved.index('--') + 1:], build, 'c')
+
+
 class InitMainCommandLine(unittest.TestCase):
     def prepare(self, variable):
         supplied = os.environ.get(variable)

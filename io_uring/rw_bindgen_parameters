@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--allowlist-type 'io_rw|io_async_rw|io_br_sel|io_uring_attr_pi|io_uring_sqe|io_kiocb|io_ring_ctx|io_comp_batch|hrtimer_sleeper|io_tw_req|io_tw_token_t|wait_page_key|poll_table_struct'
+--allowlist-function 'rust_rw_.*|iovec_from_user|__import_iovec|import_ubuf|io_buffer_select|io_vec_free|ioprio_check_cap|io_import_reg_buf|io_import_reg_vec|io_prep_reg_iovec|iov_iter_restore|iov_iter_advance|io_req_task_complete|io_req_task_queue|io_file_get_flags|rw_verify_area|io_req_post_cqe|io_poll_multishot_retry|io_schedule|hrtimer_cancel|__io_submit_flush_completions|kfree'
+--allowlist-var 'RUST_RW_.*|REQ_F_.*|IO_URING_F_.*|IOU_.*|IORING_SETUP_.*|IORING_RW_ATTR_FLAG_PI|IORING_CQE_F_MORE|IO_VEC_CACHE_SOFT_CAP|IOCB_.*|FMODE_.*|FOP_BUFFER_.*|IO_REGBUF_F_KBUF|BLK_POLL_ONESHOT|ITER_DEST|ITER_SOURCE|READ|WRITE|O_NONBLOCK|O_DIRECT|S_IFMT|S_IFREG|S_IFBLK|E.*'

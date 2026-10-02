@@ -3,6 +3,9 @@
  * Copyright (C) 2020 HiSilicon Limited.
  */
 
+#![no_main]
+//! Existing DMA benchmark utility using declarations from its original C UAPI.
+
 // C dependencies removed from executable Rust:
 // <fcntl.h>, <stdio.h>, <stdlib.h>, <string.h>, <unistd.h>,
 // <sys/ioctl.h>, <sys/mman.h>, <linux/map_benchmark.h>
@@ -10,43 +13,28 @@
 use std::ffi::c_void;
 use std::os::raw::{c_char, c_double, c_int, c_long, c_uint, c_ulong};
 
-const NSEC_PER_MSEC: c_long = 1000000;
+// Bindgen emits public C declarations; this private module keeps them local.
+#[allow(dead_code, non_camel_case_types, non_upper_case_globals, unreachable_pub)]
+mod uapi {
+    include!(env!("DMA_MAP_BINDINGS"));
+}
+
+use uapi::map_benchmark;
 
 // Values supplied by <fcntl.h>.
 const O_RDWR: c_int = 0o2;
 
 // Values supplied by <linux/map_benchmark.h>.
-const DMA_MAP_BIDIRECTIONAL: c_int = 0;
-const DMA_MAP_TO_DEVICE: c_int = 1;
-const DMA_MAP_FROM_DEVICE: c_int = 2;
-const DMA_MAP_BENCH_SINGLE_MODE: c_int = 0;
-const DMA_MAP_BENCH_SG_MODE: c_int = 1;
-const DMA_MAP_BENCH_MODE_MAX: c_int = 2;
-
-// Numeric macro values are external UAPI details not present in the isolated
-// source file.
-unsafe extern "C" {
-    static DMA_MAP_MAX_THREADS: c_int;
-    static DMA_MAP_MAX_SECONDS: c_int;
-    static DMA_MAP_MAX_TRANS_DELAY: c_long;
-    static DMA_MAP_BENCHMARK: c_int;
-}
-
-#[repr(C)]
-struct map_benchmark {
-    avg_map_100ns: u64,
-    map_stddev: u64,
-    avg_unmap_100ns: u64,
-    unmap_stddev: u64,
-    threads: c_uint,
-    seconds: c_uint,
-    node: c_int,
-    dma_bits: c_uint,
-    dma_dir: c_uint,
-    dma_trans_ns: c_uint,
-    granule: c_uint,
-    map_mode: c_uint,
-}
+const DMA_MAP_BIDIRECTIONAL: c_int = uapi::DMA_MAP_BIDIRECTIONAL as c_int;
+const DMA_MAP_TO_DEVICE: c_int = uapi::DMA_MAP_TO_DEVICE as c_int;
+const DMA_MAP_FROM_DEVICE: c_int = uapi::DMA_MAP_FROM_DEVICE as c_int;
+const DMA_MAP_BENCH_SINGLE_MODE: c_int = uapi::DMA_MAP_BENCH_SINGLE_MODE as c_int;
+const DMA_MAP_BENCH_SG_MODE: c_int = uapi::DMA_MAP_BENCH_SG_MODE as c_int;
+const DMA_MAP_BENCH_MODE_MAX: c_int = uapi::DMA_MAP_BENCH_MODE_MAX as c_int;
+const DMA_MAP_MAX_THREADS: c_int = uapi::DMA_MAP_MAX_THREADS as c_int;
+const DMA_MAP_MAX_SECONDS: c_int = uapi::DMA_MAP_MAX_SECONDS as c_int;
+const DMA_MAP_MAX_TRANS_DELAY: c_long = uapi::RUST_DMA_MAP_MAX_TRANS_DELAY as c_long;
+const DMA_MAP_BENCHMARK: c_int = uapi::RUST_DMA_MAP_BENCHMARK as c_int;
 
 unsafe extern "C" {
     static mut optarg: *mut c_char;
@@ -66,7 +54,7 @@ static DIRECTIONS_0: &[u8] = b"BIDIRECTIONAL\0";
 static DIRECTIONS_1: &[u8] = b"TO_DEVICE\0";
 static DIRECTIONS_2: &[u8] = b"FROM_DEVICE\0";
 
-static mut directions: [*const c_char; 3] = [
+static mut DIRECTIONS: [*const c_char; 3] = [
     DIRECTIONS_0.as_ptr() as *const c_char,
     DIRECTIONS_1.as_ptr() as *const c_char,
     DIRECTIONS_2.as_ptr() as *const c_char,
@@ -75,16 +63,21 @@ static mut directions: [*const c_char; 3] = [
 static MODE_0: &[u8] = b"SINGLE_MODE\0";
 static MODE_1: &[u8] = b"SG_MODE\0";
 
-static mut mode: [*const c_char; 2] = [
+static mut MODE: [*const c_char; 2] = [
     MODE_0.as_ptr() as *const c_char,
     MODE_1.as_ptr() as *const c_char,
 ];
 
 #[unsafe(no_mangle)]
+/// Native C process entry for the existing benchmark control flow.
+///
+/// # Safety
+/// The C runtime must supply a valid argc and argv array with terminated strings
+/// and a null pointer after its final argument, as required by getopt.
 pub unsafe extern "C" fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
     unsafe {
         let mut map: map_benchmark = std::mem::zeroed();
-        let mut fd: c_int;
+        let fd: c_int;
         let mut opt: c_int;
         /* default single thread, run 20 seconds on NUMA_NO_NODE */
         let mut threads: c_int = 1;
@@ -204,7 +197,7 @@ pub unsafe extern "C" fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
         map.dma_dir = dir as c_uint;
         map.dma_trans_ns = xdelay as c_uint;
         map.granule = granule as c_uint;
-        map.map_mode = map_mode as c_uint;
+        map.map_mode = map_mode as uapi::__u8;
 
         if ioctl(fd, cmd as c_ulong, &mut map as *mut map_benchmark) != 0 {
             perror(c"ioctl".as_ptr());
@@ -214,11 +207,11 @@ pub unsafe extern "C" fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
         printf(
             c"dma mapping benchmark(%s): threads:%d seconds:%d node:%d dir:%s granule:%d\n"
                 .as_ptr(),
-            mode[map_mode as usize],
+            MODE[map_mode as usize],
             threads,
             seconds,
             node,
-            directions[dir as usize],
+            DIRECTIONS[dir as usize],
             granule,
         );
         printf(

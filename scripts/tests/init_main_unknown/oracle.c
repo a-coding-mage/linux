@@ -17,6 +17,11 @@ static struct snapshot captured;
 static bool allocation_failure;
 static char memory[4096];
 
+void capture_reset(bool fail);
+const struct snapshot *capture_result(void);
+void original_unknown_prepare(const char *const *args, const char *const *envs, bool pending);
+void original_unknown_notice(void);
+
 void capture_reset(bool fail)
 {
 	memset(&captured, 0, sizeof(captured));

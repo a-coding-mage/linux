@@ -492,6 +492,8 @@ config SYSVIPC_COMPAT
 	def_bool y
 	depends on COMPAT && SYSVIPC
 
+source "ipc/Kconfig"
+
 config POSIX_MQUEUE
 	bool "POSIX Message Queues"
 	depends on NET
@@ -1966,6 +1968,13 @@ config IO_URING
 	  applications to submit and complete IO through submission and
 	  completion rings that are shared between the kernel and application.
 
+config RUST_IO_URING_RW
+	bool "Use Rust io_uring read/write operations"
+	depends on RUST && IO_URING
+	help
+	  Build the Rust implementation of io_uring read/write preparation,
+	  completion, multishot reads and polled I/O with the existing kernel ABI.
+
 config GCOV_PROFILE_URING
 	bool "Enable GCOV profiling on the io_uring subsystem"
 	depends on IO_URING && GCOV_KERNEL
@@ -2035,6 +2044,16 @@ config RSEQ
 	  per-CPU data.
 
 	  If unsure, say Y.
+
+config RUST_RSEQ
+	bool "Rust restartable sequences implementation"
+	depends on RUST && RSEQ
+	help
+	  Build the restartable sequences implementation from kernel/rseq.rs.
+	  Registration, event handling, debugging and time-slice extension
+	  policy remain in Rust; kernel macro, scoped user access and callback
+	  declaration boundaries use a dedicated helper object.
+	  The original C provider remains available when this option is off.
 
 config RSEQ_SLICE_EXTENSION
 	bool "Enable rseq-based time slice extension mechanism"

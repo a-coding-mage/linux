@@ -9,6 +9,7 @@
 //! and byte-access callbacks, without manufacturing aliased Rust references.
 
 use core::ffi::{c_int, c_void};
+use core::num::NonZeroUsize;
 
 // Kernel C is compiled with -funsigned-char, including on targets whose host
 // core::ffi::c_char is signed. The native boundary must preserve the pointee
@@ -109,7 +110,10 @@ pub unsafe extern "C" fn bin2hex(
 
 struct Layout {
     length: usize,
-    group: usize,
+    // Keep the constructor's nonzero invariant visible across formatter calls.
+    // No C-valid input can select a zero group, so division must not introduce
+    // a runtime panic dependency merely because Layout crosses a call boundary.
+    group: NonZeroUsize,
     ascii_column: usize,
     ascii: bool,
 }
@@ -119,11 +123,13 @@ impl Layout {
         let row = if rowsize == 32 { 32 } else { 16 };
         let length = length.min(row);
         let mut group = match groupsize {
-            1 | 2 | 4 | 8 => groupsize as usize,
-            _ => 1,
+            2 => NonZeroUsize::new(2).unwrap(),
+            4 => NonZeroUsize::new(4).unwrap(),
+            8 => NonZeroUsize::new(8).unwrap(),
+            _ => NonZeroUsize::MIN,
         };
         if length % group != 0 {
-            group = 1;
+            group = NonZeroUsize::MIN;
         }
         Self {
             length,
@@ -148,7 +154,7 @@ impl Layout {
         if self.ascii {
             (self.ascii_column + self.length) as c_int
         } else {
-            ((self.group * 2 + 1) * (self.length / self.group)) as c_int - 1
+            ((self.group.get() * 2 + 1) * (self.length / self.group)) as c_int - 1
         }
     }
 }
@@ -201,7 +207,7 @@ fn format_line(
         output.finish();
         return 0;
     }
-    if layout.group == 1 {
+    if layout.group.get() == 1 {
         for index in 0..layout.length {
             if !output.room() {
                 output.finish();
@@ -217,19 +223,19 @@ fn format_line(
         }
         output.position -= 1; // Remove the final space, just like the byte loop.
     } else {
-        for index in (0..layout.length).step_by(layout.group) {
+        for index in (0..layout.length).step_by(layout.group.get()) {
             // snprintf receives a complete native-endian integer before it
             // starts writing. Snapshot only this group, not the whole input.
             let mut group = [0u8; 8];
-            for (offset, byte) in group[..layout.group].iter_mut().enumerate() {
+            for (offset, byte) in group[..layout.group.get()].iter_mut().enumerate() {
                 *byte = read(index + offset);
             }
             if index != 0 && !output.put(b' ') {
                 return layout.required();
             }
-            for offset in 0..layout.group {
+            for offset in 0..layout.group.get() {
                 let offset = if cfg!(target_endian = "little") {
-                    layout.group - 1 - offset
+                    layout.group.get() - 1 - offset
                 } else {
                     offset
                 };

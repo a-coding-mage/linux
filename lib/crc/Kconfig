@@ -26,6 +26,22 @@ config CRC16
 	  The CRC16 library functions.  Select this if your module uses any of
 	  the functions from <linux/crc16.h>.
 
+config RUST_CRC16
+	bool "Rust implementation of CRC16"
+	depends on RUST
+	help
+	  Use the translated Rust crc16() when the CRC16 library is enabled.
+	  The C interface, unrestricted symbol export, CRC polynomial and
+	  crc16.ko module name are retained. The library needs no allocation.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of HOST_TOOLS_LANG and other CRC libraries.
+
+	  If unsure, say N.
+
 config CRC_CCITT
 	tristate
 	help

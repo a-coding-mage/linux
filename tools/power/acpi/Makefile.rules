@@ -7,11 +7,62 @@
 
 objdir := $(OUTPUT)tools/$(TOOL)/
 toolobjs := $(addprefix $(objdir),$(TOOL_OBJS))
+
+HOST_TOOLS_LANG ?= rust
+ifneq ($(HOST_TOOLS_LANG),c)
+ifneq ($(HOST_TOOLS_LANG),rust)
+$(error HOST_TOOLS_LANG must be 'c' or 'rust')
+endif
+endif
+
+ifneq ($(and $(filter rust,$(HOST_TOOLS_LANG)),$(TOOL_RUST_SOURCE)),)
+HOSTRUSTC ?= rustc
+KBUILD_HOSTRUSTFLAGS ?= --edition=2021
+ifneq ($(filter-out clean uninstall,$(or $(MAKECMDGOALS),all)),)
+ifneq ($(CROSS_COMPILE),)
+ifeq ($(RUST_TARGET),)
+$(error Set RUST_TARGET to the matching Rust triple for CROSS_COMPILE)
+endif
+endif
+ifneq ($(filter --target --target=%,$(KBUILD_HOSTRUSTFLAGS) $(HOSTRUSTFLAGS)),)
+$(error Set RUST_TARGET instead of passing --target in Rust flags)
+endif
+endif
+include $(srctree)/../../build/Build.include
+quiet = $(if $(filter false,$(V)),quiet_,)
+PHONY += FORCE
+tool_rust_linker := $(OUTPUT)$(TOOL)-rust-linker
+quiet_cmd_tool_linker = LINKER   $@
+cmd_tool_linker = mkdir -p $(OUTPUT); printf '%s\n' '\#!/bin/sh' \
+	'exec $(call escsq,$(CC) $(CFLAGS)) "$$@" $(call escsq,$(LDFLAGS))' > $@; chmod +x $@
+
+$(tool_rust_linker): FORCE
+	$(call if_changed,tool_linker)
+
+quiet_cmd_tool_rust = RUSTC    $(TOOL)
+cmd_tool_rust = mkdir -p $(OUTPUT); $(HOSTRUSTC) \
+	$(if $(RUST_TARGET),--target=$(RUST_TARGET)) \
+	$(KBUILD_HOSTRUSTFLAGS) $(HOSTRUSTFLAGS) \
+	$(if $(filter true,$(DEBUG)),-Copt-level=1 -Cdebuginfo=2,-Copt-level=s -Cdebuginfo=0) \
+	-Cstrip=none \
+	-Clinker=$(abspath $(tool_rust_linker)) --out-dir $(OUTPUT) \
+	--emit=dep-info=$(depfile),link=$@ $(TOOL_RUST_SOURCE); $(STRIPCMD) $@
+
+$(OUTPUT)$(TOOL): $(TOOL_RUST_SOURCE) $(tool_rust_linker) FORCE
+	$(call if_changed_dep,tool_rust)
+
+-include $(OUTPUT).$(TOOL).cmd $(OUTPUT).$(TOOL)-rust-linker.cmd
+else
 $(OUTPUT)$(TOOL): $(toolobjs) FORCE
 	$(ECHO) "  LD      " $(subst $(OUTPUT),,$@)
 	$(QUIET) $(LD) $(CFLAGS) $(toolobjs) $(LDFLAGS) -L$(OUTPUT) -o $@
 	$(ECHO) "  STRIP   " $(subst $(OUTPUT),,$@)
 	$(QUIET) $(STRIPCMD) $@
+ifneq ($(TOOL_RUST_SOURCE),)
+	$(QUIET) rm -f $(OUTPUT).$(TOOL).cmd $(OUTPUT).$(TOOL).d
+	$(QUIET) rm -f $(OUTPUT)$(TOOL)-rust-linker $(OUTPUT).$(TOOL)-rust-linker.cmd
+endif
+endif
 
 $(KERNEL_INCLUDE):
 	$(ECHO) "  MKDIR   " $(subst $(OUTPUT),,$@)
@@ -32,6 +83,10 @@ clean:
 		 -type f -print | xargs rm -f
 	$(ECHO) "  RM      " $(TOOL)
 	$(QUIET) rm -f $(OUTPUT)$(TOOL)
+ifneq ($(TOOL_RUST_SOURCE),)
+	$(QUIET) rm -f $(OUTPUT).$(TOOL).cmd $(OUTPUT).$(TOOL).d
+	$(QUIET) rm -f $(OUTPUT)$(TOOL)-rust-linker $(OUTPUT).$(TOOL)-rust-linker.cmd
+endif
 	$(ECHO) "  RMINC   " $(subst $(OUTPUT),,$(KERNEL_INCLUDE))
 	$(QUIET) rm -rf $(KERNEL_INCLUDE)
 

@@ -148,3 +148,13 @@ obj-$(CONFIG_EXECMEM) += execmem.o
 obj-$(CONFIG_TMPFS_QUOTA) += shmem_quota.o
 obj-$(CONFIG_LAZY_MMU_MODE_KUNIT_TEST) += tests/lazy_mmu_mode_kunit.o
 obj-$(CONFIG_MEM_ALLOC_PROFILING) += alloc_tag.o
+
+ifeq ($(CONFIG_RUST_WORKINGSET),y)
+# Preserve workingset.o's original archive position and the C fallback.
+# The declaration bridge owns the initcall record, so keep it at this position
+# as well instead of moving workingset initialization to the end of mm/.
+obj-y := $(patsubst workingset.o,workingset.o workingset_helpers.o,$(obj-y))
+RUSTFLAGS_workingset.o += -Zfunction-sections=n
+$(obj)/workingset.o: $(src)/workingset.rs $(objtree)/rust/bindings/workingset_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif

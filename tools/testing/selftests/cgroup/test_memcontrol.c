@@ -402,10 +402,31 @@ cleanup:
 
 static int alloc_pagecache_50M_noexit(const char *cgroup, void *arg)
 {
+	struct flock lock = {
+		.l_type = F_WRLCK,
+		.l_whence = SEEK_SET,
+	};
 	int fd = (long)arg;
 	int ppid = getppid();
+	int ret, lock_ret, saved_errno;
 
-	if (alloc_pagecache(fd, MB(50)))
+	/* Forked children share the file size and offset, but not POSIX locks. */
+	do {
+		lock_ret = fcntl(fd, F_SETLKW, &lock);
+	} while (lock_ret < 0 && errno == EINTR);
+	if (lock_ret < 0)
+		return -1;
+
+	ret = alloc_pagecache(fd, MB(50));
+	saved_errno = errno;
+	lock.l_type = F_UNLCK;
+	do {
+		lock_ret = fcntl(fd, F_SETLK, &lock);
+	} while (lock_ret < 0 && errno == EINTR);
+	if (lock_ret < 0)
+		return -1;
+	errno = saved_errno;
+	if (ret)
 		return -1;
 
 	while (getppid() == ppid)

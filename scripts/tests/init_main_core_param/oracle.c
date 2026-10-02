@@ -21,6 +21,10 @@ int sprintf(char *buffer, const char *format, ...)
 }
 #include "bool.inc"
 
+const struct kernel_param *original_parameter(void);
+void original_reset(bool value);
+bool original_value(void);
+
 static bool original_debug;
 core_param(initcall_debug, original_debug, bool, 0644);
 const struct kernel_param *original_parameter(void) { return &__param_initcall_debug; }

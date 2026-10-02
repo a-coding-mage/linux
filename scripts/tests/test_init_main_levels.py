@@ -100,10 +100,11 @@ mod main_ctors {
             flags = reader.native_flags(build, 'init/.main.o.cmd', False)
             original = work / 'original_alloc.c'
             original.write_text('#include ' + json.dumps(str(commandline.HEADER)) + '\n'
-                'static initcall_entry_t *initcall_levels[9];\n'
+                'extern initcall_entry_t *initcall_levels[9];\n'
                 'extern void do_initcall_level(int, char *);\n' +
                 function((ROOT / 'init/main.c').read_text(), 'do_initcalls') +
-                '\nvoid allocation_fixture(void) { do_initcalls(); }\n')
+                '\nvoid allocation_fixture(void);\n'
+                'void allocation_fixture(void) { do_initcalls(); }\n')
             for profiling, random_partition in ((False, False), (False, True), (True, False), (True, True)):
                 with self.subTest(profiling=profiling, random_partition=random_partition):
                     config = work / 'alloc_config.h'

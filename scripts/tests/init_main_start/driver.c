@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include "canonical.h"
 #include <linux/stdarg.h>
+/* Rust-only helper definitions have no public C header. */
+void *rust_helper_ERR_PTR(long error);
+bool rust_helper_IS_ERR(const void *ptr);
+long rust_helper_PTR_ERR(const void *ptr);
 #include "err.inc"
 
 extern int printf(const char *, ...);
@@ -13,6 +17,24 @@ extern bool early_boot_irqs_disabled;
 extern void (*late_time_init)(void);
 extern bool initcall_debug;
 extern void start_kernel(void);
+void original_start_kernel(void);
+
+void fixture_irq_disable(void);
+void fixture_irq_enable(void);
+bool fixture_irqs_disabled(void);
+bool fixture_warn(bool value, const char *format);
+void fixture_setup_boot_config(void);
+void fixture_setup_command_line(char *value);
+void fixture_early_numa(void);
+void fixture_print_kernel_cmdline(const char *value);
+void fixture_parse_early_param(void);
+void fixture_print_unknown_bootoptions(void);
+int fixture_unknown_bootoption(char *parameter, char *value, const char *doing, void *argument);
+int fixture_set_init_arg(char *parameter, char *value, const char *doing, void *argument);
+void fixture_initcall_debug_enable(void);
+void fixture_canary(void);
+void fixture_late_time(void);
+void fixture_rest_init(void);
 
 #define CHECK(condition) do { if (!(condition)) { printf("FAIL %d\n", __LINE__); exit(90); } } while (0)
 static unsigned int scenario;

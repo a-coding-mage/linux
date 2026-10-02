@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--opaque-type 'snd_card|file|inode|module|device|snd_info_entry|task_struct|workqueue_struct|poll_table_struct'
+--allowlist-type 'snd_timer.*|snd_utimer|snd_device|snd_device_ops|snd_fasync|snd_info_buffer|timer_tread_format|timer_list|list_head|rwlock_t|spinlock_t|mutex|wait_queue_entry_t|wait_queue_head_t|work_struct|file_operations|timespec64'
+--allowlist-function 'rust_timer_.*|kfree|kasprintf|sized_strscpy|seq_printf|sprintf|memdup_user|ktime_get_ts64|ktime_get_real_ts64|mod_timer|timer_delete|timer_delete_sync|disable_work_sync|get_device|put_device|stream_open|snd_kill_fasync|snd_fasync_free|snd_fasync_helper|schedule|add_wait_queue|remove_wait_queue|anon_inode_getfd|noop_llseek|snd_info_create_module_entry|snd_info_register|snd_info_free_entry|snd_iprintf|snd_device_alloc|dev_set_name|snd_register_device|snd_unregister_device|_printk'
+--allowlist-var 'RUST_.*|SNDRV_TIMER_.*|TREAD_FORMAT_.*|SNDRV_UTIMERS_MAX_COUNT|SNDRV_DEVICE_TYPE_TIMER|EINVAL|EBUSY|ENODEV|ENOMEM|ENXIO|EFAULT|EBADFD|ENOSYS|ENOTTY|EAGAIN|ERESTARTSYS|ENOTSUPP|ENOIOCTLCMD|O_.*|SIGIO|POLL_IN|EPOLLIN|EPOLLRDNORM|EPOLLERR'

@@ -9,6 +9,7 @@
 extern void bootoption_event(unsigned int kind, const char *value);
 extern __noreturn void bootoption_abort(void);
 
+__noreturn void rust_helper_BUG(void);
 __noreturn void rust_helper_BUG(void) { bootoption_abort(); }
 
 int _printk(const char *format, ...)

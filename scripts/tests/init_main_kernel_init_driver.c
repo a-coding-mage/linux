@@ -11,6 +11,7 @@
 #include <linux/pti.h>
 #include <linux/rcupdate.h>
 #include <linux/string.h>
+#include "init_main_fortify_observer.h"
 #include <linux/sysctl.h>
 
 extern void exit(int) __attribute__((noreturn));

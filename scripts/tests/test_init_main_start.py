@@ -43,6 +43,7 @@ class InitMainStart(unittest.TestCase):
              '--allowlist-function=' + pattern, '-o', generated,
              '--', *flags, *extra], cwd=work, env=env)
         helpers = work / 'helpers.rs'
+        helper_flags = support.helper_bindgen_flags(reader, build)
         helper_input = work / 'helpers.h'
         helper_input.write_text('#define __rust_helper\n#include ' +
             json.dumps(str(ROOT / 'rust/helpers/err.c')) + '\n')
@@ -50,7 +51,7 @@ class InitMainStart(unittest.TestCase):
              '--use-core', '--rust-target=1.85', '--ctypes-prefix=kernel::ffi',
              '--no-layout-tests', '--no-doc-comments', '--blocklist-type=.*',
              '--allowlist-function=^rust_helper_IS_ERR$', '-o', helpers,
-             '--', *flags, *extra], cwd=work, env=env)
+             '--', *helper_flags, *extra], cwd=work, env=env)
         helpers.write_text(helpers.read_text().replace('pub fn rust_helper_IS_ERR',
             '#[link_name="rust_helper_IS_ERR"] pub fn IS_ERR'))
         return generated
@@ -112,7 +113,7 @@ class InitMainStart(unittest.TestCase):
             primitives = work / 'primitives.c'
             primitives.write_text('#define __rust_helper\n#include ' +
                 json.dumps(str(ROOT / 'rust/helpers/page.c')) + '\n')
-            run([*cflags, *extra, '-c', primitives, '-o', work / 'primitives.o'], cwd=work, env=env)
+            run([*support.helper_cflags(reader, build), *extra, '-c', primitives, '-o', work / 'primitives.o'], cwd=work, env=env)
 
     def test_native_x86_early_entry_interfaces_and_attributes(self):
         self.native('INIT_MAIN_X86_BUILD')
@@ -156,7 +157,8 @@ class InitMainStart(unittest.TestCase):
                     ('#define CONFIG_' + key + ' 1\n' if enabled else '')
                     for key, enabled in settings.items()) +
                     '#define CC_USING_FENTRY 1\n'
-                    '#undef CONFIG_KFENCE_NUM_OBJECTS\n#define CONFIG_KFENCE_NUM_OBJECTS 255\n')
+                    '#undef CONFIG_KFENCE_NUM_OBJECTS\n#define CONFIG_KFENCE_NUM_OBJECTS 255\n'
+                    '#undef CONFIG_KFENCE_SAMPLE_INTERVAL\n#define CONFIG_KFENCE_SAMPLE_INTERVAL 100\n')
                 cfg = ['-include', str(config)]
                 generated = self.bindings(build, work, env, reader, cfg)
                 source = work / 'host.rs'

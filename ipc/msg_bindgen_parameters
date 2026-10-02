@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--opaque-type 'ipc_namespace|ipc_ids|task_struct|pid|seq_file|pid_namespace|user_namespace|percpu_counter|rw_semaphore|spinlock'
+--allowlist-type 'msgbuf|compat_ssize_t|msg_queue|msg_receiver|msg_sender|msg_msg|ipc_ops|ipc_params|wake_q_head|msqid64_ds|msqid_ds|msginfo|compat_msqid_ds|compat_msqid64_ds'
+--allowlist-function 'rust_msg_.*|ipcget|ipc_addid|ipc_rmid|ipc_rcu_getref|ipc_rcu_putref|ipcperms|ipc_obtain_object_idr|ipc_obtain_object_check|ipcctl_obtain_check|ipc_update_perm|ipc_init_ids|free_ipcs|kernel_to_ipc64_perm|ipc64_perm_to_ipc_perm|ipc_parse_version|compat_ipc_parse_version|get_compat_ipc64_perm|get_compat_ipc_perm|to_compat_ipc64_perm|to_compat_ipc_perm|ktime_get_real_seconds|kfree|free_msg|load_msg|store_msg|copy_msg|schedule|wake_q_add|wake_q_add_safe|wake_up_q|percpu_counter_destroy|down_read|up_read|down_write|up_write|capable|pid_nr_ns|ipc_seq_pid_ns|seq_printf'
+--allowlist-var 'RUST_MSGSEG|MSG.*|IPC_.*|EACCES|EIDRM|EINVAL|ENOMEM|EPERM|EFAULT|EAGAIN|E2BIG|ENOMSG|ENOSYS|ERESTARTNOHAND|CAP_SYS_RESOURCE|S_IRWXUGO|S_IWUGO|S_IRUGO'

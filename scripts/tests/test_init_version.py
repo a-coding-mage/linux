@@ -168,8 +168,13 @@ class InitVersion(unittest.TestCase):
                                       [*extra, '-O' + optimization])
                         rust = work / 'hostname.o'
                         run([*self.rust_config(flags, settings), '-Copt-level=' + optimization,
+                             '-Coverflow-checks=yes',
                              '--crate-name=version', '--emit=obj', ROOT / 'init/version.rs', '-o', rust],
                             cwd=work, env={**env, 'OBJTREE': str(work)})
+                        # The bounded C size_t addition must not introduce a
+                        # Rust panic dependency, even with overflow checks.
+                        self.assertNotIn(b'panic_const_add_overflow',
+                            run(['llvm-nm', '-u', rust], cwd=work, env=env).stdout)
                         image = ElfRecords(rust)
                         record, = [row for row in image.symbols if row[4] & 15 == 1 and row[1]
                                    and image.names[row[1]] == b'.init.setup']

@@ -75,6 +75,7 @@ TOOLS = (
     "drivers/accessibility/speakup/makemapdata",
     "drivers/accessibility/speakup/genmap",
 )
+C_DECODER_TESTS = {"arch/x86/tools/insn_decoder_test", "arch/x86/tools/insn_sanity"}
 
 
 class RustHostBuildTest(unittest.TestCase):
@@ -104,15 +105,24 @@ class RustHostBuildTest(unittest.TestCase):
                 return result.stdout
 
             first = make("-j2")
-            self.assertNotIn("  HOSTCC ", first)
+            compiled_c = {line.split()[-1] for line in first.splitlines() if "HOSTCC " in line}
+            self.assertEqual(compiled_c, C_DECODER_TESTS)
             self.assertNotIn("  HOSTLD ", first)
             for tool in TOOLS:
                 binary = Path(tmp) / tool
                 self.assertTrue(binary.is_file(), tool)
                 depfile = binary.with_name("." + binary.name + ".cmd")
                 deps = depfile.read_text()
-                self.assertIn(str(ROOT / (tool + ".rs")), deps)
-                self.assertIn("-Dwarnings", deps)
+                source = tool + (".c" if tool in C_DECODER_TESTS else ".rs")
+                self.assertIn(str(ROOT / source), deps)
+                if tool in C_DECODER_TESTS:
+                    self.assertIn("arch/x86/tools/insn_host.a", deps)
+                    self.assertNotIn(str(ROOT / (tool + ".rs")), deps)
+                    for decoder in ("insn", "inat"):
+                        self.assertIn(str(ROOT / ("arch/x86/tools/insn-host/" + decoder + ".c")), deps)
+                        self.assertNotIn(str(ROOT / ("tools/arch/x86/lib/" + decoder + ".c")), deps)
+                else:
+                    self.assertIn("-Dwarnings", deps)
             tracepoint = Path(tmp) / "scripts/.tracepoint-update.cmd"
             self.assertIn(str(ROOT / "scripts/elf-parse.rs"), tracepoint.read_text())
             sorttable = Path(tmp) / "scripts/.sorttable.cmd"
@@ -196,21 +206,25 @@ class RustHostBuildTest(unittest.TestCase):
                 self.assertIn(str(ROOT / ("arch/x86/tools/" + module + ".rs")), relocs.read_text())
             self.assertIn(str(vdso_elf_module), relocs.read_text())
             decoder_dependencies = (
-                "arch/x86/tools/insn_test_common.rs", "tools/arch/x86/lib/insn.rs",
+                "arch/x86/tools/insn_host.rs", "arch/x86/lib/insn_rust.rs",
                 "arch/x86/lib/insn.rs", "arch/x86/lib/inat.rs", "arch/x86/lib/inat_tables.rs",
                 "arch/x86/lib/x86-opcode-map.txt", "arch/x86/include/asm/insn_header.rs",
                 "arch/x86/include/asm/emulate_prefix_header.rs",
                 "arch/x86/include/asm/inat_header.rs", "arch/x86/include/asm/inat_types_header.rs")
             decoder_paths = {}
-            for tool in ("insn_decoder_test", "insn_sanity"):
-                deps = (Path(tmp) / ("arch/x86/tools/." + tool + ".cmd")).read_text()
-                # Nested path imports retain ../ spelling in rustc's depfile.
-                paths = {os.path.normpath(token): token for token in deps.split()
-                         if token.startswith("/") and not token.endswith(":")}
-                for dependency in decoder_dependencies:
-                    path = str(ROOT / dependency)
-                    self.assertIn(path, paths)
-                    decoder_paths[path] = paths[path]
+            deps = (Path(tmp) / "arch/x86/tools/.insn_host.a.cmd").read_text()
+            self.assertIn("-Dwarnings", deps)
+            # Nested path imports retain ../ spelling in rustc's depfile.
+            paths = {os.path.normpath(token): token for token in deps.split()
+                     if token.startswith("/") and not token.endswith(":")}
+            for dependency in decoder_dependencies:
+                path = str(ROOT / dependency)
+                self.assertIn(path, paths)
+                decoder_paths[path] = paths[path]
+            self.assertIn(str(Path(tmp) / "arch/x86/tools/insn_host_bindings.rs"), paths)
+            bindings = (Path(tmp) / "arch/x86/tools/.insn_host_bindings.rs.cmd").read_text()
+            for header in ("insn.h", "inat.h", "inat_types.h"):
+                self.assertIn(str(ROOT / ("tools/arch/x86/include/asm/" + header)), bindings)
             relacheck = Path(tmp) / "arch/arm64/kernel/pi/.relacheck.cmd"
             arm_elf_module = ROOT / "arch/arm64/kernel/pi/../../../../scripts/elf-parse.rs"
             self.assertIn(str(arm_elf_module), relacheck.read_text())
@@ -321,8 +335,10 @@ class RustHostBuildTest(unittest.TestCase):
                 recursive = shlex.split(os.environ.get("MAKE", "make")) + [
                     "-W", decoder_paths[str(ROOT / dependency)]]
                 rebuild = make("-n", "MAKE=" + shlex.join(recursive))
+                self.assertIn("--emit=link=arch/x86/tools/insn_host.a", rebuild)
                 for tool in ("insn_decoder_test", "insn_sanity"):
-                    self.assertIn("--emit=link=arch/x86/tools/" + tool, rebuild)
+                    self.assertIn("-o arch/x86/tools/" + tool, rebuild)
+                    self.assertIn(str(ROOT / ("arch/x86/tools/" + tool + ".c")), rebuild)
                 self.assertNotIn("--emit=link=arch/x86/tools/relocs", rebuild)
             recursive = shlex.split(os.environ.get("MAKE", "make")) + ["-W", str(sparc_vdso_module)]
             rebuild = make("-n", "MAKE=" + shlex.join(recursive))
@@ -427,15 +443,35 @@ class RustHostBuildTest(unittest.TestCase):
                 "HOSTCC=" + os.environ.get("HOSTCC", "cc"),
                 "HOSTRUSTC=" + os.environ.get("HOSTRUSTC", "rustc"),
                 "KBUILD_HOSTCFLAGS=-O2", "KBUILD_HOSTRUSTFLAGS=--edition=2021 -O -Dwarnings",
+                "KBUILD_HOSTLDFLAGS=-Wl,--trace-symbol=insn_decode",
                 "arch/x86/tools/insn_decoder_test", "arch/x86/tools/insn_sanity"]
             for language in ("c", "rust", "c", "rust"):
                 result = subprocess.run(base + ["HOST_TOOLS_LANG=" + language], env=env,
                                         capture_output=True, text=True, timeout=30)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                providers = [line for line in result.stderr.splitlines()
+                             if "definition of insn_decode" in line]
+                self.assertEqual(len(providers), 2, result.stderr)
+                for provider in providers:
+                    if language == "rust":
+                        self.assertIn("insn_host.a(", provider)
+                        self.assertIn(".rcgu.o)", provider)
+                    else:
+                        self.assertNotIn("insn_host.a(", provider)
                 for tool in ("insn_decoder_test", "insn_sanity"):
                     binary = Path(tmp) / ("arch/x86/tools/" + tool)
                     record = binary.with_name("." + tool + ".cmd").read_text()
-                    self.assertIn(tool + (".rs" if language == "rust" else ".c"), record)
+                    self.assertIn(tool + ".c", record)
+                    self.assertNotIn(tool + ".rs", record)
+                    if language == "rust":
+                        self.assertIn("arch/x86/tools/insn_host.a", record)
+                        for decoder in ("insn", "inat"):
+                            self.assertIn(str(ROOT / ("arch/x86/tools/insn-host/" + decoder + ".c")), record)
+                            self.assertNotIn(str(ROOT / ("tools/arch/x86/lib/" + decoder + ".c")), record)
+                    else:
+                        self.assertNotIn("arch/x86/tools/insn_host.a", record)
+                        for decoder in ("insn", "inat"):
+                            self.assertIn(str(ROOT / ("tools/arch/x86/lib/" + decoder + ".c")), record)
                 before = [(Path(tmp) / ("arch/x86/tools/" + tool)).stat().st_mtime_ns
                           for tool in ("insn_decoder_test", "insn_sanity")]
                 result = subprocess.run(base + ["HOST_TOOLS_LANG=" + language], env=env,

@@ -56,7 +56,9 @@ int main(void)
 			bool result = false;
 			int expected = kstrtobool(value, &result);
 			int before = randomize_kstack_offset.key.enabled.counter;
+#ifdef CONFIG_JUMP_LABEL
 			unsigned int old_changes = changes;
+#endif
 			CHECK(setup_begin->setup_func(value) == expected);
 			CHECK(randomize_kstack_offset.key.enabled.counter == (expected ? before : result));
 #ifdef CONFIG_JUMP_LABEL

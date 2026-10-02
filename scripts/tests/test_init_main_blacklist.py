@@ -3,6 +3,7 @@
 import json
 import os
 import shlex
+import subprocess
 import unittest
 
 from rbtree_native import transport
@@ -58,6 +59,7 @@ class InitMainBlacklist(unittest.TestCase):
         env['OBJTREE'] = str(build)
         with watch:
             cflags = reader.native_flags(build, 'init/.main.o.cmd', False)
+            helper_flags = commandline.helper_cflags(reader, build)
             flags = reader.native_flags(build, 'lib/.list_sort_rust.o.cmd', True)
             flags = [flag + ',linkage' if flag.startswith('-Zallow-features=') else flag for flag in flags]
             configurations = (
@@ -101,7 +103,7 @@ class InitMainBlacklist(unittest.TestCase):
                         helper = work / 'helper.c'
                         helper.write_text('#include <linux/string.h>\n#define __rust_helper\n#include ' +
                             json.dumps(str(ROOT / 'rust/helpers/list.c')) + '\n')
-                        run([*cflags, *extra, '-S', '-emit-llvm', helper, '-o', work / 'helper.ll'],
+                        run([*helper_flags, *extra, '-S', '-emit-llvm', helper, '-o', work / 'helper.ll'],
                             cwd=work, env=env)
                         ir = (work / 'helper.ll').read_text()
                         self.assertIn('@rust_helper___list_add_valid_or_report', ir)
@@ -117,6 +119,36 @@ class InitMainBlacklist(unittest.TestCase):
     def test_native_arm64_records_interfaces_and_protected_callbacks(self):
         self.native('INIT_MAIN_ARM64_BUILD')
 
+    def test_fortify_failure_boundary_is_fatal(self):
+        build, work, env, reader, watch = self.prepare('INIT_MAIN_X86_BUILD')
+        with watch:
+            source = work / 'fortify.c'
+            source.write_text('#include <linux/string.h>\n' +
+                'static char destination[4];\n'
+                'static noinline void copy(size_t size) {\n'
+                'memcpy(destination, "12345678", size); }\n'
+                "int main(int argc, char **argv) { copy(argc); return destination[0] != '1'; }\n")
+            flags = [flag for flag in reader.native_flags(build, 'init/.main.o.cmd', False)
+                     if not flag.startswith(('-mno-', '-mstack-alignment=', '-mskip-rax-setup',
+                                             '-msoft-float', '-march=', '-mtune=', '-mcmodel='))]
+            binary = work / 'fortify'
+            linker = work / 'discard.lds'
+            linker.write_text('SECTIONS { /DISCARD/ : { *(.discard.*) } } INSERT AFTER .bss;\n')
+            observer = work / 'observer.c'
+            observer.write_text('#include <linux/string.h>\n#include ' +
+                json.dumps(str(ROOT / 'scripts/tests/init_main_fortify_observer.h')) + '\n')
+            for optimization in ('0', '2'):
+                with self.subTest(observer_optimization=optimization):
+                    obj = work / 'observer.o'
+                    run([*flags, '-O' + optimization, '-c', observer, '-o', obj], cwd=work, env=env)
+                    run([*flags, '-O2', source, obj, '-no-pie', '-Wl,-T,' + str(linker),
+                         '-o', binary], cwd=work, env=env)
+                    self.assertEqual(run([binary], cwd=work, env=env).stdout, b'')
+                    overflow = subprocess.run([binary, '1', '2', '3', '4'], cwd=work,
+                                              env=env, capture_output=True, timeout=120)
+                    self.assertEqual(overflow.returncode, 91)
+                    self.assertRegex(overflow.stdout, rb'^unexpected fortify panic \d+ 4 5\n$')
+
     def test_original_names_allocation_ownership_and_hardened_lists(self):
         build, work, env, reader, watch = self.prepare('INIT_MAIN_X86_BUILD')
         with watch:
@@ -131,6 +163,7 @@ class InitMainBlacklist(unittest.TestCase):
             helper.write_text('#define __rust_helper\n#include <linux/string.h>\n#include ' +
                               json.dumps(str(ROOT / 'rust/helpers/list.c')) + '\n')
             cflags = reader.native_flags(build, 'init/.main.o.cmd', False)
+            helper_flags = commandline.helper_cflags(reader, build)
             host_flags = [flag for flag in cflags if not flag.startswith((
                 '-mno-', '-mstack-alignment=', '-mskip-rax-setup', '-msoft-float',
                 '-march=', '-mtune=', '-mcmodel='))]
@@ -167,7 +200,7 @@ class InitMainBlacklist(unittest.TestCase):
                             for source in (ROOT / 'scripts/tests/init_main_blacklist_oracle.c',
                                            services, helper, driver):
                                 obj = work / (source.stem + '.o')
-                                flags = host_flags if source == driver else cflags
+                                flags = host_flags if source == driver else helper_flags if source == helper else cflags
                                 run([*flags, *extra, '-I' + str(work), '-O' + optimization,
                                      '-c', source, '-o', obj], cwd=work, env=env)
                                 run(['llvm-objcopy', '--strip-debug', '--remove-section=.discard.addressable', obj],

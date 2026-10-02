@@ -91,3 +91,14 @@ config REGMAP_SPI_AVMM
 config REGMAP_FSI
 	tristate
 	depends on FSI
+
+config RUST_REGCACHE
+	bool "Rust register cache core"
+	depends on RUST && REGMAP
+	default n
+	help
+	  Build the register cache core from Rust. Existing cache backends and
+	  regmap bus operations keep their normal owners. Allocation, diagnostic
+	  and tracing macros use a narrow C companion.
+
+	  If unsure, say N to retain the original C regcache core.

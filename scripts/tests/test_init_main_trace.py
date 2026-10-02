@@ -5,7 +5,6 @@ import os
 import shlex
 import unittest
 
-from rbtree_native import transport
 from test_argv_split import function
 from test_hexdump_abi import ElfRecords
 from test_rational_build import run
@@ -21,7 +20,7 @@ class InitMainTrace(unittest.TestCase):
 
     def bindings(self, build, work, env, reader, extra=()):
         saved = reader.saved(build, 'rust/bindings/.bindings_generated.rs.cmd')
-        flags = transport.native_flags(saved[saved.index('--') + 1:], build, 'c')
+        flags = support.helper_bindgen_flags(reader, build)
         header = work / 'bindings.h'
         header.write_text('#include ' + json.dumps(str(support.HEADER)) + '\n'
             '#define __rust_helper\n#include ' + json.dumps(str(ROOT / 'rust/helpers/task.c')) + '\n')
@@ -142,6 +141,7 @@ boundary!(__initcall0_start,__initcall1_start,__initcall2_start,__initcall3_star
             for bug in (False, True):
                 config = work / 'config.h'
                 config.write_text('#define CONFIG_TRACEPOINTS 1\n#define CONFIG_TASKS_TRACE_RCU 1\n'
+                    '#undef CONFIG_DEBUG_BUGVERBOSE\n#define CONFIG_DEBUG_BUGVERBOSE 1\n'
                     '#undef CONFIG_PRINTK\n#undef CONFIG_PRINTK_INDEX\n'
                     '#undef CONFIG_BUG\n' + ('#define CONFIG_BUG 1\n' if bug else '#undef CONFIG_GENERIC_BUG\n'))
                 extra = ['-include', str(config)]
@@ -296,6 +296,7 @@ boundary!(__initcall0_start,__initcall1_start,__initcall2_start,__initcall3_star
             for lockdep in (False, True):
                 config = work / 'config.h'
                 config.write_text('#define CONFIG_TRACEPOINTS 1\n#define CONFIG_TASKS_TRACE_RCU 1\n'
+                    '#undef CONFIG_DEBUG_BUGVERBOSE\n#define CONFIG_DEBUG_BUGVERBOSE 1\n'
                     '#undef CONFIG_JUMP_LABEL\n#undef CONFIG_PRINTK\n#undef CONFIG_PRINTK_INDEX\n'
                     '#undef CONFIG_LOCKDEP\n#undef CONFIG_DEBUG_LOCK_ALLOC\n' +
                     ('#define CONFIG_LOCKDEP 1\n#define CONFIG_DEBUG_LOCK_ALLOC 1\n' if lockdep else ''))

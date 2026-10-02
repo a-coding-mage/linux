@@ -33,10 +33,11 @@ class InitMainConsole(unittest.TestCase):
              '--allowlist-function=^(filp_open|init_dup|fput|_printk)$',
              '-o', generated, '--', *flags, *extra], cwd=work, env=env)
         helpers = work / 'helpers.rs'
+        helper_flags = support.helper_bindgen_flags(reader, build)
         run([*shlex.split(os.environ.get('BINDGEN', saved[0])), ROOT / 'rust/helpers/err.c',
              '--use-core', '--rust-target=1.85', '--ctypes-prefix=kernel::ffi',
              '--no-layout-tests', '--no-doc-comments', '--allowlist-function=^rust_helper_IS_ERR$',
-             '-o', helpers, '--', *flags, *extra, '-D__rust_helper='], cwd=work, env=env)
+             '-o', helpers, '--', *helper_flags, *extra, '-D__rust_helper='], cwd=work, env=env)
         return generated, helpers
 
     def wrapper(self, generated, helpers, host):
@@ -55,6 +56,7 @@ class InitMainConsole(unittest.TestCase):
         build, work, env, reader, watch = self.prepare('INIT_MAIN_X86_BUILD')
         with watch:
             cflags = reader.native_flags(build, 'init/.main.o.cmd', False)
+            helper_flags = support.helper_cflags(reader, build)
             source = work / 'oracle.c'
             source.write_text('#include ' + json.dumps(str(support.HEADER)) + '\n'
                 '#define console_on_rootfs original_console\nvoid original_console(void);\n' +
@@ -83,7 +85,7 @@ class InitMainConsole(unittest.TestCase):
                              *(['--cfg=CONFIG_PRINTK'] if printk else []), wrapper, '-o', archive], cwd=work, env=env)
                         oracle, helper = work / 'oracle.o', work / 'err.o'
                         run([*cflags, *extra, '-O' + optimization, '-c', source, '-o', oracle], cwd=work, env=env)
-                        run([*cflags, *extra, '-D__rust_helper=', '-O' + optimization, '-c',
+                        run([*helper_flags, *extra, '-D__rust_helper=', '-O' + optimization, '-c',
                              ROOT / 'rust/helpers/err.c', '-o', helper], cwd=work, env=env)
                         binary = work / 'compare'
                         service_flags = [flag for flag in cflags if not flag.startswith('-m')]

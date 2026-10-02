@@ -37,7 +37,7 @@ unsafe extern "C" fn early_hostname(arg: *mut c_char) -> c_int {
         let destination = ptr::addr_of_mut!(init_uts_ns.name.nodename).cast::<c_char>();
         let count = if bindings::RUST_VERSION_FORTIFY != 0 {
             let length = bindings::strnlen(arg, bufsize);
-            if length == bufsize { bufsize } else { length + 1 }
+            if length == bufsize { bufsize } else { length.wrapping_add(1) }
         } else {
             bufsize
         };

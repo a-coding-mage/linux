@@ -268,3 +268,12 @@ config SND_CTL_LED
 	select LEDS_TRIGGERS if SND_CTL_LED
 
 source "sound/core/seq/Kconfig"
+
+config RUST_SND_TIMER
+	bool "Rust implementation of the ALSA timer core"
+	depends on RUST && SND_TIMER
+	default n
+	help
+	  Build the Rust implementation of the ALSA timer core in the original
+	  snd-timer object or module. Timer backends and the userspace ABI remain
+	  unchanged. This implementation requires semantic acceptance testing.

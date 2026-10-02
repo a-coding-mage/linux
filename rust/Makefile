@@ -904,4 +904,16 @@ $(obj)/kernel.o: private link_helper = 1
 $(obj)/kernel.o: $(obj)/helpers/helpers.bc
 endif
 
+include $(srctree)/block/blk-mq-sched-rust.mk
+include $(srctree)/crypto/algapi-bindgen.mk
+include $(srctree)/crypto/asymmetric_keys/public_key_bindgen.mk
+include $(srctree)/drivers/base/regmap/regcache-bindgen.mk
+include $(srctree)/fs/notify/inotify/inotify_user_bindgen.mk
+include $(srctree)/io_uring/rw_bindgen.mk
+include $(srctree)/ipc/msg_bindgen.mk
+include $(srctree)/kernel/rseq_bindgen.mk
+include $(srctree)/mm/workingset_bindgen.mk
+include $(srctree)/net/ipv6/ipv6_sockglue_bindgen.mk
+include $(srctree)/sound/core/timer-bindgen.mk
+
 endif # CONFIG_RUST

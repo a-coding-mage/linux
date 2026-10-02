@@ -55,3 +55,11 @@ obj-$(CONFIG_SND_OSSEMUL)	+= oss/
 obj-$(CONFIG_SND_SEQUENCER)	+= seq/
 
 obj-$(CONFIG_SND_COMPRESS_OFFLOAD)	+= snd-compress.o
+
+ifeq ($(CONFIG_RUST_SND_TIMER),y)
+# Preserve the snd-timer composite/module and timer.o's original archive slot.
+snd-timer-y += timer-helpers.o
+RUSTFLAGS_timer.o += -Zfunction-sections=n
+$(obj)/timer.o: $(src)/timer.rs $(objtree)/rust/bindings/snd_timer_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif

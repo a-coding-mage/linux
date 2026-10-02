@@ -337,3 +337,13 @@ config IPV6_IOAM6_LWTUNNEL
 	  If unsure, say N.
 
 endif # IPV6
+
+config RUST_IPV6_SOCKGLUE
+	bool "Rust IPv6 socket option implementation"
+	depends on RUST && IPV6
+	help
+	  Build ipv6_sockglue.o from its Rust translation. Socket option
+	  dispatch, validation, multicast and option lifecycle policy live
+	  in Rust; configured declarations and header-inline boundaries use
+	  a dedicated C helper object. The original C provider remains
+	  available when this option is off.
