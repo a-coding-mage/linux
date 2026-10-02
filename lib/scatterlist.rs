@@ -747,7 +747,8 @@ unsafe fn extract_bvec_to_sg(
         (*t).nents += 1;
         sg = sg.add(1);
         sg_max -= 1;
-        ret += len as isize;
+        // C adds size_t len to ssize_t ret using unsigned arithmetic.
+        ret = ret.wrapping_add(len as isize);
         // Preserve C's size_t subtraction before assignment back to ssize_t.
         max = max.wrapping_sub(len as isize);
         if max <= 0 || sg_max == 0 {
