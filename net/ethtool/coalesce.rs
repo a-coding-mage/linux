@@ -164,13 +164,16 @@ unsafe extern "C" fn coalesce_prepare_data(
 unsafe extern "C" fn coalesce_reply_size(
     _req_base: *const ethnl_req_info, _reply_base: *const ethnl_reply_data,
 ) -> i32 {
-    let u32sz = rust_coalesce_nla_total_size(size_of::<u32>() as i32);
-    let u8sz = rust_coalesce_nla_total_size(size_of::<u8>() as i32);
-    let nestsz = rust_coalesce_nla_total_size(0);
+    // C evaluates this expression as int, with primitive sizes 8, 8 and 4.
+    // The FFI boundary hides those bounds from Rust. Widen intermediates so
+    // checked arithmetic cannot panic; the valid C result (520) fits i32.
+    let u32sz = rust_coalesce_nla_total_size(size_of::<u32>() as i32) as i64;
+    let u8sz = rust_coalesce_nla_total_size(size_of::<u8>() as i32) as i64;
+    let nestsz = rust_coalesce_nla_total_size(0) as i64;
     let modersz = nestsz + 3 * u32sz;
-    let total_modersz = nestsz + modersz * NET_DIM_PARAMS_NUM_PROFILES as i32;
+    let total_modersz = nestsz + modersz * NET_DIM_PARAMS_NUM_PROFILES as i64;
     // 25 numeric attributes, four mode attributes, RX and TX profile nests.
-    25 * u32sz + 4 * u8sz + 2 * total_modersz
+    (25 * u32sz + 4 * u8sz + 2 * total_modersz) as i32
 }
 
 unsafe fn coalesce_put_u32(skb: *mut sk_buff, attr_type: u32, val: u32, supported: u32) -> bool {
