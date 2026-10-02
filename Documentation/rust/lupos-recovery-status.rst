@@ -91,10 +91,32 @@ mounts, original-C runtime tests and matched controls remain pending. COPY,
 SSC, clone and seek require distinct coverage; the selected guard tests do not
 prove those operations. No old unavailable NFS candidate result is reused.
 
+Reconstructed ethtool coalesce provider
+--------------------------------------
+
+``net/ethtool/coalesce.rs`` is reconstructed from the retained C original behind
+``RUST_ETHTOOL_COALESCE``. Policy tables, request callbacks, nested DIM profiles,
+RCU updates and driver callback/error ordering remain Rust-owned. Binding
+constants come from Clang-evaluated kernel declarations. Canonical Kbuild flags
+are retained; no per-object function-section override is introduced.
+
+Private configured binding/C-helper/Rust object and link checks passed, along
+with the original C unit's compile-time support-bit assertions. Independent
+source review found no additional discrepancy. Actual Kbuild/final callback
+ownership, feature configurations and runtime behavior remain pending.
+
+The original netdevsim coalesce test has 20 scalar and two adaptive-mode shell
+assertions. Its unchanged sources, Makefile and runner are prepared, but the
+test has not run. It must demonstrate real generic-netlink dispatch to the Rust
+provider rather than ioctl fallback. No applicable original C userspace
+coalesce assertion suite was found; these shell checks cannot be relabeled as
+one. DIM profiles, error paths and other uncovered behavior remain explicit
+coverage gaps. The original C netdevsim driver is only a test fixture.
+
 Remaining work and priority
 ---------------------------
 
-Coalesce, IPv6 GRE and virtio-9p reconstructions and their acceptance
+IPv6 GRE and virtio-9p reconstructions and their acceptance
 remain separate work. Device-driver translation is deferred until core kernel,
 memory, filesystems and networking. Existing driver candidates are preserved;
 unchanged C drivers may still supply build dependencies or test fixtures.

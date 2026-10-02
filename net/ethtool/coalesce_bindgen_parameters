@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--opaque-type 'net_device|sk_buff|genl_info|netlink_ext_ack|phy_device|work_struct|net|sock'
+--allowlist-type 'ethnl_req_info|ethnl_reply_data|ethnl_request_ops|ethtool_coalesce|kernel_ethtool_coalesce|dim_cq_moder|dim_irq_moder|nla_policy|nlattr|rust_coalesce_.*'
+--allowlist-function 'rust_coalesce_.*|ethnl_ops_begin|ethnl_ops_complete|kfree'
+--allowlist-var 'RUST_.*|ETHTOOL_A_COALESCE_.*|__ETHTOOL_A_COALESCE_CNT|ETHTOOL_COALESCE_.*|ETHTOOL_A_PROFILE_IRQ_MODERATION|ETHTOOL_A_IRQ_MODERATION_.*|ETHTOOL_A_HEADER_FLAGS|ETHTOOL_MSG_COALESCE_.*|DIM_PROFILE_.*|DIM_COALESCE_.*|NET_DIM_PARAMS_NUM_PROFILES|NLA_U32|NLA_U8|NLA_NESTED|NLA_VALIDATE_MAX|EOPNOTSUPP|EMSGSIZE|EINVAL|ENOMEM|E2BIG|ethnl_header_policy'

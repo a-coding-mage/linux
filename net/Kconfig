@@ -541,3 +541,12 @@ config NET_TEST
 	  If unsure, say N.
 
 endif   # if NET
+
+config RUST_ETHTOOL_COALESCE
+	bool "Rust ethtool coalesce request provider"
+	depends on RUST && ETHTOOL_NETLINK
+	default n
+	help
+	  Build the Rust reconstruction of the ethtool coalesce netlink
+	  provider instead of net/ethtool/coalesce.c. The original C source
+	  is retained as the reference and the default implementation.
