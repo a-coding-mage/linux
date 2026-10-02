@@ -3,11 +3,14 @@
 #define BLK_MQ_SCHED_RUST_H
 
 /* Canonical layouts and real C boundaries for the Rust scheduler owner. */
+#include <linux/jiffies.h>
 #include <linux/list_sort.h>
 #include "blk.h"
 #include "blk-mq-sched.h"
 #include "blk-mq-debugfs.h"
 
+/* Bind the Clang-evaluated kernel frequency instead of the UAPI HZ macro. */
+enum { LUPOS_SCHED_HZ = HZ };
 enum { LUPOS_SCHED_XA_PRESENT = XA_PRESENT };
 
 bool lupos_sched_test_bit(unsigned int bit, const unsigned long *state);

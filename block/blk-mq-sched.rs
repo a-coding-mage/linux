@@ -153,7 +153,7 @@ unsafe fn __blk_mq_do_dispatch_sched(hctx: *mut blk_mq_hw_ctx) -> c_int {
 }
 
 unsafe fn blk_mq_do_dispatch_sched(hctx: *mut blk_mq_hw_ctx) -> c_int {
-    let end = lupos_sched_jiffies().wrapping_add(HZ as c_ulong);
+    let end = lupos_sched_jiffies().wrapping_add(LUPOS_SCHED_HZ as c_ulong);
     loop {
         let ret = __blk_mq_do_dispatch_sched(hctx);
         if ret != 1 { return ret; }

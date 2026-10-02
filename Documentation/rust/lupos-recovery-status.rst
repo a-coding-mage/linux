@@ -18,8 +18,8 @@ The complete saved text was recovered and matched the original byte hash.
 Application and reverse-application checks passed against the exact clean
 base. All 167 target blob hashes match, and the complete regenerated per-file
 diff blocks, including modes, match the saved patch. These are source recovery
-checks only; no kernel build or original test has been rerun in this replacement
-workspace. Historical reports remain historical evidence; the prior raw build
+checks only; no complete kernel build or original-test run has yet been validated in this
+replacement workspace. Historical reports remain historical evidence; the prior raw build
 artifacts and execution logs are currently unavailable.
 
 Remaining work
@@ -40,3 +40,24 @@ configuration and uncovered behavior gaps remain open.
 Future coherent source changes will be checkpointed separately. The complete
 migration and the subsequently requested Lubuntu/Firefox A/B workflow are not
 complete at this checkpoint.
+
+Scheduler deadline correction
+-----------------------------
+
+The rebuilt configuration exposed a real constant-binding discrepancy:
+``CONFIG_HZ=1000`` evaluates to 1000 in the original C kernel headers, while
+bindgen's bare ``HZ`` macro constant was 100 from the userspace ABI headers.
+The Rust blk-mq scheduler consequently computed a 100-tick dispatch deadline
+where the C implementation used 1000 ticks.
+
+The scheduler now uses a Clang-evaluated ``LUPOS_SCHED_HZ`` enum derived from the
+explicit kernel jiffies header. The bare macro is no longer allowlisted.
+Actual configured C assertions, generated bindings, C adapter compilation and
+full Rust scheduler object compilation pass. Original compiler flags, including
+Rust overflow checks, remain unchanged. A stale-value negative control fails
+as intended. Additional preprocessor-only HZ variants are supplemental checks,
+not alternate kernel builds or original-C runtime acceptance.
+
+The complete corrected kernel rebuild and affected original C tests remain
+pending. The initial baseline build stays pinned to its original source until
+its terminal boundary; this commit does not relabel that build as corrected.
