@@ -75,3 +75,10 @@ endif
 ifdef CONFIG_GCOV_PROFILE_NETFILTER
 GCOV_PROFILE_netfilter.o := y
 endif
+
+ifeq ($(CONFIG_RUST_NET_IP_TUNNEL),y)
+# Preserve ip_tunnel.o/ip_tunnel.ko and all original exported symbol owners.
+ip_tunnel-y := ip_tunnel_rust.o ip_tunnel_helpers.o
+$(obj)/ip_tunnel_rust.o: $(src)/ip_tunnel.rs $(objtree)/rust/bindings/ip_tunnel_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'net_device_flags|ip_tunnel|ip_tunnel_net|ip_tunnel_parm|ip_tunnel_parm_kern|ip_tunnel_info|ip_tunnel_key|ip_tunnel_encap_ops|ip_tunnel_encap|tnl_ptk_info|net_device|net|sk_buff|iphdr|udphdr|ipv6hdr|flowi4|rtable|rt6_info|metadata_dst|nlattr|ifreq|rtnl_link_ops'
+--allowlist-function 'rust_ipt_.*|dev_valid_name|register_netdevice|free_netdev|dev_set_mtu|__dev_get_by_index|dst_release|skb_scrub_packet|eth_type_trans|gro_cells_receive|synchronize_net|dst_cache_get_ip4|dst_cache_set_ip4|iptunnel_xmit|netdev_state_change|ns_capable|gro_cells_destroy|dst_cache_destroy|unregister_netdevice_queue|rtnl_lock|rtnl_unlock|dst_cache_init|gro_cells_init'
+--allowlist-var 'RUST_IPT_.*|IP_TNL_.*|IP_TUNNEL_.*|MAX_IPTUN_ENCAP_OPS|IPTUNNEL_ERR_TIMEO|INET_DSCP_MASK|IP_MAX_MTU|IPV4_MIN_MTU|IPV6_MIN_MTU|ETH_.*|ARPHRD_ETHER|IFF_.*|IFNAMSIZ|IPPROTO_UDP|IP_DF|ICMP_DEST_UNREACH|ICMP_FRAG_NEEDED|ICMPV6_PKT_TOOBIG|RTF_MODIFIED|RTAX_MTU|AF_INET|IPV6_ADDR_ANY|IPV6_ADDR_COMPATv4|SIOC.*TUNNEL|CAP_NET_ADMIN|IFLA_ADDRESS|IFLA_MTU|init_net|E2BIG|ENOMEM|ERANGE|EINVAL|EPERM|EEXIST|ENOENT|EFAULT'

@@ -766,3 +766,15 @@ config TCP_MD5SIG
 	  on the Internet.
 
 	  If unsure, say N.
+
+config RUST_NET_IP_TUNNEL
+	bool "Rust IPv4 tunnel implementation library"
+	depends on RUST && NET_IP_TUNNEL != n
+	default n
+	help
+	  Build the IPv4 tunnel provider from Rust. Tunnel selection, packet
+	  receive and transmit, PMTU, ioctl/netlink configuration and network
+	  namespace lifecycle live in Rust. Configured generated declarations
+	  and narrow C macro/header-inline boundaries preserve the kernel ABI.
+	  The unchanged ip_tunnel.c remains the provider when disabled.
+	  Supports built-in and modular NET_IP_TUNNEL configurations.

@@ -916,6 +916,7 @@ include $(srctree)/mm/workingset_bindgen.mk
 include $(srctree)/net/ipv6/ipv6_sockglue_bindgen.mk
 include $(srctree)/net/ipv6/ah6_bindgen.mk
 include $(srctree)/net/ipv6/ip6_gre_bindgen.mk
+include $(srctree)/net/ipv4/ip_tunnel_bindgen.mk
 include $(srctree)/net/ethtool/coalesce_bindgen.mk
 include $(srctree)/fs/nfs/nfs4file_bindgen.mk
 include $(srctree)/sound/core/timer-bindgen.mk
