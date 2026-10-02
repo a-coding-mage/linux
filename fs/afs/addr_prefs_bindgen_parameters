@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'afs_addr_preference|afs_addr_preference_list|afs_address|afs_addr_list|afs_net|file|in_addr|in6_addr|sockaddr_in|sockaddr_in6'
+--allowlist-function 'rust_afs_addr_prefs_.*|in4_pton|in6_pton|simple_strtoul|kstrtou16|strlen|strcmp|kfree|rxrpc_kernel_remote_addr'
+--allowlist-var 'AF_INET|AF_INET6|EINVAL|ENOMEM|ENOSPC|ENOENT|ENOANO'

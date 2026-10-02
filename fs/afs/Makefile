@@ -44,3 +44,14 @@ kafs-y := \
 
 kafs-$(CONFIG_PROC_FS) += proc.o
 obj-$(CONFIG_AFS_FS)  := kafs.o
+
+# Keep kafs and its C callers unchanged; select only this translation.
+ifeq ($(CONFIG_RUST_AFS_ADDR_PREFS),y)
+kafs-y += addr_prefs_helpers.o
+# An explicit target has no implicit-rule $*; recover composite membership
+# from its actual stem, as for the original C object (built-in or module).
+$(obj)/addr_prefs.o: private modname-multi = $(sort $(foreach m,$(multi-obj-ym),\
+	$(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+$(obj)/addr_prefs.o: $(src)/addr_prefs.rs $(objtree)/rust/bindings/afs_addr_prefs_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif

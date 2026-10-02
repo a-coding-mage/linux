@@ -42,3 +42,13 @@ config AFS_DEBUG_CURSOR
 	  See <file:Documentation/filesystems/afs.rst> for more information.
 
 	  If unsure, say N.
+
+config RUST_AFS_ADDR_PREFS
+	bool "Rust AFS address preference management"
+	depends on RUST && AFS_FS
+	default n
+	help
+	  Build addr_prefs.o from its Rust translation. Configured C headers
+	  provide the ABI; a small C helper object supplies macro and inline
+	  boundaries. The existing kafs module and proc interface are retained.
+	  Leave disabled to build the retained original C implementation.
