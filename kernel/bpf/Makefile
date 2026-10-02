@@ -7,6 +7,16 @@ endif
 CFLAGS_core.o += -Wno-override-init $(cflags-nogcse-yy)
 
 obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o cnum.o log.o token.o liveness.o const_fold.o diagnostics.o
+ifeq ($(CONFIG_RUST_BPF_TOKEN),y)
+# Preserve token.o and the retained C provider; select exactly one provider.
+$(obj)/token.o: $(src)/token.rs $(objtree)/rust/bindings/bpf_token_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/token.s: $(src)/token.rs $(objtree)/rust/bindings/bpf_token_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/token.ll: $(src)/token.rs $(objtree)/rust/bindings/bpf_token_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+obj-y += token-rust.o
+endif
 obj-$(CONFIG_BPF_SYSCALL) += bpf_iter.o map_iter.o task_iter.o prog_iter.o link_iter.o
 obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o bloom_filter.o
 

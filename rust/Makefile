@@ -927,4 +927,6 @@ include $(srctree)/sound/core/timer-bindgen.mk
 
 endif # CONFIG_RUST
 
+include $(srctree)/kernel/bpf/token-bindgen.mk
+
 include $(srctree)/block/blk-crypto-fallback-bindgen.mk

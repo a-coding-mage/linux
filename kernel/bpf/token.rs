@@ -1,140 +1,261 @@
 // SPDX-License-Identifier: GPL-2.0
+//! BPF token provider translated from the retained token.c.
+//!
+//! Policy, callbacks, initialization and ownership transitions live in Rust.
+//! Configured bindings supply original C layouts. The C companion supplies
+//! only macro/static-inline boundaries and the original operations tables.
+#![allow(missing_docs, unsafe_op_in_unsafe_fn)]
 
-// Translated from token.c. Kernel types, constants, and functions are supplied
-// by the surrounding build environment.
-
-extern "C" {
-    fn ns_capable(ns: *mut user_namespace, cap: i32) -> bool;
-    fn security_bpf_token_capable(token: *const bpf_token, cap: i32) -> i32;
-    fn security_bpf_token_free(token: *mut bpf_token);
-    fn put_user_ns(ns: *mut user_namespace);
-    fn get_user_ns(ns: *mut user_namespace);
-    fn kfree(ptr: *mut kernel::ffi::c_void);
-    fn atomic64_inc(v: *mut atomic64_t);
-    fn atomic64_dec_and_test(v: *mut atomic64_t) -> bool;
-    fn INIT_WORK(work: *mut work_struct, func: unsafe extern "C" fn(*mut work_struct));
-    fn schedule_work(work: *mut work_struct);
-    fn seq_printf(m: *mut seq_file, fmt: *const kernel::ffi::c_char, ...);
-    fn path_permission(path: *const path, mask: u32) -> i32;
-    fn current_user_ns() -> *mut user_namespace;
-    fn current_umask() -> u32;
-    fn bpf_get_inode(sb: *mut super_block, dir: *mut inode, mode: umode_t) -> *mut inode;
-    fn IS_ERR(ptr: *mut inode) -> bool;
-    fn PTR_ERR(ptr: *mut inode) -> i32;
-    fn clear_nlink(inode: *mut inode);
-    fn alloc_file_pseudo(
-        inode: *mut inode,
-        mnt: *mut vfsmount,
-        name: *const kernel::ffi::c_char,
-        flags: i32,
-        fops: *const file_operations) -> *mut file;
-    fn fd_empty(f: *const fd) -> bool;
-    fn fd_file(f: *const fd) -> *mut file;
-    fn fd_prepare_file(f: fd_prepare) -> *mut file;
-    fn fd_publish(f: fd_prepare) -> i32;
-    fn copy_to_user(to: *mut kernel::ffi::c_void, from: *const kernel::ffi::c_void, n: usize) -> usize;
-    fn put_user(value: u32, to: *mut u32) -> i32;
-    fn security_bpf_token_create(token: *mut bpf_token, attr: *const bpf_attr, path: *const path) -> i32;
-    fn security_bpf_token_cmd(token: *const bpf_token, cmd: bpf_cmd) -> i32;
+#[allow(clippy::all, dead_code, non_camel_case_types, non_snake_case,
+         non_upper_case_globals, improper_ctypes, unreachable_pub)]
+mod bindings {
+    use kernel::ffi;
+    type __kernel_size_t = usize;
+    type __kernel_ssize_t = isize;
+    type __kernel_ptrdiff_t = isize;
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/bpf_token_generated.rs"));
 }
 
-#[repr(C)] pub struct user_namespace { _private: [u8; 0] }
-#[repr(C)] pub struct bpf_token { refcnt: atomic64_t, userns: *mut user_namespace, allowed_cmds: u64, allowed_maps: u64, allowed_progs: u64, allowed_attachs: u64, work: work_struct }
-#[repr(C)] pub struct atomic64_t { _private: [u8; 0] }
-#[repr(C)] pub struct work_struct { _private: [u8; 0] }
-#[repr(C)] pub struct seq_file { _private: [u8; 0] }
-#[repr(C)] pub struct inode { i_op: *const inode_operations, i_fop: *const file_operations }
-#[repr(C)] pub struct file { private_data: *mut kernel::ffi::c_void, f_op: *const file_operations, f_path: path }
-#[repr(C)] pub struct path { dentry: *mut dentry, mnt: *mut vfsmount }
-#[repr(C)] pub struct dentry { d_sb: *mut super_block }
-#[repr(C)] pub struct super_block { s_root: *mut dentry, s_op: *const super_operations, s_user_ns: *mut user_namespace, s_fs_info: *mut kernel::ffi::c_void }
-#[repr(C)] pub struct inode_operations { _private: [u8; 0] }
-#[repr(C)] pub struct file_operations { release: Option<unsafe extern "C" fn(*mut inode, *mut file) -> i32>, show_fdinfo: Option<unsafe extern "C" fn(*mut seq_file, *mut file)> }
-#[repr(C)] pub struct super_operations { _private: [u8; 0] }
-#[repr(C)] pub struct vfsmount { _private: [u8; 0] }
-#[repr(C)] pub struct fd { _private: [u8; 0] }
-#[repr(C)] pub struct fd_prepare { err: i32 }
-#[repr(C)] pub union bpf_attr { token_create: bpf_attr_token_create, info: bpf_attr_info }
-#[repr(C)] pub struct bpf_attr_token_create { bpffs_fd: i32 }
-#[repr(C)] pub struct bpf_attr_info { info: u64, info_len: u32 }
-#[repr(C)] pub struct bpf_token_info { allowed_cmds: u64, allowed_maps: u64, allowed_progs: u64, allowed_attachs: u64 }
-#[repr(C)] pub enum bpf_cmd { _ = 0 }
-#[repr(C)] pub enum bpf_map_type { _ = 0 }
-#[repr(C)] pub enum bpf_prog_type { _ = 0 }
-#[repr(C)] pub enum bpf_attach_type { _ = 0 }
-pub type umode_t = u32;
+use bindings::*;
+use core::{
+    mem::{align_of, offset_of, size_of, MaybeUninit},
+    ptr::{self, addr_of, addr_of_mut, null_mut},
+};
+use kernel::ffi::{c_char, c_int, c_void};
 
-extern "C" {
-    static init_user_ns: user_namespace;
-    static bpf_super_ops: super_operations;
-    static __MAX_BPF_CMD: u32;
-    static __MAX_BPF_MAP_TYPE: u32;
-    static __MAX_BPF_PROG_TYPE: u32;
-    static __MAX_BPF_ATTACH_TYPE: u32;
-    static bpf_token_iops: inode_operations;
-    static bpf_token_fops: file_operations;
+// Values evaluated from the same configured C headers as the bindings.
+// Work/refcnt ordering and CONFIG_SECURITY are never handwritten mirrors.
+const _: () = {
+    assert!(size_of::<bpf_token>() == LUPOS_TOKEN_SIZE as usize);
+    assert!(align_of::<bpf_token>() == LUPOS_TOKEN_ALIGN as usize);
+    assert!(offset_of!(bpf_token, work) == LUPOS_TOKEN_WORK_OFFSET as usize);
+    assert!(offset_of!(bpf_token, refcnt) == LUPOS_TOKEN_REFCNT_OFFSET as usize);
+    assert!(offset_of!(bpf_token, userns) == LUPOS_TOKEN_USERNS_OFFSET as usize);
+    assert!(offset_of!(bpf_token, allowed_cmds) == LUPOS_TOKEN_CMDS_OFFSET as usize);
+    assert!(offset_of!(bpf_token, allowed_maps) == LUPOS_TOKEN_MAPS_OFFSET as usize);
+    assert!(offset_of!(bpf_token, allowed_progs) == LUPOS_TOKEN_PROGS_OFFSET as usize);
+    assert!(offset_of!(bpf_token, allowed_attachs) == LUPOS_TOKEN_ATTACHS_OFFSET as usize);
+    assert!(size_of::<bpf_token_info>() == LUPOS_TOKEN_INFO_SIZE as usize);
+    assert!(align_of::<bpf_token_info>() == LUPOS_TOKEN_INFO_ALIGN as usize);
+    assert!(offset_of!(bpf_token_info, allowed_cmds) == LUPOS_TOKEN_INFO_CMDS_OFFSET as usize);
+    assert!(offset_of!(bpf_token_info, allowed_maps) == LUPOS_TOKEN_INFO_MAPS_OFFSET as usize);
+    assert!(offset_of!(bpf_token_info, allowed_progs) == LUPOS_TOKEN_INFO_PROGS_OFFSET as usize);
+    assert!(offset_of!(bpf_token_info, allowed_attachs) == LUPOS_TOKEN_INFO_ATTACHS_OFFSET as usize);
+    assert!(LUPOS_TOKEN_MAX_CMD < 64);
+    assert!(LUPOS_TOKEN_MAX_MAP_TYPE < 64);
+    assert!(LUPOS_TOKEN_MAX_PROG_TYPE < 64);
+    assert!(LUPOS_TOKEN_MAX_ATTACH_TYPE < 64);
+};
+
+// Guard declaration order matches C cleanup order: prepared fd/file,
+// borrowed fd, then untransferred token storage.
+struct TokenAllocation(*mut bpf_token);
+impl Drop for TokenAllocation {
+    fn drop(&mut self) { unsafe { kfree(self.0.cast()); } }
+}
+struct FetchedFd(fd);
+impl FetchedFd {
+    unsafe fn file(&self) -> *mut file { lupos_token_fd_file(addr_of!(self.0)) }
+}
+impl Drop for FetchedFd {
+    fn drop(&mut self) { unsafe { lupos_token_fdput(addr_of!(self.0)); } }
+}
+struct PreparedFd(fd_prepare);
+impl Drop for PreparedFd {
+    fn drop(&mut self) { unsafe { lupos_token_fd_prepare_cleanup(addr_of!(self.0)); } }
 }
 
-const CAP_SYS_ADMIN: i32 = 21;
-const CAP_BPF: i32 = 39;
-const MAY_ACCESS: u32 = 0x00000001;
-const S_IFREG: u32 = 0o100000;
-const S_IRUSR: u32 = 0o400;
-const S_IWUSR: u32 = 0o200;
-const O_CLOEXEC: i32 = 0x80000;
-const O_RDWR: i32 = 2;
-
-unsafe fn bpf_ns_capable(ns: *mut user_namespace, cap: i32) -> bool {
-    ns_capable(ns, cap) || (cap != CAP_SYS_ADMIN && ns_capable(ns, CAP_SYS_ADMIN))
+unsafe fn bpf_ns_capable(ns: *mut user_namespace, cap: c_int) -> bool {
+    lupos_token_ns_capable(ns, cap)
+        || (cap != LUPOS_TOKEN_CAP_SYS_ADMIN as c_int
+            && lupos_token_ns_capable(ns, LUPOS_TOKEN_CAP_SYS_ADMIN as c_int))
 }
 
-#[no_mangle] pub unsafe extern "C" fn bpf_token_capable(token: *const bpf_token, cap: i32) -> bool {
-    let userns = if !token.is_null() { (*token).userns } else { &init_user_ns as *const _ as *mut _ };
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_capable(token: *const bpf_token, cap: c_int) -> bool {
+    let userns = if token.is_null() { addr_of!(init_user_ns).cast_mut() } else { (*token).userns };
     if !bpf_ns_capable(userns, cap) { return false; }
-    if !token.is_null() && security_bpf_token_capable(token, cap) < 0 { return false; }
+    if !token.is_null() && lupos_token_security_capable(token, cap) < 0 { return false; }
     true
 }
 
-#[no_mangle] pub unsafe extern "C" fn bpf_token_inc(token: *mut bpf_token) { atomic64_inc(&mut (*token).refcnt); }
-
-unsafe fn bpf_token_free(token: *mut bpf_token) { security_bpf_token_free(token); put_user_ns((*token).userns); kfree(token.cast()); }
-unsafe extern "C" fn bpf_token_put_deferred(work: *mut work_struct) { bpf_token_free(work.cast::<bpf_token>()); }
-
-#[no_mangle] pub unsafe extern "C" fn bpf_token_put(token: *mut bpf_token) {
-    if token.is_null() || !atomic64_dec_and_test(&mut (*token).refcnt) { return; }
-    INIT_WORK(&mut (*token).work, bpf_token_put_deferred); schedule_work(&mut (*token).work);
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_inc(token: *mut bpf_token) {
+    lupos_token_atomic64_inc(addr_of_mut!((*token).refcnt));
 }
 
-unsafe extern "C" fn bpf_token_release(_inode: *mut inode, filp: *mut file) -> i32 { bpf_token_put((*filp).private_data.cast()); 0 }
+unsafe fn bpf_token_free(token: *mut bpf_token) {
+    lupos_token_security_free(token);
+    lupos_token_put_user_ns((*token).userns);
+    kfree(token.cast());
+}
 
-unsafe extern "C" fn bpf_token_show_fdinfo(m: *mut seq_file, filp: *mut file) {
+unsafe extern "C" fn bpf_token_put_deferred(work: *mut work_struct) {
+    let token = work.cast::<u8>().sub(offset_of!(bpf_token, work)).cast::<bpf_token>();
+    bpf_token_free(token);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_put(token: *mut bpf_token) {
+    if token.is_null() { return; }
+    if !lupos_token_atomic64_dec_and_test(addr_of_mut!((*token).refcnt)) { return; }
+    lupos_token_init_work(addr_of_mut!((*token).work), Some(bpf_token_put_deferred));
+    lupos_token_schedule_work(addr_of_mut!((*token).work));
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn lupos_bpf_token_release(_inode: *mut inode, filp: *mut file) -> c_int {
+    bpf_token_put((*filp).private_data.cast());
+    0
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn lupos_bpf_token_show_fdinfo(m: *mut seq_file, filp: *mut file) {
     let token = (*filp).private_data.cast::<bpf_token>();
-    let mask = (1u64 << __MAX_BPF_CMD) - 1;
-    let _ = (m, token, mask); // Formatting is supplied by the kernel integration.
+    let mask = (1u64 << LUPOS_TOKEN_MAX_CMD) - 1;
+    if ((*token).allowed_cmds & mask) == mask {
+        seq_printf(m, b"allowed_cmds:\tany\n\0".as_ptr().cast::<c_char>());
+    } else {
+        seq_printf(m, b"allowed_cmds:\t0x%llx\n\0".as_ptr().cast::<c_char>(), (*token).allowed_cmds);
+    }
+    let mask = (1u64 << LUPOS_TOKEN_MAX_MAP_TYPE) - 1;
+    if ((*token).allowed_maps & mask) == mask {
+        seq_printf(m, b"allowed_maps:\tany\n\0".as_ptr().cast::<c_char>());
+    } else {
+        seq_printf(m, b"allowed_maps:\t0x%llx\n\0".as_ptr().cast::<c_char>(), (*token).allowed_maps);
+    }
+    let mask = (1u64 << LUPOS_TOKEN_MAX_PROG_TYPE) - 1;
+    if ((*token).allowed_progs & mask) == mask {
+        seq_printf(m, b"allowed_progs:\tany\n\0".as_ptr().cast::<c_char>());
+    } else {
+        seq_printf(m, b"allowed_progs:\t0x%llx\n\0".as_ptr().cast::<c_char>(), (*token).allowed_progs);
+    }
+    let mask = (1u64 << LUPOS_TOKEN_MAX_ATTACH_TYPE) - 1;
+    if ((*token).allowed_attachs & mask) == mask {
+        seq_printf(m, b"allowed_attachs:\tany\n\0".as_ptr().cast::<c_char>());
+    } else {
+        seq_printf(m, b"allowed_attachs:\t0x%llx\n\0".as_ptr().cast::<c_char>(), (*token).allowed_attachs);
+    }
 }
 
-pub const BPF_TOKEN_INODE_NAME: &[u8] = b"bpf-token\0";
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_create(attr: *mut bpf_attr) -> c_int {
+    let mut token = TokenAllocation(null_mut());
+    let f = FetchedFd(fdget((*attr).token_create.bpffs_fd));
+    if lupos_token_fd_empty(addr_of!(f.0)) { return -(EBADF as c_int); }
 
-#[no_mangle] pub static bpf_token_fops_local: file_operations = file_operations { release: Some(bpf_token_release), show_fdinfo: Some(bpf_token_show_fdinfo) };
+    let path = (*f.file()).__bindgen_anon_1.f_path;
+    let sb = (*path.dentry).d_sb;
+    if path.dentry != (*sb).s_root { return -(EINVAL as c_int); }
+    if (*sb).s_op != addr_of!(bpf_super_ops) { return -(EINVAL as c_int); }
+    let err = lupos_token_path_permission(addr_of!(path), LUPOS_TOKEN_MAY_ACCESS as c_int);
+    if err != 0 { return err; }
 
-// The remaining creation and query entry points retain the source-level ABI;
-// their kernel allocation/file-descriptor helpers are external dependencies.
-#[no_mangle] pub unsafe extern "C" fn bpf_token_create(_attr: *mut bpf_attr) -> i32 { unimplemented!("requires kernel fd and allocation helpers") }
-#[no_mangle] pub unsafe extern "C" fn bpf_token_get_info_by_fd(_token: *mut bpf_token, _attr: *const bpf_attr, _uattr: *mut bpf_attr) -> i32 { unimplemented!("requires kernel user-copy helpers") }
-#[no_mangle] pub unsafe extern "C" fn bpf_token_get_from_fd(_ufd: u32) -> *mut bpf_token { unimplemented!("requires kernel fd helpers") }
+    let userns = (*sb).s_user_ns;
+    // Creation requires the exact owning user namespace and CAP_BPF there.
+    // CAP_SYS_ADMIN fallback belongs only to bpf_token_capable().
+    if lupos_token_current_user_ns() != userns { return -(EPERM as c_int); }
+    if !lupos_token_ns_capable(userns, LUPOS_TOKEN_CAP_BPF as c_int) { return -(EPERM as c_int); }
+    if lupos_token_current_user_ns() == addr_of!(init_user_ns).cast_mut() {
+        return -(EOPNOTSUPP as c_int);
+    }
 
-#[no_mangle] pub unsafe extern "C" fn bpf_token_allow_cmd(token: *const bpf_token, cmd: bpf_cmd) -> bool {
+    let mnt_opts = (*sb).s_fs_info.cast::<bpf_mount_opts>();
+    if (*mnt_opts).delegate_cmds == 0 && (*mnt_opts).delegate_maps == 0
+        && (*mnt_opts).delegate_progs == 0 && (*mnt_opts).delegate_attachs == 0
+    {
+        return -(ENOENT as c_int);
+    }
+    let mode = (LUPOS_TOKEN_S_IFREG as c_int
+        | ((LUPOS_TOKEN_S_IRUSR | LUPOS_TOKEN_S_IWUSR) as c_int
+            & !lupos_token_current_umask())) as umode_t;
+    let inode = bpf_get_inode(sb, null_mut(), mode);
+    if lupos_token_is_err(inode.cast()) { return lupos_token_ptr_err(inode.cast()) as c_int; }
+    (*inode).i_op = addr_of!(lupos_bpf_token_iops);
+    (*inode).__bindgen_anon_3.i_fop = addr_of!(bpf_token_fops);
+    clear_nlink(inode);
+
+    // Preserve FD_PREPARE's lazy file allocation and macro cleanup/publish.
+    let mut fdf = PreparedFd(lupos_token_fd_prepare(inode, path.mnt));
+    if fdf.0.err != 0 { return fdf.0.err; }
+    token.0 = lupos_token_zalloc();
+    if token.0.is_null() { return -(ENOMEM as c_int); }
+    lupos_token_atomic64_set(addr_of_mut!((*token.0).refcnt), 1);
+    (*token.0).userns = userns;
+    (*token.0).allowed_cmds = (*mnt_opts).delegate_cmds;
+    (*token.0).allowed_maps = (*mnt_opts).delegate_maps;
+    (*token.0).allowed_progs = (*mnt_opts).delegate_progs;
+    (*token.0).allowed_attachs = (*mnt_opts).delegate_attachs;
+
+    let err = lupos_token_security_create(token.0, attr, addr_of!(path));
+    if err != 0 { return err; }
+    lupos_token_get_user_ns((*token.0).userns);
+    (*lupos_token_fd_prepare_file(addr_of!(fdf.0))).private_data = token.0.cast();
+    token.0 = null_mut();
+    lupos_token_fd_publish(addr_of_mut!(fdf.0))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_get_info_by_fd(
+    token: *mut bpf_token, attr: *const bpf_attr, uattr: *mut bpf_attr,
+) -> c_int {
+    let uinfo = lupos_token_u64_to_user_ptr((*attr).info.info);
+    let info_len = (*attr).info.info_len.min(size_of::<bpf_token_info>() as u32);
+    let mut info = MaybeUninit::<bpf_token_info>::uninit();
+    let info_ptr = info.as_mut_ptr();
+    // Match memset over the entire C object, including any target padding.
+    ptr::write_bytes(info_ptr.cast::<u8>(), 0, size_of::<bpf_token_info>());
+    (*info_ptr).allowed_cmds = (*token).allowed_cmds;
+    (*info_ptr).allowed_maps = (*token).allowed_maps;
+    (*info_ptr).allowed_progs = (*token).allowed_progs;
+    (*info_ptr).allowed_attachs = (*token).allowed_attachs;
+    // Failed payload copy must not store length; both use checked uaccess.
+    if lupos_token_copy_to_user(uinfo, info_ptr.cast::<c_void>(), info_len as usize) != 0
+        || lupos_token_put_info_len(info_len, uattr) != 0
+    {
+        return -(EFAULT as c_int);
+    }
+    0
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_get_from_fd(ufd: u32) -> *mut bpf_token {
+    let f = FetchedFd(fdget(ufd));
+    if lupos_token_fd_empty(addr_of!(f.0)) {
+        return lupos_token_err_ptr(-(EBADF as isize)).cast();
+    }
+    let file = f.file();
+    if (*file).f_op != addr_of!(bpf_token_fops) {
+        return lupos_token_err_ptr(-(EINVAL as isize)).cast();
+    }
+    let token = (*file).private_data.cast::<bpf_token>();
+    bpf_token_inc(token);
+    token
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_allow_cmd(token: *const bpf_token, cmd: bpf_cmd) -> bool {
     if token.is_null() { return false; }
-    if ((*token).allowed_cmds & (1u64 << (cmd as u32))) == 0 { return false; }
-    security_bpf_token_cmd(token, cmd) == 0
+    // Like C, this entry point receives a valid bpf_cmd from its callers.
+    if ((*token).allowed_cmds & (1u64 << cmd)) == 0 { return false; }
+    lupos_token_security_cmd(token, cmd) == 0
 }
 
-#[no_mangle] pub unsafe extern "C" fn bpf_token_allow_map_type(token: *const bpf_token, ty: bpf_map_type) -> bool {
-    !token.is_null() && (ty as u32) < __MAX_BPF_MAP_TYPE && ((*token).allowed_maps & (1u64 << ty as u32)) != 0
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_allow_map_type(token: *const bpf_token, ty: bpf_map_type) -> bool {
+    if token.is_null() || ty >= LUPOS_TOKEN_MAX_MAP_TYPE { return false; }
+    ((*token).allowed_maps & (1u64 << ty)) != 0
 }
 
-#[no_mangle] pub unsafe extern "C" fn bpf_token_allow_prog_type(token: *const bpf_token, prog_type: bpf_prog_type, attach_type: bpf_attach_type) -> bool {
-    !token.is_null() && (prog_type as u32) < __MAX_BPF_PROG_TYPE && (attach_type as u32) < __MAX_BPF_ATTACH_TYPE && ((*token).allowed_progs & (1u64 << prog_type as u32)) != 0 && ((*token).allowed_attachs & (1u64 << attach_type as u32)) != 0
+#[no_mangle]
+pub unsafe extern "C" fn bpf_token_allow_prog_type(
+    token: *const bpf_token, prog_type: bpf_prog_type, attach_type: bpf_attach_type,
+) -> bool {
+    if token.is_null() || prog_type >= LUPOS_TOKEN_MAX_PROG_TYPE
+        || attach_type >= LUPOS_TOKEN_MAX_ATTACH_TYPE
+    {
+        return false;
+    }
+    ((*token).allowed_progs & (1u64 << prog_type)) != 0
+        && ((*token).allowed_attachs & (1u64 << attach_type)) != 0
 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

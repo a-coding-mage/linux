@@ -52,6 +52,18 @@ config RUST_BPF_LPM_TRIE
 
 	  If unsure, say N.
 
+config RUST_BPF_TOKEN
+	bool "Rust BPF token provider (experimental)"
+	depends on BPF_SYSCALL && RUST
+	default n
+	help
+	  Select the Rust implementation of the BPF token provider. The
+	  original C implementation remains the default. Token permissions,
+	  LSM checks and userspace ABI are unchanged. This uses configured
+	  original kernel types and narrow C macro/static-inline adapters.
+
+	  If unsure, say N.
+
 config BPF_JIT
 	bool "Enable BPF Just In Time compiler"
 	depends on BPF
