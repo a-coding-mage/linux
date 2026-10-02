@@ -39,6 +39,19 @@ config BPF_SYSCALL
 	  Enable the bpf() system call that allows to manipulate BPF programs
 	  and maps via file descriptors.
 
+config RUST_BPF_LPM_TRIE
+	bool "Rust BPF longest prefix match map (experimental)"
+	depends on BPF_SYSCALL && RUST
+	default n
+	help
+	  Select the Rust implementation of the BPF LPM trie map provider.
+	  The original C implementation remains the default. This changes
+	  only the provider; BPF map ABIs and the original C selftests remain
+	  unchanged. The Rust implementation uses this configuration's kernel
+	  bindings and narrow C adapters for locking, RCU and registration.
+
+	  If unsure, say N.
+
 config BPF_JIT
 	bool "Enable BPF Just In Time compiler"
 	depends on BPF

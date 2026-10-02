@@ -9,6 +9,19 @@ CFLAGS_core.o += -Wno-override-init $(cflags-nogcse-yy)
 obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o cnum.o log.o token.o liveness.o const_fold.o diagnostics.o
 obj-$(CONFIG_BPF_SYSCALL) += bpf_iter.o map_iter.o task_iter.o prog_iter.o link_iter.o
 obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o bloom_filter.o
+
+ifeq ($(CONFIG_RUST_BPF_LPM_TRIE),y)
+# Preserve the lpm_trie.o archive slot and original C source. Select exactly
+# one implementation; the companion object owns macro glue/registration only.
+$(obj)/lpm_trie.o: $(src)/lpm_trie.rs $(objtree)/rust/bindings/lpm_trie_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/lpm_trie.s: $(src)/lpm_trie.rs $(objtree)/rust/bindings/lpm_trie_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/lpm_trie.ll: $(src)/lpm_trie.rs $(objtree)/rust/bindings/lpm_trie_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+obj-y += lpm_trie-rust.o
+CFLAGS_REMOVE_lpm_trie-rust.o = $(CC_FLAGS_FTRACE)
+endif
 obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o bpf_insn_array.o
 obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o
 obj-$(CONFIG_BPF_SYSCALL) += fixups.o cfg.o states.o backtrack.o check_btf.o
