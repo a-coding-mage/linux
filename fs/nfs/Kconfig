@@ -89,6 +89,16 @@ config NFS_V4
 
 	  If unsure, say N.
 
+config RUST_NFS4_FILE
+	bool "Rust NFSv4 file operations"
+	depends on RUST && NFS_V4
+	help
+	  Build nfs4file.o from its Rust translation, including NFSv4.2 copy,
+	  clone, allocation, seek and server-side-copy operations when enabled.
+	  Kernel layouts are generated from configured C headers; only macro
+	  and header-inline boundaries use a dedicated C helper object.
+	  The original C implementation remains available when disabled.
+
 config NFS_SWAP
 	bool "Provide swap over NFS support"
 	default n

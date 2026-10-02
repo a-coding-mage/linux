@@ -70,10 +70,31 @@ modular loading, CFI/BTF, original C-source runtime tests, matched controls and
 other architectures remain pending. No historical AH6 runtime pass applies to
 this reconstructed source.
 
+Reconstructed NFSv4 file operations
+----------------------------------
+
+``fs/nfs/nfs4file.rs`` is a new reconstruction from the unchanged original C
+unit, selected by ``RUST_NFS4_FILE``. File open/flush/lease, conditional NFSv4.2
+COPY/seek/allocation/clone and SSC lifetime/registration are implemented in Rust.
+Configured declarations and narrow macro/inline wrappers preserve the C ABI.
+
+Private configured probes compile both the original NFSv4.2-off profile and a
+separate on overlay. Bindgen, strict C/Rust compilation, relocatable linking,
+read-only operation-table bytes and all table callback relocations match the
+original C comparison (14 off, 17 on). Canonical compiler flags remain intact;
+the probes do not replace full Kconfig/Kbuild or runtime tests.
+
+The unchanged original ``guard-regions.c`` builds through its own Makefile with
+no flag changes; only its test listing has run. Applicable tests can execute on
+a guest NFS mount. Integrated Kbuild, configured variants, CFI/FSCACHE, actual
+mounts, original-C runtime tests and matched controls remain pending. COPY,
+SSC, clone and seek require distinct coverage; the selected guard tests do not
+prove those operations. No old unavailable NFS candidate result is reused.
+
 Remaining work and priority
 ---------------------------
 
-Coalesce, IPv6 GRE, NFSv4 and virtio-9p reconstructions and their acceptance
+Coalesce, IPv6 GRE and virtio-9p reconstructions and their acceptance
 remain separate work. Device-driver translation is deferred until core kernel,
 memory, filesystems and networking. Existing driver candidates are preserved;
 unchanged C drivers may still supply build dependencies or test fixtures.
