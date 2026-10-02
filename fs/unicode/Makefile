@@ -8,6 +8,14 @@ obj-$(CONFIG_UNICODE_NORMALIZATION_KUNIT_TEST) += tests/utf8_kunit.o
 
 unicode-y := utf8-norm.o utf8-core.o
 
+ifeq ($(CONFIG_RUST_UNICODE_CORE),y)
+# Keep unicode.o built in even when only the Unicode data is a module.
+# The original normalization engine and data retain their C owners.
+unicode-y += utf8-core-helpers.o
+$(obj)/utf8-core.o: $(src)/utf8-core.rs $(objtree)/rust/bindings/utf8_core_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif
+
 $(obj)/utf8-data.o: $(obj)/utf8data.c
 
 # In the normal build, the checked-in utf8data.c is just shipped.

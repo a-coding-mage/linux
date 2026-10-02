@@ -10,6 +10,17 @@ config UNICODE
 	  be a separate loadable module that gets requested only when a file
 	  system actually use it.
 
+config RUST_UNICODE_CORE
+	bool "Rust Unicode core API provider"
+	depends on RUST && UNICODE
+	default n
+	help
+	  Build the nine Unicode core APIs from utf8-core.rs using layouts
+	  generated from the configured C headers. The normalization engine,
+	  Unicode data and original C KUnit tests keep their existing owners.
+	  Allocation, module-symbol and string-hash macros use C boundaries.
+	  If unsure, say N.
+
 config UNICODE_NORMALIZATION_KUNIT_TEST
 	tristate "Test UTF-8 normalization support"
 	depends on UNICODE && KUNIT
