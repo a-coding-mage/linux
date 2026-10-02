@@ -65,3 +65,11 @@ RUSTFLAGS_ipv6_sockglue.o += -Zfunction-sections=n
 $(obj)/ipv6_sockglue.o: $(src)/ipv6_sockglue.rs $(objtree)/rust/bindings/ipv6_sockglue_generated.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
 endif
+
+ifeq ($(CONFIG_RUST_INET6_AH),y)
+# Same ah6.o/ah6.ko owner and public module alias as the C provider.
+# Keep compiler/Kbuild module ownership, CFI and BTF generation intact.
+ah6-y := ah6_rust.o ah6_helpers.o
+$(obj)/ah6_rust.o: $(src)/ah6.rs $(objtree)/rust/bindings/ah6_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif

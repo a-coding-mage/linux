@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'ah6_tmp_ext|ah6_skb_cb|ah_data|ahash_request|scatterlist|ipv6hdr|ipv6_opt_hdr|ipv6_rt_hdr|ipv6_destopt_hao|rt0_hdr|ip_auth_hdr|xfrm_state|xfrm_algo_desc|xfrm_type|xfrm6_protocol|xfrm_address_t|inet6_skb_parm'
+--allowlist-function 'rust_ah6_.*|kfree|skb_cow_data|skb_push|skb_to_sgvec_nomark|sg_init_table|crypto_ahash_digest|crypto_alloc_ahash|crypto_ahash_setkey|xfrm_aalg_get_byname|xfrm_state_lookup|xfrm_output_resume|xfrm_input_resume|xfrm_register_type|xfrm_unregister_type|xfrm6_protocol_register|xfrm6_protocol_deregister|xfrm6_rcv|xfrm_input|ip6_redirect|ip6_update_pmtu'
+--allowlist-var '__this_module|AF_INET6|IPPROTO_AH|XFRM_PROTO_AH|XFRM_TYPE_REPLAY_PROT|XFRM_STATE_ESN|XFRM_MODE_.*|XFRM_POLICY_.*|NEXTHDR_.*|IPV6_TLV_PAD1|IPV6_TLV_HAO|ICMPV6_PKT_TOOBIG|NDISC_REDIRECT|EINVAL|ENOMEM|EINPROGRESS|ENOSPC|NET_XMIT_DROP|EBADMSG|EAGAIN'

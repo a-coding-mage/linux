@@ -347,3 +347,14 @@ config RUST_IPV6_SOCKGLUE
 	  in Rust; configured declarations and header-inline boundaries use
 	  a dedicated C helper object. The original C provider remains
 	  available when this option is off.
+
+config RUST_INET6_AH
+	bool "Rust IPv6 AH transformation implementation"
+	depends on RUST && INET6_AH != n
+	help
+	  Build the IPv6 Authentication Header provider from ah6.rs. AH
+	  packet processing, asynchronous completion, state lifecycle and
+	  registration policy live in Rust. Generated kernel declarations
+	  and narrow C macro/inline wrappers retain the configured ABI.
+	  The unchanged ah6.c remains the provider when this option is off.
+	  Supports both built-in and modular INET6_AH configurations.

@@ -914,6 +914,7 @@ include $(srctree)/ipc/msg_bindgen.mk
 include $(srctree)/kernel/rseq_bindgen.mk
 include $(srctree)/mm/workingset_bindgen.mk
 include $(srctree)/net/ipv6/ipv6_sockglue_bindgen.mk
+include $(srctree)/net/ipv6/ah6_bindgen.mk
 include $(srctree)/sound/core/timer-bindgen.mk
 
 endif # CONFIG_RUST

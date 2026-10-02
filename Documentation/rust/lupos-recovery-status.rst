@@ -1,63 +1,89 @@
-Lupos Rust recovery checkpoint
-=============================
+Lupos Rust recovery and validation checkpoint
+===========================================
 
-This branch restores the twelve-provider source checkpoint after the prior
-execution workspace became unavailable on 2026-10-02. It is an incomplete
-engineering checkpoint, not a release or a claim that all Linux tests pass.
+This branch contains an incomplete migration checkpoint, not a release or a
+claim that all Linux tests pass. Earlier raw build/test artifacts became
+unavailable when the execution workspace was replaced on 2026-10-02.
 
 Recovered source
 ----------------
 
-The base is ``81bb5d6483714efb4cee248d4fdb703c592723d2``. The saved patch is
-``lupos-twelve-provider-source-20261001T1015Z.patch`` (912,558 bytes), with SHA256
-``dbbfdebe23e115df74a00cc84b4e8c554bc45e15fe8531bdc4a0d1e9aa80510e``.
-It changes 167 files, with 14,981 insertions and 2,514 deletions. This status
-file is additional recovery documentation.
+Commit ``e44de5c4cfd292667d42c66446fdda615699fca8`` restored the exact saved
+twelve-provider patch on base ``81bb5d6483714efb4cee248d4fdb703c592723d2``.
+The patch ``lupos-twelve-provider-source-20261001T1015Z.patch`` has 912,558 bytes
+and SHA256 ``dbbfdebe23e115df74a00cc84b4e8c554bc45e15fe8531bdc4a0d1e9aa80510e``.
+Its 167 target source blobs, modes and complete diff blocks were verified.
+The original C implementations and tests are preserved.
 
-The complete saved text was recovered and matched the original byte hash.
-Application and reverse-application checks passed against the exact clean
-base. All 167 target blob hashes match, and the complete regenerated per-file
-diff blocks, including modes, match the saved patch. These are source recovery
-checks only; no complete kernel build or original-test run has yet been validated in this
-replacement workspace. Historical reports remain historical evidence; the prior raw build
-artifacts and execution logs are currently unavailable.
+Fresh build verification
+------------------------
 
-Remaining work
---------------
+The restored e44de5c feature configuration passed the original ``vmlinux``,
+``modules``, ``bzImage`` and ``usr_gen_init_cpio`` targets. An exact repeat
+performed no compile, link or generation work and retained artifact hashes.
+All twelve restored providers have actual Rust compiler command records,
+matching source hashes, unique archive membership and representative final
+symbols. This is a mixed Rust/C/assembly feature profile. The separate stock
+x86_64 LLVM defconfig reference has Rust disabled.
 
-Later coalesce, AH6 and IPv6 GRE source and integration changes are outside this
-saved checkpoint and require exact recovery or clearly identified reconstruction,
-review and fresh validation. Separately prepared ACPI, IPv4 tunnel, NFSv4 and
-virtio-9p candidates were not part of this saved patch either.
-
-Acceptance still requires the applicable original C-source tests, built with
-their original recipes, to execute verified Rust providers, with matched C
-controls and configuration, ABI, symbol and artifact provenance. Supplemental
-checks and translated test suites do not replace those tests. The recorded
-memory-accounting failure, strict CFI-symbol gate and broader architecture,
-configuration and uncovered behavior gaps remain open.
-
-Future coherent source changes will be checkpointed separately. The complete
-migration and the subsequently requested Lubuntu/Firefox A/B workflow are not
-complete at this checkpoint.
+The configuration retains stock debug-info, BTF and module-version choices.
+It does not validate disabled features, other architectures or every Rust
+selector. No original-C runtime acceptance has yet been established in the
+replacement environment; historical test reports are not current results.
 
 Scheduler deadline correction
 -----------------------------
 
-The rebuilt configuration exposed a real constant-binding discrepancy:
-``CONFIG_HZ=1000`` evaluates to 1000 in the original C kernel headers, while
-bindgen's bare ``HZ`` macro constant was 100 from the userspace ABI headers.
-The Rust blk-mq scheduler consequently computed a 100-tick dispatch deadline
-where the C implementation used 1000 ticks.
+Commit ``aedd84a1decd32a6097c6878cdb1ed9123b6ffdd`` corrects a configured
+constant discrepancy. ``CONFIG_HZ=1000`` evaluates to 1000 in the original C
+kernel headers, while the old bindgen bare ``HZ`` constant was 100 from
+userspace ABI headers. Rust now uses a Clang-evaluated ``LUPOS_SCHED_HZ`` enum
+derived from the explicit kernel jiffies header.
 
-The scheduler now uses a Clang-evaluated ``LUPOS_SCHED_HZ`` enum derived from the
-explicit kernel jiffies header. The bare macro is no longer allowlisted.
-Actual configured C assertions, generated bindings, C adapter compilation and
-full Rust scheduler object compilation pass. Original compiler flags, including
-Rust overflow checks, remain unchanged. A stale-value negative control fails
-as intended. Additional preprocessor-only HZ variants are supplemental checks,
-not alternate kernel builds or original-C runtime acceptance.
+Configured C/Rust compile checks and a stale-value negative control pass.
+The separate corrected kernel passed the same four original targets and an
+exact no-op repeat. The real Rust object and final linked kernel contain the
+1000-tick addition after the jiffies call. Source ownership and the unchanged
+``CONFIG_HZ=1000`` are recorded. Original compiler warnings and overflow checks
+remain enabled. Original C-source runtime tests and matched controls remain
+pending; supplemental macro probes are not alternate kernel configurations.
 
-The complete corrected kernel rebuild and affected original C tests remain
-pending. The initial baseline build stays pinned to its original source until
-its terminal boundary; this commit does not relabel that build as corrected.
+Reconstructed AH6 provider
+--------------------------
+
+``net/ipv6/ah6.rs`` is a new reconstruction from the retained original C unit,
+not byte-identical recovery of the unavailable later implementation. The
+opt-in ``RUST_INET6_AH`` selector preserves the original ah6.o/ah6.ko module
+identity. Packet processing, callbacks, state lifetime and registration policy
+are in Rust; dedicated wrappers expose configured C declarations and header
+macros/inlines. The original C provider remains available as the control.
+
+Private configured bindgen, C-helper/Rust compilation and relocatable-link
+checks pass. The audit compares 103 C/Rust layout values and 24 callback-table
+relocations from real ELF objects, including const/mutable placement and
+builtin metadata/init/exit linkage. Explicit wrapping arithmetic preserves C
+semantics while Rust overflow checks remain enabled. No unresolved AH6 helper
+or panic/unwind references remain in the combined object.
+
+These checks are supplemental. Actual Kbuild integration, MIP6 configurations,
+modular loading, CFI/BTF, original C-source runtime tests, matched controls and
+other architectures remain pending. No historical AH6 runtime pass applies to
+this reconstructed source.
+
+Remaining work and priority
+---------------------------
+
+Coalesce, IPv6 GRE, NFSv4 and virtio-9p reconstructions and their acceptance
+remain separate work. Device-driver translation is deferred until core kernel,
+memory, filesystems and networking. Existing driver candidates are preserved;
+unchanged C drivers may still supply build dependencies or test fixtures.
+
+Acceptance requires applicable original C-source tests built through their
+original recipes to exercise verified Rust providers, with matched C controls
+and recorded configuration, ABI, symbols and artifacts. Supplemental checks and
+translated test suites do not replace that requirement. Memory-accounting,
+strict CFI-symbol and broader configuration/architecture gaps remain open.
+
+Coherent source changes are committed incrementally. The complete migration
+and the subsequent Lubuntu/Firefox A/B workflow remain unfinished. Module work
+and its bounded validation are tracked in the parent Lupos repository issues.
