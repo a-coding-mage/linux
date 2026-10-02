@@ -1,4 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
+config RUST_POWER_PROCESS
+	bool "Rust system process freezer (experimental)"
+	depends on RUST && FREEZER
+	default n
+	help
+	  Build the existing process.o from its Rust translation, preserving
+	  the original C provider when disabled. Configured C headers provide
+	  layouts and constants; narrow adapters retain locking, header
+	  inlines, diagnostics and tracepoint metadata.
+
+	  This source checkpoint still needs native build and isolated PM
+	  qualification against the original C provider. If unsure, say N.
+
 config SUSPEND
 	bool "Suspend to RAM and standby"
 	depends on ARCH_SUSPEND_POSSIBLE

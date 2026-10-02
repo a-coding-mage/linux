@@ -931,3 +931,5 @@ endif # CONFIG_RUST
 include $(srctree)/kernel/bpf/token-bindgen.mk
 
 include $(srctree)/block/blk-crypto-fallback-bindgen.mk
+
+include $(srctree)/kernel/power/process-bindgen.mk
