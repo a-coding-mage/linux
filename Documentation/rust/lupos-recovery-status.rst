@@ -28,8 +28,8 @@ x86_64 LLVM defconfig reference has Rust disabled.
 
 The configuration retains stock debug-info, BTF and module-version choices.
 It does not validate disabled features, other architectures or every Rust
-selector. No original-C runtime acceptance has yet been established in the
-replacement environment; historical test reports are not current results.
+selector. Subsequent source-specific original-C checks are recorded below. Historical
+test reports are not current results, and disabled domains remain unvalidated.
 
 A boot-only smoke check of commit 84a15dcc reached Bash PID1, mounted the guest
 filesystems, identified genuine runtime tools and powered down with QEMU exit 0.
@@ -70,11 +70,37 @@ builtin metadata/init/exit linkage. Explicit wrapping arithmetic preserves C
 semantics while Rust overflow checks remain enabled. No unresolved AH6 helper
 or panic/unwind references remain in the combined object.
 
-These private checks are supplemental. A separate native built-in build passed
-the four original targets, exact no-op and actual final callback/init ownership.
-MIP6 configurations, modular loading, CFI/BTF, original C-source runtime tests, matched controls and
-other architectures remain pending. No historical AH6 runtime pass applies to
-this reconstructed source.
+These private checks are supplemental. Native built-in and MIP6=n module
+profiles at commit ``52764ae84c20231e5d8a12719da1d769861cebac`` passed the four
+original targets and exact no-op checks. Actual compiler, archive, module,
+callback, typed loader-hook and metadata ownership was verified. In the matched
+module pair, the effective config differs only in RUST_INET6_AH; other selected
+Rust providers stay enabled. Fourteen non-AH6 modules, including both original-C
+kernel test modules, are byte-identical. Only ah6.ko is the expected difference.
+
+Both providers pass four original-C nettest client/server flows (TCP/UDP, both
+directions) in the same new IPv6 transport-mode topology. A separate
+supplementary original-C UDP workload checks every byte, count and length of
+ten 1300-byte datagrams per direction. Original source, Makefile/compiler-option
+records, C binaries and adapter bytes match. Each fresh 4 GiB/eight-vCPU TCG
+guest retained the original 45-second limit, complete logs, process exits,
+positive AH counters, namespace cleanup and QEMU exit 0. The first incomplete
+logging run is retained separately and is excluded from accepted results.
+
+Paired runtime archive SHA256:
+``54610ee5cacb55e58320b4f2282b1e39352f52b00ae8f1bb51d2b1b5e5bd5438``.
+Common original-source manifest:
+``7867d1197fa1fa5e6d47eea9f67bd48a9a19d384c71dc4f639f6cbf6797fc7f4``.
+Common compiler manifest:
+``bda33e24be680a7137aa95148b63a1b8a5282e7055b46e39f8c5871af357b66a``.
+
+These are scoped original-C program checks, not complete upstream networking
+or UDP GSO/GRO suites. They do not prove TCP payload integrity, explicit final
+module unload, every async/error branch, ESN, MIP6/HAO or extension headers.
+Selected original kmod validation is recorded separately as it completes.
+Strict module DWARF/CFI/BTF and other architectures remain pending. Later GRE
+and scatterlist source changes are not attributed acceptance of this earlier
+frozen image; no historical AH6 execution is reused.
 
 Reconstructed NFSv4 file operations
 ----------------------------------
@@ -191,6 +217,50 @@ runtime acceptance of this change remain pending. The original C iov_iter
 KUnit suite has 17 cases, including five scatterlist extraction cases, and is
 the prepared kernel validation route. The separate 22-case host scatterlist
 harness builds a C implementation and does not validate the Rust kernel owner.
+
+Fresh selected kmod and host-build checks
+----------------------------------------
+
+The same frozen AH6 provider pair also passes original kmod cases 0005 and
+0008 at their unchanged 45-second limits, with all 10 and 150 repetitions,
+respectively. Original thread settings, trigger checks and test_result
+assertions remain intact. No 180-second override was needed or used in these
+new runs. Full serial output is retained for thread evidence when the bounded
+post-test dmesg ring no longer contains every earlier repetition.
+
+The genuine Debian kmod 34.2 version string exposed an integer-parsing problem
+in the unchanged upstream shell guard. Signed official kmod 30 and its matching
+libkmod2 satisfy that guard without test edits or output masking; identical
+small dependency/depmod layers were applied to both guests. Module binaries and
+original tests remain unchanged. The 34.2 negative control is preserved.
+Selected-case evidence archive SHA256:
+``67b62611fa36a026cd6c764e9a04e6ef2873856a3818eaa844b8707b98fd0732``.
+These two cases do not stand for the complete thirteen-case suite or prove
+explicit final AH6 unload, all optional configurations or other architectures.
+
+The separate ``rust-host-tools`` aggregate and its exact no-op repeat now pass.
+Actual command/executable ownership identifies 58 selected Rust utility entry
+points and two original-C decoder test executables linked to the Rust decoder.
+Linked C helpers and system/crypto/DWARF libraries are recorded; this is not a
+claim of entirely C-free host binaries. The initial native link failure for
+libdw/libelf is preserved. Signed matching Debian development libraries and a
+gendwarfksyms-only library-search adaptation resolve it without changing
+optimization, overflow checks, original sources or test assertions.
+Host-build evidence archive SHA256:
+``e919defdd15e64cc745e2742c5f68706ea9d6628f1f8c52913dfd104d7b9fea0``.
+
+No host-test execution is inferred from successful compilation. The declared
+``rust-host-tests`` discovery includes kernel/module/runtime and supplemental
+Python checks, not only these utilities. The original C decoder invocations
+and broader test side effects are being audited. The real historical baseline
+``68f3e0875bdb9ebd86be04e912a58b1259d374f1`` was retrieved for unchanged
+Git-based assertions; no fabricated replacement or test-reference edit is used.
+
+The independently required ``tools/all`` target remains unrun. Its 29 immediate
+prerequisites include source-local writers, C-selected leaf programs and
+selftests that can report success with only partial collections. Native
+invocation, per-collection outcomes and actual language ownership are required;
+neither a filename census nor aggregate exit zero would close that contract.
 
 Remaining work and priority
 ---------------------------
