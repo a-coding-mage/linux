@@ -924,6 +924,7 @@ include $(srctree)/fs/afs/addr_prefs_bindgen.mk
 include $(srctree)/fs/unicode/utf8-core-bindgen.mk
 include $(srctree)/fs/unicode/utf8-norm-bindgen.mk
 include $(srctree)/sound/core/timer-bindgen.mk
+include $(srctree)/fs/orangefs/xattr-bindgen.mk
 
 endif # CONFIG_RUST
 

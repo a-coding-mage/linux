@@ -5,3 +5,15 @@ config ORANGEFS_FS
 	help
 	   Orange is a parallel file system designed for use on high end
 	   computing (HEC) systems.
+
+config RUST_ORANGEFS_XATTR
+	bool "Rust OrangeFS extended attribute provider"
+	depends on RUST && ORANGEFS_FS
+	default n
+	help
+	  Build OrangeFS get/set/remove/list extended attribute control flow
+	  and its default xattr handler from xattr.rs, using layouts generated
+	  from the configured original C headers. The original xattr.c remains
+	  the provider when this option is disabled. Other OrangeFS objects
+	  and maintained C tests keep their existing owners.
+	  If unsure, say N.

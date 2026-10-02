@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--opaque-type 'inode|dentry|mnt_idmap|rw_semaphore|completion|spinlock_t|super_block'
+--allowlist-type 'orangefs_inode_s|orangefs_cached_xattr|orangefs_kernel_op_s|orangefs_object_kref|hlist_head|hlist_node|xattr_handler'
+--allowlist-function 'rust_orangefs_xattr_.*|op_alloc|op_release|service_operation|down_read|up_read|down_write|up_write|strlen|strcmp|strncmp|kfree'
+--allowlist-var 'RUST_ORANGEFS_XATTR_HZ|orangefs_getattr_timeout_msecs|ORANGEFS_MAX_XATTR_.*|ORANGEFS_XATTR_.*|ORANGEFS_VFS_OP_GETXATTR|ORANGEFS_VFS_OP_SETXATTR|ORANGEFS_VFS_OP_REMOVEXATTR|ORANGEFS_VFS_OP_LISTXATTR|ORANGEFS_ITERATE_START|ORANGEFS_ITERATE_END|XATTR_REPLACE|XATTR_CREATE|EINVAL|EOPNOTSUPP|ENOMEM|ENODATA|ERANGE|ENOENT|EIO'
