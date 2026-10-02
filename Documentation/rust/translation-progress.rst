@@ -24,6 +24,44 @@ Three lib host generators overlap the two inventories. These are integrated,
 tested units within the documented configuration coverage, not a whole-kernel
 completion percentage or proof of every exceptional path.
 
+Unicode normalization
+---------------------
+
+``CONFIG_RUST_UNICODE_NORM`` is an independent, default-off selector for the
+four normalization APIs in ``fs/unicode/utf8-norm.rs``. It replaces the owner
+of ``utf8-norm.o``; disabling it retains the original C normalization engine.
+The original C Unicode tables and four-case C KUnit suite remain unchanged.
+The repair preserves cursor-owned Hangul storage, the empty-decomposition
+stopper transition and the initial zero-length lookup guard, using layouts
+generated from the configured C headers. Cursor initialization writes only
+the original C fields through raw pointers, including when callers supply
+uninitialized cursor storage.
+
+Validation on 2026-10-02 generated the actual configured bindings and compiled
+both the Rust normalizer and the original C control as x86_64 kernel objects,
+using rustc 1.85.1, LLVM/Clang 19.1.7 and bindgen 0.71.1. Saved native command
+options were retained, including overflow checks and warning settings; only
+unit, path, output and composite-module identity substitutions were made.
+Both objects define the four normalization APIs. The Rust object imports no
+C normalization implementation; its bounds-check panic import remains subject
+to runtime validation. The C control object matches its original native object
+byte for byte. The configuration used built-in tests, no LTO, no inline helpers
+and no debug information. This direct object probe did not resolve the new
+selector or execute its Kbuild recipes.
+
+The following native gates remain **UNRUN**:
+
+* Kconfig selection, fresh configured binding dependencies, selected inspection
+  targets, simultaneous object/listing isolation, listing ELF/DWARF contents,
+  System.map creation/deletion, clean behavior and C/Rust ownership round trips.
+* Measured cross-language field offsets, sizes, alignment and full signatures;
+  final-link ownership; modular GPL exports, symbol versioning and valid
+  inline-helper/LTO configurations.
+* The original four-case C KUnit suite with the Rust normalization engine.
+  Earlier C-engine results do not establish Rust-normalizer acceptance.
+  Hangul, empty-ignorable, malformed/truncated input, length boundaries and
+  older-map behavior also remain uncovered at runtime.
+
 Host tools
 ----------
 

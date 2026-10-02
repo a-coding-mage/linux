@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'unicode_map|utf8cursor|utf8data|utf8data_table|utf8_normalization'
+--allowlist-var 'UTF8HANGULLEAF'

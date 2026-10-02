@@ -16,9 +16,22 @@ config RUST_UNICODE_CORE
 	default n
 	help
 	  Build the nine Unicode core APIs from utf8-core.rs using layouts
-	  generated from the configured C headers. The normalization engine,
-	  Unicode data and original C KUnit tests keep their existing owners.
+	  generated from the configured C headers. Normalization is selected
+	  independently; Unicode data and original C KUnit tests keep their
+	  existing C owners.
 	  Allocation, module-symbol and string-hash macros use C boundaries.
+	  If unsure, say N.
+
+config RUST_UNICODE_NORM
+	bool "Rust Unicode normalization provider"
+	depends on RUST && UNICODE
+	default n
+	help
+	  Build the four normalization APIs from utf8-norm.rs using layouts
+	  generated from the configured C headers. This choice is independent
+	  of RUST_UNICODE_CORE and replaces the original utf8-norm.o owner.
+	  When disabled, the original C normalization engine is the fallback.
+	  The original C Unicode tables and C KUnit tests retain their owners.
 	  If unsure, say N.
 
 config UNICODE_NORMALIZATION_KUNIT_TEST

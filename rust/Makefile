@@ -920,6 +920,7 @@ include $(srctree)/net/ipv4/ip_tunnel_bindgen.mk
 include $(srctree)/net/ethtool/coalesce_bindgen.mk
 include $(srctree)/fs/nfs/nfs4file_bindgen.mk
 include $(srctree)/fs/unicode/utf8-core-bindgen.mk
+include $(srctree)/fs/unicode/utf8-norm-bindgen.mk
 include $(srctree)/sound/core/timer-bindgen.mk
 
 endif # CONFIG_RUST
