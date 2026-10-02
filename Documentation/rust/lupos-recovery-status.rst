@@ -168,6 +168,30 @@ pending. The complete original BPF tunnel and tc_tunnel runners, compiled throug
 their original Makefiles with supported tools, are required with matched C
 controls. No historical GRE execution result is reused by this reconstruction.
 
+Scatterlist arithmetic boundary corrections
+------------------------------------------
+
+The existing Rust scatterlist owner now preserves C's signed-count wrapping
+under the kernel's ``-fno-strict-overflow`` semantics. Its DMA entry counter
+checks the nonzero divisor only when an entry is actually visited, so an empty
+list returns zero as the C implementation does. Four extraction budgets now
+preserve the C size_t subtraction before conversion back to ssize_t.
+
+The actual saved Rust compiler command was replayed with only source/output
+paths changed, keeping kernel overflow checks enabled. Both controls compile
+without diagnostics. Original C AST and frontend records establish the
+unsigned budget conversions and ``-fwrapv`` semantics. Scoped source/object
+negative controls reject the old owner and accept the corrected owner. Six
+arithmetic panic call sites disappear; 45 unrelated sites remain and are not
+blanket-suppressed. Symbols, declarations, C sources and tests are unchanged.
+
+These corrections cover representational and empty-input boundaries; no
+ordinary production incident is claimed. Full native Kbuild and original-C
+runtime acceptance of this change remain pending. The original C iov_iter
+KUnit suite has 17 cases, including five scatterlist extraction cases, and is
+the prepared kernel validation route. The separate 22-case host scatterlist
+harness builds a C implementation and does not validate the Rust kernel owner.
+
 Remaining work and priority
 ---------------------------
 

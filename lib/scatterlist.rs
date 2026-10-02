@@ -15,9 +15,10 @@ use ffi::*;
 
 #[no_mangle]
 pub unsafe extern "C" fn sg_nents(mut sg: *mut scatterlist) -> i32 {
-    let mut nents = 0;
+    let mut nents = 0i32;
     while !sg.is_null() {
-        nents += 1;
+        // Kernel C is compiled with -fno-strict-overflow: its int wraps.
+        nents = nents.wrapping_add(1);
         sg = sg_next(sg);
     }
     nents
@@ -27,10 +28,10 @@ pub unsafe extern "C" fn sg_nents_for_len(mut sg: *mut scatterlist, len: u64) ->
     if len == 0 {
         return 0;
     }
-    let mut nents = 0;
+    let mut nents = 0i32;
     let mut total = 0u64;
     while !sg.is_null() {
-        nents += 1;
+        nents = nents.wrapping_add(1);
         total = total.wrapping_add((*sg).length as u64);
         if total >= len {
             return nents;
@@ -42,9 +43,10 @@ pub unsafe extern "C" fn sg_nents_for_len(mut sg: *mut scatterlist, len: u64) ->
 #[no_mangle]
 pub unsafe extern "C" fn sg_nents_for_dma(mut sg: *mut scatterlist, sglen: u32, len: usize) -> i32 {
     let mut nents = 0i32;
-    // C DIV_ROUND_UP requires a nonzero divisor; preserve that precondition.
-    core::hint::assert_unchecked(len != 0);
     for _ in 0..sglen {
+        // Only an executed C DIV_ROUND_UP requires a nonzero divisor.
+        // An empty list returns zero without inspecting len or sg.
+        core::hint::assert_unchecked(len != 0);
         nents = nents.wrapping_add(((sg_dma_len(sg) as usize).wrapping_add(len - 1) / len) as i32);
         sg = sg_next(sg);
     }
@@ -701,7 +703,8 @@ unsafe fn extract_user_to_sg(
             return res;
         }
         let mut len = res as usize;
-        max -= res;
+        // C subtracts size_t len from ssize_t maxsize using unsigned arithmetic.
+        max = max.wrapping_sub(res);
         ret += res;
         let npages = (off + len + PAGE_SIZE - 1) / PAGE_SIZE;
         sg_max -= npages as u32;
@@ -745,7 +748,8 @@ unsafe fn extract_bvec_to_sg(
         sg = sg.add(1);
         sg_max -= 1;
         ret += len as isize;
-        max -= len as isize;
+        // Preserve C's size_t subtraction before assignment back to ssize_t.
+        max = max.wrapping_sub(len as isize);
         if max <= 0 || sg_max == 0 {
             break;
         }
@@ -777,7 +781,8 @@ unsafe fn extract_kvec_to_sg(
         let mut off = addr & (PAGE_SIZE - 1);
         len = min(max as usize, len - start);
         addr &= !(PAGE_SIZE - 1);
-        max -= len as isize;
+        // Preserve C's size_t subtraction before assignment back to ssize_t.
+        max = max.wrapping_sub(len as isize);
         ret += len as isize;
         loop {
             let seg = min(len, PAGE_SIZE - off);
@@ -890,7 +895,8 @@ unsafe fn extract_xarray_to_sg(
             (*t).nents += 1;
             sg = sg.add(1);
             sg_max -= 1;
-            max -= len as isize;
+            // Preserve C's size_t subtraction before assignment back to ssize_t.
+            max = max.wrapping_sub(len as isize);
             start = start.wrapping_add(len as i64);
             ret += len as isize;
             if max <= 0 || sg_max == 0 {
