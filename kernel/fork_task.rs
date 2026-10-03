@@ -499,7 +499,7 @@ unsafe fn dup_task_struct(orig: *mut task_struct, mut node: c_int) -> *mut task_
     }
     #[cfg(CONFIG_SCHED_MM_CID)]
     {
-        (*tsk).mm_cid.cid = MM_CID_UNSET;
+        (*tsk).mm_cid.cid = RUST_FORK_MM_CID_UNSET;
         (*tsk).mm_cid.active = 0;
         init_hlist(addr_of_mut!((*tsk).mm_cid.node));
     }

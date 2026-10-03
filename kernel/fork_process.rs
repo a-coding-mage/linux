@@ -37,7 +37,7 @@ unsafe fn rcu_copy_process(p: *mut task_struct) {
     }
     #[cfg(CONFIG_TASKS_RCU)]
     {
-        (*p).rcu_tasks_holdout = false;
+        (*p).rcu_tasks_holdout = 0;
         init_list(addr_of_mut!((*p).rcu_tasks_holdout_list));
         (*p).rcu_tasks_idle_cpu = -1;
         init_list(addr_of_mut!((*p).rcu_tasks_exit_list));

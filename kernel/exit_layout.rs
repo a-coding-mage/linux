@@ -168,3 +168,17 @@ const _: () = {
     assert!(offset_of!(ctl_table, mode) == RUST_EXIT_OFFSET_ctl_table_mode as usize);
     assert!(offset_of!(ctl_table, proc_handler) == RUST_EXIT_OFFSET_ctl_table_proc_handler as usize);
 };
+// The union arm uses bindgen's separately emitted genuine ns_tree. Validate
+// its enclosing namespace representation instead of padding around omission.
+const _: () = {
+    assert!(size_of::<ns_tree>() == RUST_EXIT_SIZE_ns_tree as usize);
+    assert!(core::mem::align_of::<ns_tree>() == RUST_EXIT_ALIGN_ns_tree as usize);
+    assert!(size_of::<ns_common>() == RUST_EXIT_SIZE_ns_common as usize);
+    assert!(core::mem::align_of::<ns_common>() == RUST_EXIT_ALIGN_ns_common as usize);
+    assert!(offset_of!(ns_common, __bindgen_anon_2.tree.ns_id) == RUST_EXIT_OFFSET_ns_common_ns_id as usize);
+    assert!(offset_of!(ns_common, __bindgen_anon_2.tree.__ns_ref_active) == RUST_EXIT_OFFSET_ns_common_active as usize);
+    assert!(offset_of!(ns_common, __bindgen_anon_2.tree.ns_owner_root) == RUST_EXIT_OFFSET_ns_common_owner_root as usize);
+    // Dropping flexible-DST generation must not change the native opaque view.
+    assert!(size_of::<mm_struct>() == RUST_EXIT_SIZE_mm_struct as usize);
+    assert!(core::mem::align_of::<mm_struct>() == RUST_EXIT_ALIGN_mm_struct as usize);
+};

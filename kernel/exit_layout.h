@@ -164,3 +164,13 @@ static const size_t RUST_EXIT_OFFSET_ctl_table_maxlen = offsetof(struct ctl_tabl
 static const size_t RUST_EXIT_OFFSET_ctl_table_mode = offsetof(struct ctl_table, mode);
 static const size_t RUST_EXIT_OFFSET_ctl_table_proc_handler = offsetof(struct ctl_table, proc_handler);
 #endif
+/* Preserve all original assertions and verify the canonical repaired arm. */
+static const size_t RUST_EXIT_SIZE_ns_tree = sizeof(struct ns_tree);
+static const size_t RUST_EXIT_ALIGN_ns_tree = __alignof__(struct ns_tree);
+static const size_t RUST_EXIT_SIZE_ns_common = sizeof(struct ns_common);
+static const size_t RUST_EXIT_ALIGN_ns_common = __alignof__(struct ns_common);
+static const size_t RUST_EXIT_OFFSET_ns_common_ns_id = offsetof(struct ns_common, ns_id);
+static const size_t RUST_EXIT_OFFSET_ns_common_active = offsetof(struct ns_common, __ns_ref_active);
+static const size_t RUST_EXIT_OFFSET_ns_common_owner_root = offsetof(struct ns_common, ns_owner_root);
+static const size_t RUST_EXIT_SIZE_mm_struct = sizeof(struct mm_struct);
+static const size_t RUST_EXIT_ALIGN_mm_struct = __alignof__(struct mm_struct);

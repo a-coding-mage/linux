@@ -5,6 +5,35 @@ This branch contains an incomplete migration checkpoint, not a release or a
 claim that all Linux tests pass. Earlier raw build/test artifacts became
 unavailable when the execution workspace was replaced on 2026-10-02.
 
+Current recovery and configured-build repairs (2026-10-03)
+-------------------------------------------------------
+
+The source through ``f7d46b59baeecce2bd7b1559ef600d8d45491af6`` is preserved
+on both the translation and recovery branches. A second execution-workspace
+replacement on 2026-10-03 made the latest local build tree and its raw build
+log unavailable before their archive completed. Earlier externally saved
+receipts remain historical evidence for their pinned source and configuration.
+They do not establish acceptance of the current tree.
+
+The first required-owner build at f7d46b5 was observed to finish with make
+status 2 and nine compiler diagnostics in fork, panic and exit. No full link,
+boot or original-C runtime result was obtained. Its source-repair archive was
+saved before the replacement and recovered with the exact SHA256
+``532252ee07933a2975de2d911772d6b5f644c4a4624083a1fb0f58ccee5f2978``.
+
+The recovered repairs expose configured unsigned MM-CID and page-type constants,
+use the actual u8 RCU field representation, fix the panic callback return and
+static name, and retain the SYSCTL_ONE symbol-plus-four relocation without
+invalid constant in-bounds arithmetic. Exit bindings reuse the native namespace
+union layout repair and remove flexible-DST generation from opaque records.
+Existing layout assertions remain enabled and additional native checks are
+added. Original C implementations, tests, compiler flags and warning policy
+are unchanged. The repaired tree requires a fresh build and runtime validation.
+
+The requested target is Rust production ownership. Any remaining C production
+implementation is an explicit migration gap; partial replacement builds below
+are scoped diagnostic evidence, not the completed target.
+
 Recovered source
 ----------------
 

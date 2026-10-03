@@ -165,7 +165,7 @@ unsafe fn put_page(page: *mut page) {
     } else if info & 1 != 0 { info - 1 } else { page as c_ulong };
     let folio = head as *mut folio;
     let page_type = b::rust_exit_page_type_read(folio.cast());
-    if page_type >> 24 == PGTY_slab || page_type >> 24 == PGTY_large_kmalloc { return; }
+    if page_type >> 24 == RUST_EXIT_PGTY_SLAB || page_type >> 24 == RUST_EXIT_PGTY_LARGE_KMALLOC { return; }
     let page = folio.cast::<page>();
     b::rust_exit_page_ref_bug(page, b::rust_exit_atomic_read(b::rust_exit_page_refcount(page)) == 0);
     let ret = b::rust_exit_atomic_dec(b::rust_exit_page_refcount(page));

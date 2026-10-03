@@ -142,7 +142,7 @@ pub unsafe extern "C" fn lupos_panic_setup_sys_info(buf: *mut c_char) -> c_int {
 
 #[cfg(CONFIG_SYSFS)]
 unsafe extern "C" fn warn_count_show(_: *mut kobject, _: *mut kobj_attribute,
-    page: *mut c_char) -> ssize_t {
+    page: *mut c_char) -> isize {
     sysfs_emit(page, cstr!("%d\n"), lupos_panic_atomic_read(addr_of!(warn_count))) as _
 }
 
@@ -339,8 +339,8 @@ unsafe fn panic_other_cpus_shutdown(crash_kexec: bool) {
 #[no_mangle]
 #[cold]
 pub unsafe extern "C" fn vpanic(fmt: *const c_char, mut args: VaList<'_, '_>) -> ! {
-    static mut buf: [c_char; PANIC_MSG_BUFSZ] = [0; PANIC_MSG_BUFSZ];
-    let buf = addr_of_mut!(buf).cast::<c_char>();
+    static mut panic_msg_buf: [c_char; PANIC_MSG_BUFSZ] = [0; PANIC_MSG_BUFSZ];
+    let buf = addr_of_mut!(panic_msg_buf).cast::<c_char>();
     let mut i_next: c_long = 0;
     let mut state: c_int = 0;
     let post_notifiers = crash_kexec_post_notifiers;

@@ -179,13 +179,16 @@ macro_rules! panic_ctl {
 }
 
 #[cfg(CONFIG_SYSCTL)]
+// Bindgen represents the native incomplete extern sysctl_vals[] as [c_int; 0].
+// wrapping_add preserves SYSCTL_ONE's symbol-plus-one-int relocation without
+// requiring that declaration to describe the definition's complete array size.
 static kern_panic_table: ReadOnly<[ctl_table; 7 + cfg!(CONFIG_SMP) as usize
     + cfg!(all(any(CONFIG_X86_32, CONFIG_PARISC), CONFIG_DEBUG_STACKOVERFLOW)) as usize]> = ReadOnly([
     #[cfg(CONFIG_SMP)]
     {
         let mut t = panic_ctl!("oops_all_cpu_backtrace", addr_of_mut!(sysctl_oops_all_cpu_backtrace).cast(), size_of::<c_int>(), proc_dointvec_minmax);
         t.extra1 = unsafe { addr_of!(sysctl_vals).cast::<c_int>().cast_mut().cast() };
-        t.extra2 = unsafe { addr_of!(sysctl_vals).cast::<c_int>().add(1).cast_mut().cast() };
+        t.extra2 = unsafe { addr_of!(sysctl_vals).cast::<c_int>().wrapping_add(1).cast_mut().cast() };
         t
     },
     panic_ctl!("tainted", null_mut(), size_of::<c_long>(), proc_taint),
@@ -195,7 +198,7 @@ static kern_panic_table: ReadOnly<[ctl_table; 7 + cfg!(CONFIG_SMP) as usize
     {
         let mut t = panic_ctl!("panic_on_warn", addr_of_mut!(panic_on_warn).cast(), size_of::<c_int>(), proc_dointvec_minmax);
         t.extra1 = unsafe { addr_of!(sysctl_vals).cast::<c_int>().cast_mut().cast() };
-        t.extra2 = unsafe { addr_of!(sysctl_vals).cast::<c_int>().add(1).cast_mut().cast() };
+        t.extra2 = unsafe { addr_of!(sysctl_vals).cast::<c_int>().wrapping_add(1).cast_mut().cast() };
         t
     },
     panic_ctl!("warn_limit", addr_of_mut!(warn_limit).cast(), size_of::<c_uint>(), proc_douintvec),

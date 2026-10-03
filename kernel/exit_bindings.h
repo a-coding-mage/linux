@@ -10,6 +10,8 @@
 
 /* Genuine C layout and config metadata; no runtime storage is defined here. */
 static const unsigned long RUST_EXIT_THREAD_SIZE = THREAD_SIZE;
+static const unsigned int RUST_EXIT_PGTY_SLAB = PGTY_slab;
+static const unsigned int RUST_EXIT_PGTY_LARGE_KMALLOC = PGTY_large_kmalloc;
 static const unsigned long RUST_EXIT_LIST_POISON2 = (unsigned long)LIST_POISON2;
 static const unsigned long RUST_EXIT_SEND_SIG_PRIV = (unsigned long)SEND_SIG_PRIV;
 static const unsigned int RUST_EXIT_PT_EVENT_FLAG_BASE = PT_EVENT_FLAG(0);
