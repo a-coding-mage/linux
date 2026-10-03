@@ -76,9 +76,50 @@ ifdef CONFIG_GCOV_PROFILE_NETFILTER
 GCOV_PROFILE_netfilter.o := y
 endif
 
+clean-files += .rust-listing/ .rust-listing-elf/
+
 ifeq ($(CONFIG_RUST_NET_IP_TUNNEL),y)
-# Preserve ip_tunnel.o/ip_tunnel.ko and all original exported symbol owners.
 ip_tunnel-y := ip_tunnel_rust.o ip_tunnel_helpers.o
-$(obj)/ip_tunnel_rust.o: $(src)/ip_tunnel.rs $(objtree)/rust/bindings/ip_tunnel_generated.rs FORCE
+ip_tunnel-rust-deps := $(objtree)/rust/bindings/ip_tunnel_generated.rs
+# Explicit Rust rules have no implicit-rule stem; retain composite membership.
+ip_tunnel-rust-modname-multi = $(sort $(foreach m,$(multi-obj-ym),\
+	$(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+$(addprefix $(obj)/,ip_tunnel_rust.o ip_tunnel.s ip_tunnel.ll ip_tunnel.rsi ip_tunnel_rust.s ip_tunnel_rust.ll ip_tunnel_rust.rsi \
+	.rust-listing/ip_tunnel_rust.o): private modname-multi = $(ip_tunnel-rust-modname-multi)
+$(obj)/ip_tunnel_rust.o: $(src)/ip_tunnel.rs $(ip_tunnel-rust-deps) \
+	$(wildcard $(objtree)/include/config/RUST_NET_IP_TUNNEL) FORCE
 	+$(call if_changed_rule,rustc_o_rs)
+
+# Keep inspection on the selected source, ahead of the generic C recipes.
+$(addprefix $(obj)/,ip_tunnel.s ip_tunnel.ll ip_tunnel.rsi ip_tunnel_rust.s ip_tunnel_rust.ll ip_tunnel_rust.rsi): private target-stem := ip_tunnel_rust
+$(addprefix $(obj)/,ip_tunnel.s ip_tunnel.ll ip_tunnel.rsi ip_tunnel_rust.s ip_tunnel_rust.ll ip_tunnel_rust.rsi): private part-of-builtin = $(if $(filter $(obj)/ip_tunnel_rust.o,$(real-obj-y) $(lib-y)),y)
+$(addprefix $(obj)/,ip_tunnel.s ip_tunnel.ll ip_tunnel.rsi ip_tunnel_rust.s ip_tunnel_rust.ll ip_tunnel_rust.rsi): private part-of-module = $(if $(filter $(obj)/ip_tunnel_rust.o,$(real-obj-m)),y)
+$(obj)/ip_tunnel.s $(obj)/ip_tunnel_rust.s: $(src)/ip_tunnel.rs $(ip_tunnel-rust-deps) FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/ip_tunnel.ll $(obj)/ip_tunnel_rust.ll: $(src)/ip_tunnel.rs $(ip_tunnel-rust-deps) FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/ip_tunnel.rsi $(obj)/ip_tunnel_rust.rsi: $(src)/ip_tunnel.rs $(ip_tunnel-rust-deps) FORCE
+	+$(call if_changed_dep,rustc_rsi_rs)
+
+# Listing debug flags and sidecars stay private; never replace the real owner.
+$(obj)/.rust-listing/ip_tunnel_rust.o: private target-stem := ip_tunnel_rust
+$(obj)/.rust-listing/ip_tunnel_rust.o: private part-of-builtin = $(if $(filter $(obj)/ip_tunnel_rust.o,$(real-obj-y) $(lib-y)),y)
+$(obj)/.rust-listing/ip_tunnel_rust.o: private part-of-module = $(if $(filter $(obj)/ip_tunnel_rust.o,$(real-obj-m)),y)
+$(obj)/.rust-listing/ip_tunnel_rust.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/ip_tunnel_rust.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
+$(obj)/.rust-listing/ip_tunnel_rust.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/ip_tunnel_rust.o: $(src)/ip_tunnel.rs $(ip_tunnel-rust-deps) FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+quiet_cmd_ip_tunnel_rust_lst_elf = LD      $@
+      cmd_ip_tunnel_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+$(obj)/.rust-listing-elf/ip_tunnel_rust.o: $(obj)/.rust-listing/ip_tunnel_rust.o FORCE
+	$(call if_changed,ip_tunnel_rust_lst_elf)
+quiet_cmd_ip_tunnel_rust_lst = MKLST   $@
+      cmd_ip_tunnel_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+$(obj)/ip_tunnel.lst $(obj)/ip_tunnel_rust.lst: $(obj)/.rust-listing-elf/ip_tunnel_rust.o $(srctree)/scripts/makelst \
+	$(wildcard System.map) FORCE
+	$(call if_changed,ip_tunnel_rust_lst)
+targets += ip_tunnel.s ip_tunnel.ll ip_tunnel.rsi ip_tunnel_rust.s ip_tunnel_rust.ll ip_tunnel_rust.rsi ip_tunnel.lst ip_tunnel_rust.lst \
+	.rust-listing/ip_tunnel_rust.o .rust-listing-elf/ip_tunnel_rust.o
 endif

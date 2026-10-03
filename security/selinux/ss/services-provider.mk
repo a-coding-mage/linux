@@ -27,6 +27,27 @@ $(obj)/ss/services.ll: $(src)/ss/services.rs $(selinux-services-rust-deps) FORCE
 	+$(call if_changed_dep,rustc_ll_rs)
 $(obj)/ss/services.rsi: $(src)/ss/services.rs $(selinux-services-rust-deps) FORCE
 	+$(call if_changed_dep,selinux_services_rsi)
+
+# Preserve the canonical member's flags/identity in an unlinked debug object.
+$(obj)/.rust-listing/ss/services.o: private target-stem := ss/services
+$(obj)/.rust-listing/ss/services.o: private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+$(obj)/.rust-listing/ss/services.o: private part-of-builtin = $(if $(filter $(obj)/ss/services.o,$(real-obj-y) $(lib-y)),y)
+$(obj)/.rust-listing/ss/services.o: private part-of-module :=
+$(obj)/.rust-listing/ss/services.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/ss/services.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/ss/services.o: $(src)/ss/services.rs $(selinux-services-rust-deps) \
+    $(obj)/flask.h $(wildcard $(objtree)/include/config/RUST_SELINUX_SERVICES) FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/.rust-listing-elf/ss/services.o: $(obj)/.rust-listing/ss/services.o FORCE
+	$(call if_changed,selinux_rust_lst_elf)
+$(obj)/ss/services.lst: $(obj)/.rust-listing-elf/ss/services.o $(srctree)/scripts/makelst \
+    $(wildcard System.map) FORCE
+	$(call if_changed,selinux_rust_lst)
+targets += ss/services.s ss/services.ll ss/services.rsi ss/services.lst \
+    .rust-listing/ss/services.o .rust-listing-elf/ss/services.o
+
 # Composite members are appended after the original Makefile's generated-header
 # prerequisite expansion, so give all three adapters the prerequisite explicitly.
 $(addprefix $(obj)/ss/,services-glue.o services-policy-glue.o services-query-glue.o): $(obj)/flask.h

@@ -18,6 +18,45 @@ crypto_algapi-y += algapi-helpers.o
 RUSTFLAGS_algapi.o += -Zfunction-sections=n
 $(obj)/algapi.o: $(src)/algapi.rs $(objtree)/rust/bindings/crypto_algapi_generated.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
+
+# Explicit targets have no implicit stem; keep the canonical owner identity.
+$(addprefix $(obj)/,algapi.o algapi.s algapi.ll algapi.rsi .rust-listing/algapi.o): private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+
+# Inspection uses the selected source and its canonical per-object policy.
+$(addprefix $(obj)/,algapi.s algapi.ll algapi.rsi): private target-stem := algapi
+$(addprefix $(obj)/,algapi.s algapi.ll algapi.rsi): private part-of-builtin = $(if $(filter $(obj)/algapi.o,$(real-obj-y) $(lib-y)),y)
+$(addprefix $(obj)/,algapi.s algapi.ll algapi.rsi): private part-of-module = $(if $(filter $(obj)/algapi.o,$(real-obj-m)),y)
+$(obj)/algapi.s: $(src)/algapi.rs $(objtree)/rust/bindings/crypto_algapi_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/algapi.ll: $(src)/algapi.rs $(objtree)/rust/bindings/crypto_algapi_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/algapi.rsi: $(src)/algapi.rs $(objtree)/rust/bindings/crypto_algapi_generated.rs FORCE
+	+$(call if_changed_dep,rustc_rsi_rs)
+
+# Debug information belongs only to this unlinked listing object.
+$(obj)/.rust-listing/algapi.o: private target-stem := algapi
+$(obj)/.rust-listing/algapi.o: private part-of-builtin = $(if $(filter $(obj)/algapi.o,$(real-obj-y) $(lib-y)),y)
+$(obj)/.rust-listing/algapi.o: private part-of-module = $(if $(filter $(obj)/algapi.o,$(real-obj-m)),y)
+$(obj)/.rust-listing/algapi.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/algapi.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
+$(obj)/.rust-listing/algapi.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/algapi.o: $(src)/algapi.rs $(objtree)/rust/bindings/crypto_algapi_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+quiet_cmd_algapi_rust_lst_elf = LD      $@
+      cmd_algapi_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+$(obj)/.rust-listing-elf/algapi.o: $(obj)/.rust-listing/algapi.o FORCE
+	$(call if_changed,algapi_rust_lst_elf)
+# Keep makelst's real System.map behavior, including creation and deletion.
+quiet_cmd_algapi_rust_lst = MKLST   $@
+      cmd_algapi_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+$(obj)/algapi.lst: $(obj)/.rust-listing-elf/algapi.o $(srctree)/scripts/makelst \
+	$(wildcard System.map) FORCE
+	$(call if_changed,algapi_rust_lst)
+targets += algapi.s algapi.ll algapi.rsi algapi.lst \
+	.rust-listing/algapi.o .rust-listing-elf/algapi.o
 endif
 obj-$(CONFIG_CRYPTO_ALGAPI2) += crypto_algapi.o
 
@@ -211,3 +250,6 @@ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
 obj-$(CONFIG_CRYPTO_KDF800108_CTR) += kdf_sp800108.o
 
 obj-$(CONFIG_CRYPTO_KRB5) += krb5/
+
+# Private inspection sidecars remain cleanable after deselection.
+clean-files += .rust-listing/ .rust-listing-elf/

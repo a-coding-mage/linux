@@ -7,11 +7,53 @@ ccflags-y := -fno-function-sections -fno-data-sections
 
 obj-y                          := main.o version.o mounts.o
 
+# Keep selected Rust source/assembly listings with their native boot owners.
+# The generic .lst rule instead compiles the adjacent C source into $*.o.
+clean-files += .rust-listing/ .rust-listing-elf/
+ifneq ($(filter y,$(CONFIG_RUST_INIT_MAIN) $(CONFIG_RUST_INIT_NOINITRAMFS) \
+	$(CONFIG_RUST_INIT_MOUNTS_INITRD) $(CONFIG_RUST_INIT_VERSION)),)
+quiet_cmd_init_rust_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
+      cmd_init_rust_rsi = \
+	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
+	command -v $(RUSTFMT) >/dev/null || exit $$?; \
+	$(RUSTFMT) --config-path $(srctree)/.rustfmt.toml $@ || exit $$?
+quiet_cmd_init_rust_lst_elf = LD      $@
+      cmd_init_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+quiet_cmd_init_rust_lst = MKLST   $@
+      cmd_init_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+
+# $1 is the original object stem; $2 is its existing native binding dependency.
+# Explicit rules have no relative implicit-rule stem. Match target-stem against
+# the original composite members so do_mounts_initrd keeps the mounts identity.
+define init-rust-inspection
+$(addprefix $(obj)/,$1.o $1.s $1.ll $1.rsi .rust-listing/$1.o): private modname-multi = \
+	$$(sort $$(foreach m,$$(multi-obj-ym),\
+		$$(if $$(filter $$(target-stem).o,$$(call suffix-search,$$m,.o,-objs -y -m)),$$(m:.o=))))
+$(obj)/$1.rsi: $(src)/$1.rs $2 FORCE
+	+$$(call if_changed_dep,init_rust_rsi)
+$(obj)/.rust-listing/$1.o: private target-stem := $1
+$(obj)/.rust-listing/$1.o: private part-of-builtin = $$(if $$(filter $(obj)/$1.o,$$(real-obj-y) $$(lib-y)),y)
+$(obj)/.rust-listing/$1.o: private part-of-module :=
+$(obj)/.rust-listing/$1.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/$1.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/$1.o: $(src)/$1.rs $2 FORCE
+	+$$(call if_changed_rule,rustc_o_rs)
+$(obj)/.rust-listing-elf/$1.o: $(obj)/.rust-listing/$1.o FORCE
+	$$(call if_changed,init_rust_lst_elf)
+$(obj)/$1.lst: $(obj)/.rust-listing-elf/$1.o $(srctree)/scripts/makelst \
+	$$(wildcard System.map) FORCE
+	$$(call if_changed,init_rust_lst)
+targets += $1.s $1.ll $1.rsi $1.lst .rust-listing/$1.o .rust-listing-elf/$1.o
+endef
+endif
+
 ifeq ($(CONFIG_RUST_INIT_MAIN),y)
 # Preserve the original main.o archive position and build identity. An explicit
 # rule is required because the original main.c remains beside main.rs.
 RUST_ALLOWED_FEATURES_main.o := linkage,no_sanitize
 RUSTFLAGS_main.o += --extern init_main_bindings -Zfunction-sections=n
+$(eval $(call init-rust-inspection,main,$(objtree)/rust/libinit_main_bindings.rmeta))
 
 $(obj)/main.o: $(src)/main.rs $(objtree)/rust/libinit_main_bindings.rmeta FORCE
 	+$(call if_changed_rule,rustc_o_rs)
@@ -31,6 +73,7 @@ ifeq ($(CONFIG_RUST_INIT_NOINITRAMFS),y)
 # Keep the original archive slot and rootfs initcall registration identity.
 RUST_ALLOWED_FEATURES_noinitramfs.o := linkage
 RUSTFLAGS_noinitramfs.o += -Zfunction-sections=n
+$(eval $(call init-rust-inspection,noinitramfs,$(objtree)/rust/bindings/init_noinitramfs_generated.rs))
 $(obj)/noinitramfs.o: $(src)/noinitramfs.rs $(objtree)/rust/bindings/init_noinitramfs_generated.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
 $(obj)/noinitramfs.s: $(src)/noinitramfs.rs $(objtree)/rust/bindings/init_noinitramfs_generated.rs FORCE
@@ -54,6 +97,7 @@ ifeq ($(CONFIG_RUST_INIT_MOUNTS_INITRD),y)
 # Keep the original component name and position within mounts.o. The explicit
 # rules select Rust while preserving the original C source as the default.
 RUSTFLAGS_do_mounts_initrd.o += -Zfunction-sections=n
+$(eval $(call init-rust-inspection,do_mounts_initrd,$(objtree)/rust/bindings/init_mounts_generated.rs))
 $(obj)/do_mounts_initrd.o: $(src)/do_mounts_initrd.rs $(objtree)/rust/bindings/init_mounts_generated.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
 $(obj)/do_mounts_initrd.s: $(src)/do_mounts_initrd.rs $(objtree)/rust/bindings/init_mounts_generated.rs FORCE
@@ -120,6 +164,8 @@ $(objtree)/rust/bindings/init_version_timestamp_generated.rs: include/generated/
 RUST_ALLOWED_FEATURES_version.o := linkage
 RUSTFLAGS_version.o += -Zfunction-sections=n
 RUSTFLAGS_version-timestamp.o += -Zfunction-sections=n
+$(eval $(call init-rust-inspection,version,$(objtree)/rust/bindings/init_version_generated.rs))
+$(eval $(call init-rust-inspection,version-timestamp,$(objtree)/rust/bindings/init_version_timestamp_generated.rs))
 
 $(obj)/version.o: $(src)/version.rs $(objtree)/rust/bindings/init_version_generated.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)

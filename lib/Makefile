@@ -352,10 +352,46 @@ ifeq ($(CONFIG_RUST_GLOB),y)
 # Keep glob.o in the original archive slot and retain its build identity.
 $(obj)/glob.o: $(src)/glob_rust.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
-$(obj)/glob.s: $(src)/glob_rust.rs FORCE
+
+# Explicit targets have no implicit stem; keep the canonical owner identity.
+$(addprefix $(obj)/,glob.o glob.s glob.ll glob.rsi .rust-listing/glob.o): private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+
+# Inspection uses the selected source and its canonical per-object policy.
+$(addprefix $(obj)/,glob.s glob.ll glob.rsi): private target-stem := glob
+$(addprefix $(obj)/,glob.s glob.ll glob.rsi): private part-of-builtin = $(if $(filter $(obj)/glob.o,$(real-obj-y) $(lib-y)),y)
+$(addprefix $(obj)/,glob.s glob.ll glob.rsi): private part-of-module = $(if $(filter $(obj)/glob.o,$(real-obj-m)),y)
+$(obj)/glob.s: $(src)/glob_rust.rs $(src)/glob.rs FORCE
 	+$(call if_changed_dep,rustc_s_rs)
-$(obj)/glob.ll: $(src)/glob_rust.rs FORCE
+$(obj)/glob.ll: $(src)/glob_rust.rs $(src)/glob.rs FORCE
 	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/glob.rsi: $(src)/glob_rust.rs $(src)/glob.rs FORCE
+	+$(call if_changed_dep,rustc_rsi_rs)
+
+# Debug information belongs only to this unlinked listing object.
+$(obj)/.rust-listing/glob.o: private target-stem := glob
+$(obj)/.rust-listing/glob.o: private part-of-builtin = $(if $(filter $(obj)/glob.o,$(real-obj-y) $(lib-y)),y)
+$(obj)/.rust-listing/glob.o: private part-of-module = $(if $(filter $(obj)/glob.o,$(real-obj-m)),y)
+$(obj)/.rust-listing/glob.o: private is-single-obj-m = $(and $(part-of-module),$(filter $(obj)/glob.o,$(obj-m)),y)
+$(obj)/.rust-listing/glob.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/glob.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
+$(obj)/.rust-listing/glob.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/glob.o: $(src)/glob_rust.rs $(src)/glob.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+quiet_cmd_glob_rust_lst_elf = LD      $@
+      cmd_glob_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+$(obj)/.rust-listing-elf/glob.o: $(obj)/.rust-listing/glob.o FORCE
+	$(call if_changed,glob_rust_lst_elf)
+# Keep makelst's real System.map behavior, including creation and deletion.
+quiet_cmd_glob_rust_lst = MKLST   $@
+      cmd_glob_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+$(obj)/glob.lst: $(obj)/.rust-listing-elf/glob.o $(srctree)/scripts/makelst \
+	$(wildcard System.map) FORCE
+	$(call if_changed,glob_rust_lst)
+targets += glob.s glob.ll glob.rsi glob.lst \
+	.rust-listing/glob.o .rust-listing-elf/glob.o
 endif
 
 obj-$(CONFIG_DIMLIB) += dim/
@@ -481,3 +517,6 @@ CONTEXT_ANALYSIS_test_context-analysis.o := y
 obj-$(CONFIG_CONTEXT_ANALYSIS_TEST) += test_context-analysis.o
 
 subdir-$(CONFIG_FORTIFY_SOURCE) += test_fortify
+
+# Private inspection sidecars remain cleanable after deselection.
+clean-files += .rust-listing/ .rust-listing-elf/

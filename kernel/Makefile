@@ -142,6 +142,45 @@ obj-y += rseq_helpers.o
 RUSTFLAGS_rseq.o += -Zfunction-sections=n
 $(obj)/rseq.o: $(src)/rseq.rs $(objtree)/rust/bindings/rseq_generated.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
+
+# Explicit targets have no implicit stem; keep the canonical owner identity.
+$(addprefix $(obj)/,rseq.o rseq.s rseq.ll rseq.rsi .rust-listing/rseq.o): private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+
+# Inspection uses the selected source and its canonical per-object policy.
+$(addprefix $(obj)/,rseq.s rseq.ll rseq.rsi): private target-stem := rseq
+$(addprefix $(obj)/,rseq.s rseq.ll rseq.rsi): private part-of-builtin = $(if $(filter $(obj)/rseq.o,$(real-obj-y) $(lib-y)),y)
+$(addprefix $(obj)/,rseq.s rseq.ll rseq.rsi): private part-of-module = $(if $(filter $(obj)/rseq.o,$(real-obj-m)),y)
+$(obj)/rseq.s: $(src)/rseq.rs $(objtree)/rust/bindings/rseq_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/rseq.ll: $(src)/rseq.rs $(objtree)/rust/bindings/rseq_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/rseq.rsi: $(src)/rseq.rs $(objtree)/rust/bindings/rseq_generated.rs FORCE
+	+$(call if_changed_dep,rustc_rsi_rs)
+
+# Debug information belongs only to this unlinked listing object.
+$(obj)/.rust-listing/rseq.o: private target-stem := rseq
+$(obj)/.rust-listing/rseq.o: private part-of-builtin = $(if $(filter $(obj)/rseq.o,$(real-obj-y) $(lib-y)),y)
+$(obj)/.rust-listing/rseq.o: private part-of-module = $(if $(filter $(obj)/rseq.o,$(real-obj-m)),y)
+$(obj)/.rust-listing/rseq.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/rseq.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
+$(obj)/.rust-listing/rseq.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/rseq.o: $(src)/rseq.rs $(objtree)/rust/bindings/rseq_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+quiet_cmd_rseq_rust_lst_elf = LD      $@
+      cmd_rseq_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+$(obj)/.rust-listing-elf/rseq.o: $(obj)/.rust-listing/rseq.o FORCE
+	$(call if_changed,rseq_rust_lst_elf)
+# Keep makelst's real System.map behavior, including creation and deletion.
+quiet_cmd_rseq_rust_lst = MKLST   $@
+      cmd_rseq_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+$(obj)/rseq.lst: $(obj)/.rust-listing-elf/rseq.o $(srctree)/scripts/makelst \
+	$(wildcard System.map) FORCE
+	$(call if_changed,rseq_rust_lst)
+targets += rseq.s rseq.ll rseq.rsi rseq.lst \
+	.rust-listing/rseq.o .rust-listing-elf/rseq.o
 endif
 obj-$(CONFIG_WATCH_QUEUE) += watch_queue.o
 
@@ -213,3 +252,6 @@ $(obj)/kheaders.md5: $(obj)/kheaders-srclist FORCE
 	$(call filechk,kheaders_md5sum)
 
 clean-files := kheaders.md5 kheaders-srclist kheaders-objlist
+
+# Private inspection sidecars remain cleanable after deselection.
+clean-files += .rust-listing/ .rust-listing-elf/

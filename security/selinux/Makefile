@@ -48,6 +48,22 @@ $(obj)/genheaders: $(src)/include/classmap_header.rs \
 endif
 HOST_EXTRACFLAGS += -I$(srctree)/security/selinux/include
 
+# Private inspection objects and sidecars remain cleanable when deselected.
+clean-files += .rust-listing/ .rust-listing-elf/
+
+ifneq ($(filter y,$(CONFIG_RUST_SELINUX_SERVICES) $(CONFIG_RUST_SELINUX_POLICYDB)),)
+# Native inline-helper/LTO compilation can leave bitcode. Materialize only
+# the private debug object for makelst; retain canonical objtool decisions.
+quiet_cmd_selinux_rust_lst_elf = LD      $@
+      cmd_selinux_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+
+# Invalidate on map creation/deletion as well as normal timestamp changes.
+# Preserve the original map argument and makelst's missing-map behavior.
+quiet_cmd_selinux_rust_lst = MKLST   $@
+      cmd_selinux_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+endif
+
 include $(srctree)/security/selinux/ss/services-provider.mk
 
 include $(srctree)/security/selinux/ss/policydb-provider.mk

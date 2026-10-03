@@ -157,4 +157,46 @@ obj-y := $(patsubst workingset.o,workingset.o workingset_helpers.o,$(obj-y))
 RUSTFLAGS_workingset.o += -Zfunction-sections=n
 $(obj)/workingset.o: $(src)/workingset.rs $(objtree)/rust/bindings/workingset_generated.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
+
+# Explicit targets have no implicit stem; keep the canonical owner identity.
+$(addprefix $(obj)/,workingset.o workingset.s workingset.ll workingset.rsi .rust-listing/workingset.o): private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+
+# Inspection uses the selected source and its canonical per-object policy.
+$(addprefix $(obj)/,workingset.s workingset.ll workingset.rsi): private target-stem := workingset
+$(addprefix $(obj)/,workingset.s workingset.ll workingset.rsi): private part-of-builtin = $(if $(filter $(obj)/workingset.o,$(real-obj-y) $(lib-y)),y)
+$(addprefix $(obj)/,workingset.s workingset.ll workingset.rsi): private part-of-module = $(if $(filter $(obj)/workingset.o,$(real-obj-m)),y)
+$(obj)/workingset.s: $(src)/workingset.rs $(objtree)/rust/bindings/workingset_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/workingset.ll: $(src)/workingset.rs $(objtree)/rust/bindings/workingset_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/workingset.rsi: $(src)/workingset.rs $(objtree)/rust/bindings/workingset_generated.rs FORCE
+	+$(call if_changed_dep,rustc_rsi_rs)
+
+# Debug information belongs only to this unlinked listing object.
+$(obj)/.rust-listing/workingset.o: private target-stem := workingset
+$(obj)/.rust-listing/workingset.o: private part-of-builtin = $(if $(filter $(obj)/workingset.o,$(real-obj-y) $(lib-y)),y)
+$(obj)/.rust-listing/workingset.o: private part-of-module = $(if $(filter $(obj)/workingset.o,$(real-obj-m)),y)
+$(obj)/.rust-listing/workingset.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/workingset.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
+$(obj)/.rust-listing/workingset.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/workingset.o: $(src)/workingset.rs $(objtree)/rust/bindings/workingset_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+quiet_cmd_workingset_rust_lst_elf = LD      $@
+      cmd_workingset_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+$(obj)/.rust-listing-elf/workingset.o: $(obj)/.rust-listing/workingset.o FORCE
+	$(call if_changed,workingset_rust_lst_elf)
+# Keep makelst's real System.map behavior, including creation and deletion.
+quiet_cmd_workingset_rust_lst = MKLST   $@
+      cmd_workingset_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+$(obj)/workingset.lst: $(obj)/.rust-listing-elf/workingset.o $(srctree)/scripts/makelst \
+	$(wildcard System.map) FORCE
+	$(call if_changed,workingset_rust_lst)
+targets += workingset.s workingset.ll workingset.rsi workingset.lst \
+	.rust-listing/workingset.o .rust-listing-elf/workingset.o
 endif
+
+# Private inspection sidecars remain cleanable after deselection.
+clean-files += .rust-listing/ .rust-listing-elf/

@@ -13,11 +13,47 @@ RUST_ALLOWED_FEATURES_crc16.o := $(if $(CONFIG_PPC),asm_experimental_arch)
 $(obj)/crc16.o: $(src)/crc16.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)
 
+
+
+# Explicit targets have no implicit stem; keep the canonical owner identity.
+$(addprefix $(obj)/,crc16.o crc16.s crc16.ll crc16.rsi .rust-listing/crc16.o): private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+
+# Inspection uses the selected source and its canonical per-object policy.
+$(addprefix $(obj)/,crc16.s crc16.ll crc16.rsi): private target-stem := crc16
+$(addprefix $(obj)/,crc16.s crc16.ll crc16.rsi): private part-of-builtin = $(if $(filter $(obj)/crc16.o,$(real-obj-y) $(lib-y)),y)
+$(addprefix $(obj)/,crc16.s crc16.ll crc16.rsi): private part-of-module = $(if $(filter $(obj)/crc16.o,$(real-obj-m)),y)
 $(obj)/crc16.s: $(src)/crc16.rs FORCE
 	+$(call if_changed_dep,rustc_s_rs)
-
 $(obj)/crc16.ll: $(src)/crc16.rs FORCE
 	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/crc16.rsi: $(src)/crc16.rs FORCE
+	+$(call if_changed_dep,rustc_rsi_rs)
+
+# Debug information belongs only to this unlinked listing object.
+$(obj)/.rust-listing/crc16.o: private target-stem := crc16
+$(obj)/.rust-listing/crc16.o: private part-of-builtin = $(if $(filter $(obj)/crc16.o,$(real-obj-y) $(lib-y)),y)
+$(obj)/.rust-listing/crc16.o: private part-of-module = $(if $(filter $(obj)/crc16.o,$(real-obj-m)),y)
+$(obj)/.rust-listing/crc16.o: private is-single-obj-m = $(and $(part-of-module),$(filter $(obj)/crc16.o,$(obj-m)),y)
+$(obj)/.rust-listing/crc16.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/crc16.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
+$(obj)/.rust-listing/crc16.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/crc16.o: $(src)/crc16.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+quiet_cmd_crc16_rust_lst_elf = LD      $@
+      cmd_crc16_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+$(obj)/.rust-listing-elf/crc16.o: $(obj)/.rust-listing/crc16.o FORCE
+	$(call if_changed,crc16_rust_lst_elf)
+# Keep makelst's real System.map behavior, including creation and deletion.
+quiet_cmd_crc16_rust_lst = MKLST   $@
+      cmd_crc16_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+$(obj)/crc16.lst: $(obj)/.rust-listing-elf/crc16.o $(srctree)/scripts/makelst \
+	$(wildcard System.map) FORCE
+	$(call if_changed,crc16_rust_lst)
+targets += crc16.s crc16.ll crc16.rsi crc16.lst \
+	.rust-listing/crc16.o .rust-listing-elf/crc16.o
 endif
 obj-$(CONFIG_CRC_CCITT) += crc-ccitt.o
 obj-$(CONFIG_CRC_ITU_T) += crc-itu-t.o
@@ -86,3 +122,6 @@ $(obj)/crc32table.h: $(obj)/gen_crc32table
 
 $(obj)/crc64table.h: $(obj)/gen_crc64table
 	$(call cmd,crc64)
+
+# Private inspection sidecars remain cleanable after deselection.
+clean-files += .rust-listing/ .rust-listing-elf/
