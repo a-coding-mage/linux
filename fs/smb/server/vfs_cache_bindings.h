@@ -117,6 +117,7 @@ void rvc_err_cache(void);
 static const unsigned long RVC_GOLDEN_RATIO_PRIME = GOLDEN_RATIO_PRIME;
 static const unsigned long RVC_CACHE_BYTES = L1_CACHE_BYTES;
 static const unsigned int RVC_DEFAULT_GFP = KSMBD_DEFAULT_GFP;
+static const unsigned int RVC_NO_FID = KSMBD_NO_FID;
 static const unsigned int RVC_GFP_KERNEL = GFP_KERNEL;
 static const unsigned int RVC_GFP_NOWAIT = GFP_NOWAIT;
 static const slab_flags_t RVC_SLAB_HWCACHE_ALIGN = SLAB_HWCACHE_ALIGN;

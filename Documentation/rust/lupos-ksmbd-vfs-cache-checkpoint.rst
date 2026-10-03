@@ -14,7 +14,9 @@ The complete source was reconstructed against commit
 bb68967cc60898ea73252eec62d0d60a295edf5e99c999e5915d1710b27aaa63.
 The complete reviewed source-archive SHA-256 is
 3083735bbd35808a0f88544da7ac384f472032210ed19eed3397fe5090828480.
-The nine unit source/integration files match that archive byte-for-byte.
+At the first checkpoint, the nine unit source/integration files matched that
+archive byte-for-byte. The follow-up below changes the root Rust file and its
+binding header; the archived original checkpoint remains unchanged.
 The separately reviewed rust/Makefile include is composed onto the existing
 parent file without replacing its other provider includes.
 
@@ -36,10 +38,11 @@ Generated recipes propagate producer/formatter failures before fixdep.
 Validation status and original C test route
 ------------------------------------------
 
-Textual function coverage, source checksums, independent source review and
-patch applicability were checked.  No configured bindgen, compiler, make,
-native/link check, server, guest, authentication operation or runtime test
-was run for this provider.  These checks do not establish behavioral parity.
+At the first checkpoint, only textual function coverage, source checksums,
+independent source review and patch applicability had been checked; configured
+bindgen, compiler, make and native/link checks had not yet run. The later native
+attempt and its failures are recorded below. No server, guest, authentication
+operation or runtime test has run. Source checks do not establish parity.
 
 The retained Linux server Makefile has no vfs_cache-specific KUnit/selftest
 target.  Samba's maintained C smbtorture SMB2 tests are the protocol-test
@@ -74,3 +77,27 @@ Those gaps remain open; no source-only result should be counted as a pass.
 This checkpoint changes no CI file, request or workflow and does not request
 another CI execution.  The previously approved CI subtree is inherited
 unchanged from its parent.  Original C and maintained test bytes are unmodified.
+
+First native module-object attempt and pending correction
+--------------------------------------------------------
+
+At source 47b0c36cddd7754a08b4ee64d7fc5638c6d280ea, the original C cache provider,
+five original C callers and native ksmbd.o module composite compiled/linked;
+their identical-command repeats preserved whole-output hashes and artifact
+timestamps. The common fixture used MODULES=y, SMB_SERVER=m and RUST=y.
+The C-to-Rust configuration difference was only RUST_KSMBD_VFS_CACHE=n to y.
+
+Configured bindgen succeeded, but Rust provider compilation failed with 51
+errors. They identify three source assumptions: platform core::ffi aliases
+instead of the kernel's configured aliases, an ungenerated KSMBD_NO_FID macro,
+and access to dentry.d_name without its generated anonymous-union layer.
+This follow-up uses kernel::ffi, casts C string pointers to the configured char
+pointer type, exports the actual C constant expression through RVC_NO_FID,
+and uses the emitted dentry union field. Algorithms and original C are unchanged.
+
+The correction is not yet compiled or runtime-qualified. Rust helper/caller/
+composite ownership audits and Rust no-op checks were not reached. The earlier
+Rust object command used canonical RUST_MODFILE=fs/smb/server/vfs_cache with
+MODULE; a proposed observer's ksmbd value was an unrun assumption, not a kernel
+ABI finding. Native validation must resume from a coherently reviewed new pin;
+no successful Rust build, module load or runtime parity is claimed here.

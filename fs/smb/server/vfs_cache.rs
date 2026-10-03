@@ -13,12 +13,14 @@ mod bindings {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/ksmbd_vfs_cache_generated.rs"));
 }
 use bindings::*;
+use kernel::ffi::{c_char, c_int, c_uint, c_ulong, c_long, c_void};
 use core::{
-    ffi::{c_char, c_int, c_uint, c_ulong, c_long, c_void},
     mem::{size_of, offset_of},
     ptr::{addr_of, addr_of_mut, null_mut},
 };
 
+// Bind the configured C expression; bindgen need not translate INT_MAX macros.
+const KSMBD_NO_FID: c_uint = RVC_NO_FID;
 const S_DEL_PENDING: c_uint = 1;
 const S_DEL_ON_CLS: c_uint = 2;
 const S_DEL_ON_CLS_STREAM: c_uint = 8;
@@ -45,7 +47,7 @@ unsafe fn file_dentry(f: *mut file) -> *mut dentry { (*file_path(f)).dentry }
 
 #[cfg(CONFIG_PROC_FS)]
 const fn const_name(value: c_uint, name: &'static core::ffi::CStr) -> ksmbd_const_name {
-    ksmbd_const_name { const_value: value, name: name.as_ptr() }
+    ksmbd_const_name { const_value: value, name: name.as_ptr().cast() }
 }
 #[cfg(CONFIG_PROC_FS)]
 static mut lease_names: [ksmbd_const_name; 8] = [
@@ -97,10 +99,10 @@ unsafe extern "C" fn proc_show_files(m: *mut seq_file, _v: *mut c_void) -> c_int
         let fp = idr_get_next(global_ft.idr, addr_of_mut!(id).cast()).cast::<ksmbd_file>();
         if fp.is_null() { break; }
         let tree_id = if (*fp).tcon.is_null() { 0 } else { (*(*fp).tcon).id };
-        seq_printf(m, c"tree_id:\t0x%x\n".as_ptr(), tree_id);
-        seq_printf(m, c"persistent_id:\t0x%llx\n".as_ptr(), (*fp).persistent_id);
-        seq_printf(m, c"volatile_id:\t0x%llx\n".as_ptr(), (*fp).volatile_id);
-        seq_printf(m, c"refcount:\t%d\n".as_ptr(), rvc_atomic_read(addr_of!((*fp).refcount)));
+        seq_printf(m, c"tree_id:\t0x%x\n".as_ptr().cast(), tree_id);
+        seq_printf(m, c"persistent_id:\t0x%llx\n".as_ptr().cast(), (*fp).persistent_id);
+        seq_printf(m, c"volatile_id:\t0x%llx\n".as_ptr().cast(), (*fp).volatile_id);
+        seq_printf(m, c"refcount:\t%d\n".as_ptr().cast(), rvc_atomic_read(addr_of!((*fp).refcount)));
         rvc_rcu_read_lock();
         let opinfo = rvc_opinfo_dereference(fp);
         if !opinfo.is_null() {
@@ -112,21 +114,21 @@ unsafe extern "C" fn proc_show_files(m: *mut seq_file, _v: *mut c_void) -> c_int
             };
             rvc_rcu_read_unlock();
             let name = ksmbd_proc_const_name(table, count, level);
-            if !name.is_null() { seq_printf(m, c"oplock:\t%s\n".as_ptr(), name); }
-            else { seq_printf(m, c"oplock:\t0x%x\n".as_ptr(), level); }
+            if !name.is_null() { seq_printf(m, c"oplock:\t%s\n".as_ptr().cast(), name); }
+            else { seq_printf(m, c"oplock:\t0x%x\n".as_ptr().cast(), level); }
         } else {
             rvc_rcu_read_unlock();
-            rvc_seq_puts(m, c"oplock:\tnone\n".as_ptr());
+            rvc_seq_puts(m, c"oplock:\tnone\n".as_ptr().cast());
         }
-        seq_printf(m, c"state:\t%s\n".as_ptr(),
+        seq_printf(m, c"state:\t%s\n".as_ptr().cast(),
                    ksmbd_proc_const_name(addr_of!(state_names).cast(), 3, (*fp).f_state));
-        seq_printf(m, c"durable_timeout:\t%u\n".as_ptr(), (*fp).durable_timeout);
-        seq_printf(m, c"create_options:\t0x%08x\n".as_ptr(), u32::from_le((*fp).coption));
-        seq_printf(m, c"desired_access:\t0x%08x\n".as_ptr(), u32::from_le((*fp).daccess));
-        seq_printf(m, c"share_access:\t0x%08x\n".as_ptr(), u32::from_le((*fp).saccess));
-        rvc_seq_puts(m, c"flags:\t".as_ptr());
+        seq_printf(m, c"durable_timeout:\t%u\n".as_ptr().cast(), (*fp).durable_timeout);
+        seq_printf(m, c"create_options:\t0x%08x\n".as_ptr().cast(), u32::from_le((*fp).coption));
+        seq_printf(m, c"desired_access:\t0x%08x\n".as_ptr().cast(), u32::from_le((*fp).daccess));
+        seq_printf(m, c"share_access:\t0x%08x\n".as_ptr().cast(), u32::from_le((*fp).saccess));
+        rvc_seq_puts(m, c"flags:\t".as_ptr().cast());
         ksmbd_proc_show_flag_names(m, addr_of!(flag_names).cast(), 7, ksmbd_proc_file_flags(fp));
-        seq_printf(m, c"\nname:\t%s\n\n".as_ptr(), (*file_dentry((*fp).filp)).d_name.name);
+        seq_printf(m, c"\nname:\t%s\n\n".as_ptr().cast(), (*file_dentry((*fp).filp)).__bindgen_anon_1.d_name.name);
         id = id.wrapping_add(1);
     }
     rvc_read_unlock(addr_of_mut!(global_ft.lock));
@@ -134,7 +136,7 @@ unsafe extern "C" fn proc_show_files(m: *mut seq_file, _v: *mut c_void) -> c_int
 }
 #[cfg(CONFIG_PROC_FS)]
 unsafe fn create_proc_files() -> c_int {
-    if ksmbd_proc_create(c"files".as_ptr(), Some(proc_show_files), null_mut()).is_null() {
+    if ksmbd_proc_create(c"files".as_ptr().cast(), Some(proc_show_files), null_mut()).is_null() {
         -(ENOMEM as c_int)
     } else { 0 }
 }
