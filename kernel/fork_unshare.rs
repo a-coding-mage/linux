@@ -205,10 +205,14 @@ pub unsafe extern "C" fn ksys_unshare(mut flags: c_ulong) -> c_int {
         if err != 0 {
             break 'prepare err;
         }
-        let err = unshare_nsproxy_namespaces(flags, &mut new_nsproxy, new_cred, new_fs);
+        // Failure can leave ERR_PTR(err) in the output. Original fork.c skips
+        // nsproxy cleanup on that path; acquire ownership only after success.
+        let mut nsproxy = null_mut();
+        let err = unshare_nsproxy_namespaces(flags, &mut nsproxy, new_cred, new_fs);
         if err != 0 {
             break 'prepare err;
         }
+        new_nsproxy = nsproxy;
         if !new_cred.is_null() {
             let err = set_cred_ucounts(new_cred);
             if err != 0 {

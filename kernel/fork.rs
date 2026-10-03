@@ -23,6 +23,7 @@ use core::ptr::{
 };
 use kernel::ffi::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
 type rcu_head = callback_head;
+include!("fork_namespace_layout.rs");
 include!("fork_storage.rs");
 include!("fork_header_algorithms.rs");
 include!("fork_task.rs");
