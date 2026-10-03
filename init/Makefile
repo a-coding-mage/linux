@@ -13,7 +13,7 @@ clean-files += .rust-listing/ .rust-listing-elf/
 ifneq ($(filter y,$(CONFIG_RUST_INIT_MAIN) $(CONFIG_RUST_INIT_NOINITRAMFS) \
 	$(CONFIG_RUST_INIT_MOUNTS_INITRD) $(CONFIG_RUST_INIT_VERSION) \
 	$(CONFIG_RUST_INIT_CALIBRATE) $(CONFIG_RUST_INIT_ROOT_MOUNTS) \
-	$(CONFIG_RUST_INIT_TASK) $(CONFIG_RUST_INIT_INITRAMFS)),)
+	$(CONFIG_RUST_INIT_TASK) $(CONFIG_RUST_INIT_INITRAMFS) $(CONFIG_RUST_INIT_RAMDISK)),)
 quiet_cmd_init_rust_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
       cmd_init_rust_rsi = \
 	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
@@ -147,6 +147,18 @@ $(obj)/do_mounts.ll: $(src)/do_mounts.rs $(objtree)/rust/bindings/init_root_moun
 endif
 mounts-$(CONFIG_BLK_DEV_RAM)	+= do_mounts_rd.o
 mounts-$(CONFIG_BLK_DEV_INITRD)	+= do_mounts_initrd.o
+
+ifeq ($(CONFIG_RUST_INIT_RAMDISK),y)
+mounts-y += ramdisk_loader_abi.o
+RUSTFLAGS_do_mounts_rd.o += -Zfunction-sections=n
+$(eval $(call init-rust-inspection,do_mounts_rd,$(objtree)/rust/bindings/init_ramdisk_generated.rs))
+$(obj)/do_mounts_rd.o: $(src)/do_mounts_rd.rs $(objtree)/rust/bindings/init_ramdisk_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/do_mounts_rd.s: $(src)/do_mounts_rd.rs $(objtree)/rust/bindings/init_ramdisk_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/do_mounts_rd.ll: $(src)/do_mounts_rd.rs $(objtree)/rust/bindings/init_ramdisk_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 
 ifeq ($(CONFIG_RUST_INIT_MOUNTS_INITRD),y)
 # Keep the original component name and position within mounts.o. The explicit

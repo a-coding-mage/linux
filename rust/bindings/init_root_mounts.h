@@ -27,9 +27,17 @@
 #include <linux/shmem_fs.h>
 #include <linux/string.h>
 #include <linux/timekeeping.h>
+#include <uapi/linux/mount.h>
 #include "../../init/do_mounts.h"
 
 enum { RUST_INIT_ROOT_MOUNTS_PAGE_SIZE = PAGE_SIZE };
+
+/* Bindgen cannot evaluate every function-like macro expansion (SB_RDONLY is
+ * BIT(0)). Typed constants retain the original expression's signedness and
+ * architecture-dependent width instead of re-encoding flag values in Rust. */
+const __typeof__(MS_RDONLY) RUST_INIT_ROOT_MOUNTS_MS_RDONLY = MS_RDONLY;
+const __typeof__(MS_SILENT) RUST_INIT_ROOT_MOUNTS_MS_SILENT = MS_SILENT;
+const __typeof__(SB_RDONLY) RUST_INIT_ROOT_MOUNTS_SB_RDONLY = SB_RDONLY;
 
 /* Only allocator/compiler metadata crosses this boundary. */
 char *rust_init_root_mounts_alloc_data_page(void);

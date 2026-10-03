@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--allowlist-type '^(mm_struct|vm_operations_struct|spinlock_t|raw_spinlock_t|rw_semaphore|mutex|seqcount_t|maple_tree|rcuwait)$'
+--allowlist-var '^(RUST_INIT_MM_.*|SPINLOCK_MAGIC|READER_BIAS|swapper_pg_dir|init_top_pgt)$'
+--allowlist-function '^$'
+--no-prepend-enum-name
+--no-doc-comments
+--flexarray-dst
+# Pointer-only dependencies retain their compiler-derived opaque layout.
+--opaque-type '^(task_struct|vm_area_struct|vm_fault|vm_uffd_ops|user_namespace|file|page|folio|mempolicy|mem_cgroup|mmu_notifier_subscriptions|linux_binfmt|uprobes_state|ldt_struct|vdso_image|kioctx_table|iommu_mm_data)$'

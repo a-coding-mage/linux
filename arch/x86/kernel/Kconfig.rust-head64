@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_X86_HEAD64
+	bool "Rust x86-64 early boot owner"
+	depends on RUST && X86_64
+	depends on !GCC_PLUGIN_LATENT_ENTROPY
+	default y
+	help
+	  Select the Rust implementation of arch/x86/kernel/head64.c.
+	  Owns the early page tables, exception dispatch, BSS and boot-data
+	  initialization, startup ordering and the associated global data.
+	  Six small architecture/compiler macro boundaries retain the kernel's
+	  paravirtual, per-CPU, page-clear alternative and BUG machinery.
+	  The C head64 object is not linked when this option is selected.

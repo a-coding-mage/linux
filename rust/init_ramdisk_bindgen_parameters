@@ -1,0 +1,9 @@
+# All image layouts, constants and function signatures come from native headers.
+# Share file/inode identity with the already-generated kernel binding crate.
+--no-recursive-allowlist
+--blocklist-type '^(file|inode)$'
+--allowlist-item '^(decompress_fn|loff_t|ssize_t|umode_t|__kernel_loff_t|__kernel_ssize_t|__kernel_long_t|__u8|__u16|__u32|__u64|__s64|__le16|__le32|__le64|__be32|obs_kernel_param|pi_entry|minix_super_block|romfs_super_block|cramfs_super|cramfs_info|cramfs_inode|squashfs_super_block)$'
+--allowlist-item '^(BLOCK_SIZE|BLOCK_SIZE_BITS|O_RDONLY|O_RDWR|S_IFMT|S_IFBLK|ENOMEM|MAX_ERRNO)$'
+--allowlist-item '^(RUST_INIT_RD_ROMSB_WORD0|RUST_INIT_RD_ROMSB_WORD1|CRAMFS_MAGIC|SQUASHFS_MAGIC|MINIX_SUPER_MAGIC|MINIX_SUPER_MAGIC2|EXT2_SUPER_MAGIC|EXT2_SB_MAGIC_OFFSET|EXT2_SB_BLOCKS_OFFSET|EXT2_SB_BSIZE_OFFSET)$'
+--allowlist-item '^(_printk|panic|kstrtoint|kfree|filp_open|fput|kernel_read|kernel_write|init_unlink|decompress_method)$'
+--allowlist-item '^(rust_init_rd_alloc_probe|rust_init_rd_alloc_copy|rust_init_rd_i_size_read)$'

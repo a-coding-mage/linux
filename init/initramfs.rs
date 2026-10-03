@@ -150,7 +150,7 @@ unsafe fn panic_show_mem(text: *const c_char) -> ! {
             ptr::null(),
             bindings::RUST_INITRAMFS_MAX_NR_ZONES as c_int - 1,
         );
-        bindings::panic(c"%s".as_ptr(), text)
+        bindings::panic(c"%s".as_ptr().cast::<c_char>(), text)
     }
 }
 
@@ -237,7 +237,7 @@ impl Parser {
             }
             let node = bindings::rust_initramfs_alloc_hash().cast::<Hash>();
             if node.is_null() {
-                panic_show_mem(c"can't allocate link hash entry".as_ptr());
+                panic_show_mem(c"can't allocate link hash entry".as_ptr().cast::<c_char>());
             }
             ptr::addr_of_mut!((*node).major).write(major);
             ptr::addr_of_mut!((*node).minor).write(minor);
@@ -279,7 +279,7 @@ impl Parser {
             // The typed flexible allocation uses the checked name_len.
             let entry = bindings::rust_initramfs_alloc_dir(self.name_len).cast::<DirEntry>();
             if entry.is_null() {
-                panic_show_mem(c"can't allocate dir_entry buffer".as_ptr());
+                panic_show_mem(c"can't allocate dir_entry buffer".as_ptr().cast::<c_char>());
             }
             ptr::addr_of_mut!((*entry).next).write(self.dirs);
             ptr::addr_of_mut!((*entry).mtime).write(self.mtime);
@@ -316,7 +316,7 @@ impl Parser {
                 mem::size_of_val(&header),
             );
             if result != 0 {
-                error(c"damaged header".as_ptr().cast_mut());
+                error(c"damaged header".as_ptr().cast::<c_char>().cast_mut());
                 return result;
             }
             self.ino = u32::from_be(header[0]);
@@ -369,11 +369,8 @@ impl Parser {
     #[link_section = ".init.text"]
     unsafe fn do_start(&mut self) -> bool {
         unsafe {
-            self.read_into(
-                ptr::addr_of_mut!((*self.buffers).header).cast(),
-                CPIO_HDRLEN,
-                State::GotHeader,
-            );
+            let header = ptr::addr_of_mut!((*self.buffers).header).cast();
+            self.read_into(header, CPIO_HDRLEN, State::GotHeader);
         }
         false
     }
@@ -410,6 +407,7 @@ impl Parser {
                         c"no cpio magic"
                     }
                     .as_ptr()
+                    .cast::<c_char>()
                     .cast_mut(),
                 );
                 return true;
@@ -438,11 +436,8 @@ impl Parser {
                 return false;
             }
             if is_type(self.mode, bindings::S_IFREG) || self.body_len == 0 {
-                self.read_into(
-                    ptr::addr_of_mut!((*self.buffers).name).cast(),
-                    n_align(self.name_len),
-                    State::GotName,
-                );
+                let name = ptr::addr_of_mut!((*self.buffers).name).cast();
+                self.read_into(name, n_align(self.name_len), State::GotName);
             }
             false
         }
@@ -469,7 +464,7 @@ impl Parser {
                 self.eat(1);
             }
             if self.byte_count != 0 && self.this_header & 3 != 0 {
-                error(c"broken padding".as_ptr().cast_mut());
+                error(c"broken padding".as_ptr().cast::<c_char>().cast_mut());
             }
             true
         }
@@ -505,10 +500,10 @@ impl Parser {
                     self.name_len as c_int,
                     self.collected
                 );
-                error(c"malformed archive".as_ptr().cast_mut());
+                error(c"malformed archive".as_ptr().cast::<c_char>().cast_mut());
                 return true;
             }
-            if bindings::strcmp(self.collected, c"TRAILER!!!".as_ptr()) == 0 {
+            if bindings::strcmp(self.collected, c"TRAILER!!!".as_ptr().cast::<c_char>()) == 0 {
                 self.free_hash();
                 return false;
             }
@@ -531,7 +526,7 @@ impl Parser {
                     bindings::vfs_fchmod(file, self.mode);
                     if self.body_len != 0 {
                         bindings::vfs_truncate(
-                            ptr::addr_of!((*file).f_path),
+                            ptr::addr_of!((*file).__bindgen_anon_1.f_path),
                             self.body_len as bindings::loff_t,
                         );
                     }
@@ -607,14 +602,17 @@ impl Parser {
             );
             self.wfile_pos = position;
             if written != count as isize {
-                error(c"write error".as_ptr().cast_mut());
+                error(c"write error".as_ptr().cast::<c_char>().cast_mut());
             }
             if self.byte_count >= self.body_len {
-                do_utime_path(ptr::addr_of!((*self.wfile).f_path), self.mtime);
+                do_utime_path(
+                    ptr::addr_of!((*self.wfile).__bindgen_anon_1.f_path),
+                    self.mtime,
+                );
                 bindings::fput(self.wfile);
                 self.wfile = ptr::null_mut();
                 if self.csum_present && self.io_csum != self.hdr_csum {
-                    error(c"bad data checksum".as_ptr().cast_mut());
+                    error(c"bad data checksum".as_ptr().cast::<c_char>().cast_mut());
                 }
                 self.eat(self.body_len as u32);
                 self.state = State::SkipIt;
@@ -637,7 +635,7 @@ impl Parser {
                     self.name_len as c_int,
                     self.collected
                 );
-                error(c"malformed archive".as_ptr().cast_mut());
+                error(c"malformed archive".as_ptr().cast::<c_char>().cast_mut());
                 return true;
             }
             self.collected
@@ -706,7 +704,12 @@ unsafe extern "C" fn flush_buffer(buffer: *mut c_void, mut length: c_ulong) -> c
                     State::Reset
                 };
             } else {
-                error(c"junk within compressed archive".as_ptr().cast_mut());
+                error(
+                    c"junk within compressed archive"
+                        .as_ptr()
+                        .cast::<c_char>()
+                        .cast_mut(),
+                );
                 break;
             }
         }
@@ -729,7 +732,7 @@ pub unsafe extern "C" fn unpack_to_rootfs(
     unsafe {
         let buffers = bindings::rust_initramfs_alloc_buffers().cast::<Buffers>();
         if buffers.is_null() {
-            panic_show_mem(c"can't allocate buffers".as_ptr());
+            panic_show_mem(c"can't allocate buffers".as_ptr().cast::<c_char>());
         }
         PARSER.buffers = buffers;
         PARSER.state = State::Start;
@@ -769,7 +772,7 @@ pub unsafe extern "C" fn unpack_to_rootfs(
                     Some(error),
                 ) != 0
                 {
-                    error(c"decompressor failed".as_ptr().cast_mut());
+                    error(c"decompressor failed".as_ptr().cast::<c_char>().cast_mut());
                 }
             } else if !name.is_null() {
                 main_printk!(
@@ -777,21 +780,27 @@ pub unsafe extern "C" fn unpack_to_rootfs(
                     b"\x013compression method %s not configured\n\0",
                     name
                 );
-                error(c"decompressor failed".as_ptr().cast_mut());
+                error(c"decompressor failed".as_ptr().cast::<c_char>().cast_mut());
             } else {
                 error(
                     c"invalid magic at start of compressed archive"
                         .as_ptr()
+                        .cast::<c_char>()
                         .cast_mut(),
                 );
             }
             if PARSER.state != State::Reset {
-                error(c"junk at the end of compressed archive".as_ptr().cast_mut());
+                error(
+                    c"junk at the end of compressed archive"
+                        .as_ptr()
+                        .cast::<c_char>()
+                        .cast_mut(),
+                );
             }
             // Never perform pointer arithmetic using an invalid decompressor
             // result on a failed stream; all configured decoders follow this ABI.
             if MY_INPTR < 0 || MY_INPTR as c_ulong > length {
-                error(c"decompressor failed".as_ptr().cast_mut());
+                error(c"decompressor failed".as_ptr().cast::<c_char>().cast_mut());
                 break;
             }
             PARSER.this_header = saved_offset + MY_INPTR as i64;
@@ -920,7 +929,7 @@ pub unsafe extern "C" fn free_initrd_mem(start: c_ulong, end: c_ulong) {
             start as *mut c_void,
             end as *mut c_void,
             bindings::POISON_FREE_INITMEM as c_int,
-            c"initrd".as_ptr(),
+            c"initrd".as_ptr().cast::<c_char>(),
         );
     }
 }
@@ -967,7 +976,7 @@ unsafe fn populate_initrd_image(error: *const c_char) {
             error
         );
         let file = bindings::filp_open(
-            c"/initrd.image".as_ptr(),
+            c"/initrd.image".as_ptr().cast::<c_char>(),
             (bindings::O_WRONLY | bindings::O_CREAT | bindings::O_LARGEFILE) as c_int,
             0o700,
         );
@@ -1035,7 +1044,7 @@ unsafe fn unpack_initramfs(_cookie: bindings::async_cookie_t) {
 #[cfg(CONFIG_SYSFS)]
 static mut BIN_ATTR_INITRD: bindings::bin_attribute = {
     let mut attribute: bindings::bin_attribute = unsafe { mem::zeroed() };
-    attribute.attr.name = c"initrd".as_ptr();
+    attribute.attr.name = c"initrd".as_ptr().cast::<c_char>();
     attribute.attr.mode = 0o440;
     attribute.read = Some(bindings::sysfs_bin_attr_simple_read);
     attribute
@@ -1091,8 +1100,11 @@ unsafe extern "C" fn do_populate_rootfs(_unused: *mut c_void, cookie: bindings::
 static mut INITRAMFS_DOMAIN: bindings::async_domain = {
     // ASYNC_DOMAIN_EXCLUSIVE: a self-linked list and registered == 0.
     let mut domain: bindings::async_domain = unsafe { mem::zeroed() };
-    domain.pending.next = ptr::addr_of_mut!(INITRAMFS_DOMAIN.pending);
-    domain.pending.prev = ptr::addr_of_mut!(INITRAMFS_DOMAIN.pending);
+    // SAFETY: taking this static list head's address does not read or mutate
+    // the domain; both links are installed by its one-time static initializer.
+    let pending = unsafe { ptr::addr_of_mut!(INITRAMFS_DOMAIN.pending) };
+    domain.pending.next = pending;
+    domain.pending.prev = pending;
     domain
 };
 static INITRAMFS_COOKIE: AtomicU64 = AtomicU64::new(0);

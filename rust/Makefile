@@ -56,6 +56,9 @@ targets += bindings/init_initramfs_generated.rs
 always-$(CONFIG_RUST_INIT_INITRAMFS) += bindings/init_initramfs_generated.rs
 
 
+targets += bindings/init_ramdisk_generated.rs
+always-$(CONFIG_RUST_INIT_RAMDISK) += bindings/init_ramdisk_generated.rs
+
 targets += bindings/init_mounts_generated.rs
 targets += bindings/init_version_generated.rs bindings/init_version_timestamp_generated.rs
 always-$(CONFIG_RUST_INIT_MOUNTS_INITRD) += bindings/init_mounts_generated.rs
@@ -607,6 +610,12 @@ $(obj)/bindings/init_initramfs_generated.rs: $(src)/bindings/init_initramfs.h \
     $(src)/init_initramfs_bindgen_parameters FORCE
 	$(call if_changed_dep,bindgen)
 
+$(obj)/bindings/init_ramdisk_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_ramdisk_bindgen_parameters)
+$(obj)/bindings/init_ramdisk_generated.rs: $(src)/bindings/init_ramdisk.h \
+    $(src)/init_ramdisk_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
 $(obj)/bindings/init_mounts_generated.rs: private bindgen_target_flags = \
     $(shell grep -Ev '^#|^$$' $(src)/init_mounts_bindgen_parameters)
 $(obj)/bindings/init_mounts_generated.rs: $(src)/bindings/init_mounts.h \
@@ -985,3 +994,14 @@ include $(srctree)/fs/smb/server/vfs_cache_bindgen.mk
 include $(srctree)/security/selinux/ss/services-bindgen.mk
 
 include $(srctree)/security/selinux/ss/policydb-bindgen.mk
+# Append to rust/Makefile alongside the other bootstrap binding targets.
+targets += bindings/init_mm_generated.rs
+always-$(CONFIG_RUST_INIT_MM) += bindings/init_mm_generated.rs
+
+$(obj)/bindings/init_mm_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_mm_bindgen_parameters)
+$(obj)/bindings/init_mm_generated.rs: $(src)/bindings/init_mm.h \
+    $(src)/init_mm_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
+include $(srctree)/arch/x86/kernel/head64-bindgen.mk

@@ -200,3 +200,59 @@ endif
 
 # Private inspection sidecars remain cleanable after deselection.
 clean-files += .rust-listing/ .rust-listing-elf/
+# Append to mm/Makefile; leave the existing obj-y += init-mm.o archive slot.
+ifeq ($(CONFIG_RUST_INIT_MM),y)
+RUSTFLAGS_init-mm.o += -Zfunction-sections=n
+
+# Explicit rules select the Rust stem even while init-mm.c remains adjacent.
+$(addprefix $(obj)/,init-mm.o init-mm.s init-mm.ll init-mm.rsi .rust-listing/init-mm.o): private target-stem := init-mm
+$(addprefix $(obj)/,init-mm.o init-mm.s init-mm.ll init-mm.rsi .rust-listing/init-mm.o): private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
+$(addprefix $(obj)/,init-mm.s init-mm.ll init-mm.rsi .rust-listing/init-mm.o): private part-of-builtin = \
+    $(if $(filter $(obj)/init-mm.o,$(real-obj-y) $(lib-y)),y)
+$(addprefix $(obj)/,init-mm.s init-mm.ll init-mm.rsi .rust-listing/init-mm.o): private part-of-module :=
+
+$(obj)/init-mm.o: $(src)/init-mm.rs $(src)/init_mm_initializers.rs \
+    $(objtree)/rust/bindings/init_mm_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/init-mm.s: $(src)/init-mm.rs $(src)/init_mm_initializers.rs \
+    $(objtree)/rust/bindings/init_mm_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/init-mm.ll: $(src)/init-mm.rs $(src)/init_mm_initializers.rs \
+    $(objtree)/rust/bindings/init_mm_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+# Propagate the compiler status before formatting the source listing.
+quiet_cmd_init_mm_rust_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
+      cmd_init_mm_rust_rsi = \
+	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
+	command -v $(RUSTFMT) >/dev/null || exit $$?; \
+	$(RUSTFMT) --config-path $(srctree)/.rustfmt.toml $@ || exit $$?
+$(obj)/init-mm.rsi: $(src)/init-mm.rs $(src)/init_mm_initializers.rs \
+    $(objtree)/rust/bindings/init_mm_generated.rs FORCE
+	+$(call if_changed_dep,init_mm_rust_rsi)
+
+# The generic .lst rule would compile adjacent C into canonical init-mm.o.
+# Build a private Rust debug object and materialize ELF without touching it.
+$(obj)/.rust-listing/init-mm.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
+$(obj)/.rust-listing/init-mm.o: private override KBUILD_CFLAGS += -g
+$(obj)/.rust-listing/init-mm.o: $(src)/init-mm.rs $(src)/init_mm_initializers.rs \
+    $(objtree)/rust/bindings/init_mm_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+quiet_cmd_init_mm_rust_lst_elf = LD      $@
+      cmd_init_mm_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
+$(obj)/.rust-listing-elf/init-mm.o: $(obj)/.rust-listing/init-mm.o FORCE
+	$(call if_changed,init_mm_rust_lst_elf)
+# Retain makelst's System.map behavior, including creation and deletion.
+quiet_cmd_init_mm_rust_lst = MKLST   $@
+      cmd_init_mm_rust_lst = : System.map=$(if $(wildcard System.map),present,absent); \
+	$(CONFIG_SHELL) $(srctree)/scripts/makelst $< System.map $(OBJDUMP) > $@
+$(obj)/init-mm.lst: $(obj)/.rust-listing-elf/init-mm.o $(srctree)/scripts/makelst \
+    $(wildcard System.map) FORCE
+	$(call if_changed,init_mm_rust_lst)
+
+targets += init-mm.s init-mm.ll init-mm.rsi init-mm.lst \
+    .rust-listing/init-mm.o .rust-listing-elf/init-mm.o
+endif
+# mm/Makefile already lists .rust-listing/ and .rust-listing-elf/ in clean-files
+# outside the selector, preserving sidecar cleanup after deselection.

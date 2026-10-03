@@ -19,6 +19,13 @@ mod bindings {
         env!("OBJTREE"),
         "/rust/bindings/init_root_mounts_generated.rs"
     ));
+
+    // Keep the production expressions unchanged while using typed constants
+    // derived from the original headers, including unsigned-long SB_RDONLY.
+    pub(crate) use self::{
+        RUST_INIT_ROOT_MOUNTS_MS_RDONLY as MS_RDONLY, RUST_INIT_ROOT_MOUNTS_MS_SILENT as MS_SILENT,
+        RUST_INIT_ROOT_MOUNTS_SB_RDONLY as SB_RDONLY,
+    };
 }
 
 mod main_printk;

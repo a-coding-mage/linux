@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'rust_head64_constants|pgd_t|pmd_t|pgdval_t|p4dval_t|pudval_t|pmdval_t|pt_regs|boot_params'
+--allowlist-function 'rust_head64_.*|native_write_cr4|early_fixup_exception|handle_vc_boot_ghcb|tdx_early_handle_ve|sme_map_bootdata|sme_unmap_bootdata|sme_early_init|kasan_early_init|idt_setup_early_handler|tdx_early_init|load_ucode_bsp|x86_early_init_platform_quirks|x86_intel_mid_early_setup|start_kernel|setup_ghcb|vc_boot_ghcb|__pi_startup_64_load_idt'
+--allowlist-var 'RUST_HEAD64_.*|X86_TRAP_PF|X86_TRAP_VC|X86_TRAP_VE|X86_SUBARCH_INTEL_MID|early_dynamic_pgts|early_top_pgt|init_top_pgt|phys_base|physical_mask|sme_me_mask|boot_params|boot_command_line|__bss_start|__bss_stop|__brk_base|__brk_limit'
