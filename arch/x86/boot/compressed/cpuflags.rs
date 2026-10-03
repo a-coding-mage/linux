@@ -1,24 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0
-// The C source includes ../cpuflags.c; its declarations and definitions are
-// supplied by the surrounding translation unit.
+//! Native compressed-boot CPU flag lookup.
 
-use core::ffi::{c_int, c_ulong};
+#[path = "../cpuflags.rs"]
+mod shared;
 
-#[repr(C)]
-pub struct Cpu {
-    pub flags: [c_ulong; 1],
+use core::ffi::c_int;
+use core::ptr::addr_of;
+
+#[no_mangle]
+pub(crate) unsafe extern "C" fn has_cpuflag(flag: c_int) -> bool {
+    // SAFETY: the caller supplies a valid boot feature bit index. bitops.h
+    // indexes 32-bit words, even on x86-64; a C bool is returned, not an int or
+    // an uninitialized full register populated only by a one-byte SETcc.
+    unsafe {
+        shared::get_cpuflags();
+        let words = addr_of!(shared::CPU.flags).cast::<u32>();
+        (words.offset((flag >> 5) as isize).read() & (1u32 << (flag & 31))) != 0
+    }
 }
-
-unsafe extern "C" {
-    pub fn get_cpuflags();
-    pub fn test_bit(flag: c_int, addr: *const c_ulong) -> bool;
-    pub static mut cpu: Cpu;
-}
-
-pub unsafe fn has_cpuflag(flag: c_int) -> bool {
-    get_cpuflags();
-
-    test_bit(flag, cpu.flags.as_ptr())
-}
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

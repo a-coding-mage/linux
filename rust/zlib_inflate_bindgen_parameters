@@ -1,0 +1,7 @@
+# Configured declarations only; no copied layouts or algorithm wrappers.
+--no-prepend-enum-name
+--wrap-unsafe-ops
+--blocklist-type '__kernel_(size_t|ssize_t|ptrdiff_t)'
+--allowlist-type '^(z_stream|z_stream_s|z_streamp|inflate_state|inflate_workspace|inflate_mode|code|codetype|gfp_t)$'
+--allowlist-function '^(zlib_inflate|zlib_inflateEnd|zlib_inflateInit2|zlib_inflateReset|zlib_inflateIncomp|zlib_inflate_workspacesize|zlib_inflate_blob|lupos_zlib_kmalloc|lupos_zlib_kfree)$'
+--allowlist-var '^(Z_.*|MAX_WBITS|ENOUGH|MAXD|ENOMEM|EINVAL|RUST_ZLIB_GFP_KERNEL)$'

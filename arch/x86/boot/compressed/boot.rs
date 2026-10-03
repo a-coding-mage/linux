@@ -11,6 +11,9 @@ mod boot_cmdline;
 mod boot_string;
 #[path = "../../../../lib/cmdline.rs"]
 pub mod cmdline;
+#[path = "boot_cpu_bindings.rs"]
+mod cpu_bindings;
+mod cpuflags;
 #[path = "../../../../lib/ctype.rs"]
 pub mod ctype;
 #[path = "../../../../lib/decompress_inflate.rs"]

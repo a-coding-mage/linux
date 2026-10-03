@@ -688,6 +688,22 @@ config 842_DECOMPRESS
 config ZLIB_INFLATE
 	tristate
 
+config RUST_ZLIB_INFLATE
+	bool "Rust implementation of the zlib inflate library"
+	depends on RUST && ZLIB_INFLATE
+	default y
+	help
+	  Use the Rust inflate, fast decoder, Huffman tables, Adler checksum
+	  and blob wrapper through the original C interfaces and exports.
+	  The original ZLIB_INFLATE built-in or module identity is retained.
+	  Native layouts come from configured, private generated bindings;
+	  only allocation primitives use a C bridge. Disable for the original
+	  C control provider, independently of HOST_TOOLS_LANG.
+
+	  DFLTCC and externally supplied ASMINF rows fail explicitly until
+	  their native hardware or assembly integration is implemented.
+	  Rebuild dependent modules after switching DWARF version owners.
+
 config ZLIB_DEFLATE
 	tristate
 	select BITREVERSE
@@ -735,6 +751,19 @@ source "lib/xz/Kconfig"
 config DECOMPRESS_GZIP
 	select ZLIB_INFLATE
 	tristate
+
+config RUST_DECOMPRESS_GZIP
+	bool "Rust implementation of the initramfs gzip wrapper"
+	depends on RUST_ZLIB_INFLATE && DECOMPRESS_GZIP=y
+	default y
+	help
+	  Use the original gunzip interface and initialization lifetime with
+	  the Rust gzip wrapper and Rust zlib library. This selects ordinary
+	  kernel/initramfs decompression; compressed-kernel PREBOOT ownership
+	  has its separate architecture selector. The original gzip header,
+	  callback, allocation and error semantics are retained.
+	  CFI builds fail explicitly until the nullable callback signature's
+	  native type encoding is integrated and checked.
 
 config DECOMPRESS_BZIP2
 	tristate

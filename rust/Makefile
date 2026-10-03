@@ -43,6 +43,9 @@ always-$(CONFIG_RUST_INIT_MAIN) += init_main_bindings.o
 targets += bindings/init_calibrate_generated.rs
 always-$(CONFIG_RUST_INIT_CALIBRATE) += bindings/init_calibrate_generated.rs
 
+targets += bindings/zlib_inflate_generated.rs
+always-$(CONFIG_RUST_ZLIB_INFLATE) += bindings/zlib_inflate_generated.rs
+
 
 targets += bindings/init_root_mounts_generated.rs
 always-$(CONFIG_RUST_INIT_ROOT_MOUNTS) += bindings/init_root_mounts_generated.rs
@@ -585,6 +588,12 @@ $(obj)/bindings/init_calibrate_generated.rs: private bindgen_target_flags = \
     $(shell grep -Ev '^#|^$$' $(src)/init_calibrate_bindgen_parameters)
 $(obj)/bindings/init_calibrate_generated.rs: $(src)/bindings/init_calibrate.h \
     $(src)/init_calibrate_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
+$(obj)/bindings/zlib_inflate_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/zlib_inflate_bindgen_parameters)
+$(obj)/bindings/zlib_inflate_generated.rs: $(src)/bindings/zlib_inflate.h \
+    $(src)/zlib_inflate_bindgen_parameters FORCE
 	$(call if_changed_dep,bindgen)
 
 $(obj)/bindings/init_root_mounts_generated.rs: private bindgen_target_flags = \

@@ -286,7 +286,19 @@ obj-$(CONFIG_ZSTD_COMPRESS) += zstd/
 obj-$(CONFIG_ZSTD_DECOMPRESS) += zstd/
 obj-$(CONFIG_XZ_DEC) += xz/
 
+ifeq ($(CONFIG_RUST_DECOMPRESS_GZIP),y)
+ifneq ($(CONFIG_DECOMPRESS_GZIP),y)
+$(error RUST_DECOMPRESS_GZIP requires the built-in DECOMPRESS_GZIP row)
+endif
+ifneq ($(CONFIG_RUST_ZLIB_INFLATE),y)
+$(error RUST_DECOMPRESS_GZIP requires the Rust zlib inflate provider)
+endif
+lib-y += decompress_inflate_rust.o
+$(obj)/decompress_inflate_rust.o: modfile := lib/decompress_inflate
+$(obj)/decompress_inflate_rust.o: $(objtree)/rust/bindings/zlib_inflate_generated.rs
+else
 lib-$(CONFIG_DECOMPRESS_GZIP) += decompress_inflate.o
+endif
 lib-$(CONFIG_DECOMPRESS_BZIP2) += decompress_bunzip2.o
 lib-$(CONFIG_DECOMPRESS_LZMA) += decompress_unlzma.o
 lib-$(CONFIG_DECOMPRESS_XZ) += decompress_unxz.o
