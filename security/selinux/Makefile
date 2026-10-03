@@ -47,3 +47,5 @@ $(obj)/genheaders: $(src)/include/classmap_header.rs \
 		   $(src)/include/initial_sid_to_string_header.rs
 endif
 HOST_EXTRACFLAGS += -I$(srctree)/security/selinux/include
+
+include $(srctree)/security/selinux/ss/services-provider.mk

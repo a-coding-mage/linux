@@ -98,3 +98,12 @@ config SECURITY_SELINUX_DEBUG
 
 		echo -n 'file "security/selinux/*" +p' > \
 			/proc/dynamic_debug/control
+
+config RUST_SELINUX_SERVICES
+	bool "Rust implementation of SELinux security services"
+	depends on RUST && SECURITY_SELINUX
+	default n
+	help
+	  Build the Rust translation of the security-server services unit.
+	  This experimental provider requires configured ABI, build and
+	  original-C runtime validation before use. If unsure, say N.
