@@ -1,134 +1,100 @@
 // SPDX-License-Identifier: GPL-2.0-only
-//
-// Dependencies supplied by the surrounding kernel translation:
-// asm/trap_pf.h, asm/segment.h, asm/trapnr.h, and misc.h.
+//! IDT setup before and after relocating the x86-64 compressed kernel.
 
-use core::ffi::c_void;
+use crate::boot_idt_bindings::*;
+use core::ptr::{addr_of, addr_of_mut};
 
-extern "C" {
-    static mut boot_idt: [gate_desc; _];
-    static mut boot_idt_desc: desc_ptr;
-    static sev_status: u64;
+unsafe fn set_idt_entry(vector: usize, handler: Option<unsafe extern "C" fn()>) {
+    let address = handler.map_or(0, |handler| handler as usize);
 
-    fn boot_stage1_vc();
-    fn boot_page_fault();
-    fn boot_nmi_trap();
-    fn boot_stage2_vc();
-    fn sev_es_shutdown_ghcb();
-}
-
-#[repr(C)]
-struct gate_bits {
-    type_: u8,
-    p: u8,
-}
-
-#[repr(C)]
-struct gate_desc {
-    offset_low: u16,
-    segment: u16,
-    bits: gate_bits,
-    offset_middle: u16,
-    offset_high: u32,
-}
-
-#[repr(C)]
-struct desc_ptr {
-    size: u16,
-    address: usize,
-}
-
-const __KERNEL_CS: u16 = 0;
-const GATE_TRAP: u8 = 0;
-const X86_TRAP_PF: i32 = 14;
-const X86_TRAP_NMI: i32 = 2;
-const X86_TRAP_VC: i32 = 29;
-
-unsafe fn set_idt_entry(vector: i32, handler: Option<unsafe extern "C" fn()>) {
-    let address = handler.map_or(0usize, |f| f as usize);
-    let mut entry = core::mem::MaybeUninit::<gate_desc>::zeroed().assume_init();
-
-    entry.offset_low = (address & 0xffff) as u16;
-    entry.segment = __KERNEL_CS;
-    entry.bits.type_ = GATE_TRAP;
-    entry.bits.p = 1;
-    entry.offset_middle = ((address >> 16) & 0xffff) as u16;
+    // SAFETY: the native packed descriptor contains only integer fields. Keep
+    // all reserved fields zero, including the trailing x86-64 reserved dword.
+    let mut entry: gate_desc = unsafe { core::mem::zeroed() };
+    entry.offset_low = address as u16;
+    entry.segment = LUPOS_BOOT_IDT_KERNEL_CS as u16;
+    entry.bits.set_type(GATE_TRAP as u16);
+    entry.bits.set_p(1);
+    entry.offset_middle = (address >> 16) as u16;
     entry.offset_high = (address >> 32) as u32;
 
-    core::ptr::copy_nonoverlapping(
-        &entry as *const gate_desc,
-        boot_idt.as_mut_ptr().add(vector as usize),
-        1,
-    );
+    // SAFETY: callers use native trap vectors within BOOT_IDT_ENTRIES. The
+    // assembly-owned table has the native gate_desc stride and packed alignment.
+    unsafe {
+        addr_of_mut!(boot_idt)
+            .cast::<gate_desc>()
+            .add(vector)
+            .write(entry)
+    };
 }
 
 /* Have this here so we don't need to include <asm/desc.h> */
 unsafe fn load_boot_idt(dtr: *const desc_ptr) {
-    core::arch::asm!("lidt [{}]", in(reg) dtr, options(nostack, preserves_flags));
+    // SAFETY: early boot runs at CPL0; dtr addresses a native packed descriptor
+    // whose ten bytes stay valid for this instruction. LIDT preserves flags.
+    unsafe { core::arch::asm!("lidt [{}]", in(reg) dtr, options(nostack, preserves_flags)) };
 }
 
-/* Setup IDT before kernel jumping to  .Lrelocated */
+/* Setup IDT before kernel jumping to .Lrelocated. */
 #[no_mangle]
-pub unsafe extern "C" fn load_stage1_idt() {
-    boot_idt_desc.address = boot_idt.as_mut_ptr() as usize;
+pub(crate) unsafe extern "C" fn load_stage1_idt() {
+    // SAFETY: head_64.S owns this descriptor and table. Set the base at runtime
+    // on every stage so no link-time absolute address survives relocation.
+    unsafe {
+        addr_of_mut!(boot_idt_desc.address)
+            .write_unaligned(addr_of!(boot_idt) as core::ffi::c_ulong);
 
-    // Equivalent to IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT).
-    set_idt_entry(X86_TRAP_VC, Some(boot_stage1_vc));
+        #[cfg(CONFIG_AMD_MEM_ENCRYPT)]
+        set_idt_entry(X86_TRAP_VC as usize, Some(boot_stage1_vc));
 
-    load_boot_idt(&boot_idt_desc);
+        load_boot_idt(addr_of!(boot_idt_desc));
+    }
 }
 
 /*
- * Setup IDT after kernel jumping to  .Lrelocated.
+ * Setup IDT after kernel jumping to .Lrelocated.
  *
- * initialize_identity_maps() needs a #PF handler to be setup
- * in order to be able to fault-in identity mapping ranges; see
- * do_boot_page_fault().
- *
- * This #PF handler setup needs to happen in load_stage2_idt() where the
- * IDT is loaded and there the #VC IDT entry gets setup too.
- *
- * In order to be able to handle #VCs, one needs a GHCB which
- * gets setup with an already set up pagetable, which is done in
- * initialize_identity_maps(). And there's the catch 22: the boot #VC
- * handler do_boot_stage2_vc() needs to call early_setup_ghcb() itself
- * (and, especially set_page_decrypted()) because the SEV-ES setup code
- * cannot initialize a GHCB as there's no #PF handler yet...
+ * initialize_identity_maps() needs a #PF handler in order to fault-in identity
+ * mapping ranges. The second-stage #VC handler needs a GHCB but must set it up
+ * itself, since early_setup_ghcb()/set_page_decrypted() require this #PF entry.
  */
 #[no_mangle]
-pub unsafe extern "C" fn load_stage2_idt() {
-    boot_idt_desc.address = boot_idt.as_mut_ptr() as usize;
+pub(crate) unsafe extern "C" fn load_stage2_idt() {
+    // SAFETY: native table storage is valid through compressed-kernel boot;
+    // the assembly entry points implement the original exception-entry ABI.
+    unsafe {
+        addr_of_mut!(boot_idt_desc.address)
+            .write_unaligned(addr_of!(boot_idt) as core::ffi::c_ulong);
 
-    set_idt_entry(X86_TRAP_PF, Some(boot_page_fault));
-    set_idt_entry(X86_TRAP_NMI, Some(boot_nmi_trap));
+        set_idt_entry(X86_TRAP_PF as usize, Some(boot_page_fault));
+        set_idt_entry(X86_TRAP_NMI as usize, Some(boot_nmi_trap));
 
-    // #ifdef CONFIG_AMD_MEM_ENCRYPT
-    /*
-     * Clear the second stage #VC handler in case guest types
-     * needing #VC have not been detected.
-     */
-    if sev_status & (1u64 << 1) != 0 {
-        set_idt_entry(X86_TRAP_VC, Some(boot_stage2_vc));
-    } else {
-        set_idt_entry(X86_TRAP_VC, None);
+        #[cfg(CONFIG_AMD_MEM_ENCRYPT)]
+        {
+            // Preserve the native present trap gate with a zero target when
+            // SEV-ES was not detected, clearing the prior-stage #VC target.
+            let handler = if sev_status & LUPOS_BOOT_IDT_SEV_ES_ENABLED as u64 != 0 {
+                Some(boot_stage2_vc as unsafe extern "C" fn())
+            } else {
+                None
+            };
+            set_idt_entry(X86_TRAP_VC as usize, handler);
+        }
+
+        load_boot_idt(addr_of!(boot_idt_desc));
     }
-    // #endif
-
-    load_boot_idt(&boot_idt_desc);
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn cleanup_exception_handling() {
-    /*
-     * Flush GHCB from cache and map it encrypted again when running as
-     * SEV-ES guest.
-     */
-    sev_es_shutdown_ghcb();
+pub(crate) unsafe extern "C" fn cleanup_exception_handling() {
+    // SAFETY: preserve native ordering: flush/re-encrypt the GHCB before
+    // disabling exception handling. Without AMD_MEM_ENCRYPT, the native header
+    // supplies an empty inline and there is no external shutdown call.
+    unsafe {
+        #[cfg(CONFIG_AMD_MEM_ENCRYPT)]
+        sev_es_shutdown_ghcb();
 
-    /* Set a null-idt, disabling #PF and #VC handling */
-    boot_idt_desc.size = 0;
-    boot_idt_desc.address = 0;
-    load_boot_idt(&boot_idt_desc);
+        addr_of_mut!(boot_idt_desc.size).write_unaligned(0);
+        addr_of_mut!(boot_idt_desc.address).write_unaligned(0);
+        load_boot_idt(addr_of!(boot_idt_desc));
+    }
 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1,11 +1,14 @@
-// Dependency intent: declarations from "misc.h" are supplied by other files.
+// SPDX-License-Identifier: GPL-2.0
+//! Compressed-boot early serial state and the shared console implementation.
 
-/* This might be accessed before .bss is cleared, so use .data instead. */
+use core::ffi::c_int;
+
+// This may be accessed before .bss is cleared, so retain the C .data placement.
+#[export_name = "early_serial_base"]
 #[link_section = ".data"]
-pub static mut early_serial_base: i32 = 0;
+static mut EARLY_SERIAL_BASE: c_int = 0;
 
-// The implementation from "../early_serial_console.c" is supplied by the
-// surrounding source tree and is intentionally not expanded in this isolated
-// translation.
+#[path = "../early_serial_console.rs"]
+mod shared;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

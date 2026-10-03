@@ -7,6 +7,8 @@
 mod bindings;
 #[path = "cmdline.rs"]
 mod boot_cmdline;
+#[cfg(CONFIG_X86_64)]
+mod boot_idt_bindings;
 #[path = "../string.rs"]
 mod boot_string;
 #[path = "../../../../lib/cmdline.rs"]
@@ -18,7 +20,11 @@ mod cpuflags;
 pub mod ctype;
 #[path = "../../../../lib/decompress_inflate.rs"]
 mod decompress_inflate;
+#[cfg(CONFIG_EARLY_PRINTK)]
+mod early_serial_console;
 mod error;
+#[cfg(CONFIG_X86_64)]
+mod idt_64;
 #[cfg(CONFIG_RANDOMIZE_BASE)]
 mod kaslr;
 mod misc;

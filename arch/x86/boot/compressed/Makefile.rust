@@ -18,6 +18,8 @@ boot-rust-flags := $(rust_common_flags) \
 boot-rust-cfg := @$(objtree)/include/generated/rustc_cfg --cfg lupos_boot --cfg PREBOOT
 boot-rust-deps := $(src)/boot_bindings.rs $(src)/cmdline.rs $(src)/error.rs \
 	$(src)/boot_cpu_bindings.rs $(src)/cpuflags.rs $(src)/../cpuflags.rs \
+	$(if $(CONFIG_EARLY_PRINTK),$(src)/early_serial_console.rs $(src)/../early_serial_console.rs) \
+	$(if $(CONFIG_X86_64),$(src)/boot_idt_bindings.rs $(src)/idt_64.rs) \
 	$(src)/misc.rs $(src)/string.rs $(src)/../string.rs $(if $(CONFIG_RANDOMIZE_BASE),$(src)/kaslr.rs) \
 	$(srctree)/lib/ctype.rs $(srctree)/include/linux/ctype_header.rs \
 	$(srctree)/lib/cmdline.rs $(srctree)/lib/decompress_inflate.rs \
@@ -26,6 +28,7 @@ boot-rust-deps := $(src)/boot_bindings.rs $(src)/cmdline.rs $(src)/error.rs \
 targets += boot-target.json boot.o boot.a libcore.rlib libcompiler_builtins.rlib \
 	boot_bindings_generated.rs boot_build.rs boot_helpers.o
 targets += boot_cpu_bindings_generated.rs
+targets += boot_idt_bindings_generated.rs
 
 quiet_cmd_boot_core = RUSTC BOOT $@
       cmd_boot_core = $(RUSTC) $(filter-out --edition=2021 -Wunreachable_pub,$(boot-rust-flags)) \
@@ -65,6 +68,18 @@ quiet_cmd_boot_cpu_bindgen = BINDGEN BOOT CPU $@
 $(obj)/boot_cpu_bindings_generated.rs: $(src)/boot_cpu_bindings.h FORCE
 	$(call if_changed_dep,boot_cpu_bindgen)
 
+# Packed descriptor layouts and bitfields come from the native x86 headers.
+quiet_cmd_boot_idt_bindgen = BINDGEN BOOT IDT $@
+      cmd_boot_idt_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
+	--no-prepend-enum-name --with-derive-default \
+	--allowlist-type '(gate_desc|desc_ptr)' \
+	--allowlist-function '(boot_page_fault|boot_nmi_trap|boot_stage1_vc|boot_stage2_vc|sev_es_shutdown_ghcb)' \
+	--allowlist-var '(boot_idt|boot_idt_desc|sev_status|BOOT_IDT_ENTRIES|GATE_TRAP|X86_TRAP_PF|X86_TRAP_NMI|X86_TRAP_VC|LUPOS_BOOT_IDT_.*)' \
+	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
+$(obj)/boot_idt_bindings_generated.rs: $(src)/boot_idt_bindings.h FORCE
+	$(call if_changed_dep,boot_idt_bindgen)
+
 # Preserve the C source's exact concatenated build entropy including its NUL.
 $(obj)/boot_build.rs: $(src)/boot_build.rs.S FORCE
 	$(call if_changed_dep,rustc_rs_rs_S)
@@ -77,7 +92,8 @@ quiet_cmd_boot_rust = RUSTC BOOT $@
 	--extern compiler_builtins=$(obj)/libcompiler_builtins.rlib \
 	--emit=link=$@,dep-info=$(depfile) $<
 $(obj)/boot.a: $(src)/boot.rs $(boot-rust-deps) $(obj)/boot_bindings_generated.rs \
-	$(obj)/boot_cpu_bindings_generated.rs $(obj)/boot_build.rs $(obj)/libcompiler_builtins.rlib FORCE
+	$(obj)/boot_cpu_bindings_generated.rs $(if $(CONFIG_X86_64),$(obj)/boot_idt_bindings_generated.rs) \
+	$(obj)/boot_build.rs $(obj)/libcompiler_builtins.rlib FORCE
 	$(call if_changed_dep,boot_rust)
 
 # Whole-program optimization sees the genuine panic handler ignores PanicInfo.
@@ -92,6 +108,8 @@ boot-rust-roots := extract_kernel decompress_kernel kernel_text_size kernel_init
 	spurious_nmi_count malloc free __putstr __puthex __putdec warn error \
 	get_cmd_line_ptr cmdline_find_option cmdline_find_option_bool \
 	get_cpuflags cpuid_count has_cpuflag cpu cpu_vendor $(if $(CONFIG_X86_32),has_eflag) \
+	$(if $(CONFIG_EARLY_PRINTK),console_init early_serial_base) \
+	$(if $(CONFIG_X86_64),load_stage1_idt load_stage2_idt cleanup_exception_handling) \
 	__cmdline_find_option __cmdline_find_option_bool \
 	inflate_fast zlib_inflate zlib_inflateEnd zlib_inflateIncomp \
 	zlib_inflateInit2 zlib_inflateReset zlib_inflate_table zlib_inflate_workspacesize \
@@ -114,10 +132,10 @@ $(boot-rust-target): $(src)/Makefile.rust $(src)/generate-rust-target.sh $(wildc
 
 # Compiler/bindgen replacement at the same configured path also invalidates it.
 $(obj)/libcore.rlib $(obj)/libcompiler_builtins.rlib $(obj)/boot.a: $(wildcard $(RUSTC))
-$(obj)/boot_bindings_generated.rs $(obj)/boot_cpu_bindings_generated.rs: $(wildcard $(BINDGEN))
+$(obj)/boot_bindings_generated.rs $(obj)/boot_cpu_bindings_generated.rs $(obj)/boot_idt_bindings_generated.rs: $(wildcard $(BINDGEN))
 
 # The helper includes the generated offsets even on its first parallel build.
 $(obj)/boot_helpers.o: $(obj)/../voffset.h
 # Version stamps cover PATH-resolved tools as well as explicit executable paths.
 $(boot-rust-target) $(obj)/libcore.rlib: $(wildcard $(objtree)/include/config/RUSTC_VERSION_TEXT)
-$(obj)/boot_bindings_generated.rs $(obj)/boot_cpu_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
+$(obj)/boot_bindings_generated.rs $(obj)/boot_cpu_bindings_generated.rs $(obj)/boot_idt_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
