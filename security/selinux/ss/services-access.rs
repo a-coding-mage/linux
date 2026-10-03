@@ -132,16 +132,16 @@ unsafe fn constraint_expr_eval(p: *mut policydb, sctx: *mut context, tctx: *mut 
                             CEXPR_DOM => lupos_services_mls_level_dom(l1, l2),
                             CEXPR_DOMBY => lupos_services_mls_level_dom(l2, l1),
                             CEXPR_INCOMP => lupos_services_mls_level_incomp(l2, l1),
-                            _ => { lupos_services_bug_constraint_mls(); return 0; }
+                            _ => { lupos_services_bug_constraint_mls(); }
                         };
                         sp += 1; stack[sp as usize] = result as c_int; e = next; continue;
                     }
-                    _ => { lupos_services_bug_constraint_attr(); return 0; }
+                    _ => { lupos_services_bug_constraint_attr(); }
                 };
                 let result = match (*e).op {
                     CEXPR_EQ => v1 == v2,
                     CEXPR_NEQ => v1 != v2,
-                    _ => { lupos_services_bug_constraint_op(); return 0; }
+                    _ => { lupos_services_bug_constraint_op(); }
                 };
                 sp += 1; stack[sp as usize] = result as c_int;
             }
@@ -149,21 +149,21 @@ unsafe fn constraint_expr_eval(p: *mut policydb, sctx: *mut context, tctx: *mut 
                 if sp == CEXPR_MAXDEPTH as c_int - 1 { return 0; }
                 let ctx = if (*e).attr & CEXPR_TARGET != 0 { tctx }
                 else if (*e).attr & CEXPR_XTARGET != 0 {
-                    if xctx.is_null() { lupos_services_bug_constraint_xcontext(); return 0; }
+                    if xctx.is_null() { lupos_services_bug_constraint_xcontext(); }
                     xctx
                 } else { sctx };
                 let value = if (*e).attr & CEXPR_USER != 0 { (*ctx).user }
                 else if (*e).attr & CEXPR_ROLE != 0 { (*ctx).role }
                 else if (*e).attr & CEXPR_TYPE != 0 { (*ctx).type_ }
-                else { lupos_services_bug_constraint_names_attr(); return 0; };
+                else { lupos_services_bug_constraint_names_attr(); };
                 let result = match (*e).op {
                     CEXPR_EQ => ebitmap_get_bit(addr_of!((*e).names), value.wrapping_sub(1)),
                     CEXPR_NEQ => (ebitmap_get_bit(addr_of!((*e).names), value.wrapping_sub(1)) == 0) as c_int,
-                    _ => { lupos_services_bug_constraint_names_op(); return 0; }
+                    _ => { lupos_services_bug_constraint_names_op(); }
                 };
                 sp += 1; stack[sp as usize] = result;
             }
-            _ => { lupos_services_bug_constraint_expr(); return 0; }
+            _ => { lupos_services_bug_constraint_expr(); }
         }
         e = next;
     }

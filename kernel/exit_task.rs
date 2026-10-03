@@ -195,6 +195,5 @@ pub unsafe extern "C" fn rust_exit_sys_exit_group(error_code: c_int) -> ! {
 }
 #[no_mangle]
 pub unsafe extern "C" fn rust_exit_abort() -> ! {
-    b::rust_exit_bug();
-    b::panic(c"Oops failed to kill thread".as_ptr().cast());
+    b::rust_exit_bug()
 }

@@ -50,13 +50,13 @@ void lupos_services_bug_constraint_end(int sp) { BUG_ON(sp != 0); }
 void lupos_services_bug_bounds_source(const struct type_datum *p) { BUG_ON(!p); }
 void lupos_services_bug_bounds_target(const struct type_datum *p) { BUG_ON(!p); }
 void lupos_services_bug_bounded_type(const struct type_datum *p) { BUG_ON(!p); }
-void lupos_services_bug_constraint_mls(void) { BUG(); }
-void lupos_services_bug_constraint_attr(void) { BUG(); }
-void lupos_services_bug_constraint_op(void) { BUG(); }
-void lupos_services_bug_constraint_xcontext(void) { BUG(); }
-void lupos_services_bug_constraint_names_attr(void) { BUG(); }
-void lupos_services_bug_constraint_names_op(void) { BUG(); }
-void lupos_services_bug_constraint_expr(void) { BUG(); }
+void __noreturn lupos_services_bug_constraint_mls(void) { BUG(); }
+void __noreturn lupos_services_bug_constraint_attr(void) { BUG(); }
+void __noreturn lupos_services_bug_constraint_op(void) { BUG(); }
+void __noreturn lupos_services_bug_constraint_xcontext(void) { BUG(); }
+void __noreturn lupos_services_bug_constraint_names_attr(void) { BUG(); }
+void __noreturn lupos_services_bug_constraint_names_op(void) { BUG(); }
+void __noreturn lupos_services_bug_constraint_expr(void) { BUG(); }
 void lupos_services_audit_sid_invalid_prefix(struct audit_buffer *ab)
 { audit_log_format(ab, "op=security_compute_sid invalid_context="); }
 void lupos_services_audit_sid_invalid_suffix(struct audit_buffer *ab, const char *s, const char *t, const char *c)
