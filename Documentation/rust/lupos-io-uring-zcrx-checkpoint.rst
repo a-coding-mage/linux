@@ -49,9 +49,29 @@ constants used at three sites, and one untyped private-data pointer.
 The correction adds typed C-derived constant aliases and explicitly types the
 ``io_zcrx_ifq`` pointer. Its reviewed source archive has SHA-256
 ``9daf8f50736297cf7c61bfc830fc1f6615d867bb835b0f43b2ee81ef449c7b59``.
-It changes no algorithms, tests or compiler flags. Corrected native replay
-remains pending; the failed first attempt does not establish Rust build or
-behavioral acceptance.
+It changes no algorithms, tests or compiler flags. The failed first attempt
+does not establish Rust build or behavioral acceptance.
+
+Second native attempt and mask linkage correction
+------------------------------------------------
+
+At commit ``3f68088d0f41b843c1d9c08fd5b6ed9ce959a2a2``, both configured
+providers, the Rust helper and four original callers compiled, and repeated
+builds passed no-op checks. Subsequent object inspection found that
+``RUST_ZCRX_AREA_MASK`` was emitted as an extern static, imported and relocated
+by the Rust provider, with no definition in the helper. This local linkage
+defect blocks ownership qualification; no final kernel link ran.
+
+The second correction replaces that declaration with an anonymous enum
+initialized directly from the original C macro and converts its single Rust
+use to ``u64``. A bounded diagnostic using the retained configured bindgen
+command verified the same enum expression produces a literal Rust constant
+of ``ffi::c_ulong`` with the correct unsigned 64-bit mask value. All five
+original aliases were inspected; the other four were generated constants.
+The reviewed corrective patch archive has SHA-256
+``9cf2eeab5f4e73b7a80f79e7a533caa3101b40f50eac71c688bb24f8f20870fb``.
+Full corrected native replay, including ownership and relocation checks,
+remains pending. The diagnostic does not establish native or runtime acceptance.
 
 Required native checks and original C tests
 ------------------------------------------

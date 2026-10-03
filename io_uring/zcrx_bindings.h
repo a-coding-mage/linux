@@ -39,7 +39,8 @@ enum {
 /* Typed aliases let configured bindgen evaluate compound macros and enum values. */
 static const unsigned int RUST_ZCRX_SUPPORTED_REG_FLAGS = ZCRX_SUPPORTED_REG_FLAGS;
 static const unsigned int RUST_ZCRX_EVENT_TYPE_MASK = ZCRX_EVENT_TYPE_MASK;
-static const u64 RUST_ZCRX_AREA_MASK = IORING_ZCRX_AREA_MASK;
+/* Use an integer constant, avoiding a typedef-backed extern static in bindgen. */
+enum { RUST_ZCRX_AREA_MASK = IORING_ZCRX_AREA_MASK };
 static const unsigned int RUST_ZCRX_OP_NOP = IORING_OP_NOP;
 static const unsigned int RUST_ZCRX_F_MULTISHOT = IO_URING_F_MULTISHOT;
 

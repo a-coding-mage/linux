@@ -654,7 +654,7 @@ unsafe fn io_parse_rqe(rqe: *mut io_uring_zcrx_rqe, ifq: *mut io_zcrx_ifq, n: &m
     let off = rust_zcrx_read_once_u64(addr_of!((*rqe).off));
     rust_zcrx_assert_spin(addr_of_mut!((*ifq).rq.lock));
     let mut ai = (off >> IORING_ZCRX_AREA_SHIFT) as c_uint;
-    let mut ni = ((off & !RUST_ZCRX_AREA_MASK) >> (*ifq).niov_shift) as c_uint;
+    let mut ni = ((off & !(RUST_ZCRX_AREA_MASK as u64)) >> (*ifq).niov_shift) as c_uint;
     if (*rqe).__pad != 0 || ai >= (*ifq).nr_areas { return false; }
     ai = rust_zcrx_array_index_nospec(ai as c_ulong, (*ifq).nr_areas as c_ulong) as c_uint;
     let a = *(*ifq).areas.add(ai as usize);
