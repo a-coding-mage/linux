@@ -1,17 +1,33 @@
 package CompareEvidence;
 # SPDX-License-Identifier: GPL-2.0-only
 use OverflowPolicy (); use strict; use warnings; use Evidence; use Digest::SHA qw(sha256_hex); use Encode qw(encode decode FB_CROAK); use Text::ParseWords qw(shellwords);
+use Time::Local qw(timegm);
 my $IMAGE='docker.io/library/debian:trixie-slim@sha256:7792b1f7702a86946cd518db72b6a407302c3e9bc1635634368b878189e8221c';
 sub canonical_json {
  my($text)=@_; my $v=$Evidence::JSON->decode($text);
  die "noncanonical/duplicate protocol JSON\n" unless $Evidence::JSON->encode($v) eq $text; return $v;
 }
+sub runner_line {
+ my($line)=@_;$line=~s/\r$//;
+ die "NUL within runner text\n" if index($line,"\0")>=0;
+ # A downloaded runner segment may start with one UTF-8 BOM before its
+ # timestamp. This never normalizes protocol text or decoded payload bytes.
+ $line=~s/^\xEF\xBB\xBF(?=\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z )//;
+ die "misplaced transport BOM\n" if $line=~/\xEF\xBB\xBF|\x{FEFF}/;
+ if($line=~/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(?:\.\d+)?Z /){
+  my($year,$month,$day,$hour,$minute,$second)=($1,$2,$3,$4,$5,$6);
+  die "malformed runner timestamp\n" unless $month>=1 && $month<=12 && $day>=1 && $hour<=23 && $minute<=59 && $second<=59;
+  eval {timegm($second,$minute,$hour,$day,$month-1,$year)};
+  die "malformed runner timestamp\n" if $@;
+  $line=~s/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z //;
+ }elsif($line=~/^\d{4}-/){die "malformed runner timestamp\n"}
+ return $line;
+}
 sub parse {
  my($raw,$provider,$receipt)=@_;
  my @roles=Evidence::roles(); my(%files,@manifest); my($state,$index,$terminal)=('outside',0,0); my($head,$chunk,$bytes);
  for my $line(split /\n/,$raw,-1){
-  $line=~s/\r$//;
-  $line=~s/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?Z //;
+  $line=runner_line($line);
   if($state eq 'outside'){
    if($line=~/^UEV3 BEGIN (.+)$/){
     my $h=canonical_json($1); Evidence::exact_keys($h,qw(schema provider run_id trigger_sha run_attempt source_sha));
@@ -36,6 +52,8 @@ sub parse {
   } elsif($state eq 'file'){
    if($line=~/^UEV3 DATA (.+)$/){
     my $part=canonical_json($1);Evidence::exact_keys($part,qw(index text));
+    die "BOM within evidence payload\n" if !ref($part->{text}) && $part->{text}=~/\x{FEFF}/;
+    die "NUL within evidence payload\n" if !ref($part->{text}) && index($part->{text},"\0")>=0;
     die "reordered/invalid chunk\n" unless $part->{index}==$chunk && !ref($part->{text}) && length($part->{text})>0 && length($part->{text})<=4096;
     $bytes.=encode('UTF-8',$part->{text});$chunk++;die "payload exceeds declaration\n" if length($bytes)>$head->{bytes};next;
    }

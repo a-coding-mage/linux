@@ -148,3 +148,29 @@ for my $case (
  my %copy=%$r; $case->[2]->($copy{$case->[1]});reject($case->[0],envelope(\%copy,'rust'));
 }
 print "OWNERSHIP_PROPOSAL_CONTROLS_COMPLETE no_kernel_execution=true\n";
+my $bom=pack('C*',0xef,0xbb,0xbf);
+my $transport=$stamped;
+$transport=~s/\A/$bom/;
+$transport=~s/^(2026-10-02T00:00:00\.1234567Z UEV3 DATA )/$bom.$1/me;
+CompareEvidence::compare(receipt($clog,$transport),$clog,$transport,$dir);
+print "PASS start and interior timestamp-boundary BOMs preserve payload hashes\n";
+reject('transport processing cannot replace original raw digest',$transport,receipt($clog,$stamped));
+for my $case (
+ ['BOM without timestamp',$bom.$rlog],
+ ['BOM after timestamp',do {my$x=$stamped;$x=~s/Z UEV3 BEGIN /Z ${bom}UEV3 BEGIN /;$x}],
+ ['doubled transport BOM',$bom.$bom.$stamped],
+ ['invalid timestamp month',do {my$x=$bom.$stamped;$x=~s/2026-10-02/2026-13-02/;$x}],
+ ['invalid timestamp day',do {my$x=$bom.$stamped;$x=~s/2026-10-02/2026-02-31/;$x}],
+ ['invalid timestamp hour',do {my$x=$bom.$stamped;$x=~s/T00:00:00/T24:00:00/;$x}],
+ ['incomplete timestamp',do {my$x=$bom.$stamped;$x=~s/1234567Z /1234567 /;$x}],
+ ['NUL in runner framing',"\0".$stamped]
+){reject($case->[0],$case->[1])}
+for my $case (['BOM',"\x{feff}"],['NUL',"\0"]){
+ my %copy=%$r;$copy{'runtime.build.log'}.=$case->[1];
+ my $bad=envelope(\%copy,'rust');my $pass=eval{CompareEvidence::compare(receipt($clog,$bad),$clog,$bad,$dir);1};
+ die "payload control did not reach $case->[0] rejection: $@" if $pass || $@!~/\Q$case->[0]\E within evidence payload/;
+ print "PASS rejects $case->[0] within payload with valid recomputed hashes\n";
+}
+my $wrong_id=receipt($clog,$transport);$wrong_id->{run_id}='124';reject('wrong run ID with transport BOM',$transport,$wrong_id);
+my $cancelled=receipt($clog,$transport);$cancelled->{jobs}{rust}{conclusion}='cancelled';reject('cancelled Rust remains unknown/failing',$transport,$cancelled);
+print "TRANSPORT_BOM_CONTROLS_COMPLETE original_failure_gates_preserved=true\n";

@@ -23,7 +23,7 @@ git -C "$repo" cat-file -e "$before^{commit}" || die 'missing parent'
 # Disarm/rearm pushes cannot reuse this request ID on later history. A newer
 # feature-branch tip requires a new reviewed setup base, not a silent ref move.
 read -r -a setup_parents <<< "$(git -C "$repo" show -s --format=%P "$before")"
-[[ ${#setup_parents[@]} == 1 && ${setup_parents[0]} == 298abda59725d491c10be678618ac76300d1aba1 ]] || die 'setup parent not allowlisted'
+[[ ${#setup_parents[@]} == 1 && ${setup_parents[0]} == 479ba34a322678167a144c7ebc69bc33d059842a ]] || die 'setup parent not allowlisted'
 changes=$(git -C "$repo" diff-tree --no-commit-id --name-status -r --no-renames "$before" "$after")
 [[ $changes == $'M\t'"$manifest" ]] || die 'only the existing manifest may change'
 [[ $(git -C "$repo" ls-tree "$after" -- "$manifest" | cut -d' ' -f1) == 100644 ]] || die 'manifest must be a regular file'
@@ -32,7 +32,7 @@ changes=$(git -C "$repo" diff-tree --no-commit-id --name-status -r --no-renames 
 expected=$(cat <<'JSON'
 {
   "schema": 1,
-  "request_id": "unicode-public-62a3294-v2",
+  "request_id": "unicode-public-62a3294-v3",
   "source_sha": "62a3294181556f17db863c9016524fa3068a374b",
   "profile": "unicode-norm-original-c-x86_64-v1",
   "evidence": "logs-only",
@@ -43,4 +43,4 @@ JSON
 cmp -s "$repo/$manifest" <(printf '%s\n' "$expected") || die 'request bytes not allowlisted'
 cmp -s <(git -C "$repo" show "$before:$manifest") <(printf '%s\n' "${expected/\"armed\": true/\"armed\": false}") || die 'prior request must be unarmed'
 printf 'REQUEST_ADMITTED source=%s request=%s trigger=%s parent=%s\n' \
-  62a3294181556f17db863c9016524fa3068a374b unicode-public-62a3294-v2 "$after" "$before"
+  62a3294181556f17db863c9016524fa3068a374b unicode-public-62a3294-v3 "$after" "$before"

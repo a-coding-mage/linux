@@ -28,7 +28,7 @@ call() {
   fi
   before_deadline || { printf 'cleanup_deadline_exhausted\n' >> "$logs/cleanup.stderr"; return 79; }
 }
-absent() { (( status == 1 )) && { [[ $output == "Error: No such object: $id" ]] || [[ $output == "Error response from daemon: No such container: $id" ]]; }; }
+absent() { (( status == 1 )) && { [[ $output == "Error: No such object: $id" ]] || [[ $output == $'\n'"Error: No such object: $id" ]] || [[ $output == "Error response from daemon: No such container: $id" ]]; }; }
 removing() { (( status == 1 )) && [[ $output == "Error response from daemon: removal of container $id is already in progress" ]]; }
 verify_absence() {
   absent && before_deadline || return 79
