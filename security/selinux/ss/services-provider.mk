@@ -7,6 +7,11 @@ selinux-y += ss/services-glue.o ss/services-policy-glue.o ss/services-query-glue
 selinux-services-rust-deps := $(src)/ss/services-access.rs $(src)/ss/services-context.rs \
     $(src)/ss/services-policy.rs $(src)/ss/services-query.rs \
     $(objtree)/rust/bindings/selinux_services_generated.rs
+# Explicit targets have no implicit-rule stem; retain the original composite
+# identity by matching their full relative stem against selinux-y's ss/ paths.
+$(addprefix $(obj)/ss/,services.o services.s services.ll services.rsi): private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
 # if_changed_dep appends fixdep; preserve expansion/formatter failures.
 quiet_cmd_selinux_services_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
       cmd_selinux_services_rsi = \

@@ -6,6 +6,11 @@ selinux-y += ss/policydb-glue.o
 selinux-policydb-rust-deps := $(src)/ss/policydb-core.rs \
     $(src)/ss/policydb-symbols.rs $(src)/ss/policydb-wire.rs \
     $(objtree)/rust/bindings/selinux_policydb_generated.rs
+# Explicit targets have no implicit-rule stem; retain the original composite
+# identity by matching their full relative stem against selinux-y's ss/ paths.
+$(addprefix $(obj)/ss/,policydb.o policydb.s policydb.ll policydb.rsi): private modname-multi = \
+    $(sort $(foreach m,$(multi-obj-ym),\
+        $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
 quiet_cmd_selinux_policydb_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
       cmd_selinux_policydb_rsi = \
     $(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
