@@ -128,9 +128,9 @@ pub unsafe extern "C" fn initrd_load() {
                 c"/dev/ram".as_ptr().cast(),
                 bindings::Root_RAM0 as bindings::dev_t,
             );
-            #[cfg(CONFIG_BLK_DEV_RAM)]
+            #[cfg(CONFIG_BLK_DEV_RAM = "y")]
             let loaded = bindings::rd_load_image();
-            #[cfg(not(CONFIG_BLK_DEV_RAM))]
+            #[cfg(not(CONFIG_BLK_DEV_RAM = "y"))]
             let loaded = 0;
             // C retains this printk index record even when its inline
             // rd_load_image fallback makes the logging branch unreachable.

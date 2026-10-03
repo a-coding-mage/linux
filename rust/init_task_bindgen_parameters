@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--allowlist-type '^(task_struct|signal_struct|sighand_struct|task_exec_state|group_info|cred|thread_info|thread_struct|seqcount_spinlock_t|task_cputime_atomic|plist_node|cpumask|rlimit|refcount_t|atomic_t|kernel_cap_t)$'
+--allowlist-var '^(RUST_INIT_TASK_.*|RLIM.*|INR_OPEN_.*|MQ_BYTES_MAX|SECUREBITS_DEFAULT|MAX_PRIO|PF_KTHREAD|SCHED_NORMAL|TASK_COMM_LEN|AUDIT_SID_UNSET|NUMA_NO_NODE|KLP_TRANSITION_IDLE|MM_CID_UNSET|SPINLOCK_MAGIC|READER_BIAS|root_user|init_user_ns|init_ucounts|init_struct_pid|init_stack|init_mm|init_fs|init_files|init_nsproxy|root_task_group|__top_init_kernel_stack|SCX_DSQ_INVALID|SCX_SLICE_DFL)$'
+--allowlist-function '^do_no_restart_syscall$'
+--no-prepend-enum-name
+--no-doc-comments
+# Pointer-only dependencies retain compiler-derived opaque size/alignment.
+--opaque-type '^(mm_struct|user_namespace|pid|fs_struct|files_struct|nsproxy|task_group|user_struct|ucounts|key|file|inode|dentry|super_block|vfsmount|css_set|cgroup|perf_event|perf_event_context|io_uring_task|audit_context|numa_group|mem_cgroup|bpf_local_storage|bpf_run_ctx|net|pid_namespace|uts_namespace|cgroup_namespace|ipc_namespace|mnt_namespace|time_namespace|ns_common|xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr)$'

@@ -1,0 +1,6 @@
+# Real C layouts and signatures, from this kernel/configuration/architecture.
+--allowlist-item '^(async_cookie_t|async_domain|bin_attribute|file|path|kstat|timespec64|fs_struct|phys_addr_t|time64_t|loff_t|umode_t|uid_t|gid_t|dev_t|obs_kernel_param|pi_entry)$'
+--allowlist-item '^(PATH_MAX|CPIO_HDRLEN|MAX_ERRNO|EINTR|EAGAIN|S_IFMT|S_IFREG|S_IFDIR|S_IFLNK|S_IFBLK|S_IFCHR|S_IFIFO|S_IFSOCK|AT_SYMLINK_NOFOLLOW|O_WRONLY|O_CREAT|O_TRUNC|O_LARGEFILE|MINORBITS|MINORMASK|NUMA_NO_NODE|POISON_FREE_INITMEM|RUST_INITRAMFS_.*)$'
+--allowlist-item '^(kernel_write|kfree|hex2bin|strcmp|init_utimes|vfs_utimes|init_stat|init_rmdir|init_unlink|init_link|filp_open|vfs_fchown|vfs_fchmod|vfs_truncate|fput|init_mkdir|init_chown|init_chmod|init_mknod|init_symlink|_printk|panic|__show_mem)$'
+--allowlist-item '^(decompress_method|flush_delayed_fput|task_work_run|security_initramfs_populated|memblock_is_region_memory|memblock_is_region_reserved|__memblock_reserve|free_reserved_area|sysfs_create_bin_file|sysfs_bin_attr_simple_read|async_schedule_node_domain|async_synchronize_cookie_domain|__usermodehelper_set_disable_depth|kstrtobool|free_initrd_mem)$'
+--allowlist-item '^(initrd_start|initrd_end|initrd_below_start_ok|phys_initrd_start|phys_initrd_size|__initramfs_start|__initramfs_size|crashk_res|firmware_kobj|rust_initramfs_.*)$'

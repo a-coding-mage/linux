@@ -1,0 +1,4 @@
+# Native interfaces, constants and metadata layouts for init/calibrate.rs.
+--allowlist-item '^(obs_kernel_param|pi_entry|HZ)$'
+--allowlist-item '^(jiffies|loops_per_jiffy|kstrtoull|_kstrtoul|delay_read_timer|__delay|_printk)$'
+--allowlist-item '^(calibrate_delay_is_known|calibration_delay_done|rust_init_calibrate_cpu_lpj)$'

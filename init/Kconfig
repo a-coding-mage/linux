@@ -2322,6 +2322,65 @@ config RUST_INIT_MAIN
 
 	  If unsure, say N to keep the original C boot implementation.
 
+config RUST_INIT_CALIBRATE
+	bool "Rust generic delay calibration"
+	depends on RUST && GENERIC_CALIBRATE_DELAY
+	depends on X86_64 || ARM64
+	depends on !GCC_PLUGIN_LATENT_ENTROPY
+	default y
+	help
+	  Build the original init/calibrate.o from Rust, including the lpj boot
+	  option, direct timer sampling, converging calibration, per-CPU reuse
+	  and weak architecture hooks. A native helper resolves the architecture
+	  CPU/per-CPU access macros; all storage and calibration logic are Rust.
+
+	  The per-CPU section ABI is currently audited for x86-64 and ARM64.
+	  The C latent-entropy compiler plugin is not supported by this owner.
+
+	  Disable only for an original-C reference configuration. Rust-owned
+	  production targets must require this option and reject C fallback.
+
+config RUST_INIT_ROOT_MOUNTS
+	bool "Rust root filesystem mounting"
+	depends on RUST
+	depends on !GCC_PLUGIN_LATENT_ENTROPY
+	default y
+	help
+	  Build init/do_mounts.o from its Rust translation. This owns root
+	  device options and discovery, filesystem selection and retry,
+	  NFS/CIFS/nodev/block root mounting, and the boot namespace pivot.
+	  It preserves the original rootfs filesystem registration and the
+	  established initrd and RAM disk interfaces.
+	  GCC latent-entropy instrumentation of init functions is not yet
+	  supported by this Rust owner.
+
+	  Disable only for an original-C reference configuration. Rust-owned
+	  production targets must require this option and reject C fallback.
+
+config RUST_INIT_TASK
+	bool "Rust initial task and initial credentials"
+	depends on RUST && (X86_64 || ARM64)
+	default y
+	help
+	  Use Rust for the initial task, signal/sighand, credentials, execution
+	  state and optional shadow-call-stack data. The architecture stack
+	  linker symbols retain their existing architecture owners. Versioned
+	  exports use a declaration-only C metadata companion; it does not
+	  define task storage or implement any initializer.
+
+config RUST_INIT_INITRAMFS
+	bool "Rust initramfs extraction and population"
+	depends on RUST && BLK_DEV_INITRD
+	depends on !GCC_PLUGIN_LATENT_ENTROPY
+	default y
+	help
+	  Build init/initramfs.o from the Rust implementation. Archive parsing,
+	  file creation, decompressor streaming, boot memory lifetime and async
+	  rootfs synchronization are owned by Rust. A small companion supplies
+	  compiler allocation hooks and architecture/current-task macros.
+	  The original CONFIG_INITRAMFS_TEST C KUnit suite tests this owner.
+
+
 config RUST_INIT_NOINITRAMFS
 	bool "Rust default root filesystem"
 	depends on RUST && !BLK_DEV_INITRD

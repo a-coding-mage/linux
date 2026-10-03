@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
+//! Rust-owned initial task, signals, credentials, and execution state.
 // Dependencies: linux/init_task.h, linux/export.h, linux/mqueue.h,
 // linux/sched.h, linux/sched/sysctl.h, linux/sched/rt.h, linux/sched/task.h,
 // linux/sched/ext.h, linux/sched/exec_state.h, linux/user_namespace.h,
@@ -10,7 +11,80 @@
 // exactly the fields the C initializer names, in the same order and under
 // the same configuration conditions.
 
-use core::mem::zeroed;
+#![allow(non_upper_case_globals, unused_unsafe, unused_mut, unused_macros)]
+
+#[cfg(not(any(CONFIG_X86_64, CONFIG_ARM64)))]
+compile_error!("Rust initial-task architecture initializers support x86_64 and arm64");
+
+#[allow(
+    clippy::all, dead_code, missing_docs, non_camel_case_types, non_snake_case,
+    non_upper_case_globals, improper_ctypes, unsafe_op_in_unsafe_fn, unreachable_pub
+)]
+mod bindings {
+    use kernel::ffi;
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/init_task_generated.rs"));
+}
+use bindings::*;
+use core::mem::{align_of, offset_of, size_of, zeroed};
+
+include!("init_task_initializers.rs");
+
+#[cfg(not(CONFIG_MODVERSIONS))]
+#[path = "../rust/ffi_export.rs"]
+mod ffi_export;
+
+// These are native-header values from this build, including any selected
+// debug/RT options. Do not relax these checks if the generated view changes.
+const _: () = {
+    assert!(size_of::<task_struct>() == RUST_INIT_TASK_SIZE as usize);
+    assert!(align_of::<task_struct>() == RUST_INIT_TASK_ALIGN as usize);
+    assert!(align_of::<task_struct>() >= RUST_INIT_TASK_L1_CACHE_BYTES as usize);
+    assert!(offset_of!(task_struct, thread) == RUST_INIT_TASK_THREAD_OFFSET as usize);
+    assert!(size_of::<thread_struct>() == RUST_INIT_TASK_THREAD_SIZE as usize);
+    assert!(align_of::<thread_struct>() == RUST_INIT_TASK_THREAD_ALIGN as usize);
+    assert!(offset_of!(task_struct, stack) == RUST_INIT_TASK_STACK_OFFSET as usize);
+    assert!(offset_of!(task_struct, restart_block) == RUST_INIT_TASK_RESTART_OFFSET as usize);
+    assert!(offset_of!(restart_block, fn_) == RUST_INIT_TASK_RESTART_FN_OFFSET as usize);
+    assert!(size_of::<Option<unsafe extern "C" fn(*mut restart_block) -> kernel::ffi::c_long>>() == RUST_INIT_TASK_RESTART_FN_SIZE as usize);
+    assert!(offset_of!(task_struct, se) == RUST_INIT_TASK_SE_OFFSET as usize);
+    assert!(offset_of!(task_struct, rt) == RUST_INIT_TASK_RT_OFFSET as usize);
+    assert!(offset_of!(task_struct, tasks) == RUST_INIT_TASK_TASKS_OFFSET as usize);
+    assert!(offset_of!(task_struct, thread_node) == RUST_INIT_TASK_THREAD_NODE_OFFSET as usize);
+    assert!(offset_of!(task_struct, alloc_lock) == RUST_INIT_TASK_ALLOC_LOCK_OFFSET as usize);
+    assert!(offset_of!(task_struct, pi_lock) == RUST_INIT_TASK_PI_LOCK_OFFSET as usize);
+    assert!(size_of::<signal_struct>() == RUST_INIT_TASK_SIGNAL_SIZE as usize);
+    assert!(align_of::<signal_struct>() == RUST_INIT_TASK_SIGNAL_ALIGN as usize);
+    assert!(size_of::<sighand_struct>() == RUST_INIT_TASK_SIGHAND_SIZE as usize);
+    assert!(align_of::<sighand_struct>() == RUST_INIT_TASK_SIGHAND_ALIGN as usize);
+    assert!(size_of::<cred>() == RUST_INIT_TASK_CRED_SIZE as usize);
+    assert!(align_of::<cred>() == RUST_INIT_TASK_CRED_ALIGN as usize);
+    assert!(size_of::<group_info>() == RUST_INIT_TASK_GROUP_SIZE as usize);
+    assert!(align_of::<group_info>() == RUST_INIT_TASK_GROUP_ALIGN as usize);
+    assert!(size_of::<task_exec_state>() == RUST_INIT_TASK_EXEC_SIZE as usize);
+    assert!(align_of::<task_exec_state>() == RUST_INIT_TASK_EXEC_ALIGN as usize);
+    assert!(size_of::<thread_info>() == RUST_INIT_TASK_INFO_SIZE as usize);
+    assert!(align_of::<thread_info>() == RUST_INIT_TASK_INFO_ALIGN as usize);
+    assert!(size_of::<raw_spinlock_t>() == RUST_INIT_TASK_RAW_LOCK_SIZE as usize);
+    assert!(align_of::<raw_spinlock_t>() == RUST_INIT_TASK_RAW_LOCK_ALIGN as usize);
+    assert!(size_of::<spinlock_t>() == RUST_INIT_TASK_SPIN_LOCK_SIZE as usize);
+    assert!(align_of::<spinlock_t>() == RUST_INIT_TASK_SPIN_LOCK_ALIGN as usize);
+    assert!(size_of::<mutex>() == RUST_INIT_TASK_MUTEX_SIZE as usize);
+    assert!(align_of::<mutex>() == RUST_INIT_TASK_MUTEX_ALIGN as usize);
+    assert!(size_of::<rw_semaphore>() == RUST_INIT_TASK_RWSEM_SIZE as usize);
+    assert!(align_of::<rw_semaphore>() == RUST_INIT_TASK_RWSEM_ALIGN as usize);
+};
+#[cfg(CONFIG_X86_64)]
+const _: () = {
+    assert!(offset_of!(thread_struct, sp) == RUST_INIT_TASK_SP_OFFSET as usize);
+    assert!(size_of::<*mut kernel::ffi::c_ulong>() == RUST_INIT_TASK_SP_SIZE as usize);
+    assert!(align_of::<*mut kernel::ffi::c_ulong>() == RUST_INIT_TASK_SP_ALIGN as usize);
+};
+#[cfg(not(CONFIG_PREEMPT_RT))]
+const _: () = {
+    assert!(RUST_INIT_TASK_SPIN_RAW_OFFSET == 0);
+    assert!(size_of::<spinlock_t>() == size_of::<raw_spinlock_t>());
+    assert!(align_of::<spinlock_t>() == align_of::<raw_spinlock_t>());
+};
 
 static mut init_signals: signal_struct = {
     // SAFETY: signal_struct is plain C data; C zero-fills unnamed fields.
@@ -38,10 +112,10 @@ static mut init_signals: signal_struct = {
         s.posix_cputimers.bases[1].nextevt = u64::MAX;
         s.posix_cputimers.bases[2].nextevt = u64::MAX;
     }
-    s.pids[PIDTYPE_PID as usize] = unsafe { &raw mut init_struct_pid };
-    s.pids[PIDTYPE_TGID as usize] = unsafe { &raw mut init_struct_pid };
-    s.pids[PIDTYPE_PGID as usize] = unsafe { &raw mut init_struct_pid };
-    s.pids[PIDTYPE_SID as usize] = unsafe { &raw mut init_struct_pid };
+    s.pids[RUST_INIT_TASK_PIDTYPE_PID as usize] = unsafe { &raw mut init_struct_pid };
+    s.pids[RUST_INIT_TASK_PIDTYPE_TGID as usize] = unsafe { &raw mut init_struct_pid };
+    s.pids[RUST_INIT_TASK_PIDTYPE_PGID as usize] = unsafe { &raw mut init_struct_pid };
+    s.pids[RUST_INIT_TASK_PIDTYPE_SID as usize] = unsafe { &raw mut init_struct_pid };
     // INIT_PREV_CPUTIME(init_signals)
     #[cfg(not(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE))]
     {
@@ -55,13 +129,13 @@ static mut init_sighand: sighand_struct = {
     let mut s: sighand_struct = unsafe { zeroed() };
     s.count = REFCOUNT_INIT!(1);
     // { { { .sa_handler = SIG_DFL } } }: only action[0] is named; SIG_DFL is 0.
-    s.action[0].sa.sa_handler = SIG_DFL;
+    s.action[0].sa.sa_handler = None;
     s.siglock = __SPIN_LOCK_UNLOCKED!(init_sighand.siglock);
     s.signalfd_wqh = __WAIT_QUEUE_HEAD_INITIALIZER!(init_sighand.signalfd_wqh);
     s
 };
 
-/* init to 2 - one for init_task, one to ensure it is never freed */
+/// Initial execution state: one task reference plus one permanent reference.
 #[no_mangle]
 pub static mut init_task_exec_state: task_exec_state = {
     // SAFETY: task_exec_state is plain C data; C zero-fills unnamed fields.
@@ -73,10 +147,11 @@ pub static mut init_task_exec_state: task_exec_state = {
 };
 
 #[cfg(CONFIG_SHADOW_CALL_STACK)]
+/// Initial shadow stack with the architecture's terminating magic word.
 #[no_mangle]
-pub static mut init_shadow_call_stack: [kernel::ffi::c_ulong; SCS_SIZE / core::mem::size_of::<kernel::ffi::c_long>()] = {
-    let mut v = [0; SCS_SIZE / core::mem::size_of::<kernel::ffi::c_long>()];
-    v[(SCS_SIZE / core::mem::size_of::<kernel::ffi::c_long>()) - 1] = SCS_END_MAGIC;
+pub static mut init_shadow_call_stack: [kernel::ffi::c_ulong; RUST_INIT_TASK_SCS_SIZE as usize / size_of::<kernel::ffi::c_long>()] = {
+    let mut v = [0; RUST_INIT_TASK_SCS_SIZE as usize / size_of::<kernel::ffi::c_long>()];
+    v[(RUST_INIT_TASK_SCS_SIZE as usize / size_of::<kernel::ffi::c_long>()) - 1] = RUST_INIT_TASK_SCS_END_MAGIC as _;
     v
 };
 
@@ -94,7 +169,7 @@ static mut init_groups: group_info = {
 static mut init_cred: cred = {
     // SAFETY: cred is plain C data; C zero-fills unnamed fields.
     let mut c: cred = unsafe { zeroed() };
-    c.usage = ATOMIC_INIT!(4);
+    c.usage.counter = 4; // ATOMIC_INIT(4) assigned to atomic_long_t by C.
     c.uid = GLOBAL_ROOT_UID;
     c.gid = GLOBAL_ROOT_GID;
     c.suid = GLOBAL_ROOT_UID;
@@ -131,13 +206,11 @@ const fn init_task_comm() -> [kernel::ffi::c_char; TASK_COMM_LEN as usize] {
  * Set up the first task table, touch at your own risk!. Base=0,
  * limit=0x1fffff (=2MB)
  */
-/// `__aligned(L1_CACHE_BYTES)`: the C object is cache-line aligned.
-#[repr(C, align(64))]
-pub struct __init_task_aligned(pub task_struct);
-const _: () = assert!(core::mem::align_of::<__init_task_aligned>() >= L1_CACHE_BYTES as usize);
-
-#[export_name = "init_task"]
-pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
+// sched_statistics already supplies native L1_CACHE_BYTES alignment, even
+// without SCHEDSTATS. Check it above and keep the canonical object type/size.
+/// Bootstrap task, including native self-links and architecture thread state.
+#[no_mangle]
+pub static mut init_task: task_struct = {
     // SAFETY: task_struct is plain C data; C zero-fills unnamed fields.
     let mut t: task_struct = unsafe { zeroed() };
     #[cfg(CONFIG_THREAD_INFO_IN_TASK)]
@@ -156,15 +229,15 @@ pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
     t.cpus_ptr = unsafe { &raw mut init_task.cpus_mask };
     t.user_cpus_ptr = core::ptr::null_mut();
     t.cpus_mask = CPU_MASK_ALL!();
-    t.max_allowed_capacity = SCHED_CAPACITY_SCALE as _;
-    t.nr_cpus_allowed = NR_CPUS as _;
+    t.max_allowed_capacity = RUST_INIT_TASK_SCHED_CAPACITY_SCALE as _;
+    t.nr_cpus_allowed = RUST_INIT_TASK_NR_CPUS as _;
     t.mm = core::ptr::null_mut();
     t.active_mm = unsafe { &raw mut init_mm };
     t.exec_state = unsafe { &raw mut init_task_exec_state };
     t.restart_block.fn_ = Some(do_no_restart_syscall);
     t.se.group_node = LIST_HEAD_INIT!(init_task.se.group_node);
     t.rt.run_list = LIST_HEAD_INIT!(init_task.rt.run_list);
-    t.rt.time_slice = RR_TIMESLICE as _;
+    t.rt.time_slice = RUST_INIT_TASK_RR_TIMESLICE as _;
     t.tasks = LIST_HEAD_INIT!(init_task.tasks);
     #[cfg(CONFIG_SMP)]
     {
@@ -181,9 +254,9 @@ pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
         t.scx.holding_cpu = -1;
         t.scx.runnable_cpu = -1;
         t.scx.runnable_node = LIST_HEAD_INIT!(init_task.scx.runnable_node);
-        t.scx.runnable_at = INITIAL_JIFFIES;
-        t.scx.ddsp_dsq_id = SCX_DSQ_INVALID as _;
-        t.scx.slice = SCX_SLICE_DFL as _;
+        t.scx.runnable_at = RUST_INIT_TASK_INITIAL_JIFFIES;
+        t.scx.ddsp_dsq_id = RUST_INIT_TASK_SCX_DSQ_INVALID as _;
+        t.scx.slice = RUST_INIT_TASK_SCX_SLICE_DFL as _;
     }
     t.ptraced = LIST_HEAD_INIT!(init_task.ptraced);
     t.ptrace_entry = LIST_HEAD_INIT!(init_task.ptrace_entry);
@@ -225,7 +298,7 @@ pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
     #[cfg(CONFIG_AUDIT)]
     {
         t.loginuid = INVALID_UID;
-        t.sessionid = AUDIT_SID_UNSET as _;
+        t.sessionid = RUST_INIT_TASK_AUDIT_SID_UNSET as _;
     }
     #[cfg(CONFIG_PERF_EVENTS)]
     {
@@ -241,7 +314,7 @@ pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
     }
     #[cfg(CONFIG_TASKS_RCU)]
     {
-        t.rcu_tasks_holdout = false;
+        t.rcu_tasks_holdout = 0; // C false, stored in u8.
         t.rcu_tasks_holdout_list = LIST_HEAD_INIT!(init_task.rcu_tasks_holdout_list);
         t.rcu_tasks_idle_cpu = -1;
         t.rcu_tasks_exit_list = LIST_HEAD_INIT!(init_task.rcu_tasks_exit_list);
@@ -288,7 +361,7 @@ pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
     }
     #[cfg(CONFIG_KCSAN)]
     {
-        t.kcsan_ctx.scoped_accesses.next = LIST_POISON1 as _;
+        t.kcsan_ctx.scoped_accesses.next = RUST_INIT_TASK_LIST_POISON1 as _;
         t.kcsan_ctx.scoped_accesses.prev = core::ptr::null_mut();
     }
     #[cfg(CONFIG_TRACE_IRQFLAGS)]
@@ -298,7 +371,7 @@ pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
     #[cfg(CONFIG_LOCKDEP)]
     {
         t.lockdep_depth = 0; /* no locks held yet */
-        t.curr_chain_key = INITIAL_CHAIN_KEY;
+        t.curr_chain_key = RUST_INIT_TASK_INITIAL_CHAIN_KEY as _;
         t.lockdep_recursion = 0;
     }
     #[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
@@ -312,7 +385,7 @@ pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
     }
     #[cfg(CONFIG_LIVEPATCH)]
     {
-        t.patch_state = KLP_TRANSITION_IDLE as _;
+        t.patch_state = RUST_INIT_TASK_KLP_TRANSITION_IDLE as _;
     }
     #[cfg(CONFIG_SECURITY)]
     {
@@ -324,23 +397,21 @@ pub static mut init_task_storage: __init_task_aligned = __init_task_aligned({
     }
     #[cfg(CONFIG_SCHED_MM_CID)]
     {
-        t.mm_cid.cid = MM_CID_UNSET as _;
+        t.mm_cid.cid = RUST_INIT_TASK_MM_CID_UNSET as _;
     }
     t
-});
-// EXPORT_SYMBOL(init_task);
-
-extern "C" {
-    /// `init_task` itself, as the rest of the kernel names it.
-    #[link_name = "init_task"]
-    pub static mut init_task: task_struct;
-}
+};
+#[cfg(not(CONFIG_MODVERSIONS))]
+ffi_export::export_symbol!(init_task, init_task, "", "");
+// With MODVERSIONS, the export uses declaration-only canonical type metadata
+// in init_task_exports.c; it defines no initial-task storage or runtime code.
 
 /*
  * Initial thread structure. Alignment of this is handled by a special
  * linker map entry.
  */
 #[cfg(not(CONFIG_THREAD_INFO_IN_TASK))]
+/// Separate bootstrap thread info, where the architecture requires it.
 #[no_mangle]
 #[link_section = ".data..init_thread_info"]
 pub static mut init_thread_info: thread_info = INIT_THREAD_INFO!(init_task);

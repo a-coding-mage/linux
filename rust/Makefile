@@ -40,6 +40,22 @@ targets += init_main_bindings.o bindings/init_main_generated.rs
 obj-$(CONFIG_RUST_INIT_MAIN) += init_main_bindings.o
 # prepare descends without need-builtin, before init/ consumes the metadata.
 always-$(CONFIG_RUST_INIT_MAIN) += init_main_bindings.o
+targets += bindings/init_calibrate_generated.rs
+always-$(CONFIG_RUST_INIT_CALIBRATE) += bindings/init_calibrate_generated.rs
+
+
+targets += bindings/init_root_mounts_generated.rs
+always-$(CONFIG_RUST_INIT_ROOT_MOUNTS) += bindings/init_root_mounts_generated.rs
+
+
+targets += bindings/init_task_generated.rs
+always-$(CONFIG_RUST_INIT_TASK) += bindings/init_task_generated.rs
+
+
+targets += bindings/init_initramfs_generated.rs
+always-$(CONFIG_RUST_INIT_INITRAMFS) += bindings/init_initramfs_generated.rs
+
+
 targets += bindings/init_mounts_generated.rs
 targets += bindings/init_version_generated.rs bindings/init_version_timestamp_generated.rs
 always-$(CONFIG_RUST_INIT_MOUNTS_INITRD) += bindings/init_mounts_generated.rs
@@ -560,6 +576,35 @@ $(obj)/bindings/init_main_generated.rs: private bindgen_target_flags = \
     $(shell grep -Ev '^#|^$$' $(src)/init_main_bindgen_parameters)
 $(obj)/bindings/init_main_generated.rs: $(src)/bindings/init_main.h \
     $(src)/init_main_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
+$(obj)/bindings/init_calibrate_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_calibrate_bindgen_parameters)
+$(obj)/bindings/init_calibrate_generated.rs: $(src)/bindings/init_calibrate.h \
+    $(src)/init_calibrate_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
+$(obj)/bindings/init_root_mounts_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_root_mounts_bindgen_parameters)
+$(obj)/bindings/init_root_mounts_generated.rs: $(src)/bindings/init_root_mounts.h \
+    $(src)/init_root_mounts_bindgen_parameters FORCE
+	$(call if_changed_dep,bindgen)
+
+$(obj)/bindings/init_task_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_task_bindgen_parameters)
+$(obj)/bindings/init_task_generated.rs: private bindgen_target_extra = && \
+    $(PERL) $(srctree)/scripts/rust_init_task_bindings.pl $@ > $@.view && \
+    mv $@.view $@
+$(obj)/bindings/init_task_generated.rs: $(src)/bindings/init_task.h \
+    $(src)/init_task_bindgen_parameters $(srctree)/scripts/rust_init_task_bindings.pl FORCE
+	$(call if_changed_dep,bindgen)
+
+clean-files += bindings/init_task_generated.rs.view
+
+$(obj)/bindings/init_initramfs_generated.rs: private bindgen_target_flags = \
+    $(shell grep -Ev '^#|^$$' $(src)/init_initramfs_bindgen_parameters)
+$(obj)/bindings/init_initramfs_generated.rs: $(src)/bindings/init_initramfs.h \
+    $(src)/init_initramfs_bindgen_parameters FORCE
 	$(call if_changed_dep,bindgen)
 
 $(obj)/bindings/init_mounts_generated.rs: private bindgen_target_flags = \

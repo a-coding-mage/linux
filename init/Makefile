@@ -11,7 +11,9 @@ obj-y                          := main.o version.o mounts.o
 # The generic .lst rule instead compiles the adjacent C source into $*.o.
 clean-files += .rust-listing/ .rust-listing-elf/
 ifneq ($(filter y,$(CONFIG_RUST_INIT_MAIN) $(CONFIG_RUST_INIT_NOINITRAMFS) \
-	$(CONFIG_RUST_INIT_MOUNTS_INITRD) $(CONFIG_RUST_INIT_VERSION)),)
+	$(CONFIG_RUST_INIT_MOUNTS_INITRD) $(CONFIG_RUST_INIT_VERSION) \
+	$(CONFIG_RUST_INIT_CALIBRATE) $(CONFIG_RUST_INIT_ROOT_MOUNTS) \
+	$(CONFIG_RUST_INIT_TASK) $(CONFIG_RUST_INIT_INITRAMFS)),)
 quiet_cmd_init_rust_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
       cmd_init_rust_rsi = \
 	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
@@ -83,13 +85,66 @@ $(obj)/noinitramfs.ll: $(src)/noinitramfs.rs $(objtree)/rust/bindings/init_noini
 endif
 else
 obj-$(CONFIG_BLK_DEV_INITRD)   += initramfs.o
+
+ifeq ($(CONFIG_RUST_INIT_INITRAMFS),y)
+RUST_ALLOWED_FEATURES_initramfs.o := linkage
+RUSTFLAGS_initramfs.o += -Zfunction-sections=n
+$(eval $(call init-rust-inspection,initramfs,$(objtree)/rust/bindings/init_initramfs_generated.rs))
+$(obj)/initramfs.o: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/initramfs.s: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/initramfs.ll: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+obj-y += initramfs_abi.o
+endif
 endif
 obj-$(CONFIG_GENERIC_CALIBRATE_DELAY) += calibrate.o
+
+ifeq ($(CONFIG_RUST_INIT_CALIBRATE),y)
+RUST_ALLOWED_FEATURES_calibrate.o := linkage
+RUSTFLAGS_calibrate.o += -Zfunction-sections=n
+$(eval $(call init-rust-inspection,calibrate,$(objtree)/rust/bindings/init_calibrate_generated.rs))
+$(obj)/calibrate.o: $(src)/calibrate.rs $(objtree)/rust/bindings/init_calibrate_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/calibrate.s: $(src)/calibrate.rs $(objtree)/rust/bindings/init_calibrate_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/calibrate.ll: $(src)/calibrate.rs $(objtree)/rust/bindings/init_calibrate_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+obj-y += calibrate_percpu.o
+endif
 obj-$(CONFIG_INITRAMFS_TEST)   += initramfs_test.o
 
 obj-y                          += init_task.o
 
+ifeq ($(CONFIG_RUST_INIT_TASK),y)
+RUSTFLAGS_init_task.o += -Zfunction-sections=n
+$(eval $(call init-rust-inspection,init_task,$(objtree)/rust/bindings/init_task_generated.rs))
+$(obj)/init_task.o: $(src)/init_task.rs $(src)/init_task_initializers.rs \
+    $(objtree)/rust/bindings/init_task_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/init_task.s: $(src)/init_task.rs $(src)/init_task_initializers.rs \
+    $(objtree)/rust/bindings/init_task_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/init_task.ll: $(src)/init_task.rs $(src)/init_task_initializers.rs \
+    $(objtree)/rust/bindings/init_task_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+obj-$(CONFIG_MODVERSIONS) += init_task_exports.o
+endif
+
 mounts-y			:= do_mounts.o
+
+ifeq ($(CONFIG_RUST_INIT_ROOT_MOUNTS),y)
+mounts-y += root_mounts_alloc.o
+RUSTFLAGS_do_mounts.o += -Zfunction-sections=n
+$(eval $(call init-rust-inspection,do_mounts,$(objtree)/rust/bindings/init_root_mounts_generated.rs))
+$(obj)/do_mounts.o: $(src)/do_mounts.rs $(objtree)/rust/bindings/init_root_mounts_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/do_mounts.s: $(src)/do_mounts.rs $(objtree)/rust/bindings/init_root_mounts_generated.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/do_mounts.ll: $(src)/do_mounts.rs $(objtree)/rust/bindings/init_root_mounts_generated.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 mounts-$(CONFIG_BLK_DEV_RAM)	+= do_mounts_rd.o
 mounts-$(CONFIG_BLK_DEV_INITRD)	+= do_mounts_initrd.o
 
