@@ -1,5 +1,5 @@
-# REVIEW DRAFT: launch.json deliberately blocks execution. See README.md.
-name: Unicode public C and Rust pilot
+# Reviewed setup: request remains unarmed; activation is separate. See README.md.
+name: Lupos integrated original C and Rust comparison
 on:
   push:
     branches: [feat/rust-translation-lupos]
@@ -37,7 +37,7 @@ jobs:
           bash .github/pilots/unicode-v1/admit-launch.sh
           echo admitted=true >> "$GITHUB_OUTPUT"
   member:
-    name: unicode-${{ matrix.provider }}
+    name: integrated-${{ matrix.provider }}
     needs: request
     if: needs.request.outputs.admitted == 'true' && github.run_attempt == 1
     runs-on: ubuntu-24.04
@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: a-coding-mage/linux
-          ref: 62a3294181556f17db863c9016524fa3068a374b
+          ref: 0008179a1ee0b082fa3ead118187fc6f3569a9f2
           path: linux
           fetch-depth: 1
           persist-credentials: false
@@ -75,7 +75,7 @@ jobs:
           lfs: false
       - name: Verify public source and original test identities
         run: bash pilot/.github/pilots/unicode-v1/verify-source.sh linux
-      - name: Build, audit and run one provider
+      - name: Build and accept one matched integrated member
         env:
           PILOT_PROVIDER: ${{ matrix.provider }}
         run: bash pilot/.github/pilots/unicode-v1/member.sh

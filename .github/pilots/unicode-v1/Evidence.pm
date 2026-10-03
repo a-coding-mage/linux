@@ -2,20 +2,19 @@ package Evidence;
 # SPDX-License-Identifier: GPL-2.0-only
 use strict; use warnings; use JSON::PP; use Digest::SHA qw(sha256_hex); use Encode qw(encode decode FB_CROAK);
 our $JSON=JSON::PP->new->canonical->ascii;
-our @STAGES=qw(install configure build noop ownership guest parse);
-our @CASES=qw(check_supported_versions check_utf8_comparisons check_utf8_nfdicf check_utf8_nfdi);
-our @APIS=qw(utf8version_is_supported utf8nlen utf8ncursor utf8byte);
-our $SOURCE='62a3294181556f17db863c9016524fa3068a374b';
+our @STAGES=qw(install configure build fixture noop ownership boot boot-parse crc crc-parse chacha chacha-parse iov iov-parse);
+our $SOURCE='0008179a1ee0b082fa3ead118187fc6f3569a9f2';
 sub roles {
   my @r;
-  for my $s (qw(pull container)) {for my $kind (qw(command log status resources.tsv)) {push @r,["host.$s.$kind","host/$s.$kind"]}}
-  push @r,map { ["host.$_","host/$_"] } qw(preflight.txt terminal.txt image.txt container.cid cleanup.inspect cleanup.stderr cleanup.status result.status);
-  push @r,map { ["runtime.$_","runtime/$_"] } qw(context.json source.lock source.before.txt source.after.txt apt-suites.tsv base-packages.tsv downloaded-packages.tsv installed-packages.tsv tool-versions.txt tool-binaries.sha256 config.full config-check.txt);
-  for my $s (@STAGES) {for my $kind (qw(command log status resources.tsv)) {push @r,["runtime.$s.$kind","runtime/$s.$kind"]}}
-  push @r,map { ["runtime.$_","runtime/$_"] } qw(O-before-noop.sha256 O-after-noop.sha256 O-before-guest.sha256 O-after-guest.sha256 O-links-before-noop.tsv O-links-after-noop.tsv O-links-before-guest.tsv O-links-after-guest.tsv image-identities.sha256 object-identities.sha256 test.cmd core.cmd data.cmd crc.cmd norm.cmd guest-admission.json strict-observer.txt strict-observer.stderr upstream-result.json upstream-parser.txt observer-parser.status member.status);
+  for my $s(qw(pull container)){for my $kind(qw(command log status resources.tsv)){push @r,["host.$s.$kind","host/$s.$kind"]}}
+  push @r,map {["host.$_","host/$_"]} qw(preflight.txt terminal.txt image.txt container.cid cleanup.inspect cleanup.stderr cleanup.status result.status);
+  push @r,map {["runtime.$_","runtime/$_"]} qw(context.json source.commit source.lock source.before.txt source.after.txt apt-suites.tsv base-packages.tsv downloaded-packages.tsv installed-packages.tsv tool-versions.txt tool-binaries.sha256 config.full config-lock.json config-check.txt);
+  for my $s(@STAGES){for my $kind(qw(command log status resources.tsv)){push @r,["runtime.$s.$kind","runtime/$s.$kind"]}}
+  push @r,map {["runtime.$_","runtime/$_"]} qw(O-before-noop.sha256 O-after-noop.sha256 O-before-guest.sha256 O-after-guest.sha256 O-links-before-noop.tsv O-links-after-noop.tsv O-links-before-guest.tsv O-links-after-guest.tsv image-identities.sha256 owners.commands owners.symbols owners.archives owners.sha256 original-tests.commands original-tests.sha256 elf-ownership.txt ownership-summary.txt audit-integrated.receipt boot-packages.tsv boot-package-identities.tsv boot-layout.tsv boot-host-layout.tsv boot-files.sha256 boot-determinism.tsv boot-fixture.sha256 boot-firmware.sha256 boot-firmware-links.tsv boot-initramfs.list boot-inputs.sha256 boot-inputs.before.txt boot-inputs.after.txt boot-context.json boot-serial.sha256 boot-verification.json boot.admission.json member.status);
+  for my $s(qw(crc chacha iov)){push @r,map {["runtime.$s.$_","runtime/$s.$_"]} qw(admission.json qemu-exit observer.txt observer.stderr upstream.json upstream.txt parser.status)}
   return @r;
 }
-sub may_be_empty { return $_[0] =~ /\A(?:host\.cleanup\.(?:inspect|stderr)|runtime\.strict-observer\.stderr)\z/; }
+sub may_be_empty { return $_[0] =~ /\A(?:host\.cleanup\.(?:inspect|stderr)|runtime\.(?:crc|chacha|iov)\.observer\.stderr)\z/; }
 sub slurp {my($p)=@_;open my $f,'<:raw',$p or die "$p: $!";local $/;return <$f>}
 sub exact_keys {my($h,@keys)=@_;die "not an object\n" unless ref($h) eq 'HASH';die "unexpected object fields\n" unless join(',',sort keys %$h) eq join(',',sort @keys)}
 sub config {

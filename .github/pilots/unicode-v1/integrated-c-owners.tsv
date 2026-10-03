@@ -1,0 +1,7 @@
+selector	C_object	C_source	built_in_archive	C_representative_symbol
+RUST_BPF_LPM_TRIE	kernel/bpf/lpm_trie.o	kernel/bpf/lpm_trie.c	kernel/bpf/built-in.a	trie_map_ops
+RUST_BPF_TOKEN	kernel/bpf/token.o	kernel/bpf/token.c	kernel/bpf/built-in.a	bpf_token_create
+RUST_POWER_PROCESS	kernel/power/process.o	kernel/power/process.c	kernel/power/built-in.a	freeze_processes
+RUST_BLK_CRYPTO_FALLBACK	block/blk-crypto-fallback.o	block/blk-crypto-fallback.c	block/built-in.a	blk_crypto_fallback_bio_prep
+RUST_SELINUX_SERVICES	security/selinux/ss/services.o	security/selinux/ss/services.c	security/selinux/built-in.a	security_compute_av
+RUST_SELINUX_POLICYDB	security/selinux/ss/policydb.o	security/selinux/ss/policydb.c	security/selinux/built-in.a	policydb_read

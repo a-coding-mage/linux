@@ -1,0 +1,16 @@
+crc7_be_test
+crc7_be_benchmark
+crc16_test
+crc16_benchmark
+crc_t10dif_test
+crc_t10dif_benchmark
+crc32_le_test
+crc32_le_benchmark
+crc32_be_test
+crc32_be_benchmark
+crc32c_test
+crc32c_benchmark
+crc64_be_test
+crc64_be_benchmark
+crc64_nvme_test
+crc64_nvme_benchmark

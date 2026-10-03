@@ -85,7 +85,7 @@ sub command {
 sub stage {
  my($files,$scope,$name,@cmd)=@_;
  die "failed/incomplete stage $scope.$name\n" unless $files->{"$scope.$name.status"}=~/\Astage=\Q$name\E native_exit=0 supervisor_exit=0 cleanup_exit=0 interrupted=0 telemetry_exit=0 timeout_seconds=([1-9][0-9]*)\n\z/;
- my $allowance=$1;my %limits=(pull=>600,install=>1200,configure=>600,build=>1800,noop=>600,ownership=>300,guest=>1020,parse=>300);
+ my $allowance=$1;my %limits=(pull=>600,install=>1200,configure=>600,build=>3600,fixture=>360,noop=>600,ownership=>600,boot=>360,'boot-parse'=>120,crc=>1020,'crc-parse'=>300,chacha=>1020,'chacha-parse'=>300,iov=>1020,'iov-parse'=>300);
  die "wrong stage allowance\n" unless $name eq 'container' ? ($allowance>1560 && $allowance<=6000) : (exists($limits{$name}) && $allowance==$limits{$name});
  die "empty stage log\n" unless $files->{"$scope.$name.log"}=~/\S/;
  Evidence::resources($files->{"$scope.$name.resources.tsv"});
@@ -124,27 +124,38 @@ sub validate {
  my @tail=('--env',"PILOT_PROVIDER=$provider",'--env','PILOT_RUN_ATTEMPT=1','--env',"PILOT_RUN_ID=$receipt->{run_id}",'--env',"PILOT_TRIGGER_SHA=$receipt->{trigger_sha}",'--env',"PILOT_JOB_STARTED_EPOCH=$context->{job_started_epoch}",'--env',"PILOT_JOB_DEADLINE_EPOCH=$context->{job_deadline_epoch}",'--env',"PILOT_CONTAINER_STARTED_EPOCH=$context->{container_started_epoch}",'--env',"PILOT_CONTAINER_DEADLINE_EPOCH=$context->{container_deadline_epoch}",$IMAGE,'bash','/pilot/run-container.sh');
  die "unexpected Docker environment/command\n" unless join("\0",@docker[17..$#docker]) eq join("\0",@tail);
  stage($f,'runtime','install','bash','/pilot/install-public-tools.sh');
- my @make=('make','-C','/src','O=/work/O','ARCH=x86_64','LLVM=1','HOST_TOOLS_LANG=rust','RUSTC=/usr/bin/rustc','-j2');
- stage($f,'runtime','configure',@make,'olddefconfig');stage($f,'runtime','build',@make,'bzImage');stage($f,'runtime','noop',@make,'bzImage');
- stage($f,'runtime','ownership','bash','/pilot/audit-commands.sh',$provider,'/work/O');
- stage($f,'runtime','guest','timeout','--signal=TERM','--kill-after=10','900','qemu-system-x86_64','-L','/usr/share/qemu','-nodefaults','-m','2048','-kernel','/work/O/arch/x86/boot/bzImage','-append','console=ttyS0 kunit.enable=1 kunit.autorun=1 kunit.filter_glob=unicode_normalization kunit_shutdown=reboot panic=-1 oops=panic nokaslr','-no-reboot','-nographic','-accel','tcg,thread=single','-cpu','max','-smp','1','-serial','stdio','-nic','none','-bios','qboot.rom');
- my $admission=$Evidence::JSON->decode($f->{'runtime.guest-admission.json'});
- Evidence::exact_keys($admission,qw(now job_remaining container_remaining required_seconds guest_timeout guest_kill_grace guest_stage_allowance parser_seconds cleanup_seconds evidence_seconds));
- for(keys%$admission){die "invalid guest admission number\n" unless "$admission->{$_}"=~/^[0-9]+$/}
- die "changed original guest timeout/grace or reserve\n" unless $admission->{guest_timeout}==900 && $admission->{guest_kill_grace}==10 && $admission->{guest_stage_allowance}==1020 && $admission->{parser_seconds}==300 && $admission->{cleanup_seconds}==60 && $admission->{evidence_seconds}==180 && $admission->{required_seconds}==1560;
- die "insufficient or inconsistent guest budget\n" unless $admission->{now}>=$context->{container_started_epoch} && $admission->{container_remaining}==$context->{container_deadline_epoch}-$admission->{now} && $admission->{job_remaining}==$context->{job_deadline_epoch}-$admission->{now} && $admission->{container_remaining}>=1560 && $admission->{job_remaining}>=1560;
- stage($f,'runtime','parse','bash','/pilot/parse-guest.sh');
- die "build output missing completed kernel\n" unless $f->{'runtime.build.log'}=~/Kernel: arch\/x86\/boot\/bzImage is ready/;
- for(qw(configure noop)){die "missing make output\n" unless $f->{"runtime.$_.log"}=~/make.*(?:Entering|Leaving) directory/}
- my $lock=Evidence::slurp("$dir/public-source.sha256");die "wrong public source lock\n" unless $f->{'runtime.source.lock'} eq $lock;
+ my @make=('make','-C','/src','O=/work/O','ARCH=x86_64','LLVM=1','HOST_TOOLS_LANG=rust','RUSTC=/usr/bin/rustc','HOSTRUSTC=/usr/bin/rustc','BINDGEN=/usr/bin/bindgen','-j2');
+ my @targets=qw(vmlinux modules bzImage usr_gen_init_cpio);
+ stage($f,'runtime','configure',@make,'olddefconfig');
+ stage($f,'runtime','build',@make,@targets);stage($f,'runtime','noop',@make,@targets);
+ stage($f,'runtime','fixture','bash','/pilot/prepare-boot.sh');
+ stage($f,'runtime','ownership','bash','/pilot/audit-integrated.sh',$provider,'/work/O');
+ stage($f,'runtime','boot','timeout','--verbose','--signal=TERM','--kill-after=10','240','qemu-system-x86_64','-L','/work/O/boot-inputs/qemu-data','-machine','q35','-accel','tcg,thread=single','-cpu','max','-smp','1','-m','2048','-nic','none','-nodefaults','-display','none','-serial','stdio','-monitor','none','-no-reboot','-kernel','/work/O/arch/x86/boot/bzImage','-initrd','/work/O/boot-inputs/initramfs.cpio.gz','-append','console=ttyS0,115200 rdinit=/init panic=-1 oops=panic nokaslr kunit.enable=0');
+ stage($f,'runtime','boot-parse','perl','/pilot/verify-boot.pl','/work/evidence/boot.log','/work/evidence/boot.status','/work/evidence/source.commit','/work/O/include/config/kernel.release','/work/evidence/boot-inputs.sha256');
+ admission($f,'boot',$context,240,360,120);
+ die "build did not finish bzImage\n" unless $f->{'runtime.build.log'}=~/Kernel: arch\/x86\/boot\/bzImage is ready/;
+ for(qw(configure noop)){die "missing make result\n" unless $f->{"runtime.$_.log"}=~/make.*(?:Entering|Leaving) directory/}
+ my $lock=Evidence::slurp("$dir/public-source.sha256");
+ die "wrong source lock\n" unless $f->{'runtime.source.lock'} eq $lock;
  my $source_hashes=Evidence::hashes($lock);
- my $source_ok=join('',map{"$_: OK\n"}map{ /^\w+  (.+)$/ ? $1 : die 'lock' }split /\n/,$lock)."SOURCE_VERIFIED=$Evidence::SOURCE\n";
- die "missing original source verification\n" unless $f->{'runtime.source.before.txt'} eq $source_ok && $f->{'runtime.source.after.txt'} eq $source_ok;
- my $want=Evidence::config(Evidence::slurp("$dir/config.symbols"));my $got=Evidence::config($f->{'runtime.config.full'});$want->{CONFIG_RUST_UNICODE_NORM}=$provider eq 'rust'?'y':'n';
- for(keys%$want){die "changed/missing configuration $_\n" unless exists$got->{$_} && $got->{$_} eq $want->{$_}}
- my %allowed=map{$_=>1}qw(CONFIG_RUST_AFS_ADDR_PREFS CONFIG_RUST_BLK_CRYPTO_FALLBACK CONFIG_RUST_BPF_TOKEN);
- for(keys%$got){die "unreviewed config addition\n" unless exists$want->{$_} || ($allowed{$_} && $got->{$_} eq 'n')}
- die "config observer receipt absent\n" unless $f->{'runtime.config-check.txt'} eq "CONFIG_ALL_VALUES_PRESERVED provider=$provider symbols=".scalar(keys%$got)."\n";
+ my $source_ok=join('',map{"$_: OK\n"}map{/^\w+  (.+)$/?$1:die 'lock'}split /\n/,$lock)."SOURCE_VERIFIED=$Evidence::SOURCE\n";
+ die "missing source verification\n" unless $f->{'runtime.source.before.txt'} eq $source_ok && $f->{'runtime.source.after.txt'} eq $source_ok && $f->{'runtime.source.commit'} eq "$Evidence::SOURCE\n";
+ my $config_lock=Evidence::slurp("$dir/config-lock.json");
+ die "wrong frozen config lock\n" unless $f->{'runtime.config-lock.json'} eq $config_lock;
+ my $ident=$Evidence::JSON->decode($config_lock);Evidence::exact_keys($ident,qw(schema c_sha256 rust_sha256));
+ die "config lock schema\n" unless $ident->{schema}==1;
+ for(qw(c_sha256 rust_sha256)){die "unfrozen config digest\n" unless $ident->{$_}=~/^[0-9a-f]{64}$/}
+ open my $config_fh,'-|','gzip','-dc','--',"$dir/integrated-rust.config.gz" or die $!;
+ my $rust_config=do {local $/;<$config_fh>};close $config_fh or die "frozen config decompression failed\n";
+ die "wrong frozen Rust config bytes\n" unless sha256_hex($rust_config) eq $ident->{rust_sha256};
+ die "wrong actual frozen config bytes\n" unless sha256_hex(encode('UTF-8',$f->{'runtime.config.full'})) eq $ident->{"${provider}_sha256"};
+ my $want=Evidence::config($rust_config);my $got=Evidence::config($f->{'runtime.config.full'});
+ for my $key (selectors()){die "missing selected new provider\n" unless ($want->{$key}//'') eq 'y';$want->{$key}=$provider eq 'rust'?'y':'n'}
+ die "config symbol/value drift\n" unless $Evidence::JSON->encode($want) eq $Evidence::JSON->encode($got);
+ die "config observer receipt absent\n" unless $f->{'runtime.config-check.txt'} eq "CONFIG_EXACT_FROZEN_MATCH provider=$provider symbols=".scalar(keys%$got)."\n";
+ for my $key(qw(CONFIG_RUST_INIT_MAIN CONFIG_RUST_CRC16 CONFIG_RUST_SCATTERLIST CONFIG_RUST_OVERFLOW_CHECKS CONFIG_ACPI CONFIG_KUNIT CONFIG_CRC_KUNIT_TEST CONFIG_CRC_ENABLE_ALL_FOR_KUNIT CONFIG_CRC_BENCHMARK CONFIG_TEST_IOV_ITER CONFIG_CRYPTO_LIB_ENABLE_ALL_FOR_KUNIT CONFIG_CRYPTO_LIB_CHACHA20POLY1305_KUNIT_TEST)){die "regression prerequisite disabled $key\n" unless ($got->{$key}//'') eq 'y'}
+ die "changed original KUnit timeout\n" unless ($got->{CONFIG_KUNIT_DEFAULT_TIMEOUT}//'') eq '300';
+ for my $key(qw(CONFIG_KUNIT_ALL_TESTS CONFIG_KUNIT_TEST CONFIG_KUNIT_EXAMPLE_TEST CONFIG_RUST_KUNIT_TESTS CONFIG_RUST_KERNEL_DOCTESTS CONFIG_UNICODE CONFIG_CRYPTO_LIB_BENCHMARK)){die "unreviewed test/profile selection $key\n" unless ($got->{$key}//'n') eq 'n'}
  my $suites="trixie\t0584fba32e13e0ab8285fb16c27adea1ec03a73669c18702821094fd6ca86675\ntrixie-updates\tbde606f5b1303e2c864d2118fca1a07c8aca59e097d10180f4e1ea1e7f53c99c\ntrixie-security\tf44452462d1d78526274ee79a391cd8e8df9dc327717dabc39a9d868eb7e4114\n";
  die "missing/wrong signed suite identities\n" unless $f->{'runtime.apt-suites.tsv'} eq $suites;
  for my $suite(qw(trixie trixie-updates trixie-security)){die "missing actual apt suite hash check\n" unless $f->{'runtime.install.log'}=~/_dists_\Q$suite\E_InRelease: OK/m}
@@ -155,71 +166,162 @@ sub validate {
  my $versions=$f->{'runtime.tool-versions.txt'};for(qr/clang version 19\.1\.7/,qr/rustc 1\.85\.1/,qr/bindgen 0\.71\.1/,qr/v1\.30/,qr/QEMU emulator version 10\.0\.13/){die "wrong/missing tool version\n" unless $versions=~$_}
  die "missing compiler path equivalence\n" unless $versions=~m{^RUSTC_PATH_EQUIVALENCE\ bare\=rustc\ resolved\=\/usr\/bin\/rustc\ requested\=\/usr\/bin\/rustc$}m;
  my $tools=Evidence::hashes($f->{'runtime.tool-binaries.sha256'});assert_keys($tools,qw(/usr/bin/rustc /usr/bin/rustfmt /usr/bin/bindgen /usr/bin/pahole /usr/bin/qemu-system-x86_64 /usr/share/qemu/qboot.rom));
- my $images=Evidence::hashes($f->{'runtime.image-identities.sha256'});assert_keys($images,qw(/work/O/arch/x86/boot/bzImage /work/O/vmlinux /work/O/vmlinux.unstripped /work/O/vmlinux.o /work/O/.config));
- my @objects=qw(fs/unicode/tests/utf8_kunit.o fs/unicode/utf8-core.o fs/unicode/utf8data.o lib/crc/crc16.o);
- my $objects=Evidence::hashes($f->{'runtime.object-identities.sha256'});assert_keys($objects,map{"/work/O/$_"}@objects);
+ die "unapproved Rust compiler\n" unless $tools->{'/usr/bin/rustc'} eq 'b4e139165f4f075f9a3fb4b20e7e4898472f08304961706072752d4aa11522b1';
+ my $images=Evidence::hashes($f->{'runtime.image-identities.sha256'});
+ assert_keys($images,qw(/work/O/arch/x86/boot/bzImage /work/O/vmlinux /work/O/vmlinux.unstripped /work/O/vmlinux.o /work/O/vmlinux.a /work/O/.config /work/O/usr/gen_init_cpio /work/O/Module.symvers /work/O/modules.order /work/O/include/config/kernel.release));
  my $whole=Evidence::hashes($f->{'runtime.O-before-noop.sha256'});
- for(qw(./fs/unicode/utf8-norm.o ./vmlinux.a)){die "missing selected normalizer/archive identity\n" unless exists $whole->{$_}}
- for(keys%$whole){die "unsafe O manifest path\n" unless m!^\./[a-zA-Z0-9_+.,/=-]+$! && !m!(?:^|/)\.\.(?:/|$)!}
- for my $kind(qw(after-noop before-guest after-guest)){die "O changed/incomplete invariance evidence\n" unless $f->{"runtime.O-$kind.sha256"} eq $f->{'runtime.O-before-noop.sha256'}}
- for my $path(keys%$images,keys%$objects){my $key=$path;$key=~s!^/work/O/!./!;my $hash=$images->{$path}//$objects->{$path};die "O manifest disagrees with named objects/images\n" unless ($whole->{$key}//'') eq $hash}
- die "config digest mismatch\n" unless $images->{'/work/O/.config'} eq sha256_hex(encode('UTF-8',$f->{'runtime.config.full'}));
- for my $kind(qw(after-noop before-guest after-guest)){die "O symlinks changed\n" unless $f->{"runtime.O-links-$kind.tsv"} eq $f->{'runtime.O-links-before-noop.tsv'}}
- die "missing O symlink inventory\n" unless $f->{'runtime.O-links-before-noop.tsv'}=~/^path\ttarget\n/;
- my @cmdroles=qw(test core data crc);my @cmdpaths=qw(fs/unicode/tests/.utf8_kunit.o.cmd fs/unicode/.utf8-core.o.cmd fs/unicode/.utf8data.o.cmd lib/crc/.crc16.o.cmd);
- my @sources=('/src/fs/unicode/tests/utf8_kunit.c','/src/fs/unicode/utf8-core.c','fs/unicode/utf8data.c','/src/lib/crc/crc16.c');
- for my $i(0..3){my $cmd=$f->{"runtime.$cmdroles[$i].cmd"};die "original C command/source/flags absent\n" unless $cmd=~/^savedcmd_\Q$objects[$i]\E := clang .* -fno-strict-overflow .* -c -o /m && $cmd=~/^source_\Q$objects[$i]\E := \Q$sources[$i]\E$/m;die "command digest missing from O inventory\n" unless ($whole->{"./$cmdpaths[$i]"}//'') eq sha256_hex(encode('UTF-8',$cmd))}
- die "unapproved Rust compiler hash\n" unless $tools->{'/usr/bin/rustc'} eq 'b4e139165f4f075f9a3fb4b20e7e4898472f08304961706072752d4aa11522b1';
- my $norm=$f->{'runtime.norm.cmd'};my $extension=$provider eq 'rust'?'rs':'c';
- OverflowPolicy::check($norm) if $provider eq 'rust';
- die "wrong selected normalizer source\n" unless $norm=~/^source_fs\/unicode\/utf8-norm\.o := \/src\/fs\/unicode\/utf8-norm\.\Q$extension\E$/m;
- if($provider eq 'rust'){die "Rust compiler/overflow flags absent\n" unless $norm=~/^savedcmd_fs\/unicode\/utf8-norm\.o := OBJTREE=\/work\/O RUST_MODFILE=fs\/unicode\/unicode \/usr\/bin\/rustc .* -Coverflow-checks=y /m}
- else{die "original C normalizer flags absent\n" unless $norm=~/^savedcmd_fs\/unicode\/utf8-norm\.o := clang .* -fno-strict-overflow .* -c -o /m}
- die "selected normalizer command not bound to O inventory\n" unless ($whole->{'./fs/unicode/.utf8-norm.o.cmd'}//'') eq sha256_hex(encode('UTF-8',$norm));
- my $owner=$f->{'runtime.ownership.log'};
- for my $label(qw(selected_normalizer original_C_tests original_C_core original_C_crc16)){die "missing linked body proof\n" unless $owner=~/^LINKED_OBJECT_SECTION_BYTES \Q$label\E \.text [1-9][0-9]*$/m}
- for my $api(@Evidence::APIS){die "missing owner/caller proof\n" unless $owner=~/^OWNER_FUNCTION \Q$api\E input_bytes=([1-9][0-9]*) final_bytes=([1-9][0-9]*)$/m && $1==$2 && $owner=~/^FINAL_CALL original_(?:test|core) \S+ -> \Q$api\E$/m}
- for my $pair(['utf8agetab',92],['utf8nfdicfdata',184],['utf8nfdidata',184],['utf8data',64256]){die "missing unchanged table proof\n" unless $owner=~/^ORIGINAL_TABLE_BYTES \Q$pair->[0]\E $pair->[1]$/m}
- my $registrations=join(',',map{($_,"string:$_",'string:utf8_kunit')}@Evidence::CASES);
- die "missing exact original test registration pointers\n" unless $owner=~/^FINAL_DATA unicode_normalization_test_cases \Q$registrations\E$/m;
- die "missing setup/teardown pointers\n" unless $owner=~/^FINAL_DATA unicode_normalization_test_suite init_test_ucd,exit_test_ucd,unicode_normalization_test_cases$/m;
- die "missing original table pointers\n" unless $owner=~/^FINAL_DATA utf8_data_table utf8agetab,utf8nfdicfdata,utf8nfdidata,utf8data$/m;
- for my $call('original_test check_supported_versions -> utf8version_is_supported','original_core utf8_validate -> utf8nlen','original_core utf8_strncmp -> utf8ncursor','original_core utf8_strncmp -> utf8byte'){die "missing exact original C caller\n" unless $owner=~/^FINAL_CALL \Q$call\E$/m}
- my $owner_verdicts=()=$owner=~/^FINAL_ELF_OWNERSHIP_PASS original_C_calls=resolved cases=4 suite=1 original_tables=equal$/mg;
- my $command_verdicts=()=$owner=~/^SELECTED_COMMAND_ARCHIVE_AND_FINAL_OWNER_PASS$/mg;
- die "missing/duplicate complete final owner verdict\n" unless $owner_verdicts==1;
- die "missing/duplicate command/archive verdict\n" unless $command_verdicts==1;
- my $serial=$f->{'runtime.guest.log'};my(@seen,$suite,$plan,$top,$summary);
- for(split /\n/,$serial){s/\r$//;die "failed guest diagnostic\n" if /\bnot ok\b|#\s*SKIP\b|Bail out!|Kernel panic|Oops:|BUG:|KASAN:|UBSAN:/i;
-  if(/^1\.\.1\s*$/){$top++;next}if(/^\s*# Subtest: unicode_normalization\s*$/){$suite++;next}if(/^\s+1\.\.4\s*$/){$plan++;next}
-  if(/^\s+ok ([1-4]) (check_\w+)\s*$/){push@seen,"$1:$2";next}if(/^ok 1 unicode_normalization\s*$/){$summary++;next}die "extra guest result\n" if /^\s*(?:(?:not\s+)?ok\b|\d+\.\.\d+\b|# Subtest:)/;
+ for my $path(keys%$whole){die "unsafe output path\n" unless $path=~m{^\./[^\x00-\x20\\]+$} && $path!~m{(?:^|/)\.\.(?:/|$)}}
+ for my $kind(qw(after-noop before-guest after-guest)){
+  die "output changed\n" unless $f->{"runtime.O-$kind.sha256"} eq $f->{'runtime.O-before-noop.sha256'};
+  die "output symlinks changed\n" unless $f->{"runtime.O-links-$kind.tsv"} eq $f->{'runtime.O-links-before-noop.tsv'};
  }
- my @wantcases=map{($_+1).':'.$Evidence::CASES[$_]}0..3;die "not exact original guest cases\n" unless ($suite//0)==1 && ($plan//0)==1 && ($top//0)==1 && ($summary//0)==1 && join(',',@seen) eq join(',',@wantcases);
- die "observer/parser status failed\n" unless $f->{'runtime.observer-parser.status'} eq "observer_exit=0 parser_exit=0\n" && $f->{'runtime.strict-observer.stderr'} eq '' && $f->{'runtime.strict-observer.txt'} eq 'ORIGINAL_C_CASES_PASS '.join(',',@Evidence::CASES)."\n";
- my $json=$Evidence::JSON->decode($f->{'runtime.upstream-result.json'});die "upstream result topology\n" unless defined($json->{name}) && $json->{name} eq 'KUnit Test Group' && ref($json->{sub_groups}) eq 'ARRAY' && @{$json->{sub_groups}}==1 && ref($json->{test_cases}) eq 'ARRAY' && !@{$json->{test_cases}};
- my $group=$json->{sub_groups}[0];die "upstream wrong suite\n" unless $group->{name} eq 'unicode_normalization' && ref($group->{sub_groups}) eq 'ARRAY' && !@{$group->{sub_groups}} && ref($group->{test_cases}) eq 'ARRAY' && @{$group->{test_cases}}==4;
- for my $i(0..3){die "upstream wrong/failed original case\n" unless $group->{test_cases}[$i]{name} eq $Evidence::CASES[$i] && $group->{test_cases}[$i]{status} eq 'PASS'}
- for my $node($json,$group){for(qw(tests passed)){die "upstream count mismatch\n" unless $node->{misc}{$_}==4}for(qw(failed crashed skipped errors)){die "upstream failure\n" unless defined($node->{misc}{$_}) && $node->{misc}{$_}==0}}
- die "upstream parser output missing\n" unless $f->{'runtime.upstream-parser.txt'}=~/Testing complete\. Ran 4 tests: passed: 4/;
- die "incomplete member verdict\n" unless $f->{'runtime.member.status'} eq "provider=$provider source=$Evidence::SOURCE config=pass noop=pass ownership=pass guest=pass parser=pass invariance=pass\n";
+ die "missing symlink inventory\n" unless $f->{'runtime.O-links-before-noop.tsv'}=~/^path\ttarget\n/;
+ for my $path(keys%$images){my$key=$path;$key=~s!^/work/O/!./!;die "image inventory not bound\n" unless ($whole->{$key}//'') eq $images->{$path}}
+ die "config identity differs\n" unless $images->{'/work/O/.config'} eq $ident->{"${provider}_sha256"};
+ # The existing UEV3 framing authenticates these complete selected command
+ # reports against the observed run; every command also binds to O hashes.
+ for my $role(qw(owners.commands original-tests.commands)){
+  die "missing selected source commands\n" unless $f->{"runtime.$role"}=~/^source_\S+ := /m;
+ }
+ my $owner=$Evidence::JSON->decode($f->{'runtime.audit-integrated.receipt'});
+ Evidence::exact_keys($owner,qw(schema provider source_sha owners original_C_suites original_C_cases actual_init_kunit_call verdict));
+ die "incomplete integrated ownership verdict\n" unless $owner->{schema}==1 && $owner->{provider} eq $provider && $owner->{source_sha} eq $Evidence::SOURCE && $owner->{owners}==24 && $owner->{original_C_suites}==3 && $owner->{original_C_cases}==34 && $owner->{actual_init_kunit_call} && $owner->{verdict} eq 'PASS';
+ my %commands;
+ for my $role(qw(owners.commands original-tests.commands)){
+  my $text=$f->{"runtime.$role"};my $blocks=0;
+  while($text=~/^BEGIN ([A-Za-z0-9_.+\/-]+)\n(.*?)\nEND \1\n/msg){
+   my($path,$body)=($1,$2);die "duplicate command sidecar\n" if exists$commands{$path};
+   die "command sidecar not bound to O\n" unless ($whole->{"./$path"}//'') eq sha256_hex(encode('UTF-8',$body));
+   $commands{$path}=$body;$blocks++;
+  }
+  die "empty command report\n" unless $blocks;
+ }
+ for my $role(qw(owners.sha256 original-tests.sha256)){
+  my $hashes=Evidence::hashes($f->{"runtime.$role"});
+  for my $path(keys%$hashes){
+   if($path=~m{^/work/O/(.+)$}){die "audited object not bound to O\n" unless ($whole->{"./$1"}//'') eq $hashes->{$path}}
+   elsif($path=~m{^/src/(.+)$}){die "audited source digest mismatch\n" if exists($source_hashes->{$1}) && $source_hashes->{$1} ne $hashes->{$path}}
+   elsif($path=~m{^/pilot/([A-Za-z0-9_.+-]+)$}){die "audited helper digest mismatch\n" unless sha256_hex(Evidence::slurp("$dir/$1")) eq $hashes->{$path}}
+   else{die "unexpected audited input path\n"}
+  }
+ }
+ my @rows=split /\n/,Evidence::slurp("$dir/integrated-owners.tsv");shift@rows;
+ my @crows=split /\n/,Evidence::slurp("$dir/integrated-c-owners.tsv");shift@crows;
+ my %crows=map{my@v=split /\t/;($v[0],\@v)}@crows;
+ my %switch=(bpf_lpm_trie=>'RUST_BPF_LPM_TRIE',bpf_token=>'RUST_BPF_TOKEN',power_process=>'RUST_POWER_PROCESS',blk_crypto_fallback=>'RUST_BLK_CRYPTO_FALLBACK',selinux_services=>'RUST_SELINUX_SERVICES',selinux_policydb=>'RUST_SELINUX_POLICYDB');
+ die "manifest size changed\n" unless @rows==24 && keys(%crows)==6;
+ my $selected_rows=()=$f->{'runtime.owners.symbols'}=~/^SELECTED_ROW /mg;
+ die "extra/missing selected owner rows\n" unless $selected_rows==24;
+ for(@rows){
+  my($name,$object,$source,$archive,$symbol,$mod)=split /\t/;my$language='Rust';
+  if($provider eq 'c' && $switch{$name}){my$c=$crows{$switch{$name}}//die 'missing C owner';($object,$source,$archive,$symbol)=@$c[1..4];$language='C'}
+  die "selected owner mismatch\n" unless $f->{'runtime.owners.symbols'}=~/^SELECTED_ROW \Q$name\E language=\Q$language\E object=\Q$object\E$/m;
+  die "selected final symbol missing\n" unless $f->{'runtime.owners.symbols'}=~/^OWNER \Q$object $symbol\E object_type=[12] binding=[0-9]+ bytes=[1-9][0-9]* final=0x[0-9a-f]+ final_binding=[0-9]+$/m;
+  for my$a($archive,'vmlinux.a'){die "selected archive leaf missing\n" unless $f->{'runtime.owners.archives'}=~/^UNIQUE_MEMBER \Q$a $object\E$/m}
+  (my$cf=$object)=~s{([^/]+)$}{.$1.cmd};my$body=$commands{$cf}//die 'missing owner command';
+  die "wrong selected source\n" unless $body=~/^source_\Q$object\E := \/src\/\Q$source\E$/m;
+  my($saved)=$body=~/^savedcmd_\Q$object\E := (.*)$/m;die "missing owner saved command\n" unless defined$saved;
+  if($language eq 'Rust'){die "wrong actual Rust compiler\n" unless $saved=~m{(?:^| )/usr/bin/rustc };OverflowPolicy::check("savedcmd_fs/unicode/utf8-norm.o := $saved\n")}
+  else{die "wrong actual C compiler/overflow policy\n" unless $saved=~/^clang(?:-19)? / && $saved=~/ -fno-strict-overflow /}
+ }
+ for my $pair(['lib/crc/tests/crc_kunit.o','lib/crc/tests/crc_kunit.c'],['lib/crypto/tests/chacha20poly1305_kunit.o','lib/crypto/tests/chacha20poly1305_kunit.c'],['lib/tests/kunit_iov_iter.o','lib/tests/kunit_iov_iter.c']){
+  my($object,$source)=@$pair;(my$cf=$object)=~s{([^/]+)$}{.$1.cmd};my$body=$commands{$cf}//die 'missing original test command';
+  die "original C producer/flags not proven\n" unless $body=~/^source_\Q$object\E := \/src\/\Q$source\E$/m && $body=~/^savedcmd_\Q$object\E := clang(?:-19)? .* -fno-strict-overflow .* -c -o /m;
+ }
+ my$elf=$f->{'runtime.elf-ownership.txt'};
+ die "missing real startup owner\n" unless $elf=~/^REAL_START_KERNEL owner=init\/main.o source=init\/main.rs final_definitions=1$/m;
+ die "missing actual Rust KUnit startup call proof\n" unless $elf=~/^ACTUAL_RUST_INIT_KUNIT_CALL caller=_R\S*kernel_init_freeable\S* target=kunit_run_all_tests$/m && $elf=~/^FINAL_CALL init\/main.o _R\S+ -> kunit_run_all_tests field=0x[0-9a-f]+ target=0x[0-9a-f]+$/m;
+ die "incomplete final ELF proof\n" unless $elf=~/^INTEGRATED_ELF_OWNERSHIP_PASS manifest_owners=24 original_C_suites=3 original_C_cases=34 actual_init_kunit_call=1$/m;
+ my $boot=$Evidence::JSON->decode($f->{'runtime.boot-verification.json'});
+ Evidence::exact_keys($boot,qw(result checks scope known_open_gate identity));
+ die "boot result not passing\n" unless $boot->{result} eq 'PASS_BOOT_SMOKE_ONLY';
+ my @checks=qw(terminal exit_zero not_forced serial_hash_matches correct_source_commit pid1_begin_exactly_once correct_guest_release success_exactly_once poweroff_marker_exactly_once kernel_powered_down boot_only_scope no_faults bash_posix_shell mount_/proc mount_/sys mount_/dev mount_/run mount_/tmp);
+ Evidence::exact_keys($boot->{checks},@checks);
+ for(@checks){die "failed historical boot check $_\n" unless JSON::PP::is_bool($boot->{checks}{$_}) && $boot->{checks}{$_}}
+ Evidence::exact_keys($boot->{identity},qw(source_sha kernel_release serial_sha256 immutable_inputs_sha256 initramfs_sha256 initramfs_bytes));
+ my $boot_context=$Evidence::JSON->decode($f->{'runtime.boot-context.json'});
+ Evidence::exact_keys($boot_context,qw(source_sha kernel_release immutable_inputs_sha256));
+ die "boot source/release identity mismatch\n" unless $boot->{identity}{source_sha} eq $Evidence::SOURCE && $boot_context->{source_sha} eq $Evidence::SOURCE && $boot_context->{kernel_release} eq $boot->{identity}{kernel_release};
+ my $serial_hash=sha256_hex(encode('UTF-8',$f->{'runtime.boot.log'}));
+ die "boot serial identity mismatch\n" unless $boot->{identity}{serial_sha256} eq $serial_hash && $f->{'runtime.boot-serial.sha256'} eq "$serial_hash  /work/evidence/boot.log\n";
+ die "boot input ledger not sealed\n" unless $boot_context->{immutable_inputs_sha256} eq sha256_hex(encode('UTF-8',$f->{'runtime.boot-inputs.sha256'})) && $boot->{identity}{immutable_inputs_sha256} eq $boot_context->{immutable_inputs_sha256};
+ my $inputs=Evidence::hashes($f->{'runtime.boot-inputs.sha256'});
+ for my $path(keys%$inputs){
+  if($path=~m{^/work/O/}){(my$key=$path)=~s!^/work/O/!./!;my$hash=$whole->{$key};
+   # Firmware is a recorded symlink, so its target hash has a separate ledger.
+   next if $path=~m{^/work/O/boot-inputs/qemu-data/};
+   die "immutable input not bound to complete O inventory\n" unless defined($hash) && $hash eq $inputs->{$path};
+  }
+ }
+ for my $path(keys%$images){next unless exists $inputs->{$path};die "boot image differs from linked image\n" unless $inputs->{$path} eq $images->{$path}}
+ my $checks_text=join('',map{"$_: OK\n"}map{/^\w+  (.+)$/?$1:die 'boot ledger'}split /\n/,$f->{'runtime.boot-inputs.sha256'});
+ die "missing pre/post boot input verification\n" unless $f->{'runtime.boot-inputs.before.txt'} eq $checks_text && $f->{'runtime.boot-inputs.after.txt'} eq $checks_text;
+ die "new fixture package pins differ\n" unless $f->{'runtime.boot-packages.tsv'} eq Evidence::slurp("$dir/boot-packages.tsv");
+ my @package_rows=split /\n/,$f->{'runtime.boot-packages.tsv'};shift@package_rows;
+ my $package_identity="Package\tVersion\tArchitecture\tSize\tSHA256\n";
+ for(@package_rows){my@v=split /\t/;die "guest pin columns\n" unless @v==7;$package_identity.=join("\t",@v[0,1,2,3,5])."\n"}
+ die "guest actual package identity mismatch\n" unless $f->{'runtime.boot-package-identities.tsv'} eq $package_identity;
+ my $det=$f->{'runtime.boot-determinism.tsv'};
+ die "fixture determinism record malformed\n" unless $det=~/\Aartifact\tsize_bytes\tfirst_sha256\trepeated_sha256\ninitramfs.cpio\t([1-9][0-9]*)\t([0-9a-f]{64})\t\2\ninitramfs.cpio.gz\t([1-9][0-9]*)\t([0-9a-f]{64})\t\4\n\z/;
+ my($cpio_bytes,$cpio_hash,$gzip_bytes,$gzip_hash)=($1,$2,$3,$4);
+ die "wrong sealed boot archive\n" unless $inputs->{'/work/O/boot-inputs/initramfs.cpio'} eq $cpio_hash && $inputs->{'/work/O/boot-inputs/initramfs.cpio.gz'} eq $gzip_hash && $boot->{identity}{initramfs_sha256} eq $gzip_hash && $boot->{identity}{initramfs_bytes}==$gzip_bytes;
+ die "fixture component cap violated\n" unless $cpio_bytes+$gzip_bytes<=268435456;
+ # Repeat original raw serial and upstream topology checks independently of
+ # supplemental observer success text. One suite per unchanged guest command.
+ for my $spec(['crc','crc','crc-cases.txt',16],['chacha','chacha20poly1305','chacha-cases.txt',1],['iov','iov_iter','iov-cases.txt',17]){
+  my($name,$suite,$casefile,$count)=@$spec;
+  stage($f,'runtime',$name,'timeout','--signal=TERM','--kill-after=10','900','qemu-system-x86_64','-L','/usr/share/qemu','-nodefaults','-m','2048','-kernel','/work/O/arch/x86/boot/bzImage','-append',"console=ttyS0 kunit.enable=1 kunit.autorun=1 kunit.filter_glob=$suite kunit_shutdown=reboot panic=-1 oops=panic nokaslr",'-no-reboot','-nographic','-accel','tcg,thread=single','-cpu','max','-smp','1','-serial','stdio','-nic','none','-bios','qboot.rom');
+  stage($f,'runtime',"$name-parse",'bash','/pilot/parse-guest.sh',$suite,$name);
+  admission($f,$name,$context,900,1020,300);
+  die "guest native receipt failed\n" unless $f->{"runtime.$name.qemu-exit"} eq "0\n";
+  my@cases=split /\n/,Evidence::slurp("$dir/$casefile");die "case manifest length\n" unless @cases==$count;
+  my@want=('KTAP version 1','1..1','    KTAP version 1',"    # Subtest: $suite","    1..$count",(map{"    ok ".($_+1)." $cases[$_]"}0..$#cases),"ok 1 $suite");
+  my$at=0;my$serial=$f->{"runtime.$name.log"};
+  for(split /\n/,$serial){s/\r$//;s/^\[\s*\d+\.\d+\]\s?//;
+   die "nonpassing original guest diagnostic\n" if /\bnot ok\b|#\s*SKIP\b|Bail out!|Kernel panic|Oops:|BUG:|KASAN:|UBSAN:/i;
+   if(/^\s*(?:KTAP version|1\.\.|(?:not )?ok\s+|# Subtest:)/){die "missing/reordered/extra original case\n" unless $at<@want && $_ eq $want[$at++];}
+  }
+  die "incomplete original suite\n" unless $at==@want;
+  die "failed observer/parser\n" unless $f->{"runtime.$name.parser.status"} eq "observer_exit=0 parser_exit=0\n" && $f->{"runtime.$name.observer.stderr"} eq '';
+  my$hash=sha256_hex(encode('UTF-8',$serial));die "observer serial unbound\n" unless $f->{"runtime.$name.observer.txt"}=~/^serial_sha256=\Q$hash\E$/m;
+  my$json=$Evidence::JSON->decode($f->{"runtime.$name.upstream.json"});
+  die "upstream result topology\n" unless $json->{name} eq 'KUnit Test Group' && ref($json->{sub_groups}) eq 'ARRAY' && @{$json->{sub_groups}}==1 && ref($json->{test_cases}) eq 'ARRAY' && !@{$json->{test_cases}};
+  my$group=$json->{sub_groups}[0];die "upstream wrong suite\n" unless $group->{name} eq $suite && ref($group->{sub_groups}) eq 'ARRAY' && !@{$group->{sub_groups}} && ref($group->{test_cases}) eq 'ARRAY' && @{$group->{test_cases}}==$count;
+  for my$i(0..$#cases){die "upstream wrong/failed case\n" unless $group->{test_cases}[$i]{name} eq $cases[$i] && $group->{test_cases}[$i]{status} eq 'PASS'}
+  for my$node($json,$group){for(qw(tests passed)){die "upstream wrong count\n" unless $node->{misc}{$_}==$count}for(qw(failed crashed skipped errors)){die "upstream failed result\n" unless defined($node->{misc}{$_}) && $node->{misc}{$_}==0}}
+  die "upstream parser result missing\n" unless $f->{"runtime.$name.upstream.txt"}=~/Testing complete\. Ran \Q$count\E tests: passed: \Q$count\E/;
+ }
+ die "incomplete member verdict\n" unless $f->{'runtime.member.status'} eq "provider=$provider source=$Evidence::SOURCE scope=incremental-six-core config=pass noop=pass ownership=pass boot=pass original_C_cases=34 original_C_suites=3 parser=pass invariance=pass new_provider_functional_suites=UNRUN\n";
  return $got;
+}
+sub selectors {qw(CONFIG_RUST_BPF_LPM_TRIE CONFIG_RUST_BPF_TOKEN CONFIG_RUST_POWER_PROCESS CONFIG_RUST_BLK_CRYPTO_FALLBACK CONFIG_RUST_SELINUX_SERVICES CONFIG_RUST_SELINUX_POLICYDB)}
+sub admission {
+ my($f,$name,$context,$native,$stage,$parser)=@_;my$a=$Evidence::JSON->decode($f->{"runtime.$name.admission.json"});
+ Evidence::exact_keys($a,qw(now job_remaining container_remaining required_seconds guest_timeout guest_kill_grace guest_stage_allowance parser_seconds cleanup_seconds evidence_seconds));
+ for(keys%$a){die "invalid guest budget number\n" unless "$a->{$_}"=~/^[0-9]+$/}
+ my$required=$stage+$parser+60+180;
+ die "changed guest timeout/reserve\n" unless $a->{guest_timeout}==$native && $a->{guest_kill_grace}==10 && $a->{guest_stage_allowance}==$stage && $a->{parser_seconds}==$parser && $a->{cleanup_seconds}==60 && $a->{evidence_seconds}==180 && $a->{required_seconds}==$required;
+ die "insufficient guest budget\n" unless $a->{now}>=$context->{container_started_epoch} && $a->{container_remaining}==$context->{container_deadline_epoch}-$a->{now} && $a->{job_remaining}==$context->{job_deadline_epoch}-$a->{now} && $a->{container_remaining}>=$required && $a->{job_remaining}>=$required;
 }
 sub compare {
  my($receipt,$craw,$rraw,$dir)=@_;
  Evidence::exact_keys($receipt,qw(schema repository branch event run_id run_attempt trigger_sha decoding jobs));
  die "wrong trusted download receipt context\n" unless $receipt->{schema}==1 && $receipt->{repository} eq 'a-coding-mage/linux' && $receipt->{branch} eq 'feat/rust-translation-lupos' && $receipt->{event} eq 'push' && "$receipt->{run_id}"=~/^[1-9][0-9]*$/ && $receipt->{run_attempt}==1 && $receipt->{trigger_sha}=~/^[0-9a-f]{40}$/ && $receipt->{decoding} eq 'connector-decoded-text-utf8' && ref($receipt->{jobs}) eq 'HASH';
- Evidence::exact_keys($receipt->{jobs},qw(c rust));my%files;my%config;
- for my $provider(qw(c rust)){
-  my $raw=$provider eq 'c'?$craw:$rraw;my $job=$receipt->{jobs}{$provider};Evidence::exact_keys($job,qw(job_id name status conclusion text_sha256));
-  die "wrong/incomplete GitHub job receipt\n" unless "$job->{job_id}"=~/^[1-9][0-9]*$/ && $job->{name} eq "unicode-$provider" && $job->{status} eq 'completed' && $job->{conclusion} eq 'success' && $job->{text_sha256} eq sha256_hex($raw);
+ Evidence::exact_keys($receipt->{jobs},qw(c rust));my(%files,%config);
+ for my$provider(qw(c rust)){
+  my$raw=$provider eq 'c'?$craw:$rraw;my$job=$receipt->{jobs}{$provider};Evidence::exact_keys($job,qw(job_id name status conclusion text_sha256));
+  die "wrong/incomplete GitHub job receipt\n" unless "$job->{job_id}"=~/^[1-9][0-9]*$/ && $job->{name} eq "integrated-$provider" && $job->{status} eq 'completed' && $job->{conclusion} eq 'success' && $job->{text_sha256} eq sha256_hex($raw);
   $files{$provider}=parse($raw,$provider,$receipt);$config{$provider}=validate($files{$provider},$provider,$receipt,$dir);
  }
  die "same job supplied twice\n" if $receipt->{jobs}{c}{job_id}==$receipt->{jobs}{rust}{job_id};
- for my $role(qw(source.lock source.before.txt source.after.txt apt-suites.tsv base-packages.tsv downloaded-packages.tsv installed-packages.tsv tool-versions.txt tool-binaries.sha256 object-identities.sha256 test.cmd core.cmd data.cmd crc.cmd)){
-  die "C/R comparison mismatch $role\n" unless $files{c}{"runtime.$role"} eq $files{rust}{"runtime.$role"};
+ for my$role(qw(source.commit source.lock source.before.txt source.after.txt config-lock.json apt-suites.tsv base-packages.tsv downloaded-packages.tsv installed-packages.tsv tool-versions.txt tool-binaries.sha256 original-tests.commands original-tests.sha256 boot-packages.tsv boot-package-identities.tsv boot-layout.tsv boot-host-layout.tsv boot-files.sha256 boot-determinism.tsv boot-fixture.sha256 boot-firmware.sha256 boot-firmware-links.tsv boot-initramfs.list)){
+  die "C/R common-input mismatch $role\n" unless $files{c}{"runtime.$role"} eq $files{rust}{"runtime.$role"};
  }
- delete $config{c}{CONFIG_RUST_UNICODE_NORM};delete $config{rust}{CONFIG_RUST_UNICODE_NORM};
- die "C/R config drift beyond selector\n" unless $Evidence::JSON->encode($config{c}) eq $Evidence::JSON->encode($config{rust});
+ for my$key(selectors()){
+  die "not the required incremental C/R selection\n" unless $config{c}{$key} eq 'n' && $config{rust}{$key} eq 'y';
+  delete$config{c}{$key};delete$config{rust}{$key};
+ }
+ die "C/R config drift beyond six selectors\n" unless $Evidence::JSON->encode($config{c}) eq $Evidence::JSON->encode($config{rust});
  return 1;
 }
 1;

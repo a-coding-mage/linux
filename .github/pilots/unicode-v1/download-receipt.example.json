@@ -10,14 +10,14 @@
   "jobs": {
     "c": {
       "job_id": "REPLACE_FROM_VERIFIED_JOB_METADATA",
-      "name": "unicode-c",
+      "name": "integrated-c",
       "status": "UNVERIFIED",
       "conclusion": "UNVERIFIED",
       "text_sha256": "REPLACE_WITH_SAVED_DECODED_TEXT_UTF8_SHA256"
     },
     "rust": {
       "job_id": "REPLACE_FROM_VERIFIED_JOB_METADATA",
-      "name": "unicode-rust",
+      "name": "integrated-rust",
       "status": "UNVERIFIED",
       "conclusion": "UNVERIFIED",
       "text_sha256": "REPLACE_WITH_SAVED_DECODED_TEXT_UTF8_SHA256"

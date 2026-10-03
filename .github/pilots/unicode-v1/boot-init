@@ -1,0 +1,53 @@
+#!/bin/bash
+# Disposable guest PID1. Boot smoke only: no workload or original-C test suite.
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin LC_ALL=C LANG=C
+exec </dev/console >/dev/console 2>&1
+set -Eeuo pipefail
+failure() {
+  rc=$?
+  trap - ERR
+  printf 'LUPOS_BOOT_SMOKE_FAILURE rc=%s line=%s\n' "$rc" "${BASH_LINENO[0]}"
+  /usr/bin/busybox poweroff -f
+  while :; do /usr/bin/sleep 1; done
+}
+trap failure ERR
+printf 'LUPOS_BOOT_SMOKE_BEGIN v1 pid=%s\n' "$$"
+[[ $$ -eq 1 ]]
+ensure_mount() {
+  local type=$1 target=$2 options=$3 rc
+  [[ -d $target && ! -L $target ]]
+  if /usr/bin/mountpoint -q "$target"; then
+    printf 'LUPOS_MOUNT_ALREADY_PRESENT target=%s\n' "$target"
+  else
+    rc=$?
+    [[ $rc -eq 32 ]]
+    /usr/bin/mount -t "$type" -o "$options" "$type" "$target"
+  fi
+  /usr/bin/mountpoint -q "$target"
+  printf 'LUPOS_MOUNT_READY type=%s target=%s\n' "$type" "$target"
+}
+ensure_mount proc /proc nosuid,nodev,noexec
+ensure_mount sysfs /sys nosuid,nodev,noexec
+ensure_mount devtmpfs /dev nosuid,mode=0755
+ensure_mount tmpfs /run nosuid,nodev,size=16M,mode=0755
+ensure_mount tmpfs /tmp nosuid,nodev,size=16M,mode=1777
+printf 'LUPOS_KERNEL_RELEASE='
+/usr/bin/uname -r
+/usr/bin/uname -a
+printf 'LUPOS_CMDLINE='
+/usr/bin/cat /proc/cmdline
+printf 'LUPOS_GUEST_BASH_VERSION=%s\n' "$BASH_VERSION"
+/usr/bin/bash --version
+/usr/bin/mount --version
+/usr/bin/uname --version
+/usr/bin/cpio --version
+/bin/sh -c 'printf "LUPOS_SH_BASH_VERSION=%s\n" "$BASH_VERSION"; set -o | /usr/bin/grep posix'
+/usr/bin/busybox --help
+printf 'LUPOS_GUEST_MOUNTS_BEGIN\n'
+/usr/bin/cat /proc/mounts
+printf 'LUPOS_GUEST_MOUNTS_END\n'
+printf 'LUPOS_BOOT_SMOKE_SCOPE=boot_only_no_workloads_no_original_C_acceptance\n'
+printf 'LUPOS_BOOT_SMOKE_SUCCESS v1\n'
+printf 'LUPOS_BOOT_SMOKE_POWEROFF v1\n'
+/usr/bin/busybox poweroff -f
+while :; do /usr/bin/sleep 1; done

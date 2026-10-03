@@ -1,3 +1,41 @@
+# Current cycle: incremental Phase 2 comparison (unarmed)
+
+This section describes the current proposed cycle. The older Unicode contract
+below is retained as historical reference; its experiment-specific source,
+configuration, case counts and ownership assertions do not govern this cycle.
+This README grants no authority; the request stays unarmed until its separately
+reviewed manifest-only activation. launch.json records approval of one cycle.
+
+Kernel source: `0008179a1ee0b082fa3ead118187fc6f3569a9f2`. The complete frozen
+configuration hashes are in `config-lock.json`; `integrated-rust.config.gz`
+contains the exact reviewed R configuration. Both members preserve the proven
+mixed Rust baseline. Only the six selectors in `provider-delta.config` switch
+from original C to Rust. This is an incremental comparison, not full all-C parity.
+
+The finite cycle performs the original full build targets and identical no-op,
+24 bounded owner checks, actual Rust `start_kernel` and Rust-init KUnit call
+proof, unchanged Bash PID1 with all 18 checks, and the original C CRC (16),
+ChaCha20Poly1305 (1) and iov_iter (17) suites. Each suite keeps its original
+source, flags, assertions, filter and timeout. The boot-only guest explicitly
+sets `kunit.enable=0`; the three suite guests explicitly enable KUnit.
+
+Important open gates: native `.s/.ll/.rsi/.lst` inspection remains static-only.
+The audit covers `init/version.o` and `linux_proc_banner`, but does not establish
+the final `init/version-timestamp.o` command/object or strong `linux_banner` and
+`init_uts_ns` ownership. Complete startup/version-metadata qualification is not
+claimed. Functional BPF/freezer/block-fallback/SELinux policy tests, Phase 3
+FS/network/zcrx, broader drivers and ARM64 remain separate, unrun scopes.
+
+Existing standard-runner supervision, immutable toolchain, cleanup and text
+transport remain in use. The planned maximum stays 10+10+120+120=260 runner
+minutes; no artifacts, caches, paid runner, secrets, settings changes or automatic
+retry are added. The regenerated public guest stays inside the measured output
+cap and is compared by complete manifests/digests. New integrated build, guest
+and ELF execution remain unrun. Actual source/setup publication and activation
+require their separately reviewed exact inputs and the existing manifest gate.
+
+## Historical reference begins here
+
 # Corrected public Unicode pilot: request v2
 
 This is a review candidate. No publication or run is authorized by these files.

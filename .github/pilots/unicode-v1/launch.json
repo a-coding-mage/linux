@@ -3,7 +3,7 @@
   "status": "reviewed-pilot",
   "toolchain_closure": "immutable-image-and-snapshots-runtime-resolution-unrun",
   "toolchain_recipe": "public-only-implemented-unrun",
-  "final_ownership_auditor": "new-implementation-historical-readonly-probed",
+  "final_ownership_auditor": "implemented-incremental-six-core-integrated-ELF-unrun",
   "public_source_review": "approved",
   "owner_pilot_approval": "one-logs-only-execution-approved",
   "evidence_mode": "logs-only"
