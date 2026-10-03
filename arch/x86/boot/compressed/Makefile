@@ -102,13 +102,15 @@ vmlinux-objs-y := $(filter-out $(addprefix $(obj)/,misc.o cmdline.o error.o kasl
 vmlinux-objs-y += $(obj)/boot.o $(obj)/boot_helpers.o
 endif
 ifdef CONFIG_X86_64
-	vmlinux-objs-y += $(obj)/ident_map_64.o
 ifneq ($(CONFIG_RUST_X86_COMPRESSED),y)
+	vmlinux-objs-y += $(obj)/ident_map_64.o
 	vmlinux-objs-y += $(obj)/idt_64.o
 endif
 	vmlinux-objs-y += $(obj)/idt_handlers_64.o
 	vmlinux-objs-$(CONFIG_AMD_MEM_ENCRYPT) += $(obj)/mem_encrypt.o
+ifneq ($(CONFIG_RUST_X86_COMPRESSED),y)
 	vmlinux-objs-y += $(obj)/pgtable_64.o
+endif
 	vmlinux-objs-$(CONFIG_AMD_MEM_ENCRYPT) += $(obj)/sev.o $(obj)/sev-handle-vc.o
 endif
 

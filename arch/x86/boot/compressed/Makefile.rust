@@ -20,6 +20,8 @@ boot-rust-deps := $(src)/boot_bindings.rs $(src)/cmdline.rs $(src)/error.rs \
 	$(src)/boot_cpu_bindings.rs $(src)/cpuflags.rs $(src)/../cpuflags.rs \
 	$(if $(CONFIG_EARLY_PRINTK),$(src)/early_serial_console.rs $(src)/../early_serial_console.rs) \
 	$(if $(CONFIG_X86_64),$(src)/boot_idt_bindings.rs $(src)/idt_64.rs) \
+	$(if $(CONFIG_X86_64),$(src)/boot_pgtable_bindings.rs $(src)/pgtable_64.rs) \
+	$(if $(CONFIG_X86_64),$(src)/boot_ident_map_bindings.rs $(src)/ident_map_64.rs $(src)/../../mm/ident_map.rs) \
 	$(src)/misc.rs $(src)/string.rs $(src)/../string.rs $(if $(CONFIG_RANDOMIZE_BASE),$(src)/kaslr.rs) \
 	$(srctree)/lib/ctype.rs $(srctree)/include/linux/ctype_header.rs \
 	$(srctree)/lib/cmdline.rs $(srctree)/lib/decompress_inflate.rs \
@@ -29,6 +31,8 @@ targets += boot-target.json boot.o boot.a libcore.rlib libcompiler_builtins.rlib
 	boot_bindings_generated.rs boot_build.rs boot_helpers.o
 targets += boot_cpu_bindings_generated.rs
 targets += boot_idt_bindings_generated.rs
+targets += boot_pgtable_bindings_generated.rs
+targets += boot_ident_map_bindings_generated.rs
 
 quiet_cmd_boot_core = RUSTC BOOT $@
       cmd_boot_core = $(RUSTC) $(filter-out --edition=2021 -Wunreachable_pub,$(boot-rust-flags)) \
@@ -80,6 +84,30 @@ quiet_cmd_boot_idt_bindgen = BINDGEN BOOT IDT $@
 $(obj)/boot_idt_bindings_generated.rs: $(src)/boot_idt_bindings.h FORCE
 	$(call if_changed_dep,boot_idt_bindgen)
 
+# Native page-table layout, assembly declarations and macro values only.
+quiet_cmd_boot_pgtable_bindgen = BINDGEN BOOT PGTABLE $@
+      cmd_boot_pgtable_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
+	--no-prepend-enum-name --with-derive-default \
+	--allowlist-type 'pgd_t' \
+	--allowlist-function 'trampoline_32bit_src' \
+	--allowlist-var '(trampoline_ljmp_imm_offset|physical_mask|sme_me_mask|LUPOS_BOOT_PGTABLE_.*)' \
+	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
+$(obj)/boot_pgtable_bindings_generated.rs: $(src)/boot_pgtable_bindings.h FORCE
+	$(call if_changed_dep,boot_pgtable_bindgen)
+
+# Layout/constant boundary only; mapping and privileged instructions are Rust.
+quiet_cmd_boot_ident_map_bindgen = BINDGEN BOOT IDENT MAP $@
+      cmd_boot_ident_map_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
+	--no-prepend-enum-name --with-derive-default \
+	--allowlist-type '(x86_pf_error_code|x86_mapping_info|pgd_t|p4d_t|pud_t|pmd_t|pte_t|pt_regs|phys_addr_t)' \
+	--allowlist-function '(sev_prep_identity_maps|snp_check_features|sev_es_check_ghcb_fault|snp_set_page_shared|snp_set_page_private)' \
+	--allowlist-var '(LUPOS_IDENT_.*|X86_PF_PROT|X86_PF_USER|X86_PF_RSVD|__pgtable_l5_enabled|pgdir_shift|ptrs_per_p4d|sme_me_mask|spurious_nmi_count|_pgtable|_head|_end)' \
+	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
+$(obj)/boot_ident_map_bindings_generated.rs: $(src)/boot_ident_map_bindings.h FORCE
+	$(call if_changed_dep,boot_ident_map_bindgen)
+
 # Preserve the C source's exact concatenated build entropy including its NUL.
 $(obj)/boot_build.rs: $(src)/boot_build.rs.S FORCE
 	$(call if_changed_dep,rustc_rs_rs_S)
@@ -93,6 +121,8 @@ quiet_cmd_boot_rust = RUSTC BOOT $@
 	--emit=link=$@,dep-info=$(depfile) $<
 $(obj)/boot.a: $(src)/boot.rs $(boot-rust-deps) $(obj)/boot_bindings_generated.rs \
 	$(obj)/boot_cpu_bindings_generated.rs $(if $(CONFIG_X86_64),$(obj)/boot_idt_bindings_generated.rs) \
+	$(if $(CONFIG_X86_64),$(obj)/boot_pgtable_bindings_generated.rs) \
+	$(if $(CONFIG_X86_64),$(obj)/boot_ident_map_bindings_generated.rs) \
 	$(obj)/boot_build.rs $(obj)/libcompiler_builtins.rlib FORCE
 	$(call if_changed_dep,boot_rust)
 
@@ -110,6 +140,8 @@ boot-rust-roots := extract_kernel decompress_kernel kernel_text_size kernel_init
 	get_cpuflags cpuid_count has_cpuflag cpu cpu_vendor $(if $(CONFIG_X86_32),has_eflag) \
 	$(if $(CONFIG_EARLY_PRINTK),console_init early_serial_base) \
 	$(if $(CONFIG_X86_64),load_stage1_idt load_stage2_idt cleanup_exception_handling) \
+	$(if $(CONFIG_X86_64),configure_5level_paging __pgtable_l5_enabled pgdir_shift ptrs_per_p4d trampoline_32bit) \
+	$(if $(CONFIG_X86_64),initialize_identity_maps kernel_add_identity_map kernel_ident_mapping_init kernel_ident_mapping_free set_page_decrypted set_page_encrypted set_page_non_present do_boot_page_fault do_boot_nmi_trap __default_kernel_pte_mask physical_mask) \
 	__cmdline_find_option __cmdline_find_option_bool \
 	inflate_fast zlib_inflate zlib_inflateEnd zlib_inflateIncomp \
 	zlib_inflateInit2 zlib_inflateReset zlib_inflate_table zlib_inflate_workspacesize \
@@ -133,9 +165,13 @@ $(boot-rust-target): $(src)/Makefile.rust $(src)/generate-rust-target.sh $(wildc
 # Compiler/bindgen replacement at the same configured path also invalidates it.
 $(obj)/libcore.rlib $(obj)/libcompiler_builtins.rlib $(obj)/boot.a: $(wildcard $(RUSTC))
 $(obj)/boot_bindings_generated.rs $(obj)/boot_cpu_bindings_generated.rs $(obj)/boot_idt_bindings_generated.rs: $(wildcard $(BINDGEN))
+$(obj)/boot_pgtable_bindings_generated.rs: $(wildcard $(BINDGEN))
+$(obj)/boot_ident_map_bindings_generated.rs: $(wildcard $(BINDGEN))
 
 # The helper includes the generated offsets even on its first parallel build.
 $(obj)/boot_helpers.o: $(obj)/../voffset.h
 # Version stamps cover PATH-resolved tools as well as explicit executable paths.
 $(boot-rust-target) $(obj)/libcore.rlib: $(wildcard $(objtree)/include/config/RUSTC_VERSION_TEXT)
 $(obj)/boot_bindings_generated.rs $(obj)/boot_cpu_bindings_generated.rs $(obj)/boot_idt_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
+$(obj)/boot_pgtable_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
+$(obj)/boot_ident_map_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
