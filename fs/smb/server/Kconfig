@@ -71,3 +71,13 @@ config SMB_SERVER_KERBEROS5
 	bool "Support for Kerberos 5"
 	depends on SMB_SERVER
 	default y
+
+config RUST_KSMBD_VFS_CACHE
+	bool "Rust provider for the ksmbd file cache"
+	depends on SMB_SERVER && RUST
+	default n
+	help
+	  Select the Rust implementation of the ksmbd file-cache unit in the
+	  existing vfs_cache.o slot. The retained C provider remains the default.
+	  This experimental provider requires configured ABI, native-link, and
+	  maintained SMB protocol-suite qualification before deployment.

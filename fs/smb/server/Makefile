@@ -19,3 +19,26 @@ $(obj)/ksmbd_spnego_negtokentarg.asn1.o: $(obj)/ksmbd_spnego_negtokentarg.asn1.c
 
 ksmbd-$(CONFIG_SMB_SERVER_SMBDIRECT) += transport_rdma.o
 ksmbd-$(CONFIG_PROC_FS) += proc.o
+
+ifeq ($(CONFIG_RUST_KSMBD_VFS_CACHE),y)
+# Keep vfs_cache.o in the original ksmbd composite object. C remains untouched.
+ksmbd-y += vfs_cache_helpers.o
+vfs-cache-rust-deps := $(src)/vfs_cache_close.rs $(src)/vfs_cache_lifecycle.rs \
+	$(objtree)/rust/bindings/ksmbd_vfs_cache_generated.rs
+# Do not let the canonical expanded-source formatter probe's && list hide a
+# missing formatter behind if_changed_dep's appended fixdep invocation.
+quiet_cmd_vfs_cache_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
+      cmd_vfs_cache_rsi = \
+	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
+	command -v $(RUSTFMT) >/dev/null || exit $$?; \
+	$(RUSTFMT) --config-path $(srctree)/.rustfmt.toml $@ || exit $$?
+$(obj)/vfs_cache.o: $(src)/vfs_cache.rs $(vfs-cache-rust-deps) \
+	$(wildcard $(objtree)/include/config/RUST_KSMBD_VFS_CACHE) FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/vfs_cache.s: $(src)/vfs_cache.rs $(vfs-cache-rust-deps) FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/vfs_cache.ll: $(src)/vfs_cache.rs $(vfs-cache-rust-deps) FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/vfs_cache.rsi: $(src)/vfs_cache.rs $(vfs-cache-rust-deps) FORCE
+	+$(call if_changed_dep,vfs_cache_rsi)
+endif
