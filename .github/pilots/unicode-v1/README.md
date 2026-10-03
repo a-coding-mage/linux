@@ -1,10 +1,10 @@
-# Unarmed public Unicode pilot: revision v4 of the unreleased evidence protocol
+# Corrected public Unicode pilot: request v2
 
 This is a review candidate. No publication or run is authorized by these files.
 The source remains `62a3294181556f17db863c9016524fa3068a374b`; original C tests,
 config values, provider selectors, flags and guest settings retain their reviewed
-profile. The setup-base gate is deliberately stale and must be refreshed to the
-then-verified feature-branch tip after review. Do not change the experiment pin.
+profile. The setup-base gate is pinned to 298abda59725d491c10be678618ac76300d1aba1.
+The new request ID is unicode-public-62a3294-v2. Do not change the experiment pin.
 
 Both matrix jobs reject `github.run_attempt != 1` before checkout, and reject
 reruns again in the host, container, installer and stage shell boundaries. A
@@ -37,7 +37,7 @@ is disabled. No evidence is truncated to produce a pass.
 
 ## Proposed run and time commitment
 
-The setup commit adds both this workflow and the unarmed manifest. It can trigger
+The corrected setup updates the existing helpers and resets the new request to unarmed. It can trigger
 one request-only run, which is expected to reject the setup push and start no
 member. After that expected outcome is verified, a separate manifest-only
 activation commit can trigger one request job and the sequential C/R pair.
@@ -47,8 +47,8 @@ commits, both possible workflow runs and the specified public logs.
 The request job has a 10-minute ceiling in each run. Each member has a proposed
 120-minute GitHub job ceiling. Thus the complete planned setup-plus-activation
 maximum is 260 standard-runner minutes: 10 + 10 + 120 + 120. It is not a measured
-duration. The verified prospective base had no pre-existing workflow files; the
-head and workflow inventory must be rechecked before publication.
+duration. The verified base contains the previously published pilot workflow; the head and
+workflow inventory must be rechecked before publication.
 
 The internal soft job deadline is 115 minutes from the first workflow step,
 leaving a five-minute tail relative to that step's 120-minute window. Platform
@@ -134,3 +134,31 @@ Even a complete passing envelope retains observations and hashes, not final ELF
 bytes. It remains a provisional logs-only C/R result. Independent later binary
 reinspection requires separately approved bounded artifacts; no artifact upload
 or binary-through-logs substitute is included here.
+
+## Corrected harness and unchanged experiment
+
+The prior attempt 37081883721 failed before any original C test ran. Its failure
+and logs are retained. This request is one new bounded attempt, never a rerun.
+
+The allocation sampler retries only exact disappearing-entry ENOENT failures,
+at most three attempts inside one shared five-second budget. It accepts a
+metric only after a complete successful rescan. Invalid, mixed, permission,
+I/O, truncated or NUL-tainted output fails closed; resource caps do not change.
+
+Configure/build/no-op now pass RUSTC=/usr/bin/rustc as an explicit make variable.
+This is a build-integration change. Bare rustc must first resolve to that exact
+path and executable SHA256 b4e139165f4f075f9a3fb4b20e7e4898472f08304961706072752d4aa11522b1.
+No compiler flags change. The five original command files are retained before
+the fail-closed ownership audit. Exact compiler/source and enabled overflow
+checks remain required; any conflicting or disabled overflow setting fails.
+
+Cleanup uses bounded command capture, monotonic deadlines, process-group
+termination/reaping and an exact-CID absence receipt. It retains the existing
+60-second reserve, 20/25-second operation limits and shared 20-second removal
+and verification interval. Timeout, malformed or NUL-tainted output, failure
+to reap, unknown daemon diagnostics and unproved absence all fail.
+
+Static/synthetic controls do not establish real Docker compatibility or a
+kernel/guest result. The prior missing normalizer command and final container
+absence are not reconstructed. Authentic complete fresh C/R logs and unchanged
+final-ELF ownership checks are still required for a provisional result.

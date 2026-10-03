@@ -1,6 +1,6 @@
 package CompareEvidence;
 # SPDX-License-Identifier: GPL-2.0-only
-use strict; use warnings; use Evidence; use Digest::SHA qw(sha256_hex); use Encode qw(encode decode FB_CROAK); use Text::ParseWords qw(shellwords);
+use OverflowPolicy (); use strict; use warnings; use Evidence; use Digest::SHA qw(sha256_hex); use Encode qw(encode decode FB_CROAK); use Text::ParseWords qw(shellwords);
 my $IMAGE='docker.io/library/debian:trixie-slim@sha256:7792b1f7702a86946cd518db72b6a407302c3e9bc1635634368b878189e8221c';
 sub canonical_json {
  my($text)=@_; my $v=$Evidence::JSON->decode($text);
@@ -84,6 +84,9 @@ sub validate {
  die "container allowance differs from deadline\n" unless $f->{'host.container.status'}=~/timeout_seconds=\Q$container_allowance\E\n\z/;
  die "host result/cleanup failed\n" unless $f->{'host.cleanup.status'} eq "cleanup_exit=0\n" && $f->{'host.result.status'} eq "native_exit=0 cleanup_exit=0\n";
  die "missing owned container identity\n" unless $f->{'host.container.cid'}=~/\A[0-9a-f]{64}\z/;
+ my $owned_cid=$f->{'host.container.cid'};
+ my $verified_absence=()=$f->{'host.cleanup.inspect'}=~/^cleanup_verified_absent=\Q$owned_cid\E$/mg;
+ die "container absence not verified\n" unless $verified_absence==1;
  for my $p(qw(preflight terminal)){
   my $phase=$p eq 'preflight'?'initial':'terminal';
   die "host admission/terminal missing\n" unless $f->{"host.$p.txt"}=~/RESOURCE_STAGE=\Q$phase\E UTC=/ && $f->{"host.$p.txt"}=~/CAPS O_allocated_bytes=(\d+) evidence_allocated_bytes=(\d+)/ && $1<=1342177280 && $2<=134209536;
@@ -103,7 +106,7 @@ sub validate {
  my @tail=('--env',"PILOT_PROVIDER=$provider",'--env','PILOT_RUN_ATTEMPT=1','--env',"PILOT_RUN_ID=$receipt->{run_id}",'--env',"PILOT_TRIGGER_SHA=$receipt->{trigger_sha}",'--env',"PILOT_JOB_STARTED_EPOCH=$context->{job_started_epoch}",'--env',"PILOT_JOB_DEADLINE_EPOCH=$context->{job_deadline_epoch}",'--env',"PILOT_CONTAINER_STARTED_EPOCH=$context->{container_started_epoch}",'--env',"PILOT_CONTAINER_DEADLINE_EPOCH=$context->{container_deadline_epoch}",$IMAGE,'bash','/pilot/run-container.sh');
  die "unexpected Docker environment/command\n" unless join("\0",@docker[17..$#docker]) eq join("\0",@tail);
  stage($f,'runtime','install','bash','/pilot/install-public-tools.sh');
- my @make=('make','-C','/src','O=/work/O','ARCH=x86_64','LLVM=1','HOST_TOOLS_LANG=rust','-j2');
+ my @make=('make','-C','/src','O=/work/O','ARCH=x86_64','LLVM=1','HOST_TOOLS_LANG=rust','RUSTC=/usr/bin/rustc','-j2');
  stage($f,'runtime','configure',@make,'olddefconfig');stage($f,'runtime','build',@make,'bzImage');stage($f,'runtime','noop',@make,'bzImage');
  stage($f,'runtime','ownership','bash','/pilot/audit-commands.sh',$provider,'/work/O');
  stage($f,'runtime','guest','timeout','--signal=TERM','--kill-after=10','900','qemu-system-x86_64','-L','/usr/share/qemu','-nodefaults','-m','2048','-kernel','/work/O/arch/x86/boot/bzImage','-append','console=ttyS0 kunit.enable=1 kunit.autorun=1 kunit.filter_glob=unicode_normalization kunit_shutdown=reboot panic=-1 oops=panic nokaslr','-no-reboot','-nographic','-accel','tcg,thread=single','-cpu','max','-smp','1','-serial','stdio','-nic','none','-bios','qboot.rom');
@@ -132,6 +135,7 @@ sub validate {
  my @pins=split /\n/,Evidence::slurp("$dir/public-packages-candidate.tsv");shift@pins;for(@pins){my($n,$v)=split /\t/;die "missing/wrong pinned package $n\n" unless ($installed{$n}//'') eq $v}
  die "missing dependency closure\n" unless $f->{'runtime.base-packages.tsv'}=~/^base-files\t/m && $f->{'runtime.downloaded-packages.tsv'}=~/^[a-z0-9+.-]+\t\S+\t(?:amd64|all)\t[0-9a-f]{64}$/m;
  my $versions=$f->{'runtime.tool-versions.txt'};for(qr/clang version 19\.1\.7/,qr/rustc 1\.85\.1/,qr/bindgen 0\.71\.1/,qr/v1\.30/,qr/QEMU emulator version 10\.0\.13/){die "wrong/missing tool version\n" unless $versions=~$_}
+ die "missing compiler path equivalence\n" unless $versions=~m{^RUSTC_PATH_EQUIVALENCE\ bare\=rustc\ resolved\=\/usr\/bin\/rustc\ requested\=\/usr\/bin\/rustc$}m;
  my $tools=Evidence::hashes($f->{'runtime.tool-binaries.sha256'});assert_keys($tools,qw(/usr/bin/rustc /usr/bin/rustfmt /usr/bin/bindgen /usr/bin/pahole /usr/bin/qemu-system-x86_64 /usr/share/qemu/qboot.rom));
  my $images=Evidence::hashes($f->{'runtime.image-identities.sha256'});assert_keys($images,qw(/work/O/arch/x86/boot/bzImage /work/O/vmlinux /work/O/vmlinux.unstripped /work/O/vmlinux.o /work/O/.config));
  my @objects=qw(fs/unicode/tests/utf8_kunit.o fs/unicode/utf8-core.o fs/unicode/utf8data.o lib/crc/crc16.o);
@@ -147,9 +151,11 @@ sub validate {
  my @cmdroles=qw(test core data crc);my @cmdpaths=qw(fs/unicode/tests/.utf8_kunit.o.cmd fs/unicode/.utf8-core.o.cmd fs/unicode/.utf8data.o.cmd lib/crc/.crc16.o.cmd);
  my @sources=('/src/fs/unicode/tests/utf8_kunit.c','/src/fs/unicode/utf8-core.c','fs/unicode/utf8data.c','/src/lib/crc/crc16.c');
  for my $i(0..3){my $cmd=$f->{"runtime.$cmdroles[$i].cmd"};die "original C command/source/flags absent\n" unless $cmd=~/^savedcmd_\Q$objects[$i]\E := clang .* -fno-strict-overflow .* -c -o /m && $cmd=~/^source_\Q$objects[$i]\E := \Q$sources[$i]\E$/m;die "command digest missing from O inventory\n" unless ($whole->{"./$cmdpaths[$i]"}//'') eq sha256_hex(encode('UTF-8',$cmd))}
+ die "unapproved Rust compiler hash\n" unless $tools->{'/usr/bin/rustc'} eq 'b4e139165f4f075f9a3fb4b20e7e4898472f08304961706072752d4aa11522b1';
  my $norm=$f->{'runtime.norm.cmd'};my $extension=$provider eq 'rust'?'rs':'c';
+ OverflowPolicy::check($norm) if $provider eq 'rust';
  die "wrong selected normalizer source\n" unless $norm=~/^source_fs\/unicode\/utf8-norm\.o := \/src\/fs\/unicode\/utf8-norm\.\Q$extension\E$/m;
- if($provider eq 'rust'){die "Rust compiler/overflow flags absent\n" unless $norm=~/^savedcmd_fs\/unicode\/utf8-norm\.o := .*\/usr\/bin\/rustc .* -Coverflow-checks=y /m}
+ if($provider eq 'rust'){die "Rust compiler/overflow flags absent\n" unless $norm=~/^savedcmd_fs\/unicode\/utf8-norm\.o := OBJTREE=\/work\/O RUST_MODFILE=fs\/unicode\/unicode \/usr\/bin\/rustc .* -Coverflow-checks=y /m}
  else{die "original C normalizer flags absent\n" unless $norm=~/^savedcmd_fs\/unicode\/utf8-norm\.o := clang .* -fno-strict-overflow .* -c -o /m}
  die "selected normalizer command not bound to O inventory\n" unless ($whole->{'./fs/unicode/.utf8-norm.o.cmd'}//'') eq sha256_hex(encode('UTF-8',$norm));
  my $owner=$f->{'runtime.ownership.log'};

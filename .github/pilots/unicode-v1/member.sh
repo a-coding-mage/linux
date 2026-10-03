@@ -14,24 +14,16 @@ container_name=unicode-pilot-$GITHUB_RUN_ID-$PILOT_PROVIDER
 cidfile=$PILOT_LOG_ROOT/container.cid
 cleanup=0; emitting=0
 finish() {
-  local result=$? container_id='' state='' probe=0
+  local result=$? container_id=''
   trap - EXIT INT TERM; set +e
   : > "$PILOT_LOG_ROOT/cleanup.inspect" || cleanup=79
   : > "$PILOT_LOG_ROOT/cleanup.stderr" || cleanup=79
+  printf 'member_entry_exit=%s\n' "$result" >> "$PILOT_LOG_ROOT/cleanup.inspect" || cleanup=79
   if [[ -s $cidfile ]]; then
     container_id=$(cat "$cidfile") || cleanup=79
     if [[ ! $container_id =~ ^[0-9a-f]{64}$ ]]; then cleanup=79
     else
-      timeout 20 docker inspect --format '{{.State.Running}}' "$container_id" > "$PILOT_LOG_ROOT/cleanup.inspect" 2> "$PILOT_LOG_ROOT/cleanup.stderr"; probe=$?
-      if (( probe == 0 )); then
-        state=$(cat "$PILOT_LOG_ROOT/cleanup.inspect") || cleanup=79
-        [[ $state == true || $state == false ]] || cleanup=79
-        if [[ $state == true ]]; then
-          timeout 25 docker stop --time 10 "$container_id" >> "$PILOT_LOG_ROOT/cleanup.inspect" 2>> "$PILOT_LOG_ROOT/cleanup.stderr" || cleanup=79
-        fi
-        timeout 20 docker rm --force "$container_id" >> "$PILOT_LOG_ROOT/cleanup.inspect" 2>> "$PILOT_LOG_ROOT/cleanup.stderr" || cleanup=79
-      elif (( probe != 1 )) || ! grep -Fq 'No such object:' "$PILOT_LOG_ROOT/cleanup.stderr"; then cleanup=79
-      fi
+      bash "$here/cleanup-container.sh" "$container_id" "$PILOT_LOG_ROOT" || cleanup=79
     fi
   fi
   printf 'cleanup_exit=%s\n' "$cleanup" > "$PILOT_LOG_ROOT/cleanup.status" || { cleanup=79; result=79; }

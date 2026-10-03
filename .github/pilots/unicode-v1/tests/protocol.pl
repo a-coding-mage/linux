@@ -16,7 +16,7 @@ sub fixtures {
  $f{'host.preflight.txt'}="RESOURCE_STAGE=initial UTC=2026-10-02T00:00:00Z\nCAPS O_allocated_bytes=1 evidence_allocated_bytes=1\n";
  $f{'host.terminal.txt'}="RESOURCE_STAGE=terminal UTC=2026-10-02T00:00:05Z\nCAPS O_allocated_bytes=1 evidence_allocated_bytes=1\n";
  $f{'host.image.txt'}="$image amd64\n";$f{'host.cleanup.status'}="cleanup_exit=0\n";$f{'host.result.status'}="native_exit=0 cleanup_exit=0\n";
- $f{'host.container.cid'}='b'x64;$f{'host.cleanup.inspect'}='';$f{'host.cleanup.stderr'}='';
+ $f{'host.container.cid'}='b'x64;$f{'host.cleanup.inspect'}='cleanup_verified_absent='.('b'x64)."\n";$f{'host.cleanup.stderr'}='';
  $f{'host.pull.command'}=cmd('docker','pull','--platform','linux/amd64',$image);
  my$root='/runner/work/linux/linux';
  $f{'host.container.command'}=cmd('docker','run','--rm','--platform','linux/amd64','--name',"unicode-pilot-$run-$p",'--cidfile',"$root/evidence/container.cid",'--label',"unicode_pilot_run=$run",'--mount',"type=bind,src=$root/linux,dst=/src,readonly",'--mount',"type=bind,src=$root/pilot/.github/pilots/unicode-v1,dst=/pilot,readonly",'--mount',"type=bind,src=$root/work,dst=/work",'--env',"PILOT_PROVIDER=$p",'--env','PILOT_RUN_ATTEMPT=1','--env',"PILOT_RUN_ID=$run",'--env',"PILOT_TRIGGER_SHA=$trigger",'--env',"PILOT_JOB_STARTED_EPOCH=$job_start",'--env',"PILOT_JOB_DEADLINE_EPOCH=$job_deadline",'--env',"PILOT_CONTAINER_STARTED_EPOCH=$container_start",'--env',"PILOT_CONTAINER_DEADLINE_EPOCH=$container_deadline",$image,'bash','/pilot/run-container.sh');
@@ -29,11 +29,12 @@ sub fixtures {
  $f{'runtime.installed-packages.tsv'}=join('',map{my@v=split/\t/;join("\t",@v[0..2])."\n"}@pins);
  $f{'runtime.base-packages.tsv'}="base-files\t13.7\tamd64\n";
  $f{'runtime.downloaded-packages.tsv'}=join('',map{my@v=split/\t/;join("\t",@v[0,1,2,5])."\n"}@pins);
- $f{'runtime.tool-versions.txt'}="Debian clang version 19.1.7\nrustc 1.85.1\nbindgen 0.71.1\nv1.30\nQEMU emulator version 10.0.13\n";
+ $f{'runtime.tool-versions.txt'}="RUSTC_PATH_EQUIVALENCE bare=rustc resolved=/usr/bin/rustc requested=/usr/bin/rustc\nDebian clang version 19.1.7\nrustc 1.85.1\nbindgen 0.71.1\nv1.30\nQEMU emulator version 10.0.13\n";
  $f{'runtime.tool-binaries.sha256'}=join('',map{sha256_hex($_)."  $_\n"}qw(/usr/bin/rustc /usr/bin/rustfmt /usr/bin/bindgen /usr/bin/pahole /usr/bin/qemu-system-x86_64 /usr/share/qemu/qboot.rom));
+ $f{'runtime.tool-binaries.sha256'}=~s{^[0-9a-f]{64}  /usr/bin/rustc$}{b4e139165f4f075f9a3fb4b20e7e4898472f08304961706072752d4aa11522b1  /usr/bin/rustc}m;
  $f{'runtime.config.full'}=Evidence::slurp("$dir/config.symbols");$f{'runtime.config.full'}=~s/^CONFIG_RUST_UNICODE_NORM=y$/# CONFIG_RUST_UNICODE_NORM is not set/m if$p eq'c';
  $f{'runtime.config-check.txt'}="CONFIG_ALL_VALUES_PRESERVED provider=$p symbols=".scalar(keys%{Evidence::config($f{'runtime.config.full'})})."\n";
- my@make=('make','-C','/src','O=/work/O','ARCH=x86_64','LLVM=1','HOST_TOOLS_LANG=rust','-j2');
+ my@make=('make','-C','/src','O=/work/O','ARCH=x86_64','LLVM=1','HOST_TOOLS_LANG=rust','RUSTC=/usr/bin/rustc','-j2');
  $f{'runtime.install.command'}=cmd('bash','/pilot/install-public-tools.sh');
  $f{'runtime.install.log'}=join('',map{"/work/apt-lists/snapshot_dists_${_}_InRelease: OK\n"}qw(trixie trixie-updates trixie-security));
  $f{'runtime.configure.command'}=cmd(@make,'olddefconfig');$f{'runtime.build.command'}=cmd(@make,'bzImage');$f{'runtime.noop.command'}=cmd(@make,'bzImage');
@@ -44,7 +45,7 @@ sub fixtures {
  $f{'runtime.parse.command'}=cmd('bash','/pilot/parse-guest.sh');
  my@objects=qw(fs/unicode/tests/utf8_kunit.o fs/unicode/utf8-core.o fs/unicode/utf8data.o lib/crc/crc16.o);my@labels=qw(test core data crc);my@cmdpaths=qw(fs/unicode/tests/.utf8_kunit.o.cmd fs/unicode/.utf8-core.o.cmd fs/unicode/.utf8data.o.cmd lib/crc/.crc16.o.cmd);my@sources=('/src/fs/unicode/tests/utf8_kunit.c','/src/fs/unicode/utf8-core.c','fs/unicode/utf8data.c','/src/lib/crc/crc16.c');my%whole;
  for my$i(0..3){$f{"runtime.$labels[$i].cmd"}="savedcmd_$objects[$i] := clang -O2 -fno-strict-overflow -D__KERNEL__ -c -o $objects[$i] $sources[$i]\nsource_$objects[$i] := $sources[$i]\n";$whole{"./$cmdpaths[$i]"}=sha256_hex($f{"runtime.$labels[$i].cmd"});$whole{"./$objects[$i]"}=sha256_hex($objects[$i])}
- $f{'runtime.norm.cmd'}=$p eq 'rust'?"savedcmd_fs/unicode/utf8-norm.o := OBJTREE=/work/O /usr/bin/rustc --edition=2021 -Coverflow-checks=y /src/fs/unicode/utf8-norm.rs \nsource_fs/unicode/utf8-norm.o := /src/fs/unicode/utf8-norm.rs\n":"savedcmd_fs/unicode/utf8-norm.o := clang -O2 -fno-strict-overflow -D__KERNEL__ -c -o fs/unicode/utf8-norm.o /src/fs/unicode/utf8-norm.c\nsource_fs/unicode/utf8-norm.o := /src/fs/unicode/utf8-norm.c\n";
+ $f{'runtime.norm.cmd'}=$p eq 'rust'?"savedcmd_fs/unicode/utf8-norm.o := OBJTREE=/work/O RUST_MODFILE=fs/unicode/unicode /usr/bin/rustc --edition=2021 -Coverflow-checks=y /src/fs/unicode/utf8-norm.rs \nsource_fs/unicode/utf8-norm.o := /src/fs/unicode/utf8-norm.rs\n":"savedcmd_fs/unicode/utf8-norm.o := clang -O2 -fno-strict-overflow -D__KERNEL__ -c -o fs/unicode/utf8-norm.o /src/fs/unicode/utf8-norm.c\nsource_fs/unicode/utf8-norm.o := /src/fs/unicode/utf8-norm.c\n";
  $whole{'./fs/unicode/.utf8-norm.o.cmd'}=sha256_hex($f{'runtime.norm.cmd'});
  $whole{'./fs/unicode/utf8-norm.o'}=sha256_hex("synthetic normalizer $p");$whole{'./vmlinux.a'}=sha256_hex("synthetic archive $p");
  $f{'runtime.object-identities.sha256'}=join('',map{$whole{"./$_"}."  /work/O/$_\n"}@objects);
@@ -97,6 +98,8 @@ $bad=$rlog;$bad=~s/UEV3 FILE [^\n]+\n.*?UEV3 END_FILE [^\n]+\n//s;reject('missin
 for my$case(
  ['incorrect earlier newline CID fixture','host.container.cid',('b'x64)."\n"],
  ['short CID','host.container.cid','b'x63],
+ ['cleanup without observed absence','host.cleanup.inspect',"member_entry_exit=0\n"],
+ ['cleanup of wrong container','host.cleanup.inspect','cleanup_verified_absent='.('c'x64)."\n"],
  ['nonhex CID','host.container.cid','g'x64],
  ['missing full normalizer command','runtime.norm.cmd',"source_fs/unicode/utf8-norm.o := /src/fs/unicode/utf8-norm.rs\n"],
  ['missing guest budget admission','runtime.guest-admission.json','{}'],
@@ -120,3 +123,28 @@ my$rec=receipt($clog,$rlog);$rec->{run_attempt}=2;reject('GitHub rerun receipt',
 $rec=receipt($clog,$rlog);$rec->{jobs}{rust}{conclusion}='failure';reject('failed GitHub job metadata',$rlog,$rec);
 $rec=receipt($clog,$rlog);$rec->{jobs}{rust}{text_sha256}='0'x64;reject('decoded download digest mismatch',$rlog,$rec);
 print "SYNTHETIC_PROTOCOL_TESTS_COMPLETE no_kernel_execution=true\n";
+for my $case (
+ ['bare compiler',sub { $_[0]=~s! /usr/bin/rustc ! rustc ! },'Rust compiler/overflow flags absent'],
+ ['wrong compiler prefix',sub { $_[0]=~s! /usr/bin/rustc ! /wrong/usr/bin/rustc ! },'Rust compiler/overflow flags absent'],
+ ['compiler text in environment value',sub { $_[0]=~s! /usr/bin/rustc ! COMPILER=/usr/bin/rustc /wrong/rustc ! },'Rust compiler/overflow flags absent'],
+ ['C source selected as Rust',sub { $_[0]=~s!utf8-norm\.rs!utf8-norm.c!g },'wrong selected normalizer source'],
+ ['disabled overflow checking',sub { $_[0]=~s/Coverflow-checks=y/Coverflow-checks=n/ },'overflow policy: conflicting/disabled setting']
+) {
+ my %copy=%$r; $case->[1]->($copy{'runtime.norm.cmd'});
+ my $hash=sha256_hex(encode('UTF-8',$copy{'runtime.norm.cmd'}));
+ for my $stage(qw(before-noop after-noop before-guest after-guest)) {
+  $copy{"runtime.O-$stage.sha256"}=~s{^[0-9a-f]{64}  \./fs/unicode/\.utf8-norm\.o\.cmd$}{$hash  ./fs/unicode/.utf8-norm.o.cmd}m or die 'fixture inventory';
+ }
+ my $bad=envelope(\%copy,'rust');
+ my $pass=eval {CompareEvidence::compare(receipt($clog,$bad),$clog,$bad,$dir);1};
+ die "wrong rejection for $case->[0]: $@" if $pass || $@ !~ /\Q$case->[2]\E/;
+ print "PASS rejects $case->[0] with rebound command digests\n";
+}
+for my $case (
+ ['missing explicit compiler selection','runtime.build.command',sub {$_[0]=~s! RUSTC=/usr/bin/rustc!!}],
+ ['wrong pinned compiler hash','runtime.tool-binaries.sha256',sub {$_[0]=~s!^[0-9a-f]{64}  /usr/bin/rustc$!('0'x64).'  /usr/bin/rustc'!me}],
+ ['missing path equivalence','runtime.tool-versions.txt',sub {$_[0]=~s/^RUSTC_PATH_EQUIVALENCE[^\n]*\n//m}]
+) {
+ my %copy=%$r; $case->[2]->($copy{$case->[1]});reject($case->[0],envelope(\%copy,'rust'));
+}
+print "OWNERSHIP_PROPOSAL_CONTROLS_COMPLETE no_kernel_execution=true\n";

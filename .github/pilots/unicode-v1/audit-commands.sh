@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-2.0-only
-set -euo pipefail
+set -Eeuo pipefail
+trap 'status=$?; printf "OWNERSHIP_FAILED line=%s exit=%s command=%q\n" "$LINENO" "$status" "$BASH_COMMAND" >&2; exit "$status"' ERR
 provider=${1:?c or rust}; out=${2:?output tree}
 [[ $provider == c || $provider == rust ]]
 cd "$out"
+# Show the selected command even when its compiler assertion fails.
+cat fs/unicode/.utf8-norm.o.cmd
 extension=c; [[ $provider == c ]] || extension=rs
 grep -Fx "source_fs/unicode/utf8-norm.o := /src/fs/unicode/utf8-norm.$extension" fs/unicode/.utf8-norm.o.cmd
 grep -Fx 'source_fs/unicode/utf8-core.o := /src/fs/unicode/utf8-core.c' fs/unicode/.utf8-core.o.cmd
@@ -12,8 +15,9 @@ grep -Fx 'source_lib/crc/crc16.o := /src/lib/crc/crc16.c' lib/crc/.crc16.o.cmd
 cmp fs/unicode/utf8data.c /src/fs/unicode/utf8data.c_shipped
 grep -F -- '-fno-strict-overflow' fs/unicode/tests/.utf8_kunit.o.cmd
 if [[ $provider == rust ]]; then
-  grep -F -- '/usr/bin/rustc' fs/unicode/.utf8-norm.o.cmd
+  grep -E -- '^savedcmd_fs/unicode/utf8-norm\.o := OBJTREE=/work/O RUST_MODFILE=fs/unicode/unicode /usr/bin/rustc ' fs/unicode/.utf8-norm.o.cmd
   grep -F -- '-Coverflow-checks=y' fs/unicode/.utf8-norm.o.cmd
+  perl /pilot/OverflowPolicy.pm fs/unicode/.utf8-norm.o.cmd
   test -s rust/bindings/utf8_norm_generated.rs
   test -s rust/bindings/.utf8_norm_generated.rs.cmd
   cat rust/bindings/.utf8_norm_generated.rs.cmd

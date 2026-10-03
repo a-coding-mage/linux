@@ -15,7 +15,7 @@ set -euo pipefail
 case "$*" in
   'rev-parse HEAD') echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa;;
   'show -s --format=%P aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') echo "${STUB_PARENTS:-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb}";;
-  'show -s --format=%P bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb') echo "${STUB_SETUP_PARENT:-2099a6c20c54c99ae1689eb59f5240c54cc2774e}";;
+  'show -s --format=%P bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb') echo "${STUB_SETUP_PARENT:-298abda59725d491c10be678618ac76300d1aba1}";;
   'cat-file -e bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb^{commit}') exit 0;;
   diff-tree*) printf '%b\n' "${STUB_CHANGES:-M\t.github/pilots/unicode-request.json}";;
   ls-tree*) printf '%s blob cccccccccccccccccccccccccccccccccccccccc\t.github/pilots/unicode-request.json\n' "${STUB_MODE:-100644}";;
@@ -65,7 +65,7 @@ GITHUB_RUN_ATTEMPT=2
 if run_gate; then exit 1; fi; echo 'PASS rejects rerun'; GITHUB_RUN_ATTEMPT=1
 cp "$work/unarmed.json" "$work/repo/.github/pilots/unicode-request.json"
 if run_gate; then exit 1; fi; echo 'PASS rejects unarmed installation'
-sed 's/unicode-public-62a3294-v1/unreviewed/' "$work/armed.json" > "$work/repo/.github/pilots/unicode-request.json"
+sed 's/unicode-public-62a3294-v2/unreviewed/' "$work/armed.json" > "$work/repo/.github/pilots/unicode-request.json"
 if run_gate; then exit 1; fi; echo 'PASS rejects unreviewed request ID'
 cp "$work/armed.json" "$work/repo/.github/pilots/unicode-request.json"
 run_gate

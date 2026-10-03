@@ -20,7 +20,10 @@ export SOURCE_DATE_EPOCH="$(git -C /src show -s --format=%ct HEAD)"
 export KBUILD_BUILD_TIMESTAMP="$(date -u -d "@$SOURCE_DATE_EPOCH" '+%a %b %d %T UTC %Y')"
 cp /pilot/public-source.sha256 /work/evidence/source.lock
 bash /pilot/verify-source.sh /src > /work/evidence/source.before.txt
+# Bare-name resolution and the explicit make selection must name the same approved binary.
+[[ $(command -v rustc) == /usr/bin/rustc ]]
 {
+  printf 'RUSTC_PATH_EQUIVALENCE bare=rustc resolved=/usr/bin/rustc requested=/usr/bin/rustc\n'
   clang --version; ld.lld --version; rustc -vV; bindgen --version
   rustfmt --version; pahole --version; qemu-system-x86_64 --version
   make --version; gcc --version
@@ -29,10 +32,11 @@ bash /pilot/verify-source.sh /src > /work/evidence/source.before.txt
 [[ $(rustc --version | awk '{print $2}') == 1.85.1 ]]
 [[ $(bindgen --version) == 'bindgen 0.71.1' ]]
 [[ $(pahole --version) == v1.30 ]]
+printf 'b4e139165f4f075f9a3fb4b20e7e4898472f08304961706072752d4aa11522b1  /usr/bin/rustc\n' | sha256sum -c -
 sha256sum /usr/bin/rustc /usr/bin/rustfmt /usr/bin/bindgen /usr/bin/pahole /usr/bin/qemu-system-x86_64 /usr/share/qemu/qboot.rom > /work/evidence/tool-binaries.sha256
 cp /pilot/config.symbols /work/O/.config
 if [[ $PILOT_PROVIDER == c ]]; then sed -i 's/^CONFIG_RUST_UNICODE_NORM=y$/# CONFIG_RUST_UNICODE_NORM is not set/' /work/O/.config; fi
-make_cmd=(make -C /src O=/work/O ARCH=x86_64 LLVM=1 HOST_TOOLS_LANG=rust -j2)
+make_cmd=(make -C /src O=/work/O ARCH=x86_64 LLVM=1 HOST_TOOLS_LANG=rust RUSTC=/usr/bin/rustc -j2)
 bash /pilot/guard.sh configure 600 "${make_cmd[@]}" olddefconfig
 perl /pilot/compare-config.pl /pilot/config.symbols /work/O/.config "$PILOT_PROVIDER" > /work/evidence/config-check.txt
 cp /work/O/.config /work/evidence/config.full
@@ -45,14 +49,15 @@ bash /pilot/guard.sh noop 600 "${make_cmd[@]}" bzImage
 hash_output > /work/evidence/O-after-noop.sha256; link_output > /work/evidence/O-links-after-noop.tsv
 cmp /work/evidence/O-before-noop.sha256 /work/evidence/O-after-noop.sha256
 cmp /work/evidence/O-links-before-noop.tsv /work/evidence/O-links-after-noop.tsv
-bash /pilot/guard.sh ownership 300 bash /pilot/audit-commands.sh "$PILOT_PROVIDER" /work/O
-sha256sum /work/O/arch/x86/boot/bzImage /work/O/vmlinux /work/O/vmlinux.unstripped /work/O/vmlinux.o /work/O/.config > /work/evidence/image-identities.sha256
-sha256sum /work/O/fs/unicode/tests/utf8_kunit.o /work/O/fs/unicode/utf8-core.o /work/O/fs/unicode/utf8data.o /work/O/lib/crc/crc16.o > /work/evidence/object-identities.sha256
+# Retain complete command inputs before the fail-closed ownership gate.
 cp /work/O/fs/unicode/tests/.utf8_kunit.o.cmd /work/evidence/test.cmd
 cp /work/O/fs/unicode/.utf8-core.o.cmd /work/evidence/core.cmd
 cp /work/O/fs/unicode/.utf8data.o.cmd /work/evidence/data.cmd
 cp /work/O/lib/crc/.crc16.o.cmd /work/evidence/crc.cmd
 cp /work/O/fs/unicode/.utf8-norm.o.cmd /work/evidence/norm.cmd
+bash /pilot/guard.sh ownership 300 bash /pilot/audit-commands.sh "$PILOT_PROVIDER" /work/O
+sha256sum /work/O/arch/x86/boot/bzImage /work/O/vmlinux /work/O/vmlinux.unstripped /work/O/vmlinux.o /work/O/.config > /work/evidence/image-identities.sha256
+sha256sum /work/O/fs/unicode/tests/utf8_kunit.o /work/O/fs/unicode/utf8-core.o /work/O/fs/unicode/utf8data.o /work/O/lib/crc/crc16.o > /work/evidence/object-identities.sha256
 hash_output > /work/evidence/O-before-guest.sha256; link_output > /work/evidence/O-links-before-guest.tsv
 cmp /work/evidence/O-after-noop.sha256 /work/evidence/O-before-guest.sha256
 cmp /work/evidence/O-links-after-noop.tsv /work/evidence/O-links-before-guest.tsv
