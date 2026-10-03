@@ -3157,3 +3157,5 @@ source "arch/x86/Kconfig.cpufeatures"
 source "arch/x86/Kconfig.assembler"
 
 source "arch/x86/kernel/Kconfig.rust-head64"
+
+source "arch/x86/kernel/Kconfig.rust-setup"

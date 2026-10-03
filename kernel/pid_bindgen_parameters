@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--flexarray-dst
+--newtype-global-enum pid_type
+--with-attribute-custom-enum=pid_type='#[cfi_encoding="8pid_type"]'
+--with-attribute-custom-struct=pid='#[cfi_encoding="3pid"]'
+# These native layouts are never inspected; preserve bindgen's configured size
+# and alignment while avoiding packed/align representations in unrelated types.
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
+--allowlist-type 'ns_tree|ns_common|lupos_pidmap_lock_storage|raw_spinlock_t|spinlock_t|pid|upid|pid_type|pid_namespace|task_struct|signal_struct|file|fd|ctl_table|ctl_table_set|ctl_table_header|ctl_table_root|kuid_t|kgid_t|rcu_head|hlist_node|hlist_head'
+--allowlist-function 'lupos_pid_.*|kmem_cache_free|kfree|pidfs_free_pid|pidfs_prepare_pid|pidfs_add_pid|pidfs_remove_pid|wake_up_process|idr_remove|idr_find|idr_get_next|idr_replace|idr_preload|idr_alloc|idr_alloc_cyclic|fdget|pidfd_pid|pidfd_prepare|fd_install|proc_dointvec_minmax|setup_sysctl_set|retire_sysctl_set|__register_sysctl_table|unregister_sysctl_table|down_read_killable|up_read|ptrace_may_access|fget_task|receive_fd|fput'
+--allowlist-var 'init_pid_ns|init_task|init_user_ns|pidns_operations|PID_MAX_DEFAULT|MEMFD_NOEXEC_SCOPE_EXEC|SPINLOCK_MAGIC|LUPOS_PID_.*|PIDNS_ADDING|MAX_PID_NS_LEVEL|PIDTYPE_.*|PIDFD_SELF_THREAD|PIDFD_SELF_THREAD_GROUP|PIDFD_NONBLOCK|PIDFD_THREAD|ENOMEM|EINVAL|EPERM|ENOSPC|EEXIST|EAGAIN|EBADF|ESRCH|CAP_SYS_ADMIN|S_IRWXU|S_IRWXG|S_IROTH|PTRACE_MODE_ATTACH_REALCREDS|PF_EXITING|O_CLOEXEC'

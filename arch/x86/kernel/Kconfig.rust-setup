@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_X86_SETUP
+	bool "Rust x86-64 architecture setup owner"
+	depends on RUST && X86_64
+	default y
+	help
+	  Build the configured Rust owner of arch/x86/kernel/setup.o. The
+	  original setup.c remains the reference for non-Rust configurations.
+	  Existing architecture and subsystem API callees retain their own
+	  implementation owners; configured C headers supply their ABI.

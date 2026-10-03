@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_PID
+	bool "Rust PID management"
+	depends on RUST
+	default y
+	help
+	  Build the PID allocator, namespace/task lookup and linkage, pidfd
+	  syscall bodies and PID namespace sysctl policy from kernel/pid.rs
+	  in the original kernel/pid.o slot. Configured kernel types come
+	  from bindgen; macro, locking, refcount and RCU primitives and native
+	  ABI metadata use pid_helpers.o. All initial PID and namespace
+	  data, flexible-array storage and static relocations remain in Rust.
+	  PID_NS, SYSCTL, USER_NS and MULTIUSER retain their original branches.
+	  Turning this option off selects the unchanged original C provider.

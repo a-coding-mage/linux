@@ -1005,3 +1005,7 @@ $(obj)/bindings/init_mm_generated.rs: $(src)/bindings/init_mm.h \
 	$(call if_changed_dep,bindgen)
 
 include $(srctree)/arch/x86/kernel/head64-bindgen.mk
+
+include $(srctree)/kernel/fork_bindgen.mk
+include $(srctree)/kernel/pid_bindgen.mk
+include $(srctree)/arch/x86/kernel/setup-bindgen.mk

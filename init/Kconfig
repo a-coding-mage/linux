@@ -2294,6 +2294,8 @@ config RUST
 
 	  If unsure, say N.
 
+source "kernel/Kconfig.pid-rust"
+
 config RUST_NATIVE_EXPORTS
 	bool "Native Rust library export bridge"
 	depends on RUST
@@ -2567,6 +2569,24 @@ config ARCH_HAS_SYNC_CORE_BEFORE_USERMODE
 config ARCH_HAS_SYSCALL_WRAPPER
 	def_bool n
 # Add beside the other bootstrap Rust selectors in init/Kconfig.
+config RUST_FORK
+	bool "Rust process creation and task/MM lifetime"
+	depends on RUST && X86_64 && MMU && THREAD_INFO_IN_TASK
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Select Rust as the sole algorithm owner of kernel/fork.o, including
+	  fork/clone/clone3/unshare, task/stack/MM lifetime, process publication,
+	  reference counting and reverse failure unwinding. A native companion
+	  retains compiler/architecture/locking primitives, syscall entry and
+	  initcall metadata, and symbol exports. Owned static and per-CPU
+	  initializers are in Rust; remaining header/subsystem C dependencies
+	  are explicit migration work.
+
+	  The original fork.c remains the source and test oracle. Disable only
+	  for a deliberate original-C reference configuration; Rust production
+	  configurations must require this symbol and reject C fallback.
+
 config RUST_INIT_MM
 	bool "Rust initial memory descriptor"
 	depends on RUST && (X86_64 || ARM64)
