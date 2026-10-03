@@ -1,0 +1,89 @@
+# REVIEW DRAFT: launch.json deliberately blocks execution. See README.md.
+name: Unicode public C and Rust pilot
+on:
+  push:
+    branches: [feat/rust-translation-lupos]
+    paths: [.github/pilots/unicode-request.json]
+permissions:
+  contents: read
+concurrency:
+  group: unicode-public-pilot-v1
+  cancel-in-progress: false
+defaults:
+  run:
+    shell: bash
+jobs:
+  request:
+    if: github.repository == 'a-coding-mage/linux' && github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      admitted: ${{ steps.admit.outputs.admitted }}
+    steps:
+      - name: Read the exact trigger and its parent
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+          submodules: false
+          lfs: false
+          sparse-checkout: .github/pilots
+      - name: Validate single-commit manifest request
+        run: bash .github/pilots/unicode-v1/gate.sh "$PWD" "$GITHUB_EVENT_PATH"
+      - name: Require the reviewed, complete execution contract
+        id: admit
+        run: |
+          bash .github/pilots/unicode-v1/admit-launch.sh
+          echo admitted=true >> "$GITHUB_OUTPUT"
+  member:
+    name: unicode-${{ matrix.provider }}
+    needs: request
+    if: needs.request.outputs.admitted == 'true' && github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        provider: [c, rust]
+    steps:
+      - name: Reject every member rerun before checkout
+        run: |
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          started=$(date -u +%s)
+          printf 'PILOT_JOB_STARTED_EPOCH=%s\nPILOT_JOB_DEADLINE_EPOCH=%s\n' "$started" "$((started+6900))" >> "$GITHUB_ENV"
+      - name: Read approved pilot helpers
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          path: pilot
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: .github/pilots
+      - name: Record and admit standard-runner resources
+        run: bash pilot/.github/pilots/unicode-v1/resources.sh initial "$GITHUB_WORKSPACE"
+      - name: Read identical immutable public kernel source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: a-coding-mage/linux
+          ref: 62a3294181556f17db863c9016524fa3068a374b
+          path: linux
+          fetch-depth: 1
+          persist-credentials: false
+          submodules: false
+          lfs: false
+      - name: Verify public source and original test identities
+        run: bash pilot/.github/pilots/unicode-v1/verify-source.sh linux
+      - name: Build, audit and run one provider
+        env:
+          PILOT_PROVIDER: ${{ matrix.provider }}
+        run: bash pilot/.github/pilots/unicode-v1/member.sh
+      - name: Record terminal capacity and public evidence inventory
+        if: always()
+        run: |
+          bash pilot/.github/pilots/unicode-v1/resources.sh terminal "$GITHUB_WORKSPACE"
+          test ! -d evidence || find evidence -type f -printf '%P\t%s bytes\n'
+# No cache, artifact upload, workflow dispatch, schedule, write token, secret,
+# paid-runner fallback, default-branch modification, or automatic retry.
+# Pair acceptance is an explicit offline review of complete downloaded logs.
