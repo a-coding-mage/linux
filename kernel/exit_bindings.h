@@ -12,7 +12,10 @@
 static const unsigned long RUST_EXIT_THREAD_SIZE = THREAD_SIZE;
 static const unsigned int RUST_EXIT_PGTY_SLAB = PGTY_slab;
 static const unsigned int RUST_EXIT_PGTY_LARGE_KMALLOC = PGTY_large_kmalloc;
-static const unsigned long RUST_EXIT_LIST_POISON2 = (unsigned long)LIST_POISON2;
+/* Force Clang to publish the configured address as an integer enumerator.
+ * A pointer-derived static-const expression becomes an unresolved bindgen static. */
+enum { RUST_EXIT_LIST_POISON2 = (unsigned long)LIST_POISON2 };
+static_assert((unsigned long)RUST_EXIT_LIST_POISON2 == (unsigned long)LIST_POISON2);
 static const unsigned long RUST_EXIT_SEND_SIG_PRIV = (unsigned long)SEND_SIG_PRIV;
 static const unsigned int RUST_EXIT_PT_EVENT_FLAG_BASE = PT_EVENT_FLAG(0);
 static const int RUST_EXIT_TIF_NOTIFY_SIGNAL = TIF_NOTIFY_SIGNAL;

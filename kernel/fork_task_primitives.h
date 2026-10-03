@@ -29,7 +29,7 @@ static const slab_flags_t RUST_FORK_SLAB_PANIC = SLAB_PANIC;
 static const slab_flags_t RUST_FORK_SLAB_ACCOUNT = SLAB_ACCOUNT;
 static const slab_flags_t RUST_FORK_SLAB_HWCACHE_ALIGN = SLAB_HWCACHE_ALIGN;
 static const slab_flags_t RUST_FORK_SLAB_TYPESAFE_BY_RCU = SLAB_TYPESAFE_BY_RCU;
-static const unsigned long RUST_FORK_RLIM_INFINITY = RLIM_INFINITY;
+enum { RUST_FORK_RLIM_INFINITY = RLIM_INFINITY };
 enum { RUST_FORK_L1_CACHE_BYTES = L1_CACHE_BYTES,
        RUST_FORK_ARCH_MIN_TASKALIGN = ARCH_MIN_TASKALIGN,
        RUST_FORK_ARCH_MIN_MMSTRUCT_ALIGN = ARCH_MIN_MMSTRUCT_ALIGN,
@@ -277,4 +277,3 @@ RFV(security_task_free, (struct task_struct *p), security_task_free(p))
 #undef RFV
 #undef RFR
 #endif
-
