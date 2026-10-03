@@ -14,7 +14,8 @@ The reconstruction uses base commit
 ``298abda59725d491c10be678618ac76300d1aba1``. The complete reviewed revision-02
 source archive has SHA-256
 ``2890cd5aabbfd825423e6a15d930b95d3c7d2c55a273c5903efbd7001abf4571``.
-The seven provider/integration files are byte-identical to that seal. The shared
+At that checkpoint, all seven provider/integration files were byte-identical
+to that seal. The shared
 ``rust/Makefile`` include is composed separately with existing provider rules.
 
 Configured bindgen reads the original kernel, io_uring and networking headers;
@@ -31,9 +32,26 @@ warning-once sites and spinlock initialization classes are preserved.
 Independent source review covered all 84 original bodies. Corrective review
 closed the identified anonymous ``io_ring_ctx`` member-access and kernel FFI
 scalar/pointer conversion issues. Function inventories, original-source hashes
-and source-preserving patch applicability were checked. Configured binding
-generation, compilation, native ABI, KCFI, symbol closure and execution remain
-unverified; source review does not establish behavioral parity.
+and source-preserving patch applicability were checked. Native ABI, KCFI,
+symbol closure and execution remain unverified; source review does not
+establish behavioral parity.
+
+First native attempt and correction
+-----------------------------------
+
+At commit ``bc846d0c26f566e6a586592c2a15d5a0aa9f5f94``, the configured C
+provider and all four original callers compiled, and their repeated builds
+passed no-op checks. The C/R configurations differed only in the Rust provider
+selector. Configured bindgen succeeded; the first Rust compile failed with
+seven diagnostics: three missing compound macro constants, two missing enum
+constants used at three sites, and one untyped private-data pointer.
+
+The correction adds typed C-derived constant aliases and explicitly types the
+``io_zcrx_ifq`` pointer. Its reviewed source archive has SHA-256
+``9daf8f50736297cf7c61bfc830fc1f6615d867bb835b0f43b2ee81ef449c7b59``.
+It changes no algorithms, tests or compiler flags. Corrected native replay
+remains pending; the failed first attempt does not establish Rust build or
+behavioral acceptance.
 
 Required native checks and original C tests
 ------------------------------------------

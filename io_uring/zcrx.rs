@@ -436,7 +436,7 @@ pub unsafe extern "C" fn io_zcrx_get_region(ctx: *mut io_ring_ctx, id: c_uint) -
 }
 #[export_name = "rust_zcrx_box_release"]
 unsafe extern "C" fn zcrx_box_release(_inode: *mut inode, file: *mut file) -> c_int {
-    let ifq = (*file).private_data.cast();
+    let ifq: *mut io_zcrx_ifq = (*file).private_data.cast();
     if rust_zcrx_warn_once_08(ifq.is_null()) { return neg(EFAULT); }
     zcrx_unregister(ifq, null_mut()); 0
 }
@@ -531,7 +531,7 @@ pub unsafe extern "C" fn io_register_zcrx(ctx: *mut io_ring_ctx, arg: *mut io_ur
     let mut notif: zcrx_event_desc = zeroed();
     if rust_zcrx_copy_from_user(addr_of_mut!(reg).cast(), arg.cast(), size_of_val(&reg)) != 0 { return neg(EFAULT); }
     if !rust_zcrx_mem_is_zero(addr_of!(reg.__resv).cast(), size_of_val(&reg.__resv)) || reg.zcrx_id != 0 { return neg(EINVAL); }
-    if reg.flags & !ZCRX_SUPPORTED_REG_FLAGS != 0 { return neg(EINVAL); }
+    if reg.flags & !RUST_ZCRX_SUPPORTED_REG_FLAGS != 0 { return neg(EINVAL); }
     if reg.flags & ZCRX_REG_IMPORT != 0 { return import_zcrx(ctx, arg, addr_of_mut!(reg)); }
     if rust_zcrx_copy_from_user(addr_of_mut!(rd).cast(), reg.region_ptr as usize as *const c_void, size_of_val(&rd)) != 0 { return neg(EFAULT); }
     if reg.if_rxq == u32::MAX || reg.rq_entries == 0 { return neg(EINVAL); }
@@ -544,7 +544,7 @@ pub unsafe extern "C" fn io_register_zcrx(ctx: *mut io_ring_ctx, arg: *mut io_ur
     if rust_zcrx_copy_from_user(addr_of_mut!(area).cast(), reg.area_ptr as usize as *const c_void, size_of_val(&area)) != 0 { return neg(EFAULT); }
     if area.rq_area_token != 0 { return neg(EINVAL); }
     if reg.event_desc != 0 && rust_zcrx_copy_from_user(addr_of_mut!(notif).cast(), reg.event_desc as usize as *const c_void, size_of_val(&notif)) != 0 { return neg(EFAULT); }
-    if notif.type_mask & !ZCRX_EVENT_TYPE_MASK != 0 || notif.flags & !ZCRX_EVENT_DESC_FLAG_STATS != 0 { return neg(EINVAL); }
+    if notif.type_mask & !RUST_ZCRX_EVENT_TYPE_MASK != 0 || notif.flags & !ZCRX_EVENT_DESC_FLAG_STATS != 0 { return neg(EINVAL); }
     if notif.flags & ZCRX_EVENT_DESC_FLAG_STATS == 0 && notif.stats_offset != 0 { return neg(EINVAL); }
     if !rust_zcrx_mem_is_zero(addr_of!(notif.__resv2).cast(), size_of_val(&notif.__resv2)) { return neg(EINVAL); }
     let ifq = io_zcrx_ifq_alloc(ctx);
@@ -654,7 +654,7 @@ unsafe fn io_parse_rqe(rqe: *mut io_uring_zcrx_rqe, ifq: *mut io_zcrx_ifq, n: &m
     let off = rust_zcrx_read_once_u64(addr_of!((*rqe).off));
     rust_zcrx_assert_spin(addr_of_mut!((*ifq).rq.lock));
     let mut ai = (off >> IORING_ZCRX_AREA_SHIFT) as c_uint;
-    let mut ni = ((off & !IORING_ZCRX_AREA_MASK) >> (*ifq).niov_shift) as c_uint;
+    let mut ni = ((off & !RUST_ZCRX_AREA_MASK) >> (*ifq).niov_shift) as c_uint;
     if (*rqe).__pad != 0 || ai >= (*ifq).nr_areas { return false; }
     ai = rust_zcrx_array_index_nospec(ai as c_ulong, (*ifq).nr_areas as c_ulong) as c_uint;
     let a = *(*ifq).areas.add(ai as usize);
@@ -722,7 +722,7 @@ unsafe fn zcrx_send_notif(ifq: *mut io_zcrx_ifq, ty: c_uint) {
     let req: *mut io_kiocb = rust_zcrx_alloc_notif_req().cast();
     if req.is_null() { return; }
     (*ifq).fired_notifs |= mask;
-    (*req).opcode = IORING_OP_NOP as u8;
+    (*req).opcode = RUST_ZCRX_OP_NOP as u8;
     (*req).cqe.user_data = (*ifq).notif_data; (*req).cqe.res = ty as c_int;
     (*req).ctx = (*ifq).master_ctx;
     rust_zcrx_percpu_get(rust_zcrx_ctx_refs((*req).ctx));
@@ -1015,10 +1015,10 @@ unsafe fn io_zcrx_tcp_recvmsg(req: *mut io_kiocb, ifq: *mut io_zcrx_ifq,
             else if rust_zcrx_sock_state(sk) as u32 == TCP_CLOSE { ret = neg(ENOTCONN); }
             else { ret = neg(EAGAIN); }
         }
-    } else if args.nr_skbs > IO_SKBS_PER_CALL_LIMIT && issue_flags & IO_URING_F_MULTISHOT != 0 {
+    } else if args.nr_skbs > IO_SKBS_PER_CALL_LIMIT && issue_flags & RUST_ZCRX_F_MULTISHOT != 0 {
         ret = IOU_REQUEUE as c_int;
     } else if rust_zcrx_sock_done(sk) {
-        ret = if issue_flags & IO_URING_F_MULTISHOT != 0 { IOU_REQUEUE as c_int } else { neg(EAGAIN) };
+        ret = if issue_flags & RUST_ZCRX_F_MULTISHOT != 0 { IOU_REQUEUE as c_int } else { neg(EAGAIN) };
     }
     release_sock(sk); ret
 }

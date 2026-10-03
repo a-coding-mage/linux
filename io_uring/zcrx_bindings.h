@@ -36,6 +36,13 @@ enum {
  RUST_ZCRX_TAIL_OFFSET = offsetof(struct zcrx_rq_hdr, tail),
  RUST_ZCRX_RQES_OFFSET = ALIGN(sizeof(struct zcrx_rq_hdr), L1_CACHE_BYTES),
 };
+/* Typed aliases let configured bindgen evaluate compound macros and enum values. */
+static const unsigned int RUST_ZCRX_SUPPORTED_REG_FLAGS = ZCRX_SUPPORTED_REG_FLAGS;
+static const unsigned int RUST_ZCRX_EVENT_TYPE_MASK = ZCRX_EVENT_TYPE_MASK;
+static const u64 RUST_ZCRX_AREA_MASK = IORING_ZCRX_AREA_MASK;
+static const unsigned int RUST_ZCRX_OP_NOP = IORING_OP_NOP;
+static const unsigned int RUST_ZCRX_F_MULTISHOT = IO_URING_F_MULTISHOT;
+
 /* Original same-unit symbols are implemented in Rust, never C fallbacks. */
 netmem_ref rust_zcrx_pp_alloc_netmems(struct page_pool *, gfp_t);
 bool rust_zcrx_pp_release_netmem(struct page_pool *, netmem_ref);
