@@ -15,14 +15,16 @@
 //! for the kernel's -fno-strict-overflow domain and never unwinds.
 
 use core::ffi::{c_int, c_uint, c_ulonglong};
-#[cfg(not(CONFIG_RUST))]
+#[cfg(any(not(CONFIG_RUST), lupos_boot))]
 use core::ffi::c_char;
-#[cfg(CONFIG_RUST)]
+#[cfg(all(CONFIG_RUST, not(lupos_boot)))]
 use kernel::ffi::c_char;
-#[cfg(CONFIG_RUST)]
+#[cfg(all(CONFIG_RUST, not(lupos_boot)))]
 use kernel::bindings::{simple_strtol, simple_strtoull, skip_spaces, strlen, strncmp};
+#[cfg(lupos_boot)]
+use crate::bindings::{simple_strtol, simple_strtoull, skip_spaces, strlen, strncmp};
 
-#[cfg(not(CONFIG_RUST))]
+#[cfg(all(not(CONFIG_RUST), not(lupos_boot)))]
 extern "C" {
     fn simple_strtol(s: *const c_char, endp: *mut *mut c_char, base: c_uint) -> isize;
     fn simple_strtoull(s: *const c_char, endp: *mut *mut c_char, base: c_uint) -> c_ulonglong;

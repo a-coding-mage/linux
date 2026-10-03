@@ -11,9 +11,9 @@
 
 use super::ctype_mask;
 
-#[cfg(not(CONFIG_RUST))]
+#[cfg(any(not(CONFIG_RUST), lupos_boot))]
 use core::ffi::c_char;
-#[cfg(CONFIG_RUST)]
+#[cfg(all(CONFIG_RUST, not(lupos_boot)))]
 use kernel::ffi::c_char;
 
 /// Uppercase-letter classification bit.

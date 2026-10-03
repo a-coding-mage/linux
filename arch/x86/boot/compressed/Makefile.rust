@@ -1,0 +1,107 @@
+# SPDX-License-Identifier: GPL-2.0
+# The ordinary %.rs rule injects kernel/alloc/metadata and the kernel code model.
+# These rules deliberately use an isolated, freestanding early-boot sysroot.
+boot-rust-lib-src := $(if $(RUST_LIB_SRC),$(RUST_LIB_SRC),$(shell $(RUSTC) --print sysroot)/lib/rustlib/src/rust/library)
+boot-rust-target := $(obj)/boot-target.json
+boot-rust-flags := $(rust_common_flags) \
+	--target=$(boot-rust-target) --sysroot=/dev/null \
+	-Cpanic=abort -Cembed-bitcode=y -Clto=n -Ccodegen-units=1 \
+	-Cforce-unwind-tables=n -Csymbol-mangling-version=v0 \
+	-Copt-level=2 -Ccode-model=small -Crelocation-model=pie -Cno-redzone=y \
+	-Ctarget-feature=-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2 \
+	-Zfunction-sections=y -Zno-jump-tables \
+	-Zdefault-visibility=hidden -Zdirect-access-external-data=y \
+	-Zrelax-elf-relocations=n -Zplt=y \
+	-Cdebug-assertions=$(if $(CONFIG_RUST_DEBUG_ASSERTIONS),y,n) \
+	-Coverflow-checks=$(if $(CONFIG_RUST_OVERFLOW_CHECKS),y,n) \
+	$(if $(CONFIG_WERROR),-Dwarnings) $(KRUSTFLAGS)
+boot-rust-cfg := @$(objtree)/include/generated/rustc_cfg --cfg lupos_boot --cfg PREBOOT
+boot-rust-deps := $(src)/boot_bindings.rs $(src)/cmdline.rs $(src)/error.rs \
+	$(src)/misc.rs $(src)/string.rs $(src)/../string.rs $(if $(CONFIG_RANDOMIZE_BASE),$(src)/kaslr.rs) \
+	$(srctree)/lib/ctype.rs $(srctree)/include/linux/ctype_header.rs \
+	$(srctree)/lib/cmdline.rs $(srctree)/lib/decompress_inflate.rs \
+	$(addprefix $(srctree)/lib/zlib_inflate/,inflate.rs inftrees.rs inffast.rs infutil.rs inffixed_header.rs)
+
+targets += boot-target.json boot.o boot.a libcore.rlib libcompiler_builtins.rlib \
+	boot_bindings_generated.rs boot_build.rs boot_helpers.o
+
+quiet_cmd_boot_core = RUSTC BOOT $@
+      cmd_boot_core = $(RUSTC) $(filter-out --edition=2021 -Wunreachable_pub,$(boot-rust-flags)) \
+	--edition=$(if $(call rustc-min-version,108700),2024,2021) --cfg no_fp_fmt_parse \
+	--crate-name core --crate-type rlib --emit=link=$@,dep-info=$(depfile) $<
+$(obj)/libcore.rlib: $(boot-rust-lib-src)/core/src/lib.rs $(boot-rust-target) FORCE
+	$(call if_changed_dep,boot_core)
+
+quiet_cmd_boot_builtins = RUSTC BOOT $@
+      cmd_boot_builtins = $(RUSTC) $(boot-rust-flags) --crate-name compiler_builtins \
+	--crate-type rlib --extern core=$(obj)/libcore.rlib --emit=link=$@,dep-info=$(depfile) $<
+$(obj)/libcompiler_builtins.rlib: $(src)/boot_compiler_builtins.rs $(obj)/libcore.rlib FORCE
+	$(call if_changed_dep,boot_builtins)
+
+quiet_cmd_boot_bindgen = BINDGEN BOOT $@
+      cmd_boot_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
+	--no-prepend-enum-name --with-derive-default \
+	--blocklist-type '__kernel_(size_t|ssize_t|ptrdiff_t)' \
+	--allowlist-type '(boot_params|setup_header|screen_info|port_io_ops|mem_vector|boot_e820_entry|setup_data|setup_indirect|efi_memory_desc_t|kho_data|kho_scratch|Elf32_Ehdr|Elf32_Phdr|Elf64_Ehdr|Elf64_Phdr|boot_memptr|acpi_physical_address|phys_addr_t|z_stream|z_stream_s|z_streamp|inflate_state|inflate_workspace|inflate_mode|code|codetype)' \
+	--allowlist-function '(get_cmd_line_ptr|cmdline_find_option.*|__putstr|__puthex|__putdec|warn|error|malloc|free|memcpy|memmove|memset|strcmp|strncmp|strchr|strlen|strnlen|strstr|simple_strto.*|skip_spaces|boot_kstrtoul|has_cpuflag|count_immovable_mem_regions|__efi_soft_reserve_enabled|lupos_boot_maxmem)' \
+	--allowlist-var '(LUPOS_BOOT_.*|CONFIG_PHYSICAL_ALIGN|COMMAND_LINE_SIZE|RDRAND_RETRY_LOOPS|X86_FEATURE_RDRAND|X86_FEATURE_TSC|EINVAL|ENOMEM|SETUP_.*|EFI_.*|EFI32_LOADER_SIGNATURE|EFI64_LOADER_SIGNATURE|E820_TYPE_RAM|EI_MAG.*|ELFMAG.*|PT_LOAD|KASLR_FLAG|XLF_MEM_ENCRYPTION|Z_.*|MAX_WBITS|ENOUGH|MAXD|boot_params_ptr|pio_ops|immovable_mem)' \
+	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
+$(obj)/boot_bindings_generated.rs: $(src)/boot_bindings.h $(obj)/../voffset.h FORCE
+	$(call if_changed_dep,boot_bindgen)
+
+# Preserve the C source's exact concatenated build entropy including its NUL.
+$(obj)/boot_build.rs: $(src)/boot_build.rs.S FORCE
+	$(call if_changed_dep,rustc_rs_rs_S)
+
+quiet_cmd_boot_rust = RUSTC BOOT $@
+      cmd_boot_rust = LUPOS_BOOT_OBJ=$(abspath $(obj)) \
+	$(RUSTC) $(filter-out -Clto=n,$(boot-rust-flags)) -Clto=fat $(boot-rust-cfg) \
+	--crate-name compressed_boot --crate-type staticlib -Ldependency=$(obj) \
+	--extern core=$(obj)/libcore.rlib \
+	--extern compiler_builtins=$(obj)/libcompiler_builtins.rlib \
+	--emit=link=$@,dep-info=$(depfile) $<
+$(obj)/boot.a: $(src)/boot.rs $(boot-rust-deps) $(obj)/boot_bindings_generated.rs \
+	$(obj)/boot_build.rs $(obj)/libcompiler_builtins.rlib FORCE
+	$(call if_changed_dep,boot_rust)
+
+# Whole-program optimization sees the genuine panic handler ignores PanicInfo.
+# It removes only unused format/location metadata, preserving checked branches
+# and the original Rust error/hlt path. Non-LTO core creates forbidden absolute
+# pointers; the relocation gate above the final boot link rejects regression.
+#
+# Private section collection prevents unused core routines from entering the
+# decompressor. These are all C/assembly-visible roots of the replaced units.
+boot-rust-roots := extract_kernel decompress_kernel kernel_text_size kernel_inittext_size kernel_inittext_offset \
+	kernel_total_size memcmp bcmp strcmp strncmp strnlen simple_strtoull simple_strtol strlen strstr strchr boot_kstrtoul memcpy memmove memset boot_params_ptr pio_ops free_mem_ptr free_mem_end_ptr \
+	spurious_nmi_count malloc free __putstr __puthex __putdec warn error \
+	get_cmd_line_ptr cmdline_find_option cmdline_find_option_bool \
+	__cmdline_find_option __cmdline_find_option_bool \
+	inflate_fast zlib_inflate zlib_inflateEnd zlib_inflateIncomp \
+	zlib_inflateInit2 zlib_inflateReset zlib_inflate_table zlib_inflate_workspacesize \
+	$(if $(CONFIG_RANDOMIZE_BASE),choose_random_location kaslr_get_random_long _ctype get_option get_options memparse next_arg parse_option_str skip_spaces) \
+	$(if $(CONFIG_EFI_STUB),panic)
+quiet_cmd_boot_rust_link = LD BOOT $@
+      cmd_boot_rust_link = $(LD) -r --gc-sections \
+	$(addprefix --undefined=,$(boot-rust-roots)) -o $@ \
+	--whole-archive $(obj)/boot.a --no-whole-archive && \
+	$(CONFIG_SHELL) $(src)/verify-rust-boot.sh $(READELF) $@
+$(obj)/boot.o: $(obj)/boot.a $(src)/verify-rust-boot.sh FORCE
+	$(call if_changed,boot_rust_link)
+
+# Start from this compiler's supported freestanding ABI. Unlike the kernel
+# target, compressed boot uses small addressing and no stack-clash probes.
+quiet_cmd_boot_target = TARGET BOOT $@
+      cmd_boot_target = $(CONFIG_SHELL) $(src)/generate-rust-target.sh $@ $(RUSTC)
+$(boot-rust-target): $(src)/Makefile.rust $(src)/generate-rust-target.sh $(wildcard $(RUSTC)) FORCE
+	$(call if_changed,boot_target)
+
+# Compiler/bindgen replacement at the same configured path also invalidates it.
+$(obj)/libcore.rlib $(obj)/libcompiler_builtins.rlib $(obj)/boot.a: $(wildcard $(RUSTC))
+$(obj)/boot_bindings_generated.rs: $(wildcard $(BINDGEN))
+
+# The helper includes the generated offsets even on its first parallel build.
+$(obj)/boot_helpers.o: $(obj)/../voffset.h
+# Version stamps cover PATH-resolved tools as well as explicit executable paths.
+$(boot-rust-target) $(obj)/libcore.rlib: $(wildcard $(objtree)/include/config/RUSTC_VERSION_TEXT)
+$(obj)/boot_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
