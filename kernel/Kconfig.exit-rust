@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_EXIT
+	bool "Rust process exit, reparenting and wait"
+	depends on RUST
+	default y
+	help
+	  Build all process-exit, process-reparenting, mm-owner replacement,
+	  zombie-reaping, wait and waitid syscall algorithms from kernel/exit.rs
+	  in the original exit.o slot. Configured layouts and constants come
+	  from native headers. Native compiler, locking, architecture and
+	  uaccess primitives plus syscall/initcall/export metadata live in
+	  exit_helpers.o. Exit-owned data and initializers remain in Rust.
+	  All original feature-dependent behavior is retained.
+
+	  The unchanged exit.c is retained for deliberate original-C reference
+	  configurations. Rust acceptance must verify CONFIG_RUST_EXIT=y and
+	  reject a C exit.o provider before running the original C tests.

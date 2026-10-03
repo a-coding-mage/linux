@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--flexarray-dst
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
+--allowlist-type 'softirq_action|tasklet_struct|tasklet_head|softirq_ctrl|tasklet_sync_callback|smp_hotplug_thread|task_struct|atomic_t|local_lock_t|spinlock_t|raw_spinlock_t|rt_mutex_base|lockdep_map|lock_class_key|rust_softirq_.*'
+--allowlist-function 'lupos_sirq_.*|wake_up_process|smpboot_register_percpu_thread|sched_set_fifo_low|workqueue_softirq_action|workqueue_softirq_dead|vtime_account_irq|vtime_account_softirq|vtime_account_hardirq|irqtime_account_irq|in_lock_functions|trace_hardirqs_on|trace_hardirqs_off|warn_bogus_irq_restore|preempt_count_add|preempt_count_sub'
+--allowlist-var 'RUST_SIRQ_.*|NR_SOFTIRQS|HI_SOFTIRQ|TASKLET_SOFTIRQ|SCHED_SOFTIRQ|TASKLET_STATE_.*|PF_MEMALLOC|PF_IDLE|SPINLOCK_MAGIC'

@@ -1,88 +1,447 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// Translation of linux/kernel/softirq.c. Kernel-provided symbols are external.
-
-#[repr(C)]
-pub struct softirq_action { pub action: Option<unsafe extern "C" fn()> }
-#[repr(C)]
-pub struct tasklet_head { pub head: *mut tasklet_struct, pub tail: *mut *mut tasklet_struct }
-#[repr(C)]
-pub struct tasklet_struct {
-    pub next: *mut tasklet_struct, pub state: usize, pub count: atomic_t,
-    pub func: Option<unsafe extern "C" fn(usize)>, pub callback: Option<unsafe extern "C" fn(*mut tasklet_struct)>,
-    pub use_callback: bool, pub data: usize,
+// Algorithm owner translated from kernel/softirq.c at c8eeb0b98b0b.
+// The original C file is preserved as the source and test oracle.
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unused_mut,
+    unused_macros,
+    unused_unsafe,
+    unreachable_pub
+)]
+#[allow(improper_ctypes)]
+mod bindings {
+    use kernel::ffi;
+    include!(concat!(
+        env!("OBJTREE"),
+        "/rust/bindings/softirq_generated.rs"
+    ));
 }
-#[repr(C)] pub struct task_struct { pub flags: usize, pub softirq_disable_cnt: i32, pub preempt_disable_ip: usize }
-#[repr(C)] pub struct atomic_t(pub i32);
-#[repr(C)] pub struct smp_hotplug_thread { pub store: *mut *mut task_struct, pub setup: Option<unsafe extern "C" fn(u32)>, pub thread_should_run: Option<unsafe extern "C" fn(u32)->i32>, pub thread_fn: Option<unsafe extern "C" fn(u32)>, pub thread_comm: *const u8 }
+use bindings::*;
+use core::mem::{offset_of, size_of, zeroed};
+use core::ptr::{addr_of, addr_of_mut, null_mut};
+use kernel::ffi::{c_int, c_uint, c_ulong, c_void};
 
-extern "C" {
-    static mut softirq_vec: [softirq_action; 10];
-    static mut current: *mut task_struct;
-    static mut ksoftirqd: *mut task_struct;
-    static mut softirq_to_name: [*const u8; 10];
-    fn __local_interrupt_disable(); fn __local_interrupt_enable();
-    fn __this_cpu_read<T>(x: T) -> T; fn wake_up_process(t: *mut task_struct);
-    fn __local_bh_disable_ip(ip: usize, cnt: u32); fn __local_bh_enable_ip(ip: usize, cnt: u32);
-    fn __do_softirq(); fn local_softirq_pending() -> u32; fn set_softirq_pending(v: u32);
-    fn local_irq_save(flags: *mut usize); fn local_irq_restore(flags: usize); fn local_irq_disable(); fn local_irq_enable();
-    fn in_hardirq() -> bool; fn in_interrupt() -> bool; fn preemptible() -> bool; fn preempt_count() -> i32;
-    fn softirq_count() -> u32; fn lockdep_assert_irqs_enabled(); fn lockdep_assert_irqs_disabled();
-    fn __preempt_count_add(v: u32); fn __preempt_count_sub(v: u32); fn preempt_count_dec(); fn preempt_count_set(v: i32); fn preempt_check_resched();
-    fn lockdep_softirqs_off(ip: usize); fn lockdep_softirqs_on(ip: usize); fn lockdep_softirq_enter(); fn lockdep_softirq_exit();
-    fn lockdep_hardirq_context() -> bool; fn lockdep_hardirq_enter(); fn lockdep_hardirq_exit();
-    fn account_softirq_enter(t: *mut task_struct); fn account_softirq_exit(t: *mut task_struct);
-    fn ffs(v: u32) -> i32; fn jiffies() -> usize; fn time_before(a: usize,b:usize)->bool; fn need_resched()->bool;
-    fn kstat_incr_softirqs_this_cpu(n: u32); fn trace_softirq_entry(n:u32); fn trace_softirq_exit(n:u32); fn trace_softirq_raise(n:u32);
-    fn rcu_softirq_qs(); fn rcu_read_lock(); fn rcu_read_unlock(); fn migrate_disable(); fn migrate_enable();
-    fn __raise_softirq_irqoff(n:u32); fn or_softirq_pending(v:u32); fn force_irqthreads()->bool; fn do_softirq_own_stack();
-    fn ct_irq_enter(); fn ct_irq_exit(); fn __irq_enter_raw(); fn irq_count()->u32; fn smp_processor_id()->u32;
-    fn tick_nohz_full_cpu(cpu:u32)->bool; fn is_idle_task(t:*mut task_struct)->bool; fn tick_irq_enter(); fn tick_nohz_irq_exit();
-    fn hrtimer_rearm_deferred(); fn sched_core_idle_cpu(cpu:i32)->bool; fn hardirq_disable_count()->u32; fn in_nmi()->bool;
-    fn tasklet_trylock(t:*mut tasklet_struct)->bool; fn tasklet_unlock(t:*mut tasklet_struct); fn atomic_read(a:*const atomic_t)->i32;
-    fn test_and_clear_wake_up_bit(n:u32,p:*mut usize)->bool; fn clear_and_wake_up_bit(n:u32,p:*mut usize); fn wait_on_bit_lock(p:*mut usize,n:u32,state:u32); fn wait_on_bit(p:*mut usize,n:u32,state:u32);
-    fn cpu_relax(); fn cond_resched(); fn warn_once(x:bool,msg:*const u8); fn pr_notice(msg:*const u8); fn sched_set_fifo_low(t:*mut task_struct);
-    fn workqueue_softirq_action(high:bool); fn workqueue_softirq_dead(cpu:u32); fn cpuhp_setup_state_nocalls(a:i32,b:*const u8,c:Option<unsafe extern "C" fn(u32)->i32>,d:Option<unsafe extern "C" fn(u32)->i32>);
-    fn smpboot_register_percpu_thread(t:*mut smp_hotplug_thread)->i32; fn local_timers_pending_force_th()->u32;
+// x86_64 compiler/architecture boundary. Kbuild forces native frame pointers
+// for this entire Rust object, including inspection/listing targets. Keeping
+// these always-inline avoids attributing BH transitions to a helper's callsite.
+#[inline(always)]
+unsafe fn caller_frame() -> *const c_ulong {
+    let frame: *const c_ulong;
+    core::arch::asm!("mov {}, rbp", out(reg) frame,
+        options(nostack, nomem, preserves_flags));
+    frame
+}
+#[inline(always)]
+unsafe fn caller_ip() -> c_ulong {
+    *caller_frame().add(1)
+}
+#[inline(always)]
+unsafe fn instruction_ip() -> c_ulong {
+    let ip: c_ulong;
+    core::arch::asm!("lea {}, [rip + 2f]", "2:", out(reg) ip,
+        options(nostack, nomem, preserves_flags));
+    ip
+}
+#[inline(always)]
+unsafe fn is_lock_function(_ip: c_ulong) -> bool {
+    #[cfg(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK))]
+    {
+        in_lock_functions(_ip) != 0
+    }
+    #[cfg(not(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK)))]
+    {
+        false
+    }
+}
+#[inline(always)]
+unsafe fn lock_parent_ip() -> c_ulong {
+    // ftrace.h::get_lock_parent_ip, including its zero-valued CALLER_ADDR1/2
+    // policy when the surrounding kernel has no CONFIG_FRAME_POINTER.
+    let frame = caller_frame();
+    let first = *frame.add(1);
+    if !is_lock_function(first) {
+        return first;
+    }
+    #[cfg(CONFIG_FRAME_POINTER)]
+    {
+        let parent = *frame as *const c_ulong;
+        let second = *parent.add(1);
+        if !is_lock_function(second) {
+            return second;
+        }
+        let grandparent = *parent as *const c_ulong;
+        *grandparent.add(1)
+    }
+    #[cfg(not(CONFIG_FRAME_POINTER))]
+    {
+        0
+    }
 }
 
-static mut SOFTIRQ_VEC: [softirq_action; 10] = [softirq_action { action: None }; 10];
-static mut SOFTIRQ_TO_NAME: [*const u8; 10] = [b"HI\0".as_ptr(),b"TIMER\0".as_ptr(),b"NET_TX\0".as_ptr(),b"NET_RX\0".as_ptr(),b"BLOCK\0".as_ptr(),b"IRQ_POLL\0".as_ptr(),b"TASKLET\0".as_ptr(),b"SCHED\0".as_ptr(),b"HRTIMER\0".as_ptr(),b"RCU\0".as_ptr()];
+include!("softirq_layout.rs");
+include!("softirq_storage.rs");
+include!("softirq_header.rs");
+include!("softirq_bh.rs");
+include!("softirq_tasklet.rs");
 
-unsafe fn wakeup_softirqd() { let t = ksoftirqd; if !t.is_null() { wake_up_process(t); } }
-pub unsafe extern "C" fn _local_interrupt_disable() { __local_interrupt_disable(); }
-pub unsafe extern "C" fn _local_interrupt_enable() { __local_interrupt_enable(); }
-
-pub unsafe extern "C" fn do_softirq() { if in_interrupt() { return; } let mut f=0; local_irq_save(&mut f); if local_softirq_pending()!=0 { do_softirq_own_stack(); } local_irq_restore(f); }
-pub unsafe extern "C" fn raise_softirq_irqoff(n:u32) { __raise_softirq_irqoff(n); if !in_interrupt() { wakeup_softirqd(); } }
-pub unsafe extern "C" fn raise_softirq(n:u32) { let mut f=0; local_irq_save(&mut f); raise_softirq_irqoff(n); local_irq_restore(f); }
-pub unsafe extern "C" fn __raise_softirq_irqoff(n:u32) { trace_softirq_raise(n); or_softirq_pending(1u32.wrapping_shl(n)); }
-pub unsafe extern "C" fn open_softirq(n:i32, action:Option<unsafe extern "C" fn()>) { SOFTIRQ_VEC[n as usize].action=action; }
-
-unsafe fn handle_softirqs(_ksirqd:bool) {
-    let end=jiffies().wrapping_add(2); let old=(*current).flags; let mut restart=10; (*current).flags &= !0x00100000usize;
-    let mut pending=local_softirq_pending(); __local_bh_disable_ip(0,1); lockdep_softirq_enter(); account_softirq_enter(current);
-    loop { set_softirq_pending(0); local_irq_enable(); let mut bit=ffs(pending); while bit!=0 { let n=(bit-1) as usize; let h=&SOFTIRQ_VEC[n]; if let Some(a)=h.action { a(); } pending >>= bit; bit=ffs(pending); } local_irq_disable(); pending=local_softirq_pending(); if pending!=0 && time_before(jiffies(),end) && !need_resched() { restart-=1; if restart>0 { continue; } wakeup_softirqd(); } break; }
-    account_softirq_exit(current); lockdep_softirq_exit(); __local_bh_enable_ip(0,1); (*current).flags=old;
+#[inline(always)]
+unsafe fn current_task() -> *mut task_struct {
+    lupos_sirq_current()
 }
-pub unsafe extern "C" fn __do_softirq() { handle_softirqs(false); }
+#[inline(always)]
+unsafe fn softirq_count() -> c_uint {
+    #[cfg(CONFIG_PREEMPT_RT)]
+    {
+        (*current_task()).softirq_disable_cnt as c_uint & RUST_SIRQ_SOFTIRQ_MASK
+    }
+    #[cfg(not(CONFIG_PREEMPT_RT))]
+    {
+        lupos_sirq_preempt_count() & RUST_SIRQ_SOFTIRQ_MASK
+    }
+}
+#[inline(always)]
+unsafe fn irq_count() -> c_uint {
+    (lupos_sirq_preempt_count() & (RUST_SIRQ_NMI_MASK | RUST_SIRQ_HARDIRQ_MASK)) | softirq_count()
+}
+#[inline(always)]
+unsafe fn in_interrupt() -> bool {
+    irq_count() != 0
+}
+#[inline(always)]
+unsafe fn in_hardirq() -> bool {
+    lupos_sirq_preempt_count() & RUST_SIRQ_HARDIRQ_MASK != 0
+}
+#[inline(always)]
+unsafe fn in_nmi() -> bool {
+    lupos_sirq_preempt_count() & RUST_SIRQ_NMI_MASK != 0
+}
 
-pub unsafe extern "C" fn irq_enter_rcu() { __irq_enter_raw(); hrtimer_rearm_deferred(); if tick_nohz_full_cpu(smp_processor_id()) || (is_idle_task(current) && irq_count()==1) { tick_irq_enter(); } account_hardirq_enter(current); }
-pub unsafe extern "C" fn irq_enter() { ct_irq_enter(); irq_enter_rcu(); }
-extern "C" { fn account_hardirq_enter(t:*mut task_struct); fn account_hardirq_exit(t:*mut task_struct); fn preempt_count_sub(v:u32); }
-pub unsafe extern "C" fn irq_exit_rcu() { local_irq_disable(); account_hardirq_exit(current); preempt_count_sub(1); if !in_interrupt() && hardirq_disable_count()==0 && local_softirq_pending()!=0 { hrtimer_rearm_deferred(); wakeup_softirqd(); } lockdep_hardirq_exit(); }
-pub unsafe extern "C" fn irq_exit() { irq_exit_rcu(); ct_irq_exit(); }
+unsafe fn wakeup_softirqd() {
+    let task = lupos_sirq_ksoftirqd_read();
+    if !task.is_null() {
+        wake_up_process(task);
+    }
+}
 
-pub unsafe extern "C" fn tasklet_setup(t:*mut tasklet_struct, cb:Option<unsafe extern "C" fn(*mut tasklet_struct)>) { (*t).next=core::ptr::null_mut(); (*t).state=0; (*t).count.0=0; (*t).callback=cb; (*t).use_callback=true; (*t).data=0; }
-pub unsafe extern "C" fn tasklet_init(t:*mut tasklet_struct, f:Option<unsafe extern "C" fn(usize)>, d:usize) { (*t).next=core::ptr::null_mut(); (*t).state=0; (*t).count.0=0; (*t).func=f; (*t).use_callback=false; (*t).data=d; }
-pub unsafe extern "C" fn tasklet_kill(t:*mut tasklet_struct) { if in_interrupt(){pr_notice(b"Attempt to kill tasklet from interrupt\n\0".as_ptr());} wait_on_bit_lock(&mut (*t).state,0,2); wait_on_bit(&mut (*t).state,1,2); clear_and_wake_up_bit(0,&mut (*t).state); }
-pub unsafe extern "C" fn tasklet_unlock_spin_wait(t:*mut tasklet_struct) { while ((*t).state & 2)!=0 { cpu_relax(); } }
+#[no_mangle]
+pub unsafe extern "C" fn _local_interrupt_disable() {
+    // include/linux/interrupt_rc.h::__local_interrupt_disable, in Rust.
+    let flags = lupos_sirq_irq_save();
+    lupos_sirq_interrupt_state_write(flags);
+}
+#[no_mangle]
+pub unsafe extern "C" fn _local_interrupt_enable() {
+    lupos_sirq_irq_restore(lupos_sirq_interrupt_state_read());
+}
 
-pub unsafe extern "C" fn softirq_init() { open_softirq(6,None); open_softirq(0,None); }
-pub unsafe extern "C" fn ksoftirqd_should_run(_cpu:u32)->i32 { local_softirq_pending() as i32 }
-pub unsafe extern "C" fn run_ksoftirqd(_cpu:u32) { if local_softirq_pending()!=0 { handle_softirqs(true); cond_resched(); } }
-pub unsafe extern "C" fn early_irq_init()->i32 { 0 }
-pub unsafe extern "C" fn arch_probe_nr_irqs()->i32 { 16 }
-pub unsafe extern "C" fn arch_early_irq_init()->i32 { 0 }
-pub unsafe extern "C" fn arch_dynirq_lower_bound(from:u32)->u32 { from }
+unsafe fn lockdep_softirq_start() -> bool {
+    #[cfg(CONFIG_TRACE_IRQFLAGS)]
+    {
+        let was_hardirq = lupos_sirq_hardirq_context();
+        if was_hardirq {
+            lupos_sirq_hardirq_exit();
+        }
+        lupos_sirq_softirq_enter();
+        return was_hardirq;
+    }
+    #[cfg(not(CONFIG_TRACE_IRQFLAGS))]
+    {
+        false
+    }
+}
+unsafe fn lockdep_softirq_end(_was_hardirq: bool) {
+    #[cfg(CONFIG_TRACE_IRQFLAGS)]
+    {
+        lupos_sirq_softirq_exit();
+        if _was_hardirq {
+            lupos_sirq_hardirq_enter();
+        }
+    }
+}
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+// Expanded vtime.h sequencing: configured out-of-line accounting providers
+// retain their own ownership, but the pair/order of calls belongs to Rust.
+unsafe fn account_enter(_task: *mut task_struct, _offset: c_uint) {
+    #[cfg(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE)]
+    vtime_account_irq(_task, _offset);
+    #[cfg(CONFIG_IRQ_TIME_ACCOUNTING)]
+    irqtime_account_irq(_task, _offset);
+}
+unsafe fn account_softirq_exit(_task: *mut task_struct) {
+    #[cfg(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE)]
+    vtime_account_softirq(_task);
+    #[cfg(CONFIG_IRQ_TIME_ACCOUNTING)]
+    irqtime_account_irq(_task, 0);
+}
+unsafe fn account_hardirq_exit(_task: *mut task_struct) {
+    #[cfg(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE)]
+    vtime_account_hardirq(_task);
+    #[cfg(CONFIG_IRQ_TIME_ACCOUNTING)]
+    irqtime_account_irq(_task, 0);
+}
+
+unsafe fn handle_softirqs(_ksirqd: bool) {
+    // Exact msecs_to_jiffies(2) result for all x86 CONFIG_HZ choices.
+    const MAX_SOFTIRQ_TIME: c_ulong = (2 * RUST_SIRQ_HZ as c_ulong + 999) / 1000;
+    let end = lupos_sirq_jiffies().wrapping_add(MAX_SOFTIRQ_TIME);
+    let task = current_task();
+    let old_flags = (*task).flags;
+    let mut max_restart = 10;
+    (*task).flags &= !(PF_MEMALLOC as c_uint);
+    let mut pending = lupos_sirq_pending();
+    softirq_handle_begin();
+    let was_hardirq = lockdep_softirq_start();
+    account_enter(task, RUST_SIRQ_SOFTIRQ_OFFSET);
+    loop {
+        // Publish the empty pending mask before enabling hard IRQs. Newly
+        // raised bits are consumed only after the current snapshot finishes.
+        lupos_sirq_set_pending(0);
+        lupos_sirq_irq_enable();
+        let mut base = 0usize;
+        while pending != 0 {
+            let skip = pending.trailing_zeros() as usize;
+            let nr = base + skip;
+            let vector = addr_of!(SOFTIRQ_VEC.value).cast::<softirq_action>().add(nr);
+            let prev_count = lupos_sirq_preempt_count();
+            lupos_sirq_kstat_inc(nr as c_uint);
+            lupos_sirq_trace_entry(nr as c_uint);
+            // C calls unconditionally; a missing installed action is a bug,
+            // never a silently ignored vector.
+            (*vector).action.unwrap_unchecked()();
+            lupos_sirq_trace_exit(nr as c_uint);
+            let after = lupos_sirq_preempt_count();
+            if prev_count != after {
+                lupos_sirq_count_error(
+                    nr as c_uint,
+                    SOFTIRQ_NAMES.value[nr],
+                    (*vector).action,
+                    prev_count,
+                    after,
+                );
+                // Original prev_count is int; retain its native promotion
+                // when restoring architectures' unsigned-long counter API.
+                lupos_sirq_preempt_set(prev_count as c_int);
+            }
+            base = nr + 1;
+            // NR_SOFTIRQS is 10 in this source. Avoid a Rust shift panic even
+            // if the native vector count eventually reaches 32.
+            pending = if skip == 31 { 0 } else { pending >> (skip + 1) };
+        }
+        #[cfg(not(CONFIG_PREEMPT_RT))]
+        if _ksirqd {
+            lupos_sirq_rcu_qs();
+        }
+        lupos_sirq_irq_disable();
+        pending = lupos_sirq_pending();
+        if pending != 0 {
+            // time_before uses signed wrapping subtraction, not numeric <.
+            if (lupos_sirq_jiffies().wrapping_sub(end) as isize) < 0 && !lupos_sirq_need_resched() {
+                max_restart -= 1;
+                if max_restart != 0 {
+                    continue;
+                }
+            }
+            wakeup_softirqd();
+        }
+        break;
+    }
+    account_softirq_exit(task);
+    lockdep_softirq_end(was_hardirq);
+    softirq_handle_end();
+    // current_restore_flags restores only the borrowed PF_MEMALLOC bit.
+    (*task).flags =
+        ((*task).flags & !(PF_MEMALLOC as c_uint)) | (old_flags & PF_MEMALLOC as c_uint);
+}
+
+#[no_mangle]
+#[link_section = ".softirqentry.text"]
+pub unsafe extern "C" fn __do_softirq() {
+    handle_softirqs(false);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn irq_enter_rcu() {
+    // __irq_enter_raw, expanded to preserve count-before-lockdep order.
+    lupos_sirq_preempt_add(RUST_SIRQ_HARDIRQ_OFFSET);
+    lupos_sirq_hardirq_enter();
+    lupos_sirq_hrtimer_rearm();
+    let task = current_task();
+    if lupos_sirq_tick_full(lupos_sirq_cpu())
+        || (((*task).flags & PF_IDLE as c_uint != 0) && irq_count() == RUST_SIRQ_HARDIRQ_OFFSET)
+    {
+        lupos_sirq_tick_enter();
+    }
+    account_enter(task, RUST_SIRQ_HARDIRQ_OFFSET);
+}
+#[no_mangle]
+pub unsafe extern "C" fn irq_enter() {
+    lupos_sirq_ct_enter();
+    irq_enter_rcu();
+}
+
+unsafe fn tick_irq_exit() {
+    #[cfg(CONFIG_NO_HZ_COMMON)]
+    {
+        let cpu = lupos_sirq_cpu();
+        if (lupos_sirq_core_idle(cpu as c_int) && !lupos_sirq_need_resched())
+            || lupos_sirq_tick_full(cpu)
+        {
+            if !in_hardirq() {
+                lupos_sirq_tick_exit();
+            }
+        }
+    }
+}
+#[cfg(CONFIG_IRQ_FORCED_THREADING)]
+unsafe fn wake_timersd() {
+    let task = lupos_sirq_ktimerd_read();
+    if !task.is_null() {
+        wake_up_process(task);
+    }
+}
+
+unsafe fn irq_exit_common() {
+    if RUST_SIRQ_ARCH_EXIT_IRQS_DISABLED == 0 {
+        lupos_sirq_irq_disable();
+    } else {
+        lupos_sirq_assert_irqs_disabled();
+    }
+    account_hardirq_exit(current_task());
+    lupos_sirq_preempt_sub(RUST_SIRQ_HARDIRQ_OFFSET);
+    if !in_interrupt()
+        && lupos_sirq_preempt_count() & RUST_SIRQ_HARDIRQ_DISABLE_MASK == 0
+        && lupos_sirq_pending() != 0
+    {
+        lupos_sirq_hrtimer_rearm();
+        invoke_softirq();
+    }
+    #[cfg(CONFIG_IRQ_FORCED_THREADING)]
+    if lupos_sirq_force_irqthreads()
+        && lupos_sirq_timer_pending() != 0
+        && !(in_nmi() | in_hardirq())
+    {
+        wake_timersd();
+    }
+    tick_irq_exit();
+}
+#[no_mangle]
+pub unsafe extern "C" fn irq_exit_rcu() {
+    irq_exit_common();
+    lupos_sirq_hardirq_exit(); // must be last
+}
+#[no_mangle]
+pub unsafe extern "C" fn irq_exit() {
+    irq_exit_common();
+    lupos_sirq_ct_exit();
+    lupos_sirq_hardirq_exit(); // must be last, after context tracking
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn raise_softirq_irqoff(nr: c_uint) {
+    __raise_softirq_irqoff(nr);
+    if !in_interrupt() && should_wake_ksoftirqd() {
+        wakeup_softirqd();
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn raise_softirq(nr: c_uint) {
+    let flags = lupos_sirq_irq_save();
+    raise_softirq_irqoff(nr);
+    lupos_sirq_irq_restore(flags);
+}
+#[no_mangle]
+pub unsafe extern "C" fn __raise_softirq_irqoff(nr: c_uint) {
+    lupos_sirq_assert_irqs_disabled();
+    lupos_sirq_trace_raise(nr);
+    lupos_sirq_or_pending(1u32 << nr);
+}
+#[no_mangle]
+pub unsafe extern "C" fn open_softirq(nr: c_int, action: Option<unsafe extern "C" fn()>) {
+    (*addr_of_mut!(SOFTIRQ_VEC.value)
+        .cast::<softirq_action>()
+        .add(nr as usize))
+    .action = action;
+}
+
+unsafe extern "C" fn ksoftirqd_should_run(_cpu: c_uint) -> c_int {
+    lupos_sirq_pending() as c_int
+}
+unsafe extern "C" fn run_ksoftirqd(_cpu: c_uint) {
+    ksoftirqd_run_begin();
+    if lupos_sirq_pending() != 0 {
+        handle_softirqs(true);
+        ksoftirqd_run_end();
+        lupos_sirq_cond_resched();
+        return;
+    }
+    ksoftirqd_run_end();
+}
+#[cfg(CONFIG_IRQ_FORCED_THREADING)]
+unsafe extern "C" fn ktimerd_setup(_cpu: c_uint) {
+    sched_set_fifo_low(current_task());
+}
+#[cfg(CONFIG_IRQ_FORCED_THREADING)]
+unsafe extern "C" fn ktimerd_should_run(_cpu: c_uint) -> c_int {
+    lupos_sirq_timer_pending() as c_int
+}
+#[cfg(CONFIG_IRQ_FORCED_THREADING)]
+#[no_mangle]
+pub unsafe extern "C" fn raise_ktimers_thread(nr: c_uint) {
+    lupos_sirq_trace_raise(nr);
+    lupos_sirq_timer_or((1 as c_ulong) << nr);
+}
+#[cfg(CONFIG_IRQ_FORCED_THREADING)]
+unsafe extern "C" fn run_ktimerd(_cpu: c_uint) {
+    ksoftirqd_run_begin();
+    let timer_si = lupos_sirq_timer_pending();
+    lupos_sirq_timer_clear();
+    lupos_sirq_or_pending(timer_si);
+    __do_softirq();
+    ksoftirqd_run_end();
+}
+#[no_mangle]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn lupos_spawn_ksoftirqd() -> c_int {
+    #[cfg(CONFIG_HOTPLUG_CPU)]
+    let dead = Some(takeover_tasklets as unsafe extern "C" fn(c_uint) -> c_int);
+    #[cfg(not(CONFIG_HOTPLUG_CPU))]
+    let dead = None;
+    // As in the source, hotplug-registration return is deliberately ignored.
+    lupos_sirq_cpuhp(dead);
+    lupos_sirq_bug(smpboot_register_percpu_thread(addr_of_mut!(SOFTIRQ_THREADS)) != 0);
+    #[cfg(CONFIG_IRQ_FORCED_THREADING)]
+    if lupos_sirq_force_irqthreads() {
+        lupos_sirq_bug(smpboot_register_percpu_thread(addr_of_mut!(TIMER_THREAD)) != 0);
+    }
+    0
+}
+
+#[no_mangle]
+#[linkage = "weak"]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn early_irq_init() -> c_int {
+    0
+}
+#[no_mangle]
+#[linkage = "weak"]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn arch_probe_nr_irqs() -> c_int {
+    RUST_SIRQ_NR_IRQS_LEGACY as c_int
+}
+#[no_mangle]
+#[linkage = "weak"]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn arch_early_irq_init() -> c_int {
+    0
+}
+#[no_mangle]
+#[linkage = "weak"]
+pub unsafe extern "C" fn arch_dynirq_lower_bound(from: c_uint) -> c_uint {
+    from
+}

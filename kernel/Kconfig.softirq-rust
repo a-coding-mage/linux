@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SOFTIRQ
+	bool "Rust softirq dispatch, tasklets and interrupt context"
+	depends on RUST && X86_64
+	depends on !RANDSTRUCT && !CFI && !GCC_PLUGIN_LATENT_ENTROPY
+	default y
+	help
+	  Select Rust as the sole algorithm/data owner of kernel/softirq.o,
+	  including RT and non-RT BH state, dispatch, IRQ context, tasklets,
+	  CPU hotplug, softirq/timer daemons and weak IRQ setup defaults.
+	  Configured types are generated from the original kernel headers.
+	  A native companion emits compiler trace/export/initcall metadata,
+	  architecture/atomic operations and explicitly recorded remaining
+	  header/subsystem migration dependencies.
+
+	  This selector describes the intended supported x86_64 source scope;
+	  a source-only proposal is not evidence of successful compilation or
+	  runtime equivalence. The recorded validation gates must pass before
+	  accepting any production configuration, including tracing and RT.
+	  Original C is retained for deliberate reference/test configurations.
+	  Rust production validation must reject an unset selector, C fallback
+	  or a duplicate C owner. Other architectures, CFI, randstruct and GCC
+	  latent-entropy instrumentation require further work.

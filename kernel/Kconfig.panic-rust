@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_PANIC
+	bool "Rust panic, warning and taint handling"
+	depends on RUST && X86_64 && PRINTK
+	depends on RUSTC_VERSION = 108501
+	depends on !CFI && !PRINTK_INDEX
+	default y
+	help
+	  Build the panic/warning/oops/taint bodies and owned state from Rust
+	  in the original kernel/panic.o slot. C supplies header primitives,
+	  weak architecture entry shells and native init/export metadata.
+	  The variadic entry points use Rust 1.85.1's real C va_list support.
+
+	  This source batch starts with x86_64 and its native warning ABI.
+	  Other architectures, Rust compiler releases, CFI callback type
+	  encodings and PRINTK_INDEX metadata require separate acceptance.
+	  This option defaults on within those dependencies. Verify the
+	  original kernel tests and build artifact provenance when enabling
+	  a new configuration. Off explicitly selects unchanged C.

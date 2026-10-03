@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--blocklist-function 'lupos_panic_warn_with_args'
+--allowlist-function 'trace_hardirqs_on|trace_hardirqs_off'
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
+--allowlist-type 'atomic_t|atomic_notifier_head|raw_spinlock_t|spinlock_t|call_single_data_t|lupos_panic_csd_storage|pt_regs|taint_flag|seq_buf|ctl_table|kobject|kobj_attribute|kernel_param|kernel_param_ops|warn_args|task_struct|file_operations|file|inode|loff_t|ssize_t|lockdep_ok|kmsg_dump_reason|error_detector'
+--allowlist-function 'lupos_panic_.*|panic_smp_self_stop|nmi_panic_self_stop|crash_smp_send_stop|panic_smp_redirect_cpu|proc_doulongvec_minmax|proc_dointvec_minmax|proc_dointvec|proc_douintvec|sysctl_sys_info_handler|sys_info_parse_param|sys_info|sysfs_emit|sysfs_add_file_to_group|kstrtoint|kstrtoull|_kstrtoul|smp_call_function_single_async|set_cpu_online|console_verbose|bust_spinlocks|dump_stack|_printk|printk_legacy_allow_panic_sync|atomic_notifier_call_chain|debug_locks_off|console_flush_on_panic|nbcon_atomic_flush_unsafe|emergency_restart|seq_buf_puts|seq_buf_putc|seq_buf_printf|strlen|strcmp|strsep|show_regs|memset|simple_attr_open|simple_attr_release|param_set_ulong|param_get_ulong'
+--allowlist-var 'LUPOS_PANIC_.*|SPINLOCK_MAGIC|PANIC_CPU_INVALID|TAINT_.*|LOCKDEP_.*|SYS_INFO_.*|KMSG_DUMP_.*|CONSOLE_FLUSH_PENDING|CONSOLE_REPLAY_ALL|REBOOT_UNDEFINED|ERROR_DETECTOR_WARN|MSEC_PER_SEC|CAP_SYS_ADMIN|EPERM|EINVAL|oops_in_progress|panic_reboot_mode|reboot_mode|suppress_printk|kernel_kobj|sysctl_vals|sysctl_panic_on_stackoverflow|__start_once|__end_once|stop_a_enabled'

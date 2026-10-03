@@ -1008,4 +1008,7 @@ include $(srctree)/arch/x86/kernel/head64-bindgen.mk
 
 include $(srctree)/kernel/fork_bindgen.mk
 include $(srctree)/kernel/pid_bindgen.mk
+include $(srctree)/kernel/exit_bindgen.mk
+include $(srctree)/kernel/softirq_bindgen.mk
+include $(srctree)/kernel/panic_bindgen.mk
 include $(srctree)/arch/x86/kernel/setup-bindgen.mk
