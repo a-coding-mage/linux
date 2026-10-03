@@ -651,7 +651,7 @@ pub unsafe extern "C" fn security_netlbl_sid_to_secattr(
         return -(ENOMEM as c_int);
     }
     (*secattr).attr.secid = sid;
-    (*secattr).flags |= NETLBL_SECATTR_DOMAIN_CPY | NETLBL_SECATTR_SECID;
+    (*secattr).flags |= (LUPOS_SERVICES_NETLBL_SECATTR_DOMAIN_CPY as u32) | NETLBL_SECATTR_SECID;
     mls_export_netlbl_lvl(policydb, ctx, secattr);
     mls_export_netlbl_cat(policydb, ctx, secattr)
 }

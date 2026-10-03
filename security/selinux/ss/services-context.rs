@@ -69,7 +69,7 @@ unsafe fn security_sid_to_context_core(mut sid: u32, out: *mut *mut c_char,
             if text.is_null() { return -(EINVAL as c_int); }
             *len = strlen(text).wrapping_add(1) as u32;
             if out.is_null() { return 0; }
-            let copy = lupos_services_kmemdup(text.cast(), *len as usize, GFP_ATOMIC).cast();
+            let copy: *mut c_char = lupos_services_kmemdup(text.cast(), *len as usize, GFP_ATOMIC).cast();
             if copy.is_null() { return -(ENOMEM as c_int); }
             *out = copy;
             return 0;

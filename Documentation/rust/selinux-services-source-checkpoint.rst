@@ -34,12 +34,24 @@ checkpoint; a future listing request requires separate integration.
 Validation remains incomplete
 -----------------------------
 
-Source inventory matches all 87 definitions and cross-review corrected two
-binding/type issues. No configured bindgen, C/Rust compilation, layout
-assertion execution, object/symbol ownership check, kernel build, original
-C tests or runtime comparison has run for this provider. None of those
-stages is claimed passing. Do not treat this checkpoint as a validated
-replacement or enable it on a production system.
+Source inventory matches all 87 definitions. The first native attempt at
+``2fc27ef5678e02ef2247aa7efe7416409c972fe2`` compiled original C
+``services.o`` and passed its exact repeat with unchanged whole-output
+hashes and artifact mtimes. Only ``RUST_SELINUX_SERVICES`` changed from n
+to y between the C and Rust fixtures. Canonical headers and configured
+bindings were generated, then Rust compilation stopped on two errors:
+missing ``NETLBL_SECATTR_DOMAIN_CPY`` and an untyped ``kmemdup`` pointer
+cast. The retained object after failure is the C object, not Rust output.
+
+The correction exposes the original NetLabel macro through a configured
+C-expression enum under ``CONFIG_NETLABEL`` and uses it in the existing
+u32 flags operation. The pointer is explicitly ``*mut kernel::ffi::c_char``.
+It changes no algorithms, original C sources, tests or build flags. The
+failed run was preserved without a retry; corrected native replay remains
+pending. Rust/glue compilation, Rust no-op, layout and symbol ownership
+qualification, original C callers, the composite, full kernel linking,
+original C tests and runtime comparison remain unqualified. Do not treat
+this checkpoint as a validated replacement or enable it in production.
 
 The unchanged original ``tools/testing/selftests/lsm`` C programs and their
 Makefile/lib.mk recipes offer surrounding LSM inventory and attribute

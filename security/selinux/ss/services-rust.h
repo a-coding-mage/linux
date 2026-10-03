@@ -96,6 +96,9 @@ enum {
 enum {
  LUPOS_SERVICES_GFP_ATOMIC = GFP_ATOMIC,
  LUPOS_SERVICES_GFP_KERNEL = GFP_KERNEL,
+#ifdef CONFIG_NETLABEL
+ LUPOS_SERVICES_NETLBL_SECATTR_DOMAIN_CPY = NETLBL_SECATTR_DOMAIN_CPY,
+#endif
 };
 struct selinux_audit_rule { u32 au_seqno; struct context au_ctxt; };
 void lupos_services_rcu_read_lock(void);
