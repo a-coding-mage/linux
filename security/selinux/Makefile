@@ -49,3 +49,5 @@ endif
 HOST_EXTRACFLAGS += -I$(srctree)/security/selinux/include
 
 include $(srctree)/security/selinux/ss/services-provider.mk
+
+include $(srctree)/security/selinux/ss/policydb-provider.mk

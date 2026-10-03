@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SELINUX_POLICYDB
+	bool "Rust implementation of SELinux policy database"
+	depends on RUST && SECURITY_SELINUX
+	default n
+	help
+	  Build the Rust translation of the SELinux policy database unit.
+	  This source reconstruction requires configured ABI, native build,
+	  retained-C test and policy round-trip validation before use.
+	  If unsure, say N.

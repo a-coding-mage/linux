@@ -938,3 +938,5 @@ include $(srctree)/kernel/power/process-bindgen.mk
 include $(srctree)/fs/smb/server/vfs_cache_bindgen.mk
 
 include $(srctree)/security/selinux/ss/services-bindgen.mk
+
+include $(srctree)/security/selinux/ss/policydb-bindgen.mk
