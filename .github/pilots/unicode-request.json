@@ -4,5 +4,5 @@
   "source_sha": "0008179a1ee0b082fa3ead118187fc6f3569a9f2",
   "profile": "lupos-phase2-original-c-x86_64-v1",
   "evidence": "logs-only",
-  "armed": false
+  "armed": true
 }
