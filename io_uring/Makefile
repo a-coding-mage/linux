@@ -37,3 +37,14 @@ $(obj)/rw.s: $(src)/rw.rs FORCE
 $(obj)/rw.ll: $(src)/rw.rs FORCE
 	+$(call if_changed_dep,rustc_ll_rs)
 endif
+
+# The explicit recipe overrides only zcrx.o; never link both implementations.
+ifeq ($(CONFIG_RUST_IO_URING_ZCRX),y)
+obj-$(CONFIG_IO_URING_ZCRX) += zcrx_helpers.o
+$(obj)/zcrx.o: $(src)/zcrx.rs $(objtree)/rust/bindings/io_uring_zcrx_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/zcrx.s: $(src)/zcrx.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/zcrx.ll: $(src)/zcrx.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif

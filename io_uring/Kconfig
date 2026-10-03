@@ -19,3 +19,12 @@ config IO_URING_BPF_OPS
 	def_bool y
 	depends on IO_URING
 	depends on BPF_SYSCALL && BPF_JIT && DEBUG_INFO_BTF
+
+config RUST_IO_URING_ZCRX
+	bool "Rust io_uring zero-copy receive provider"
+	depends on RUST && IO_URING_ZCRX
+	default n
+	help
+	  Select the Rust implementation of the generic io_uring zero-copy
+	  receive provider. The original C implementation remains the default.
+	  Configured C headers provide the ABI and narrow inline/macro helpers.

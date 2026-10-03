@@ -910,6 +910,7 @@ include $(srctree)/crypto/asymmetric_keys/public_key_bindgen.mk
 include $(srctree)/drivers/base/regmap/regcache-bindgen.mk
 include $(srctree)/fs/notify/inotify/inotify_user_bindgen.mk
 include $(srctree)/io_uring/rw_bindgen.mk
+include $(srctree)/io_uring/zcrx_bindgen.mk
 include $(srctree)/ipc/msg_bindgen.mk
 include $(srctree)/kernel/rseq_bindgen.mk
 include $(srctree)/kernel/bpf/lpm_trie-bindgen.mk
