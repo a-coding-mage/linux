@@ -2,6 +2,20 @@
 
 menu "Memory Management options"
 
+config RUST_SLAB_COMMON
+	bool "Rust common slab cache and deferred-free algorithms"
+	depends on RUST
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build slab_common.o from Rust with configured native types and
+	  constants. Cache lifecycle, kmalloc geometry, information and
+	  deferred RCU-free algorithms execute in Rust. Native list/lock
+	  storage, header leaves and caller-IP/BPF entry metadata remain
+	  explicit boundaries. The original C implementation is retained
+	  as reference and is not linked when selected. Native compiler
+	  policy and original C acceptance remain required.
+
 config RUST_SLUB
 	bool "Rust SLUB allocator algorithms"
 	depends on RUST && SLUB

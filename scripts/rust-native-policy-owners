@@ -39,3 +39,5 @@ mm/rmap                   strong -
 mm/vmscan                 strong -
 
 mm/slub                   strong -
+
+mm/slab_common            strong -

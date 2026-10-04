@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-prepend-enum-name
+--allowlist-type '^(kmem_cache|kmem_cache_args|kmem_buckets|kmalloc_cache_type|kmalloc_info_struct|slab|slab_state|slab_flags_t|gfp_t|freeptr_t|list_head|mutex|kmem_obj_info|slabinfo|seq_file|seq_operations|proc_ops|proc_dir_entry|inode|file|loff_t|umode_t|callback_head|kvfree_rcu_head|kvfree_rcu_bulk_data|kfree_rcu_cpu|kfree_rcu_cpu_work|rcu_gp_seq|rcu_work|work_struct|workqueue_struct|delayed_work|raw_spinlock_t|atomic_t|llist_head|llist_node|hrtimer|hrtimer_restart|hrtimer_mode|ktime_t|shrinker|shrink_control)$'
+--allowlist-function '^(rust_slab_common_.*|_printk|panic|strcmp|strchr|kstrdup_const|kfree_const|kasprintf|kmem_cache_free|kmem_cache_destroy|do_kmem_cache_create|kmem_cache_flags|__kmem_cache_release|__kmem_cache_shutdown|__kmem_cache_shrink|__kmem_obj_info|get_slabinfo|ksize|kfree|get_random_u64|seq_putc|seq_printf|seq_open|seq_list_start|seq_list_next|call_rcu|rcu_barrier|synchronize_rcu|kvfree|kvfree_rcu_cb|kvfree_rcu_barrier_on_cache|deferred_work_barrier|defer_kfree_rcu|__kfree_rcu_sheaf|flush_all_rcu_sheaves|flush_rcu_sheaves_on_cache|llist_del_first|vfree|queue_rcu_work|flush_rcu_work|cancel_delayed_work_sync|hrtimer_setup|shrinker_alloc|shrinker_register)$'
+--allowlist-var '^(RSC_.*|DOWN|PARTIAL|UP|FULL|KMALLOC_.*|NR_KMALLOC_TYPES|slab_mutex|slab_caches|slabinfo_op|slabinfo_proc_ops|rcu_scheduler_active|system_highpri_wq|rust_slab_common_rcu_.*)$'
+--with-attribute-custom-struct=kmem_cache='#[cfi_encoding="10kmem_cache"]'
+--with-attribute-custom-struct=slab='#[cfi_encoding="4slab"]'
+--with-attribute-custom-struct=kmem_cache_args='#[cfi_encoding="15kmem_cache_args"]'
+--with-attribute-custom-struct=callback_head='#[cfi_encoding="13callback_head"]'
+--with-attribute-custom-struct=kvfree_rcu_head='#[cfi_encoding="15kvfree_rcu_head"]'
+--with-attribute-custom-struct=work_struct='#[cfi_encoding="11work_struct"]'
+--with-attribute-custom-struct=hrtimer='#[cfi_encoding="7hrtimer"]'
+--with-attribute-custom-struct=shrinker='#[cfi_encoding="8shrinker"]'
+--with-attribute-custom-struct=shrink_control='#[cfi_encoding="14shrink_control"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=inode='#[cfi_encoding="5inode"]'

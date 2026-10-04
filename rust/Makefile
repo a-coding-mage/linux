@@ -1048,3 +1048,5 @@ include $(srctree)/mm/rmap_native_bindgen.mk
 include $(srctree)/mm/vmscan_native_bindgen.mk
 
 include $(srctree)/mm/slub_bindgen.mk
+
+include $(srctree)/mm/slab_common_bindgen.mk

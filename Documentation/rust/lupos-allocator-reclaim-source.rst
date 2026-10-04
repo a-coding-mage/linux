@@ -100,3 +100,29 @@ equivalent Rust sanitizer coverage. Configured native types, callback and
 public ABI, stack/compiler protection, caller-IP profiling, static data and
 section lifetimes, original C suites and all configuration branches remain
 gates for the later integrated build-fix and acceptance phases.
+
+Common slab cache and deferred free
+----------------------------------
+
+The ``mm/slab_common.c`` source candidate maps all 78 original function
+definition occurrences, including configuration alternatives. Cache creation,
+merge/refcount/destruction, kmalloc geometry and randomization, reporting,
+sensitive freeing and both deferred RCU-free configurations have Rust bodies.
+The configured kernel headers and original private RCU declarations supply
+native types. Invented zero-sized layouts and Default lock initializers are
+not used. Exact list, mutex, per-CPU raw-spinlock and registration initializers
+remain native storage boundaries.
+
+Reciprocal source review corrected allocation-profile site merging,
+configuration-variant inventory and native enum-width coupling. The public
+``kmem_cache_destroy`` entry remains native to capture its original caller's
+``_RET_IP_``; configured ``bpf_get_kmem_cache`` remains native for the original
+``__bpf_kfunc`` metadata. Both call Rust algorithm bodies. These two public
+symbols and native header/storage leaves remain explicit native runtime work,
+not metadata-only or a claim of complete direct Rust public ownership.
+
+Formatting, source inventory, immutable original-C hashes and read-only patch
+checks passed. No bindgen, compiler, configuration, native probe, kernel build,
+guest or original C test was run for this source checkpoint. Native signature,
+layout, compiler-protection and section/data/callback identity, all branch
+configurations and runtime error/lock/RCU behavior remain unverified gates.
