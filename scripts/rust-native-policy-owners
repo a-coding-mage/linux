@@ -33,3 +33,5 @@ mm/memory                 strong -
 mm/userfaultfd            strong -
 mm/mremap                 strong -
 mm/mprotect               strong -
+
+mm/rmap                   strong -

@@ -1042,3 +1042,5 @@ include $(srctree)/mm/memory_native_bindgen.mk
 include $(srctree)/mm/userfaultfd_native_bindgen.mk
 include $(srctree)/mm/mremap_native_bindgen.mk
 include $(srctree)/mm/mprotect_native_bindgen.mk
+
+include $(srctree)/mm/rmap_native_bindgen.mk

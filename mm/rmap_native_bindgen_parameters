@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(rust_rmap_pgoff_t|anon_vma|anon_vma_chain|vm_area_struct|mm_struct|folio|page|address_space|file|kmem_cache|atomic_t|list_head|rb_root|rb_root_cached|rw_semaphore|spinlock_t|gfp_t|slab_flags_t|rmap_t|fpb_t|vma_flags_t|vm_flags_t|vma_operation|pgtable_level|ttu_flags|node_stat_item|mthp_stat_item|mmu_notifier_event|rmap_walk_control|page_vma_mapped_walk|mmu_notifier_range|mmu_gather|pte_t|pmd_t|pud_t|p4d_t|pgd_t|softleaf_t|swp_entry_t|mem_cgroup|pglist_data|pg_data_t|tlbflush_unmap_batch|arch_tlbflush_unmap_batch|hstate|folio_walk|folio_walk_level)$'
+--allowlist-function '^rust_rmap_.*'
+--allowlist-var '^(RUST_RMAP_.*|E[A-Z0-9_]+|PGTABLE_LEVEL_.*|VMA_OP_.*|TTU_.*|NR_ANON_MAPPED|NR_FILE_MAPPED|NR_ANON_THPS|NR_SHMEM_PMDMAPPED|NR_FILE_PMDMAPPED|MTHP_STAT_NR_ANON|MM_ANONPAGES|MM_SWAPENTS|MMU_NOTIFY_.*|FW_LEVEL_PTE)$'
+# Use compiler-sized views of native anonymous/randomized layouts. Access is
+# through typed header leaves, never offsets or replicas.
+--opaque-type '^(mm_struct|task_struct|signal_struct|sighand_struct|files_struct|fs_struct|dentry|super_block|page|folio|ptdesc|mem_cgroup|lruvec|kmem_cache|shrinker|device|mem_section|zone|pglist_data|net|socket|cred)$'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=folio='#[cfi_encoding="5folio"]'
+--with-attribute-custom-struct=anon_vma='#[cfi_encoding="8anon_vma"]'
+--with-attribute-custom-struct=rmap_walk_control='#[cfi_encoding="17rmap_walk_control"]'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'

@@ -2,6 +2,20 @@
 
 menu "Memory Management options"
 
+config RUST_RMAP
+	bool "Rust reverse mapping owner"
+	depends on RUST && MMU
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build rmap.o from Rust using configured native types. Anonymous
+	  VMA lifetime, reverse-map traversal, mapcounts, reclaim unmapping,
+	  migration and device-exclusive decisions execute in Rust.
+	  Native header, atomic and architecture leaves remain explicit.
+	  The retained original rmap.c is not linked when selected.
+	  Native instrumentation gates remain required. This source-phase
+	  implementation still requires the integrated build and C tests.
+
 source "mm/Kconfig.rust-mprotect"
 
 config RUST_MEMORY

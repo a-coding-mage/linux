@@ -1,0 +1,31 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef RUST_RMAP_NATIVE_INCLUDES_H
+#define RUST_RMAP_NATIVE_INCLUDES_H
+#include <linux/mm.h>
+#include <linux/sched/mm.h>
+#include <linux/sched/task.h>
+#include <linux/pagemap.h>
+#include <linux/swap.h>
+#include <linux/leafops.h>
+#include <linux/slab.h>
+#include <linux/init.h>
+#include <linux/ksm.h>
+#include <linux/rmap.h>
+#include <linux/rcupdate.h>
+#include <linux/export.h>
+#include <linux/memcontrol.h>
+#include <linux/mmu_notifier.h>
+#include <linux/migrate.h>
+#include <linux/hugetlb.h>
+#include <linux/huge_mm.h>
+#include <linux/backing-dev.h>
+#include <linux/page_idle.h>
+#include <linux/memremap.h>
+#include <linux/userfaultfd_k.h>
+#include <linux/mm_inline.h>
+#include <linux/oom.h>
+#include <asm/tlb.h>
+#include <trace/events/migrate.h>
+#include "internal.h"
+#include "swap.h"
+#endif
