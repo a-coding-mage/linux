@@ -71,7 +71,7 @@ void *rust_memblock_kzalloc_node(size_t size, int nid);
 phys_addr_t rust_memblock_pa(const void *ptr);
 phys_addr_t rust_memblock_pa_symbol(const void *ptr);
 void *rust_memblock_va(phys_addr_t addr);
-phys_addr_t rust_memblock_virt_to_phys(const void *ptr);
+phys_addr_t rust_memblock_virt_to_phys(void *ptr);
 void *rust_memblock_phys_to_virt(phys_addr_t addr);
 bool rust_memblock_is_kernel(unsigned long addr);
 void rust_memblock_accept_memory(phys_addr_t start, unsigned long size);

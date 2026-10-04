@@ -395,8 +395,11 @@ pub unsafe extern "C" fn handle_nested_irq(irq: c_uint) {
     let mut action_ret = IRQ_NONE;
     let mut action = (*desc).action;
     while !action.is_null() {
-        action_ret.0 |=
-            ((*action).thread_fn.unwrap_unchecked())((*action).irq as c_int, (*action).dev_id).0;
+        action_ret.0 |= ((*action).thread_fn.unwrap_unchecked())(
+            (*action).irq as c_int,
+            (*action).__bindgen_anon_1.dev_id,
+        )
+        .0;
         action = (*action).next;
     }
     if !lupos_irq_no_debug(desc) {
@@ -499,7 +502,8 @@ pub unsafe extern "C" fn handle_fasteoi_nmi(desc: *mut irq_desc) {
     let irq = (*desc).irq_data.irq;
     lupos_irq_kstat_incr_raw(desc);
     lupos_irq_trace_entry(irq, action);
-    let res = ((*action).handler.unwrap_unchecked())(irq as c_int, (*action).dev_id);
+    let res =
+        ((*action).handler.unwrap_unchecked())(irq as c_int, (*action).__bindgen_anon_1.dev_id);
     lupos_irq_trace_exit(irq, action, res);
     if let Some(eoi) = (*chip).irq_eoi {
         eoi(data(desc));
@@ -561,7 +565,7 @@ pub unsafe extern "C" fn handle_percpu_devid_irq(desc: *mut irq_desc) {
         lupos_irq_trace_entry(irq, action);
         let res = ((*action).handler.unwrap_unchecked())(
             irq as c_int,
-            lupos_irq_raw_cpu_ptr((*action).percpu_dev_id),
+            lupos_irq_raw_cpu_ptr((*action).__bindgen_anon_1.percpu_dev_id),
         );
         lupos_irq_trace_exit(irq, action, res);
     } else {

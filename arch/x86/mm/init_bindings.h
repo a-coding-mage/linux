@@ -72,19 +72,40 @@
 #define RUST_MM_INIT_PGD_PAGE_COUNT (2 * RUST_MM_INIT_PGD_PAGE_TABLES)
 #endif
 #define RUST_MM_INIT_PGT_BYTES (RUST_MM_INIT_PGD_PAGE_COUNT * PAGE_SIZE)
+/* Native enums preserve unsigned high-bit values in the pinned bindgen,
+ * unlike a static const declaration which can become an extern static.
+ * Keep the source macro expressions and verify the original unsigned widths.
+ */
+enum rust_mm_address_constants {
+	RUST_MM_PAGE_MASK = PAGE_MASK,
+	RUST_MM_PMD_MASK = PMD_MASK,
+	RUST_MM_PUD_MASK = PUD_MASK,
+	RUST_MM_P4D_MASK = P4D_MASK,
+	RUST_MM_PHYS_ADDR_MAX = PHYS_ADDR_MAX,
+#ifdef CONFIG_X86_64
+	RUST_MM_START_KERNEL_MAP = __START_KERNEL_map,
+	RUST_MM_VSYSCALL_ADDR = VSYSCALL_ADDR,
+#endif
+};
+_Static_assert((unsigned long)RUST_MM_PAGE_MASK == PAGE_MASK, "PAGE_MASK width");
+_Static_assert((unsigned long)RUST_MM_PMD_MASK == PMD_MASK, "PMD_MASK width");
+_Static_assert((unsigned long)RUST_MM_PUD_MASK == PUD_MASK, "PUD_MASK width");
+_Static_assert((unsigned long)RUST_MM_P4D_MASK == P4D_MASK, "P4D_MASK width");
+_Static_assert((phys_addr_t)RUST_MM_PHYS_ADDR_MAX == PHYS_ADDR_MAX, "PHYS_ADDR_MAX width");
+#ifdef CONFIG_X86_64
+_Static_assert((unsigned long)RUST_MM_START_KERNEL_MAP == __START_KERNEL_map, "kernel map width");
+_Static_assert((unsigned long)RUST_MM_VSYSCALL_ADDR == VSYSCALL_ADDR, "vsyscall width");
+#endif
+
 #ifdef __BINDGEN__
 #define MM_ULONG(name, value) static const unsigned long RUST_MM_##name = (value)
 #define MM_UINT(name, value) static const unsigned int RUST_MM_##name = (value)
 MM_UINT(PAGE_SHIFT, PAGE_SHIFT);
 MM_UINT(PMD_SHIFT, PMD_SHIFT);
 MM_ULONG(PAGE_SIZE, PAGE_SIZE);
-MM_ULONG(PAGE_MASK, PAGE_MASK);
 MM_ULONG(PMD_SIZE, PMD_SIZE);
-MM_ULONG(PMD_MASK, PMD_MASK);
 MM_ULONG(PUD_SIZE, PUD_SIZE);
-MM_ULONG(PUD_MASK, PUD_MASK);
 MM_ULONG(P4D_SIZE, P4D_SIZE);
-MM_ULONG(P4D_MASK, P4D_MASK);
 MM_ULONG(PTRS_PER_PTE, PTRS_PER_PTE);
 MM_ULONG(PTRS_PER_PMD, PTRS_PER_PMD);
 MM_ULONG(PTRS_PER_PUD, PTRS_PER_PUD);
@@ -134,15 +155,13 @@ MM_UINT(SWAP_LIMIT_SHIFT, PAGE_SHIFT - SWP_OFFSET_FIRST_BIT);
 MM_UINT(SWAP_LIMIT_SHIFT, 0);
 #endif
 MM_ULONG(PT_LIST_OFFSET, offsetof(struct ptdesc, pt_list));
+MM_ULONG(MM_PAGE_TABLE_LOCK_OFFSET, offsetof(struct mm_struct, page_table_lock));
 MM_ULONG(READ_IMPLIES_EXEC, READ_IMPLIES_EXEC);
 MM_UINT(PMD_ORDER, PMD_ORDER);
 MM_ULONG(MIN_MEMORY_BLOCK_SIZE, MIN_MEMORY_BLOCK_SIZE);
 MM_ULONG(PAGES_PER_SECTION, PAGES_PER_SECTION);
-static const phys_addr_t RUST_MM_PHYS_ADDR_MAX = PHYS_ADDR_MAX;
 #ifdef CONFIG_X86_64
-MM_ULONG(START_KERNEL_MAP, __START_KERNEL_map);
 MM_ULONG(KERNEL_IMAGE_SIZE, KERNEL_IMAGE_SIZE);
-MM_ULONG(VSYSCALL_ADDR, VSYSCALL_ADDR);
 #endif
 #ifdef CONFIG_EXECMEM
 MM_ULONG(MODULE_ALIGN, MODULE_ALIGN);

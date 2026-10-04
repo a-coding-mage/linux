@@ -15,6 +15,7 @@
 #include <linux/preempt.h>
 #include <linux/random.h>
 #include <linux/sched.h>
+#include <linux/kstrtox.h>
 #include <asm/irq_regs.h>
 #include <trace/events/irq.h>
 #include "internals.h"

@@ -59,7 +59,7 @@ macro_rules! mb_fn {
         $item
     )* };
 }
-macro_rules! info { ($fmt:expr $(, $arg:expr)* $(,)?) => { #[cfg(CONFIG_PRINTK)] { _printk($fmt.as_ptr() $(, $arg)*); } }; }
+macro_rules! info { ($fmt:expr $(, $arg:expr)* $(,)?) => { #[cfg(CONFIG_PRINTK)] { _printk($fmt.as_ptr().cast::<CChar>() $(, $arg)*); } }; }
 macro_rules! warn {
     ($condition:expr) => {
         rust_memblock_warn($condition)
@@ -121,14 +121,14 @@ pub static mut memblock: bindings::memblock = bindings::memblock {
         max: RUST_MEMBLOCK_INIT_MEMORY_REGIONS as ULong,
         total_size: 0,
         regions: (&raw mut MEMORY_REGIONS).cast::<memblock_region>(),
-        name: c"memory".as_ptr().cast_mut(),
+        name: c"memory".as_ptr().cast::<CChar>().cast_mut(),
     },
     reserved: memblock_type {
         cnt: 0,
         max: RUST_MEMBLOCK_INIT_RESERVED_REGIONS as ULong,
         total_size: 0,
         regions: (&raw mut RESERVED_REGIONS).cast::<memblock_region>(),
-        name: c"reserved".as_ptr().cast_mut(),
+        name: c"reserved".as_ptr().cast::<CChar>().cast_mut(),
     },
 };
 #[cfg(CONFIG_HAVE_MEMBLOCK_PHYS_MAP)]
@@ -138,7 +138,7 @@ pub static mut physmem: memblock_type = memblock_type {
     max: 4,
     total_size: 0,
     regions: (&raw mut PHYSMEM_REGIONS).cast::<memblock_region>(),
-    name: c"physmem".as_ptr().cast_mut(),
+    name: c"physmem".as_ptr().cast::<CChar>().cast_mut(),
 };
 #[link_section = ".ref.data"]
 static mut memblock_memory: *mut memblock_type = unsafe { &raw mut memblock.memory };
@@ -398,28 +398,28 @@ unsafe fn memblock_remove_range(ty: *mut memblock_type, base: Phys, size: Phys) 
 }
 #[no_mangle]
 pub unsafe extern "C" fn rust_memblock_add_node(base: Phys, size: Phys, nid: i32, flags: Flags, caller: *const Void) -> i32 {
-    debug_range(c"memblock_add_node".as_ptr(), base, size, nid, flags, caller, true);
+    debug_range(c"memblock_add_node".as_ptr().cast::<CChar>(), base, size, nid, flags, caller, true);
     memblock_add_range(memory(), base, size, nid, flags)
 }
 #[no_mangle]
 pub unsafe extern "C" fn rust_memblock_add(base: Phys, size: Phys, caller: *const Void) -> i32 {
-    debug_range(c"memblock_add".as_ptr(), base, size, MAX_NODES, 0, caller, false);
+    debug_range(c"memblock_add".as_ptr().cast::<CChar>(), base, size, MAX_NODES, 0, caller, false);
     memblock_add_range(memory(), base, size, MAX_NODES, 0)
 }
 #[no_mangle]
 pub unsafe extern "C" fn rust_memblock_remove(base: Phys, size: Phys, caller: *const Void) -> i32 {
-    debug_range(c"memblock_remove".as_ptr(), base, size, NO_NODE, 0, caller, false);
+    debug_range(c"memblock_remove".as_ptr().cast::<CChar>(), base, size, NO_NODE, 0, caller, false);
     memblock_remove_range(memory(), base, size)
 }
 #[no_mangle]
 pub unsafe extern "C" fn rust___memblock_reserve(base: Phys, size: Phys, nid: i32, flags: Flags, caller: *const Void) -> i32 {
-    debug_range(c"__memblock_reserve".as_ptr(), base, size, nid, flags, caller, true);
+    debug_range(c"__memblock_reserve".as_ptr().cast::<CChar>(), base, size, nid, flags, caller, true);
     memblock_add_range(reserved(), base, size, nid, flags)
 }
 #[cfg(CONFIG_HAVE_MEMBLOCK_PHYS_MAP)]
 #[no_mangle]
 pub unsafe extern "C" fn rust_memblock_physmem_add(base: Phys, size: Phys, caller: *const Void) -> i32 {
-    debug_range(c"memblock_physmem_add".as_ptr(), base, size, MAX_NODES, 0, caller, false);
+    debug_range(c"memblock_physmem_add".as_ptr().cast::<CChar>(), base, size, MAX_NODES, 0, caller, false);
     memblock_add_range(&raw mut physmem, base, size, MAX_NODES, 0)
 }
 unsafe fn memblock_setclr_flag(ty: *mut memblock_type, base: Phys, size: Phys, set: bool, flag: Flags) -> i32 {
@@ -685,7 +685,7 @@ unsafe fn memblock_find_in_range(start: Phys, end: Phys, size: Phys, align: Phys
 }
 unsafe fn memblock_double_array(ty: *mut memblock_type, mut avoid_start: Phys, mut avoid_size: Phys) -> i32 {
     let use_slab = rust_memblock_slab_available();
-    if !memblock_can_resize { panic(c"memblock: cannot resize %s array\n".as_ptr(), (*ty).name); }
+    if !memblock_can_resize { panic(c"memblock: cannot resize %s array\n".as_ptr().cast::<CChar>(), (*ty).name); }
     // C evaluates max * sizeof(region) in size_t before widening to Phys.
     let old_size = ((*ty).max as usize).wrapping_mul(size_of::<memblock_region>()) as Phys;
     let new_size = old_size.wrapping_shl(1);
@@ -753,7 +753,7 @@ pub unsafe extern "C" fn memblock_free(ptr: *mut Void, size: usize) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn rust_memblock_phys_free(base: Phys, size: Phys, caller: *const Void) -> i32 {
-    debug_range(c"memblock_phys_free".as_ptr(), base, size, NO_NODE, 0, caller, false);
+    debug_range(c"memblock_phys_free".as_ptr().cast::<CChar>(), base, size, NO_NODE, 0, caller, false);
     rust_memblock_kmemleak_free(base, size as usize);
     let mut ret = 0;
     if !rust_memblock_slab_available() || cfg!(CONFIG_ARCH_KEEP_MEMBLOCK) {
@@ -906,7 +906,7 @@ pub unsafe extern "C" fn rust_memblock_phys_alloc_range(
     caller: *const Void,
 ) -> Phys {
     debug_alloc(
-        c"memblock_phys_alloc_range".as_ptr(),
+        c"memblock_phys_alloc_range".as_ptr().cast::<CChar>(),
         size,
         align,
         start,
@@ -955,7 +955,7 @@ pub unsafe extern "C" fn rust_memblock_alloc_exact_nid_raw(
     caller: *const Void,
 ) -> *mut Void {
     debug_alloc(
-        c"memblock_alloc_exact_nid_raw".as_ptr(),
+        c"memblock_alloc_exact_nid_raw".as_ptr().cast::<CChar>(),
         size,
         align,
         min_addr,
@@ -977,7 +977,7 @@ pub unsafe extern "C" fn rust_memblock_alloc_try_nid_raw(
     caller: *const Void,
 ) -> *mut Void {
     debug_alloc(
-        c"memblock_alloc_try_nid_raw".as_ptr(),
+        c"memblock_alloc_try_nid_raw".as_ptr().cast::<CChar>(),
         size,
         align,
         min_addr,
@@ -1041,7 +1041,7 @@ pub unsafe extern "C" fn rust_memblock_alloc_try_nid(
     caller: *const Void,
 ) -> *mut Void {
     debug_alloc(
-        c"memblock_alloc_try_nid".as_ptr(),
+        c"memblock_alloc_try_nid".as_ptr().cast::<CChar>(),
         size,
         align,
         min_addr,
@@ -1065,7 +1065,13 @@ pub unsafe extern "C" fn __memblock_alloc_or_panic(
 ) -> *mut Void {
     let ptr = memblock_alloc_try_nid(size, align, 0, ACCESSIBLE, NO_NODE);
     if ptr.is_null() {
-        panic(c"%s: Failed to allocate %pap bytes\n".as_ptr(), func, &size);
+        panic(
+            c"%s: Failed to allocate %pap bytes\n"
+                .as_ptr()
+                .cast::<CChar>(),
+            func,
+            &size,
+        );
     }
     ptr
 }
@@ -1251,7 +1257,7 @@ unsafe fn memblock_dump(ty: *mut memblock_type) {
         let end = base.wrapping_add(size).wrapping_sub(1);
         let mut nid_buf = [0 as CChar; 32];
         #[cfg(CONFIG_NUMA)]
-        if valid_node(node(r)) { snprintf(nid_buf.as_mut_ptr(), nid_buf.len(), c" on node %d".as_ptr(), node(r)); }
+        if valid_node(node(r)) { snprintf(nid_buf.as_mut_ptr(), nid_buf.len(), c" on node %d".as_ptr().cast::<CChar>(), node(r)); }
         info!(c"\x016 %s[%#x]\t[%pa-%pa], %pa bytes%s flags: %#x\n", (*ty).name, i as u32, &base, &end, &size, nid_buf.as_ptr(), (*r).flags);
     }
 }
@@ -1267,7 +1273,7 @@ pub unsafe extern "C" fn memblock_dump_all() { if memblock_debug != 0 { __memblo
 #[no_mangle]
 #[link_section = ".init.text"]
 pub unsafe extern "C" fn rust_memblock_early_param(p: *mut CChar) -> i32 {
-    if !p.is_null() && !strstr(p, c"debug".as_ptr()).is_null() {
+    if !p.is_null() && !strstr(p, c"debug".as_ptr().cast::<CChar>()).is_null() {
         memblock_debug = 1;
     }
     0

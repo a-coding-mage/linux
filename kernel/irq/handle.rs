@@ -60,7 +60,7 @@ static mut irqhandler_duration_threshold_ns: u64 = 0;
 #[link_section = ".init.text"]
 pub unsafe extern "C" fn lupos_irq_duration_setup(arg: *mut c_char) -> c_int {
     let mut val: c_ulong = 0;
-    let ret = kstrtoul(arg, 0, &mut val);
+    let ret = lupos_irq_parse_ulong(arg, 0, &mut val);
     if ret != 0 {
         lupos_irq_duration_parse_error(ret);
         return 0;
@@ -86,18 +86,21 @@ pub unsafe extern "C" fn __handle_irq_event_percpu(desc: *mut irq_desc) -> irqre
     let mut action = (*desc).action;
     while !action.is_null() {
         if lupos_irq_can_thread(desc)
-            && (*action).flags & (IRQF_NO_THREAD | IRQF_PERCPU | IRQF_ONESHOT) as c_ulong == 0
+            && (*action).flags & (IRQF_NO_THREAD | IRQF_PERCPU | IRQF_ONESHOT) == 0
         {
             lupos_irq_lockdep_threaded();
         }
         lupos_irq_trace_entry(irq, action);
         let res = if lupos_irq_duration_enabled() {
             let start = lupos_irq_local_clock();
-            let ret = ((*action).handler.unwrap_unchecked())(irq as c_int, (*action).dev_id);
+            let ret = ((*action).handler.unwrap_unchecked())(
+                irq as c_int,
+                (*action).__bindgen_anon_1.dev_id,
+            );
             irqhandler_duration_check(start, irq, action);
             ret
         } else {
-            ((*action).handler.unwrap_unchecked())(irq as c_int, (*action).dev_id)
+            ((*action).handler.unwrap_unchecked())(irq as c_int, (*action).__bindgen_anon_1.dev_id)
         };
         lupos_irq_trace_exit(irq, action, res);
         if lupos_irq_warn_enabled(irq, action) {

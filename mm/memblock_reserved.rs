@@ -86,7 +86,7 @@ pub unsafe extern "C" fn reserve_mem_release_by_name(name: *const CChar) -> i32 
     snprintf(
         buf.as_mut_ptr(),
         buf.len(),
-        c"reserve_mem:%s".as_ptr(),
+        c"reserve_mem:%s".as_ptr().cast::<CChar>(),
         name,
     );
     free_reserved_area(start, end, 0, buf.as_ptr());
@@ -136,10 +136,10 @@ unsafe fn prepare_kho_fdt() -> i32 {
     }
     err |= fdt_create(fdt, PAGE_BYTES as i32);
     err |= fdt_finish_reservemap(fdt);
-    err |= fdt_begin_node(fdt, c"".as_ptr());
+    err |= fdt_begin_node(fdt, c"".as_ptr().cast::<CChar>());
     err |= fdt_property(
         fdt,
-        c"compatible".as_ptr(),
+        c"compatible".as_ptr().cast::<CChar>(),
         MEMBLOCK_KHO_NODE_COMPATIBLE.as_ptr().cast(),
         MEMBLOCK_KHO_NODE_COMPATIBLE.len() as i32,
     );
@@ -149,20 +149,20 @@ unsafe fn prepare_kho_fdt() -> i32 {
         err |= fdt_begin_node(fdt, (&raw const (*entry).name).cast());
         err |= fdt_property(
             fdt,
-            c"compatible".as_ptr(),
+            c"compatible".as_ptr().cast::<CChar>(),
             RESERVE_MEM_KHO_NODE_COMPATIBLE.as_ptr().cast(),
             RESERVE_MEM_KHO_NODE_COMPATIBLE.len() as i32,
         );
         // The KHO ABI stores these native phys_addr_t bytes, not FDT cells.
         err |= fdt_property(
             fdt,
-            c"start".as_ptr(),
+            c"start".as_ptr().cast::<CChar>(),
             (&raw const (*entry).start).cast(),
             size_of::<Phys>() as i32,
         );
         err |= fdt_property(
             fdt,
-            c"size".as_ptr(),
+            c"size".as_ptr().cast::<CChar>(),
             (&raw const (*entry).size).cast(),
             size_of::<Phys>() as i32,
         );
@@ -267,8 +267,15 @@ unsafe fn reserve_mem_kho_revive(name: *const CChar, size: Phys, align: Phys) ->
             return false;
         }
         let (mut len_start, mut len_size) = (0, 0);
-        let p_start = fdt_getprop(fdt, offset, c"start".as_ptr(), &mut len_start).cast::<Phys>();
-        let p_size = fdt_getprop(fdt, offset, c"size".as_ptr(), &mut len_size).cast::<Phys>();
+        let p_start = fdt_getprop(
+            fdt,
+            offset,
+            c"start".as_ptr().cast::<CChar>(),
+            &mut len_start,
+        )
+        .cast::<Phys>();
+        let p_size = fdt_getprop(fdt, offset, c"size".as_ptr().cast::<CChar>(), &mut len_size)
+            .cast::<Phys>();
         if p_start.is_null()
             || len_start != size_of::<Phys>() as i32
             || p_size.is_null()
@@ -379,12 +386,17 @@ pub unsafe extern "C" fn rust_memblock_debug_show(m: *mut seq_file, _private: *m
         let r = region(ty, i);
         let end = region_end(r).wrapping_sub(1);
         let nid = node(r);
-        seq_printf(m, c"%4d: ".as_ptr(), i as i32);
-        seq_printf(m, c"%pa..%pa ".as_ptr(), &raw const (*r).base, &end);
+        seq_printf(m, c"%4d: ".as_ptr().cast::<CChar>(), i as i32);
+        seq_printf(
+            m,
+            c"%pa..%pa ".as_ptr().cast::<CChar>(),
+            &raw const (*r).base,
+            &end,
+        );
         if valid_node(nid) {
-            seq_printf(m, c"%4d ".as_ptr(), nid);
+            seq_printf(m, c"%4d ".as_ptr().cast::<CChar>(), nid);
         } else {
-            seq_printf(m, c"%4c ".as_ptr(), b'x' as i32);
+            seq_printf(m, c"%4c ".as_ptr().cast::<CChar>(), b'x' as i32);
         }
         let mut name = c"NONE";
         if (*r).flags != 0 {
@@ -396,7 +408,7 @@ pub unsafe extern "C" fn rust_memblock_debug_show(m: *mut seq_file, _private: *m
                 }
             }
         }
-        seq_printf(m, c"%s\n".as_ptr(), name.as_ptr());
+        seq_printf(m, c"%s\n".as_ptr().cast::<CChar>(), name.as_ptr());
     }
     0
 }
@@ -422,7 +434,7 @@ pub unsafe extern "C" fn rust_memblock_reserve_mem_show(
         );
         seq_printf(
             m,
-            c"%s\t\t(%s)\n".as_ptr(),
+            c"%s\t\t(%s)\n".as_ptr().cast::<CChar>(),
             (&raw const (*entry).name).cast::<CChar>(),
             txtsz.as_ptr(),
         );
@@ -436,16 +448,20 @@ pub unsafe extern "C" fn rust_memblock_init_debugfs() -> i32 {
     if !cfg!(CONFIG_ARCH_KEEP_MEMBLOCK) && reserved_mem_count == 0 {
         return 0;
     }
-    let root = debugfs_create_dir(c"memblock".as_ptr(), null_mut());
+    let root = debugfs_create_dir(c"memblock".as_ptr().cast::<CChar>(), null_mut());
     if reserved_mem_count != 0 {
         rust_memblock_debugfs_reservation_file(root);
     }
     #[cfg(CONFIG_ARCH_KEEP_MEMBLOCK)]
     {
-        rust_memblock_debugfs_array_file(c"memory".as_ptr(), root, memory());
-        rust_memblock_debugfs_array_file(c"reserved".as_ptr(), root, reserved());
+        rust_memblock_debugfs_array_file(c"memory".as_ptr().cast::<CChar>(), root, memory());
+        rust_memblock_debugfs_array_file(c"reserved".as_ptr().cast::<CChar>(), root, reserved());
         #[cfg(CONFIG_HAVE_MEMBLOCK_PHYS_MAP)]
-        rust_memblock_debugfs_array_file(c"physmem".as_ptr(), root, &raw mut physmem);
+        rust_memblock_debugfs_array_file(
+            c"physmem".as_ptr().cast::<CChar>(),
+            root,
+            &raw mut physmem,
+        );
     }
     0
 }

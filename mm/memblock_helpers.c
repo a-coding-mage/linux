@@ -27,7 +27,7 @@ void *rust_memblock_kzalloc_node(size_t size, int nid) { return kzalloc_node(siz
 phys_addr_t rust_memblock_pa(const void *ptr) { return __pa(ptr); }
 phys_addr_t rust_memblock_pa_symbol(const void *ptr) { return __pa_symbol(ptr); }
 void *rust_memblock_va(phys_addr_t addr) { return __va(addr); }
-phys_addr_t rust_memblock_virt_to_phys(const void *ptr) { return virt_to_phys(ptr); }
+phys_addr_t rust_memblock_virt_to_phys(void *ptr) { return virt_to_phys(ptr); }
 void *rust_memblock_phys_to_virt(phys_addr_t addr) { return phys_to_virt(addr); }
 bool rust_memblock_is_kernel(unsigned long addr) { return __is_kernel(addr); }
 void rust_memblock_accept_memory(phys_addr_t start, unsigned long size) { accept_memory(start, size); }

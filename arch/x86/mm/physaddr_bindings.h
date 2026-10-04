@@ -18,7 +18,15 @@
 #endif
 
 #ifdef __BINDGEN__
-static const unsigned long RUST_PHYSADDR_START_KERNEL_MAP = __START_KERNEL_map;
+/* High-bit unsigned static constants become extern statics in bindgen.
+ * Native enumerators expose the original full-width values as real constants.
+ */
+enum {
+	RUST_PHYSADDR_START_KERNEL_MAP = __START_KERNEL_map,
+	RUST_PHYSADDR_PAGE_SECTION_MASK = PAGE_SECTION_MASK,
+};
+static_assert((unsigned long)RUST_PHYSADDR_START_KERNEL_MAP == __START_KERNEL_map);
+static_assert((unsigned long)RUST_PHYSADDR_PAGE_SECTION_MASK == PAGE_SECTION_MASK);
 static const unsigned long RUST_PHYSADDR_KERNEL_IMAGE_SIZE = KERNEL_IMAGE_SIZE;
 static const unsigned int RUST_PHYSADDR_PAGE_SHIFT = PAGE_SHIFT;
 static const unsigned int RUST_PHYSADDR_PFN_SECTION_SHIFT = PFN_SECTION_SHIFT;
@@ -26,7 +34,6 @@ static const unsigned long RUST_PHYSADDR_SECTIONS_PER_ROOT = SECTIONS_PER_ROOT;
 static const unsigned long RUST_PHYSADDR_SECTION_ROOT_MASK = SECTION_ROOT_MASK;
 static const unsigned long RUST_PHYSADDR_SECTION_HAS_MEM_MAP = SECTION_HAS_MEM_MAP;
 static const unsigned long RUST_PHYSADDR_SECTION_IS_EARLY = SECTION_IS_EARLY;
-static const unsigned long RUST_PHYSADDR_PAGE_SECTION_MASK = PAGE_SECTION_MASK;
 static const unsigned long RUST_PHYSADDR_PAGES_PER_SUBSECTION = PAGES_PER_SUBSECTION;
 
 /* Evaluate both native branches after all includes; restore the real macro. */

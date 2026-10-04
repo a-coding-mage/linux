@@ -11,11 +11,13 @@
     unreachable_pub
 )]
 include!("init_support.rs");
+include!("init_identity_support.rs");
+use kernel::ffi::c_long;
 #[path = "ident_map.rs"]
 mod ident_map;
 
 macro_rules! define_populate {
-    ($name:ident, $normal:ident, $safe:ident, $a:ty, $b:ty) => {
+    ($name:ident, $normal:path, $safe:path, $a:ty, $b:ty) => {
         #[inline]
         unsafe fn $name(mm: *mut mm_struct, a: *mut $a, b: *mut $b, init: bool) {
             if init {
@@ -28,34 +30,34 @@ macro_rules! define_populate {
 }
 define_populate!(
     p4d_populate_init,
-    p4d_populate,
-    p4d_populate_safe,
+    b::rust_mm_p4d_populate,
+    b::rust_mm_p4d_populate_safe,
     p4d_t,
     pud_t
 );
 define_populate!(
     pgd_populate_init,
-    pgd_populate,
-    pgd_populate_safe,
+    b::rust_mm_pgd_populate,
+    b::rust_mm_pgd_populate_safe,
     pgd_t,
     p4d_t
 );
 define_populate!(
     pud_populate_init,
-    pud_populate,
-    pud_populate_safe,
+    b::rust_mm_pud_populate,
+    b::rust_mm_pud_populate_safe,
     pud_t,
     pmd_t
 );
 define_populate!(
     pmd_populate_kernel_init,
-    pmd_populate_kernel,
-    pmd_populate_kernel_safe,
+    b::rust_mm_pmd_populate_kernel,
+    b::rust_mm_pmd_populate_kernel_safe,
     pmd_t,
     pte_t
 );
 macro_rules! define_entry {
-    ($name:ident, $normal:ident, $safe:ident, $t:ty) => {
+    ($name:ident, $normal:path, $safe:path, $t:ty) => {
         #[inline]
         unsafe fn $name(p: *mut $t, value: $t, init: bool) {
             if init {
@@ -66,14 +68,34 @@ macro_rules! define_entry {
         }
     };
 }
-define_entry!(set_p4d_init, set_p4d, set_p4d_safe, p4d_t);
-define_entry!(set_pud_init, set_pud, set_pud_safe, pud_t);
-define_entry!(set_pmd_init, set_pmd, set_pmd_safe, pmd_t);
-define_entry!(set_pte_init, set_pte, set_pte_safe, pte_t);
+define_entry!(
+    set_p4d_init,
+    b::rust_mm_set_p4d,
+    b::rust_mm_set_p4d_safe,
+    p4d_t
+);
+define_entry!(
+    set_pud_init,
+    b::rust_mm_set_pud,
+    b::rust_mm_set_pud_safe,
+    pud_t
+);
+define_entry!(
+    set_pmd_init,
+    b::rust_mm_set_pmd,
+    b::rust_mm_set_pmd_safe,
+    pmd_t
+);
+define_entry!(
+    set_pte_init,
+    b::rust_mm_set_pte,
+    b::rust_mm_set_pte_safe,
+    pte_t
+);
 #[inline]
 unsafe fn prot_sethuge(prot: pgprot_t) -> pgprot_t {
-    warn_prot_pat(pgprot_val(prot) & _PAGE_PAT != 0);
-    __pgprot(pgprot_val(prot) | _PAGE_PSE)
+    b::rust_mm_warn_prot_pat(b::rust_mm_pgprot_val(prot) & _PAGE_PAT != 0);
+    b::rust_mm___pgprot(b::rust_mm_pgprot_val(prot) | _PAGE_PSE)
 }
 #[no_mangle]
 #[link_section = ".data..read_mostly"]
@@ -101,9 +123,9 @@ unsafe fn sync_global_pgds_l5(start: c_ulong, end: c_ulong) {
         if addr < start {
             break;
         }
-        let pgd_ref = pgd_offset_k(addr);
-        if !pgd_none(*pgd_ref) {
-            spin_lock(addr_of_mut!(pgd_lock));
+        let pgd_ref = b::rust_mm_pgd_offset_k(addr);
+        if !b::rust_mm_pgd_none(*pgd_ref) {
+            b::rust_mm_spin_lock(addr_of_mut!(pgd_lock));
             let head = addr_of_mut!(pgd_list);
             let mut link = (*head).next;
             while link != head {
@@ -111,32 +133,34 @@ unsafe fn sync_global_pgds_l5(start: c_ulong, end: c_ulong) {
                     .cast::<u8>()
                     .sub(b::RUST_MM_PT_LIST_OFFSET as usize)
                     .cast::<ptdesc>();
-                let pgd = ptdesc_address(desc).cast::<pgd_t>().add(pgd_index(addr));
-                let pgt_lock = addr_of_mut!((*pgd_page_get_mm(desc)).page_table_lock);
-                spin_lock(pgt_lock);
-                if !pgd_none(*pgd_ref) && !pgd_none(*pgd) {
-                    bug_on(pgd_page_vaddr(*pgd) != pgd_page_vaddr(*pgd_ref));
+                let pgd = b::rust_mm_ptdesc_address(desc)
+                    .cast::<pgd_t>()
+                    .add(pgd_index(addr));
+                let pgt_lock = mm_page_table_lock(pgd_page_get_mm(desc));
+                b::rust_mm_spin_lock(pgt_lock);
+                if !b::rust_mm_pgd_none(*pgd_ref) && !b::rust_mm_pgd_none(*pgd) {
+                    bug_on(b::rust_mm_pgd_page_vaddr(*pgd) != b::rust_mm_pgd_page_vaddr(*pgd_ref));
                 }
-                if pgd_none(*pgd) {
-                    set_pgd(pgd, *pgd_ref);
+                if b::rust_mm_pgd_none(*pgd) {
+                    b::rust_mm_set_pgd(pgd, *pgd_ref);
                 }
-                spin_unlock(pgt_lock);
+                b::rust_mm_spin_unlock(pgt_lock);
                 link = (*link).next;
             }
-            spin_unlock(addr_of_mut!(pgd_lock));
+            b::rust_mm_spin_unlock(addr_of_mut!(pgd_lock));
         }
-        addr = round_up(addr.wrapping_add(1), pgdir_size());
+        addr = round_up(addr.wrapping_add(1), b::rust_mm_pgdir_size());
     }
 }
 unsafe fn sync_global_pgds_l4(start: c_ulong, end: c_ulong) {
     let mut addr = start;
     while addr <= end {
-        let pgd_ref = pgd_offset_k(addr);
+        let pgd_ref = b::rust_mm_pgd_offset_k(addr);
         // The folded-P4D build assertion is kept in native primitive glue.
-        assert_folded_pgd(pgd_ref);
-        let p4d_ref = p4d_offset(pgd_ref, addr);
-        if !p4d_none(*p4d_ref) {
-            spin_lock(addr_of_mut!(pgd_lock));
+        b::rust_mm_assert_folded_pgd(pgd_ref);
+        let p4d_ref = b::rust_mm_p4d_offset(pgd_ref, addr);
+        if !b::rust_mm_p4d_none(*p4d_ref) {
+            b::rust_mm_spin_lock(addr_of_mut!(pgd_lock));
             let head = addr_of_mut!(pgd_list);
             let mut link = (*head).next;
             while link != head {
@@ -144,26 +168,28 @@ unsafe fn sync_global_pgds_l4(start: c_ulong, end: c_ulong) {
                     .cast::<u8>()
                     .sub(b::RUST_MM_PT_LIST_OFFSET as usize)
                     .cast::<ptdesc>();
-                let pgd = ptdesc_address(desc).cast::<pgd_t>().add(pgd_index(addr));
-                let p4d = p4d_offset(pgd, addr);
-                let pgt_lock = addr_of_mut!((*pgd_page_get_mm(desc)).page_table_lock);
-                spin_lock(pgt_lock);
-                if !p4d_none(*p4d_ref) && !p4d_none(*p4d) {
-                    bug_on(p4d_pgtable(*p4d) != p4d_pgtable(*p4d_ref));
+                let pgd = b::rust_mm_ptdesc_address(desc)
+                    .cast::<pgd_t>()
+                    .add(pgd_index(addr));
+                let p4d = b::rust_mm_p4d_offset(pgd, addr);
+                let pgt_lock = mm_page_table_lock(pgd_page_get_mm(desc));
+                b::rust_mm_spin_lock(pgt_lock);
+                if !b::rust_mm_p4d_none(*p4d_ref) && !b::rust_mm_p4d_none(*p4d) {
+                    bug_on(b::rust_mm_p4d_pgtable(*p4d) != b::rust_mm_p4d_pgtable(*p4d_ref));
                 }
-                if p4d_none(*p4d) {
-                    set_p4d(p4d, *p4d_ref);
+                if b::rust_mm_p4d_none(*p4d) {
+                    b::rust_mm_set_p4d(p4d, *p4d_ref);
                 }
-                spin_unlock(pgt_lock);
+                b::rust_mm_spin_unlock(pgt_lock);
                 link = (*link).next;
             }
-            spin_unlock(addr_of_mut!(pgd_lock));
+            b::rust_mm_spin_unlock(addr_of_mut!(pgd_lock));
         }
-        addr = round_up(addr.wrapping_add(1), pgdir_size());
+        addr = round_up(addr.wrapping_add(1), b::rust_mm_pgdir_size());
     }
 }
 unsafe fn sync_global_pgds(start: c_ulong, end: c_ulong) {
-    if pgtable_l5_enabled() {
+    if b::rust_mm_pgtable_l5_enabled() {
         sync_global_pgds_l5(start, end);
     } else {
         sync_global_pgds_l4(start, end);
@@ -176,9 +202,9 @@ pub unsafe extern "C" fn arch_sync_kernel_mappings(start: c_ulong, end: c_ulong)
 #[link_section = ".ref.text"]
 unsafe fn spp_getpage() -> *mut c_void {
     let ptr = if after_bootmem != 0 {
-        spp_getpage_late() as *mut c_void
+        b::rust_mm_spp_getpage_late() as *mut c_void
     } else {
-        memblock_alloc_page()
+        b::rust_mm_memblock_alloc_page()
     };
     if ptr.is_null() || (ptr as c_ulong & !PAGE_MASK) != 0 {
         panic(
@@ -192,82 +218,93 @@ unsafe fn spp_getpage() -> *mut c_void {
             },
         );
     }
-    debug_spp_getpage(ptr);
+    b::rust_mm_debug_spp_getpage(ptr);
     ptr
 }
 unsafe fn fill_p4d(pgd: *mut pgd_t, vaddr: c_ulong) -> *mut p4d_t {
-    if pgd_none(*pgd) {
+    if b::rust_mm_pgd_none(*pgd) {
         let p4d = spp_getpage().cast::<p4d_t>();
-        pgd_populate(addr_of_mut!(init_mm), pgd, p4d);
-        if p4d != p4d_offset(pgd, 0) {
-            b::rust_mm_log_pagetable0(p4d, p4d_offset(pgd, 0));
+        b::rust_mm_pgd_populate(addr_of_mut!(init_mm), pgd, p4d);
+        if p4d != b::rust_mm_p4d_offset(pgd, 0) {
+            b::rust_mm_log_pagetable0(p4d, b::rust_mm_p4d_offset(pgd, 0));
         }
     }
-    p4d_offset(pgd, vaddr)
+    b::rust_mm_p4d_offset(pgd, vaddr)
 }
 unsafe fn fill_pud(p4d: *mut p4d_t, vaddr: c_ulong) -> *mut pud_t {
-    if p4d_none(*p4d) {
+    if b::rust_mm_p4d_none(*p4d) {
         let pud = spp_getpage().cast::<pud_t>();
-        p4d_populate(addr_of_mut!(init_mm), p4d, pud);
-        if pud != pud_offset(p4d, 0) {
-            b::rust_mm_log_pagetable1(pud, pud_offset(p4d, 0));
+        b::rust_mm_p4d_populate(addr_of_mut!(init_mm), p4d, pud);
+        if pud != b::rust_mm_pud_offset(p4d, 0) {
+            b::rust_mm_log_pagetable1(pud, b::rust_mm_pud_offset(p4d, 0));
         }
     }
-    pud_offset(p4d, vaddr)
+    b::rust_mm_pud_offset(p4d, vaddr)
 }
 unsafe fn fill_pmd(pud: *mut pud_t, vaddr: c_ulong) -> *mut pmd_t {
-    if pud_none(*pud) {
+    if b::rust_mm_pud_none(*pud) {
         let pmd = spp_getpage().cast::<pmd_t>();
-        pud_populate(addr_of_mut!(init_mm), pud, pmd);
-        if pmd != pmd_offset(pud, 0) {
-            b::rust_mm_log_pagetable2(pmd, pmd_offset(pud, 0));
+        b::rust_mm_pud_populate(addr_of_mut!(init_mm), pud, pmd);
+        if pmd != b::rust_mm_pmd_offset(pud, 0) {
+            b::rust_mm_log_pagetable2(pmd, b::rust_mm_pmd_offset(pud, 0));
         }
     }
-    pmd_offset(pud, vaddr)
+    b::rust_mm_pmd_offset(pud, vaddr)
 }
 unsafe fn fill_pte(pmd: *mut pmd_t, vaddr: c_ulong) -> *mut pte_t {
-    if pmd_none(*pmd) {
+    if b::rust_mm_pmd_none(*pmd) {
         let pte = spp_getpage().cast::<pte_t>();
-        pmd_populate_kernel(addr_of_mut!(init_mm), pmd, pte);
-        if pte != pte_offset_kernel(pmd, 0) {
+        b::rust_mm_pmd_populate_kernel(addr_of_mut!(init_mm), pmd, pte);
+        if pte != b::rust_mm_pte_offset_kernel(pmd, 0) {
             b::rust_mm_log_pagetable3();
         }
     }
-    pte_offset_kernel(pmd, vaddr)
+    b::rust_mm_pte_offset_kernel(pmd, vaddr)
 }
 unsafe fn __set_pte_vaddr(pud: *mut pud_t, vaddr: c_ulong, new_pte: pte_t) {
     let pmd = fill_pmd(pud, vaddr);
     let pte = fill_pte(pmd, vaddr);
-    set_pte(pte, new_pte);
+    b::rust_mm_set_pte(pte, new_pte);
     flush_tlb_one_kernel(vaddr);
 }
 #[no_mangle]
-pub unsafe extern "C" fn set_pte_vaddr_p4d(p4d_page: *mut p4d_t, vaddr: c_ulong, new_pte: pte_t) {
+pub unsafe extern "C" fn set_pte_vaddr_p4d(
+    b::rust_mm_p4d_page: *mut p4d_t,
+    vaddr: c_ulong,
+    new_pte: pte_t,
+) {
     __set_pte_vaddr(
-        fill_pud(p4d_page.add(p4d_index(vaddr)), vaddr),
+        fill_pud(b::rust_mm_p4d_page.add(p4d_index(vaddr)), vaddr),
         vaddr,
         new_pte,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn set_pte_vaddr_pud(pud_page: *mut pud_t, vaddr: c_ulong, new_pte: pte_t) {
-    __set_pte_vaddr(pud_page.add(pud_index(vaddr)), vaddr, new_pte);
+pub unsafe extern "C" fn set_pte_vaddr_pud(
+    b::rust_mm_pud_page: *mut pud_t,
+    vaddr: c_ulong,
+    new_pte: pte_t,
+) {
+    __set_pte_vaddr(b::rust_mm_pud_page.add(pud_index(vaddr)), vaddr, new_pte);
 }
 #[no_mangle]
 pub unsafe extern "C" fn set_pte_vaddr(vaddr: c_ulong, pteval: pte_t) {
-    debug_set_pte_vaddr(vaddr, native_pte_val(pteval));
-    let pgd = pgd_offset_k(vaddr);
-    if pgd_none(*pgd) {
+    b::rust_mm_debug_set_pte_vaddr(vaddr, b::rust_mm_native_pte_val(pteval));
+    let pgd = b::rust_mm_pgd_offset_k(vaddr);
+    if b::rust_mm_pgd_none(*pgd) {
         b::rust_mm_log_missing_fixmap();
         return;
     }
-    set_pte_vaddr_p4d(p4d_offset(pgd, 0), vaddr, pteval);
+    set_pte_vaddr_p4d(b::rust_mm_p4d_offset(pgd, 0), vaddr, pteval);
 }
 #[no_mangle]
 #[cold]
 #[link_section = ".init.text"]
 pub unsafe extern "C" fn populate_extra_pmd(vaddr: c_ulong) -> *mut pmd_t {
-    fill_pmd(fill_pud(fill_p4d(pgd_offset_k(vaddr), vaddr), vaddr), vaddr)
+    fill_pmd(
+        fill_pud(fill_p4d(b::rust_mm_pgd_offset_k(vaddr), vaddr), vaddr),
+        vaddr,
+    )
 }
 #[no_mangle]
 #[cold]
@@ -278,34 +315,42 @@ pub unsafe extern "C" fn populate_extra_pte(vaddr: c_ulong) -> *mut pte_t {
 #[cold]
 #[link_section = ".init.text"]
 unsafe fn __init_extra_mapping(mut phys: c_ulong, mut size: c_ulong, cache: page_cache_mode) {
-    let prot =
-        __pgprot(pgprot_val(page_kernel_large()) | protval_4k_2_large(cachemode2protval(cache)));
+    let prot = b::rust_mm___pgprot(
+        b::rust_mm_pgprot_val(b::rust_mm_page_kernel_large())
+            | b::rust_mm_protval_4k_2_large(cachemode2protval(cache)),
+    );
     bug_on(phys & !PMD_MASK != 0 || size & !PMD_MASK != 0);
     while size != 0 {
-        let pgd = pgd_offset_k(__va(phys) as c_ulong);
-        if pgd_none(*pgd) {
-            set_pgd(
+        let pgd = b::rust_mm_pgd_offset_k(b::rust_mm___va(phys) as c_ulong);
+        if b::rust_mm_pgd_none(*pgd) {
+            b::rust_mm_set_pgd(
                 pgd,
-                __pgd(__pa(spp_getpage()) | kernpg_table() | _PAGE_USER),
+                b::rust_mm___pgd(
+                    b::rust_mm___pa(spp_getpage()) | b::rust_mm_kernpg_table() | _PAGE_USER,
+                ),
             );
         }
-        let p4d = p4d_offset(pgd, __va(phys) as c_ulong);
-        if p4d_none(*p4d) {
-            set_p4d(
+        let p4d = b::rust_mm_p4d_offset(pgd, b::rust_mm___va(phys) as c_ulong);
+        if b::rust_mm_p4d_none(*p4d) {
+            b::rust_mm_set_p4d(
                 p4d,
-                __p4d(__pa(spp_getpage()) | kernpg_table() | _PAGE_USER),
+                b::rust_mm___p4d(
+                    b::rust_mm___pa(spp_getpage()) | b::rust_mm_kernpg_table() | _PAGE_USER,
+                ),
             );
         }
-        let pud = pud_offset(p4d, __va(phys) as c_ulong);
-        if pud_none(*pud) {
-            set_pud(
+        let pud = b::rust_mm_pud_offset(p4d, b::rust_mm___va(phys) as c_ulong);
+        if b::rust_mm_pud_none(*pud) {
+            b::rust_mm_set_pud(
                 pud,
-                __pud(__pa(spp_getpage()) | kernpg_table() | _PAGE_USER),
+                b::rust_mm___pud(
+                    b::rust_mm___pa(spp_getpage()) | b::rust_mm_kernpg_table() | _PAGE_USER,
+                ),
             );
         }
-        let pmd = pmd_offset(pud, phys);
-        bug_on(!pmd_none(*pmd));
-        set_pmd(pmd, __pmd(phys | pgprot_val(prot)));
+        let pmd = b::rust_mm_pmd_offset(pud, phys);
+        bug_on(!b::rust_mm_pmd_none(*pmd));
+        b::rust_mm_set_pmd(pmd, b::rust_mm___pmd(phys | b::rust_mm_pgprot_val(prot)));
         phys = phys.wrapping_add(PMD_SIZE);
         size = size.wrapping_sub(PMD_SIZE);
     }
@@ -326,17 +371,16 @@ pub unsafe extern "C" fn init_extra_mapping_uc(phys: c_ulong, size: c_ulong) {
 #[cold]
 #[link_section = ".init.text"]
 pub unsafe extern "C" fn cleanup_highmap() {
-    let mut vaddr = b::RUST_MM_START_KERNEL_MAP;
+    let mut vaddr = START_KERNEL_MAP;
     let mut vaddr_end = vaddr.wrapping_add(b::RUST_MM_KERNEL_IMAGE_SIZE);
     let end = round_up(_brk_end, PMD_SIZE).wrapping_sub(1);
     let mut pmd = addr_of_mut!(level2_kernel_pgt).cast::<pmd_t>();
     if max_pfn_mapped != 0 {
-        vaddr_end =
-            b::RUST_MM_START_KERNEL_MAP.wrapping_add(max_pfn_mapped.wrapping_shl(PAGE_SHIFT));
+        vaddr_end = START_KERNEL_MAP.wrapping_add(max_pfn_mapped.wrapping_shl(PAGE_SHIFT));
     }
     while vaddr.wrapping_add(PMD_SIZE).wrapping_sub(1) < vaddr_end {
-        if !pmd_none(*pmd) && (vaddr < addr_of!(_text) as c_ulong || vaddr > end) {
-            set_pmd(pmd, __pmd(0));
+        if !b::rust_mm_pmd_none(*pmd) && (vaddr < addr_of!(_text) as c_ulong || vaddr > end) {
+            b::rust_mm_set_pmd(pmd, b::rust_mm___pmd(0));
         }
         pmd = pmd.add(1);
         vaddr = vaddr.wrapping_add(PMD_SIZE);
@@ -346,7 +390,7 @@ pub unsafe extern "C" fn cleanup_highmap() {
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn phys_pte_init(
-    pte_page: *mut pte_t,
+    b::rust_mm_pte_page: *mut pte_t,
     mut paddr: c_ulong,
     paddr_end: c_ulong,
     prot: pgprot_t,
@@ -354,7 +398,7 @@ unsafe fn phys_pte_init(
 ) -> c_ulong {
     let mut pages: c_ulong = 0;
     let mut paddr_last = paddr_end;
-    let mut pte = pte_page.add(pte_index(paddr));
+    let mut pte = b::rust_mm_pte_page.add(pte_index(paddr));
     for _ in pte_index(paddr)..PTRS_PER_PTE {
         let paddr_next = (paddr & PAGE_MASK).wrapping_add(PAGE_SIZE);
         if paddr >= paddr_end {
@@ -366,28 +410,28 @@ unsafe fn phys_pte_init(
                     E820_TYPE_ACPI,
                 )
             {
-                set_pte_init(pte, __pte(0), init);
+                set_pte_init(pte, b::rust_mm___pte(0), init);
             }
-        } else if !pte_none(*pte) {
+        } else if !b::rust_mm_pte_none(*pte) {
             // Preserve Xen's existing read-only pagetable mappings.
             if after_bootmem == 0 {
                 pages = pages.wrapping_add(1);
             }
         } else {
             pages = pages.wrapping_add(1);
-            set_pte_init(pte, pfn_pte(paddr >> PAGE_SHIFT, prot), init);
+            set_pte_init(pte, b::rust_mm_pfn_pte(paddr >> PAGE_SHIFT, prot), init);
             paddr_last = (paddr & PAGE_MASK).wrapping_add(PAGE_SIZE);
         }
         paddr = paddr_next;
         pte = pte.add(1);
     }
-    update_page_count(PG_LEVEL_4K as c_int, pages);
+    b::rust_mm_update_page_count(PG_LEVEL_4K as c_int, pages);
     paddr_last
 }
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn phys_pmd_init(
-    pmd_page: *mut pmd_t,
+    b::rust_mm_pmd_page: *mut pmd_t,
     mut paddr: c_ulong,
     paddr_end: c_ulong,
     page_size_mask: c_ulong,
@@ -397,7 +441,7 @@ unsafe fn phys_pmd_init(
     let mut pages: c_ulong = 0;
     let mut paddr_last = paddr_end;
     for _ in pmd_index(paddr)..PTRS_PER_PMD {
-        let pmd = pmd_page.add(pmd_index(paddr));
+        let pmd = b::rust_mm_pmd_page.add(pmd_index(paddr));
         let mut new_prot = prot;
         let paddr_next = (paddr & PMD_MASK).wrapping_add(PMD_SIZE);
         if paddr >= paddr_end {
@@ -405,22 +449,22 @@ unsafe fn phys_pmd_init(
                 && !e820__mapped_any((paddr & PMD_MASK) as u64, paddr_next as u64, E820_TYPE_RAM)
                 && !e820__mapped_any((paddr & PMD_MASK) as u64, paddr_next as u64, E820_TYPE_ACPI)
             {
-                set_pmd_init(pmd, __pmd(0), init);
+                set_pmd_init(pmd, b::rust_mm___pmd(0), init);
             }
             paddr = paddr_next;
             continue;
         }
-        if !pmd_none(*pmd) {
-            if !pmd_leaf(*pmd) {
-                spin_lock(addr_of_mut!(init_mm.page_table_lock));
+        if !b::rust_mm_pmd_none(*pmd) {
+            if !b::rust_mm_pmd_leaf(*pmd) {
+                b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
                 paddr_last = phys_pte_init(
-                    pmd_page_vaddr(*pmd) as *mut pte_t,
+                    b::rust_mm_pmd_page_vaddr(*pmd) as *mut pte_t,
                     paddr,
                     paddr_end,
                     prot,
                     init,
                 );
-                spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+                b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
                 paddr = paddr_next;
                 continue;
             }
@@ -433,30 +477,34 @@ unsafe fn phys_pmd_init(
                 continue;
             }
             // Splitting retains the old frame/cache/protection attributes.
-            new_prot = pte_pgprot(pte_clrhuge(*pmd.cast::<pte_t>()));
+            new_prot = b::rust_mm_pte_pgprot(b::rust_mm_pte_clrhuge(*pmd.cast::<pte_t>()));
         }
         if page_size_mask & (1 << PG_LEVEL_2M) != 0 {
             pages = pages.wrapping_add(1);
-            spin_lock(addr_of_mut!(init_mm.page_table_lock));
-            set_pmd_init(pmd, pfn_pmd(paddr >> PAGE_SHIFT, prot_sethuge(prot)), init);
-            spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+            set_pmd_init(
+                pmd,
+                b::rust_mm_pfn_pmd(paddr >> PAGE_SHIFT, prot_sethuge(prot)),
+                init,
+            );
+            b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
             paddr_last = paddr_next;
         } else {
             let pte = alloc_low_pages(1).cast::<pte_t>();
             paddr_last = phys_pte_init(pte, paddr, paddr_end, new_prot, init);
-            spin_lock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
             pmd_populate_kernel_init(addr_of_mut!(init_mm), pmd, pte, init);
-            spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
         }
         paddr = paddr_next;
     }
-    update_page_count(PG_LEVEL_2M as c_int, pages);
+    b::rust_mm_update_page_count(PG_LEVEL_2M as c_int, pages);
     paddr_last
 }
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn phys_pud_init(
-    pud_page: *mut pud_t,
+    b::rust_mm_pud_page: *mut pud_t,
     mut paddr: c_ulong,
     paddr_end: c_ulong,
     page_size_mask: c_ulong,
@@ -465,8 +513,8 @@ unsafe fn phys_pud_init(
 ) -> c_ulong {
     let mut pages: c_ulong = 0;
     let mut paddr_last = paddr_end;
-    for _ in pud_index(__va(paddr) as c_ulong)..PTRS_PER_PUD {
-        let pud = pud_page.add(pud_index(__va(paddr) as c_ulong));
+    for _ in pud_index(b::rust_mm___va(paddr) as c_ulong)..PTRS_PER_PUD {
+        let pud = b::rust_mm_pud_page.add(pud_index(b::rust_mm___va(paddr) as c_ulong));
         let mut prot = base_prot;
         let paddr_next = (paddr & PUD_MASK).wrapping_add(PUD_SIZE);
         if paddr >= paddr_end {
@@ -474,15 +522,15 @@ unsafe fn phys_pud_init(
                 && !e820__mapped_any((paddr & PUD_MASK) as u64, paddr_next as u64, E820_TYPE_RAM)
                 && !e820__mapped_any((paddr & PUD_MASK) as u64, paddr_next as u64, E820_TYPE_ACPI)
             {
-                set_pud_init(pud, __pud(0), init);
+                set_pud_init(pud, b::rust_mm___pud(0), init);
             }
             paddr = paddr_next;
             continue;
         }
-        if !pud_none(*pud) {
-            if !pud_leaf(*pud) {
+        if !b::rust_mm_pud_none(*pud) {
+            if !b::rust_mm_pud_leaf(*pud) {
                 paddr_last = phys_pmd_init(
-                    pmd_offset(pud, 0),
+                    b::rust_mm_pmd_offset(pud, 0),
                     paddr,
                     paddr_end,
                     page_size_mask,
@@ -500,30 +548,34 @@ unsafe fn phys_pud_init(
                 paddr = paddr_next;
                 continue;
             }
-            prot = pte_pgprot(pte_clrhuge(*pud.cast::<pte_t>()));
+            prot = b::rust_mm_pte_pgprot(b::rust_mm_pte_clrhuge(*pud.cast::<pte_t>()));
         }
         if page_size_mask & (1 << PG_LEVEL_1G) != 0 {
             pages = pages.wrapping_add(1);
-            spin_lock(addr_of_mut!(init_mm.page_table_lock));
-            set_pud_init(pud, pfn_pud(paddr >> PAGE_SHIFT, prot_sethuge(prot)), init);
-            spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+            set_pud_init(
+                pud,
+                b::rust_mm_pfn_pud(paddr >> PAGE_SHIFT, prot_sethuge(prot)),
+                init,
+            );
+            b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
             paddr_last = paddr_next;
         } else {
             let pmd = alloc_low_pages(1).cast::<pmd_t>();
             paddr_last = phys_pmd_init(pmd, paddr, paddr_end, page_size_mask, prot, init);
-            spin_lock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
             pud_populate_init(addr_of_mut!(init_mm), pud, pmd, init);
-            spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
         }
         paddr = paddr_next;
     }
-    update_page_count(PG_LEVEL_1G as c_int, pages);
+    b::rust_mm_update_page_count(PG_LEVEL_1G as c_int, pages);
     paddr_last
 }
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn phys_p4d_init(
-    p4d_page: *mut p4d_t,
+    b::rust_mm_p4d_page: *mut p4d_t,
     mut paddr: c_ulong,
     paddr_end: c_ulong,
     page_size_mask: c_ulong,
@@ -531,11 +583,11 @@ unsafe fn phys_p4d_init(
     init: bool,
 ) -> c_ulong {
     let mut paddr_last = paddr_end;
-    let mut vaddr = __va(paddr) as c_ulong;
-    let vaddr_end = __va(paddr_end) as c_ulong;
-    if !pgtable_l5_enabled() {
+    let mut vaddr = b::rust_mm___va(paddr) as c_ulong;
+    let vaddr_end = b::rust_mm___va(paddr_end) as c_ulong;
+    if !b::rust_mm_pgtable_l5_enabled() {
         return phys_pud_init(
-            p4d_page.cast(),
+            b::rust_mm_p4d_page.cast(),
             paddr,
             paddr_end,
             page_size_mask,
@@ -544,22 +596,22 @@ unsafe fn phys_p4d_init(
         );
     }
     while vaddr < vaddr_end {
-        let p4d = p4d_page.add(p4d_index(vaddr));
+        let p4d = b::rust_mm_p4d_page.add(p4d_index(vaddr));
         let vaddr_next = (vaddr & P4D_MASK).wrapping_add(P4D_SIZE);
-        paddr = __pa(vaddr as *const c_void);
+        paddr = b::rust_mm___pa(vaddr as *const c_void);
         if paddr >= paddr_end {
-            let paddr_next = __pa(vaddr_next as *const c_void);
+            let paddr_next = b::rust_mm___pa(vaddr_next as *const c_void);
             if after_bootmem == 0
                 && !e820__mapped_any((paddr & P4D_MASK) as u64, paddr_next as u64, E820_TYPE_RAM)
                 && !e820__mapped_any((paddr & P4D_MASK) as u64, paddr_next as u64, E820_TYPE_ACPI)
             {
-                set_p4d_init(p4d, __p4d(0), init);
+                set_p4d_init(p4d, b::rust_mm___p4d(0), init);
             }
-        } else if !p4d_none(*p4d) {
+        } else if !b::rust_mm_p4d_none(*p4d) {
             paddr_last = phys_pud_init(
-                pud_offset(p4d, 0),
+                b::rust_mm_pud_offset(p4d, 0),
                 paddr,
-                __pa(vaddr_end as *const c_void),
+                b::rust_mm___pa(vaddr_end as *const c_void),
                 page_size_mask,
                 prot,
                 init,
@@ -569,14 +621,14 @@ unsafe fn phys_p4d_init(
             paddr_last = phys_pud_init(
                 pud,
                 paddr,
-                __pa(vaddr_end as *const c_void),
+                b::rust_mm___pa(vaddr_end as *const c_void),
                 page_size_mask,
                 prot,
                 init,
             );
-            spin_lock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
             p4d_populate_init(addr_of_mut!(init_mm), p4d, pud, init);
-            spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
         }
         vaddr = vaddr_next;
     }
@@ -593,17 +645,17 @@ unsafe fn __kernel_physical_mapping_init(
 ) -> c_ulong {
     let mut pgd_changed = false;
     let mut paddr_last = paddr_end;
-    let mut vaddr = __va(paddr_start) as c_ulong;
-    let vaddr_end = __va(paddr_end) as c_ulong;
+    let mut vaddr = b::rust_mm___va(paddr_start) as c_ulong;
+    let vaddr_end = b::rust_mm___va(paddr_end) as c_ulong;
     let vaddr_start = vaddr;
     while vaddr < vaddr_end {
-        let pgd = pgd_offset_k(vaddr);
-        let vaddr_next = (vaddr & pgdir_mask()).wrapping_add(pgdir_size());
-        if pgd_val(*pgd) != 0 {
+        let pgd = b::rust_mm_pgd_offset_k(vaddr);
+        let vaddr_next = (vaddr & b::rust_mm_pgdir_mask()).wrapping_add(b::rust_mm_pgdir_size());
+        if b::rust_mm_pgd_val(*pgd) != 0 {
             paddr_last = phys_p4d_init(
-                pgd_page_vaddr(*pgd) as *mut p4d_t,
-                __pa(vaddr as *const c_void),
-                __pa(vaddr_end as *const c_void),
+                b::rust_mm_pgd_page_vaddr(*pgd) as *mut p4d_t,
+                b::rust_mm___pa(vaddr as *const c_void),
+                b::rust_mm___pa(vaddr_end as *const c_void),
                 page_size_mask,
                 prot,
                 init,
@@ -612,24 +664,24 @@ unsafe fn __kernel_physical_mapping_init(
             let p4d = alloc_low_pages(1).cast::<p4d_t>();
             paddr_last = phys_p4d_init(
                 p4d,
-                __pa(vaddr as *const c_void),
-                __pa(vaddr_end as *const c_void),
+                b::rust_mm___pa(vaddr as *const c_void),
+                b::rust_mm___pa(vaddr_end as *const c_void),
                 page_size_mask,
                 prot,
                 init,
             );
-            spin_lock(addr_of_mut!(init_mm.page_table_lock));
-            if pgtable_l5_enabled() {
+            b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+            if b::rust_mm_pgtable_l5_enabled() {
                 pgd_populate_init(addr_of_mut!(init_mm), pgd, p4d, init);
             } else {
                 p4d_populate_init(
                     addr_of_mut!(init_mm),
-                    p4d_offset(pgd, vaddr),
+                    b::rust_mm_p4d_offset(pgd, vaddr),
                     p4d.cast(),
                     init,
                 );
             }
-            spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
             pgd_changed = true;
         }
         vaddr = vaddr_next;
@@ -658,7 +710,7 @@ pub unsafe extern "C" fn kernel_physical_mapping_change(
     end: c_ulong,
     mask: c_ulong,
 ) -> c_ulong {
-    __kernel_physical_mapping_init(start, end, mask, page_kernel(), false)
+    __kernel_physical_mapping_init(start, end, mask, b::rust_mm_page_kernel(), false)
 }
 #[no_mangle]
 #[cold]
@@ -668,20 +720,15 @@ pub unsafe extern "C" fn initmem_init() {
     x86_numa_init();
     #[cfg(not(CONFIG_NUMA))]
     {
-        memblock_set_node(
-            0,
-            b::RUST_MM_PHYS_ADDR_MAX,
-            addr_of_mut!(memblock.memory),
-            0,
-        );
+        memblock_set_node(0, PHYS_ADDR_MAX, addr_of_mut!(memblock.memory), 0);
     }
 }
 #[no_mangle]
 #[cold]
 #[link_section = ".init.text"]
 pub unsafe extern "C" fn paging_init() {
-    node_clear_state(0, N_MEMORY);
-    node_clear_state(0, N_NORMAL_MEMORY);
+    b::rust_mm_node_clear_state(0, N_MEMORY);
+    b::rust_mm_node_clear_state(0, N_NORMAL_MEMORY);
 }
 const PAGE_UNUSED: u8 = 0xfd;
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.data")]
@@ -692,7 +739,7 @@ unsafe fn vmemmap_flush_unused_pmd() {
     if unused_pmd_start == 0 {
         return;
     }
-    write_bytes(
+    core::ptr::write_bytes(
         unused_pmd_start as *mut u8,
         PAGE_UNUSED,
         round_up(unused_pmd_start, PMD_SIZE).wrapping_sub(unused_pmd_start) as usize,
@@ -703,7 +750,7 @@ unsafe fn vmemmap_flush_unused_pmd() {
 unsafe fn vmemmap_pmd_is_unused(addr: c_ulong, end: c_ulong) -> bool {
     let start = round_down(addr, PMD_SIZE);
     vmemmap_flush_unused_pmd();
-    write_bytes(
+    core::ptr::write_bytes(
         addr as *mut u8,
         PAGE_UNUSED,
         end.wrapping_sub(addr) as usize,
@@ -718,7 +765,7 @@ unsafe fn vmemmap_pmd_is_unused(addr: c_ulong, end: c_ulong) -> bool {
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn __vmemmap_use_sub_pmd(start: c_ulong) {
-    write_bytes(start as *mut u8, 0, size_of::<page>());
+    core::ptr::write_bytes(start as *mut u8, 0, core::mem::size_of::<page>());
 }
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
@@ -737,7 +784,7 @@ unsafe fn vmemmap_use_new_sub_pmd(start: c_ulong, end: c_ulong) {
     vmemmap_flush_unused_pmd();
     __vmemmap_use_sub_pmd(start);
     if start & (PMD_SIZE - 1) != 0 {
-        write_bytes(
+        core::ptr::write_bytes(
             page as *mut u8,
             PAGE_UNUSED,
             start.wrapping_sub(page) as usize,
@@ -755,7 +802,8 @@ unsafe fn update_end_of_memory_vars(start: u64, size: u64) {
     if end_pfn > max_pfn {
         max_pfn = end_pfn;
         max_low_pfn = end_pfn;
-        high_memory = __va(max_pfn.wrapping_mul(PAGE_SIZE).wrapping_sub(1)).wrapping_byte_add(1);
+        high_memory =
+            b::rust_mm___va(max_pfn.wrapping_mul(PAGE_SIZE).wrapping_sub(1)).wrapping_byte_add(1);
     }
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
@@ -770,11 +818,11 @@ pub unsafe extern "C" fn add_pages(
         .wrapping_add(nr_pages)
         .wrapping_shl(PAGE_SHIFT)
         .wrapping_sub(1);
-    if warn_add_pages_end(end > direct_map_physmem_end()) {
+    if b::rust_mm_warn_add_pages_end(end > b::rust_mm_direct_map_physmem_end()) {
         return -(ERANGE as c_int);
     }
     let ret = __add_pages(nid, start_pfn, nr_pages, params);
-    warn_add_pages_ret(ret != 0);
+    b::rust_mm_warn_add_pages_ret(ret != 0);
     // Device-private pages must not alter DMA addressing limits, including on failure.
     if (*params).pgmap.is_null() {
         update_end_of_memory_vars(
@@ -806,10 +854,10 @@ pub unsafe extern "C" fn arch_add_memory(
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn free_pagetable(page: *mut page) {
-    if PageReserved(page) {
-        free_reserved_page(page);
+    if b::rust_mm_PageReserved(page) {
+        b::rust_mm_free_reserved_page(page);
     } else {
-        pagetable_free(page_ptdesc(page));
+        b::rust_mm_pagetable_free(b::rust_mm_page_ptdesc(page));
     }
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
@@ -817,8 +865,8 @@ unsafe fn free_vmemmap_pages(page: *mut page, order: c_uint, altmap: *mut vmem_a
     let nr_pages = 1u32.wrapping_shl(order) as c_ulong;
     if !altmap.is_null() {
         vmem_altmap_free(altmap, nr_pages);
-    } else if PageReserved(page) {
-        free_reserved_pages(page, order);
+    } else if b::rust_mm_PageReserved(page) {
+        b::rust_mm_free_reserved_pages(page, order);
     } else {
         __free_pages(page, order);
     }
@@ -826,38 +874,38 @@ unsafe fn free_vmemmap_pages(page: *mut page, order: c_uint, altmap: *mut vmem_a
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn free_pte_table(start: *mut pte_t, pmd: *mut pmd_t) {
     for i in 0..PTRS_PER_PTE {
-        if !pte_none(*start.add(i)) {
+        if !b::rust_mm_pte_none(*start.add(i)) {
             return;
         }
     }
-    free_pagetable(pmd_page(*pmd));
-    spin_lock(addr_of_mut!(init_mm.page_table_lock));
-    pmd_clear(pmd);
-    spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+    free_pagetable(b::rust_mm_pmd_page(*pmd));
+    b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+    b::rust_mm_pmd_clear(pmd);
+    b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn free_pmd_table(start: *mut pmd_t, pud: *mut pud_t) {
     for i in 0..PTRS_PER_PMD {
-        if !pmd_none(*start.add(i)) {
+        if !b::rust_mm_pmd_none(*start.add(i)) {
             return;
         }
     }
-    free_pagetable(pud_page(*pud));
-    spin_lock(addr_of_mut!(init_mm.page_table_lock));
-    pud_clear(pud);
-    spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+    free_pagetable(b::rust_mm_pud_page(*pud));
+    b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+    b::rust_mm_pud_clear(pud);
+    b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn free_pud_table(start: *mut pud_t, p4d: *mut p4d_t) {
     for i in 0..PTRS_PER_PUD {
-        if !pud_none(*start.add(i)) {
+        if !b::rust_mm_pud_none(*start.add(i)) {
             return;
         }
     }
-    free_pagetable(p4d_page(*p4d));
-    spin_lock(addr_of_mut!(init_mm.page_table_lock));
-    p4d_clear(p4d);
-    spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+    free_pagetable(b::rust_mm_p4d_page(*p4d));
+    b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+    b::rust_mm_p4d_clear(p4d);
+    b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn remove_pte_table(start: *mut pte_t, mut addr: c_ulong, end: c_ulong, direct: bool) {
@@ -865,27 +913,27 @@ unsafe fn remove_pte_table(start: *mut pte_t, mut addr: c_ulong, end: c_ulong, d
     let mut pte = start.add(pte_index(addr));
     while addr < end {
         let next = min(addr.wrapping_add(PAGE_SIZE) & PAGE_MASK, end);
-        if pte_present(*pte) {
+        if b::rust_mm_pte_present(*pte) {
             // Preserve the C identity-map guard exactly, including its PTE arithmetic.
-            let phys_addr =
-                pte_val(*pte).wrapping_add((addr & PAGE_MASK) as pteval_t) as phys_addr_t;
+            let phys_addr = b::rust_mm_pte_val(*pte).wrapping_add((addr & PAGE_MASK) as pteval_t)
+                as phys_addr_t;
             if phys_addr < 0x40000000 {
                 return;
             }
             if !direct {
-                free_vmemmap_pages(pte_page(*pte), 0, null_mut());
+                free_vmemmap_pages(b::rust_mm_pte_page(*pte), 0, null_mut());
             }
-            spin_lock(addr_of_mut!(init_mm.page_table_lock));
-            pte_clear(addr_of_mut!(init_mm), addr, pte);
-            spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+            b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+            b::rust_mm_pte_clear(addr_of_mut!(init_mm), addr, pte);
+            b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
             pages = pages.wrapping_add(1);
         }
         addr = next;
         pte = pte.add(1);
     }
-    flush_tlb_all();
+    b::rust_mm_flush_tlb_all();
     if direct {
-        update_page_count(PG_LEVEL_4K as c_int, pages.wrapping_neg());
+        b::rust_mm_update_page_count(PG_LEVEL_4K as c_int, pages.wrapping_neg());
     }
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
@@ -899,25 +947,25 @@ unsafe fn remove_pmd_table(
     let mut pages: c_ulong = 0;
     let mut pmd = start.add(pmd_index(addr));
     while addr < end {
-        let next = pmd_addr_end(addr, end);
-        if pmd_present(*pmd) {
-            if pmd_leaf(*pmd) {
+        let next = b::rust_mm_pmd_addr_end(addr, end);
+        if b::rust_mm_pmd_present(*pmd) {
+            if b::rust_mm_pmd_leaf(*pmd) {
                 if addr & (PMD_SIZE - 1) == 0 && next & (PMD_SIZE - 1) == 0 {
                     if !direct {
-                        free_vmemmap_pages(pmd_page(*pmd), b::RUST_MM_PMD_ORDER, altmap);
+                        free_vmemmap_pages(b::rust_mm_pmd_page(*pmd), b::RUST_MM_PMD_ORDER, altmap);
                     }
-                    spin_lock(addr_of_mut!(init_mm.page_table_lock));
-                    pmd_clear(pmd);
-                    spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+                    b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+                    b::rust_mm_pmd_clear(pmd);
+                    b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
                     pages = pages.wrapping_add(1);
                 } else if vmemmap_pmd_is_unused(addr, next) {
-                    free_vmemmap_pages(pmd_page(*pmd), b::RUST_MM_PMD_ORDER, altmap);
-                    spin_lock(addr_of_mut!(init_mm.page_table_lock));
-                    pmd_clear(pmd);
-                    spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+                    free_vmemmap_pages(b::rust_mm_pmd_page(*pmd), b::RUST_MM_PMD_ORDER, altmap);
+                    b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+                    b::rust_mm_pmd_clear(pmd);
+                    b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
                 }
             } else {
-                let pte = pmd_page_vaddr(*pmd) as *mut pte_t;
+                let pte = b::rust_mm_pmd_page_vaddr(*pmd) as *mut pte_t;
                 remove_pte_table(pte, addr, next, direct);
                 free_pte_table(pte, pmd);
             }
@@ -926,7 +974,7 @@ unsafe fn remove_pmd_table(
         pmd = pmd.add(1);
     }
     if direct {
-        update_page_count(PG_LEVEL_2M as c_int, pages.wrapping_neg());
+        b::rust_mm_update_page_count(PG_LEVEL_2M as c_int, pages.wrapping_neg());
     }
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
@@ -940,15 +988,16 @@ unsafe fn remove_pud_table(
     let mut pages: c_ulong = 0;
     let mut pud = start.add(pud_index(addr));
     while addr < end {
-        let next = pud_addr_end(addr, end);
-        if pud_present(*pud) {
-            if pud_leaf(*pud) && addr & (PUD_SIZE - 1) == 0 && next & (PUD_SIZE - 1) == 0 {
-                spin_lock(addr_of_mut!(init_mm.page_table_lock));
-                pud_clear(pud);
-                spin_unlock(addr_of_mut!(init_mm.page_table_lock));
+        let next = b::rust_mm_pud_addr_end(addr, end);
+        if b::rust_mm_pud_present(*pud) {
+            if b::rust_mm_pud_leaf(*pud) && addr & (PUD_SIZE - 1) == 0 && next & (PUD_SIZE - 1) == 0
+            {
+                b::rust_mm_spin_lock(mm_page_table_lock(addr_of_mut!(init_mm)));
+                b::rust_mm_pud_clear(pud);
+                b::rust_mm_spin_unlock(mm_page_table_lock(addr_of_mut!(init_mm)));
                 pages = pages.wrapping_add(1);
             } else {
-                let pmd = pmd_offset(pud, 0);
+                let pmd = b::rust_mm_pmd_offset(pud, 0);
                 remove_pmd_table(pmd, addr, next, direct, altmap);
                 free_pmd_table(pmd, pud);
             }
@@ -957,7 +1006,7 @@ unsafe fn remove_pud_table(
         pud = pud.add(1);
     }
     if direct {
-        update_page_count(PG_LEVEL_1G as c_int, pages.wrapping_neg());
+        b::rust_mm_update_page_count(PG_LEVEL_1G as c_int, pages.wrapping_neg());
     }
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
@@ -970,12 +1019,12 @@ unsafe fn remove_p4d_table(
 ) {
     let mut p4d = start.add(p4d_index(addr));
     while addr < end {
-        let next = p4d_addr_end(addr, end);
-        if p4d_present(*p4d) {
-            assert_no_p4d_leaf(p4d);
-            let pud = pud_offset(p4d, 0);
+        let next = b::rust_mm_p4d_addr_end(addr, end);
+        if b::rust_mm_p4d_present(*p4d) {
+            b::rust_mm_assert_no_p4d_leaf(p4d);
+            let pud = b::rust_mm_pud_offset(p4d, 0);
             remove_pud_table(pud, addr, next, altmap, direct);
-            if pgtable_l5_enabled() {
+            if b::rust_mm_pgtable_l5_enabled() {
                 free_pud_table(pud, p4d);
             }
         }
@@ -983,35 +1032,35 @@ unsafe fn remove_p4d_table(
         p4d = p4d.add(1);
     }
     if direct {
-        update_page_count(PG_LEVEL_512G as c_int, 0);
+        b::rust_mm_update_page_count(PG_LEVEL_512G as c_int, 0);
     }
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn remove_pagetable(start: c_ulong, end: c_ulong, direct: bool, altmap: *mut vmem_altmap) {
     let mut addr = start;
     while addr < end {
-        let next = pgd_addr_end(addr, end);
-        let pgd = pgd_offset_k(addr);
-        if pgd_present(*pgd) {
-            remove_p4d_table(p4d_offset(pgd, 0), addr, next, altmap, direct);
+        let next = b::rust_mm_pgd_addr_end(addr, end);
+        let pgd = b::rust_mm_pgd_offset_k(addr);
+        if b::rust_mm_pgd_present(*pgd) {
+            remove_p4d_table(b::rust_mm_p4d_offset(pgd, 0), addr, next, altmap, direct);
         }
         addr = next;
     }
-    flush_tlb_all();
+    b::rust_mm_flush_tlb_all();
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
 #[no_mangle]
 #[link_section = ".ref.text"]
 pub unsafe extern "C" fn vmemmap_free(start: c_ulong, end: c_ulong, altmap: *mut vmem_altmap) {
-    vm_bug_on(start & (PAGE_SIZE - 1) != 0);
-    vm_bug_on(end & (PAGE_SIZE - 1) != 0);
+    b::rust_mm_vm_bug_on(start & (PAGE_SIZE - 1) != 0);
+    b::rust_mm_vm_bug_on(end & (PAGE_SIZE - 1) != 0);
     remove_pagetable(start, end, false, altmap);
 }
 #[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn kernel_physical_mapping_remove(start: c_ulong, end: c_ulong) {
     remove_pagetable(
-        __va(start) as c_ulong,
-        __va(end) as c_ulong,
+        b::rust_mm___va(start) as c_ulong,
+        b::rust_mm___va(end) as c_ulong,
         true,
         null_mut(),
     );
@@ -1038,10 +1087,10 @@ static mut kcore_vsyscall: kcore_list = unsafe { MaybeUninit::zeroed().assume_in
 #[cold]
 #[link_section = ".init.text"]
 unsafe fn preallocate_vmalloc_pages() {
-    let mut addr = vmalloc_start();
-    while addr <= vmemory_end() {
-        let pgd = pgd_offset_k(addr);
-        let p4d = p4d_alloc(addr_of_mut!(init_mm), pgd, addr);
+    let mut addr = b::rust_mm_vmalloc_start();
+    while addr <= b::rust_mm_vmemory_end() {
+        let pgd = b::rust_mm_pgd_offset_k(addr);
+        let p4d = b::rust_mm_p4d_alloc(addr_of_mut!(init_mm), pgd, addr);
         if p4d.is_null() {
             panic(
                 c"Failed to pre-allocate %s pages for vmalloc area\n"
@@ -1050,8 +1099,8 @@ unsafe fn preallocate_vmalloc_pages() {
                 c"p4d".as_ptr().cast::<c_char>(),
             );
         }
-        if !pgtable_l5_enabled() {
-            let pud = pud_alloc(addr_of_mut!(init_mm), p4d, addr);
+        if !b::rust_mm_pgtable_l5_enabled() {
+            let pud = b::rust_mm_pud_alloc(addr_of_mut!(init_mm), p4d, addr);
             if pud.is_null() {
                 panic(
                     c"Failed to pre-allocate %s pages for vmalloc area\n"
@@ -1061,7 +1110,7 @@ unsafe fn preallocate_vmalloc_pages() {
                 );
             }
         }
-        addr = round_up(addr.wrapping_add(1), pgdir_size());
+        addr = round_up(addr.wrapping_add(1), b::rust_mm_pgdir_size());
     }
 }
 #[no_mangle]
@@ -1077,9 +1126,9 @@ pub unsafe extern "C" fn mem_init() {
     after_bootmem = 1;
     (x86_init.hyper.init_after_bootmem.unwrap())();
     if !get_gate_vma(addr_of_mut!(init_mm)).is_null() {
-        kclist_add(
+        b::rust_mm_kclist_add(
             addr_of_mut!(kcore_vsyscall),
-            b::RUST_MM_VSYSCALL_ADDR as *mut c_void,
+            VSYSCALL_ADDR as *mut c_void,
             PAGE_SIZE as usize,
             KCORE_USER as c_int,
         );
@@ -1103,7 +1152,7 @@ pub unsafe extern "C" fn mark_rodata_ro() {
         text_end,
         (all_end.wrapping_sub(text_end) >> PAGE_SHIFT) as c_int,
     );
-    set_ftrace_ops_ro();
+    b::rust_mm_set_ftrace_ops_ro();
     #[cfg(CONFIG_CPA_DEBUG)]
     {
         b::rust_mm_log_cpa_undo(start, end);
@@ -1147,11 +1196,11 @@ unsafe fn probe_memory_block_size() -> c_ulong {
         if boot_mem_end < MEM_SIZE_FOR_LARGE_BLOCK {
             bz = b::RUST_MM_MIN_MEMORY_BLOCK_SIZE;
         } else {
-            bz = memory_block_advised_max_size();
+            bz = b::rust_mm_memory_block_advised_max_size();
             let mut adjust_alignment = true;
             if bz == 0 {
                 bz = MAX_BLOCK_SIZE;
-                if !feature_hypervisor() {
+                if !b::rust_mm_feature_hypervisor() {
                     adjust_alignment = false;
                 }
             } else {
@@ -1198,11 +1247,14 @@ pub unsafe extern "C" fn vmemmap_set_pmd(
     addr: c_ulong,
     next: c_ulong,
 ) {
-    let entry = pfn_pte(__pa(p) >> PAGE_SHIFT, page_kernel_large());
-    set_pmd(pmd, __pmd(pte_val(entry) as c_ulong));
+    let entry = b::rust_mm_pfn_pte(
+        b::rust_mm___pa(p) >> PAGE_SHIFT,
+        b::rust_mm_page_kernel_large(),
+    );
+    b::rust_mm_set_pmd(pmd, b::rust_mm___pmd(b::rust_mm_pte_val(entry) as c_ulong));
     if p_end != p || node_start != node {
         if !p_start.is_null() {
-            debug_vmemmap_block(
+            b::rust_mm_debug_vmemmap_block(
                 addr_start as c_ulong,
                 addr_end.wrapping_sub(1) as c_ulong,
                 p_start,
@@ -1229,7 +1281,7 @@ pub unsafe extern "C" fn vmemmap_check_pmd(
     addr: c_ulong,
     next: c_ulong,
 ) -> c_int {
-    let large = pmd_leaf(*pmd);
+    let large = b::rust_mm_pmd_leaf(*pmd);
     if large {
         vmemmap_verify(pmd.cast::<pte_t>(), node, addr, next);
         vmemmap_use_sub_pmd(addr, next);
@@ -1245,17 +1297,17 @@ pub unsafe extern "C" fn vmemmap_populate(
     node: c_int,
     altmap: *mut vmem_altmap,
 ) -> c_int {
-    vm_bug_on(start & (PAGE_SIZE - 1) != 0);
-    vm_bug_on(end & (PAGE_SIZE - 1) != 0);
+    b::rust_mm_vm_bug_on(start & (PAGE_SIZE - 1) != 0);
+    b::rust_mm_vm_bug_on(end & (PAGE_SIZE - 1) != 0);
     let err;
     if end.wrapping_sub(start)
-        < b::RUST_MM_PAGES_PER_SECTION.wrapping_mul(size_of::<page>() as c_ulong)
+        < b::RUST_MM_PAGES_PER_SECTION.wrapping_mul(core::mem::size_of::<page>() as c_ulong)
     {
         err = vmemmap_populate_basepages(start, end, node, null_mut());
-    } else if boot_has_pse() {
+    } else if b::rust_mm_boot_has_pse() {
         err = vmemmap_populate_hugepages(start, end, node, altmap);
     } else if !altmap.is_null() {
-        error_altmap_unsupported();
+        b::rust_mm_error_altmap_unsupported();
         err = -(ENOMEM as c_int);
     } else {
         err = vmemmap_populate_basepages(start, end, node, null_mut());

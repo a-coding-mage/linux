@@ -137,3 +137,5 @@ IRQ_PRIMITIVE(void, stat_ref_write, (struct irq_desc *d, unsigned int value), { 
 #if defined(CONFIG_SPARSE_IRQ) && defined(CONFIG_SYSFS)
 IRQ_PRIMITIVE(void, warn_sysfs, (int irq), { pr_warn("Failed to add kobject for irq %d\n", irq); })
 #endif
+/* kstrtoul is header-inline; retain its native width/alignment dispatch. */
+IRQ_PRIMITIVE(int, parse_ulong, (const char *str, unsigned int base, unsigned long *value), { return kstrtoul(str, base, value); })

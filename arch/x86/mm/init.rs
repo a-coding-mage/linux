@@ -68,7 +68,7 @@ pub unsafe extern "C" fn x86_has_pat_wp() -> bool {
 }
 #[no_mangle]
 pub unsafe extern "C" fn pgprot2cachemode(pgprot: pgprot_t) -> page_cache_mode {
-    let masked = pgprot_val(pgprot) & _PAGE_CACHE_MASK;
+    let masked = b::rust_mm_pgprot_val(pgprot) & _PAGE_CACHE_MASK;
     if masked == 0 {
         0
     } else {
@@ -113,8 +113,8 @@ pub unsafe extern "C" fn rust_mm_parse_gbpages_off(_: *mut c_char) -> c_int {
 #[link_section = ".ref.text"]
 pub unsafe extern "C" fn alloc_low_pages(num: c_uint) -> *mut c_void {
     if after_bootmem != 0 {
-        let order = get_order((num as c_ulong).wrapping_shl(PAGE_SHIFT));
-        return alloc_low_after_bootmem(order) as *mut c_void;
+        let order = b::rust_mm_get_order((num as c_ulong).wrapping_shl(PAGE_SHIFT));
+        return b::rust_mm_alloc_low_after_bootmem(order) as *mut c_void;
     }
     let pfn;
     if pgt_buf_end.wrapping_add(num as c_ulong) > pgt_buf_top || !can_use_brk_pgt {
@@ -128,7 +128,7 @@ pub unsafe extern "C" fn alloc_low_pages(num: c_uint) -> *mut c_void {
             ) as c_ulong;
         }
         if ret == 0 && can_use_brk_pgt {
-            ret = __pa(extend_brk(
+            ret = b::rust_mm___pa(extend_brk(
                 PAGE_SIZE.wrapping_mul(num as c_ulong),
                 PAGE_SIZE,
             ));
@@ -146,18 +146,18 @@ pub unsafe extern "C" fn alloc_low_pages(num: c_uint) -> *mut c_void {
         pgt_buf_end = pgt_buf_end.wrapping_add(num as c_ulong);
     }
     for i in 0..num {
-        clear_page(__va(
+        b::rust_mm_clear_page(b::rust_mm___va(
             pfn.wrapping_add(i as c_ulong).wrapping_shl(PAGE_SHIFT),
         ));
     }
-    __va(pfn.wrapping_shl(PAGE_SHIFT))
+    b::rust_mm___va(pfn.wrapping_shl(PAGE_SHIFT))
 }
 #[no_mangle]
 #[cold]
 #[link_section = ".init.text"]
 pub unsafe extern "C" fn early_alloc_pgt_buf() {
     let tables = b::RUST_MM_INIT_PGT_BUF_SIZE as c_ulong;
-    let base = __pa(extend_brk(tables as usize, PAGE_SIZE as usize));
+    let base = b::rust_mm___pa(extend_brk(tables as usize, PAGE_SIZE as usize));
     pgt_buf_start = base >> PAGE_SHIFT;
     pgt_buf_end = pgt_buf_start;
     pgt_buf_top = pgt_buf_start.wrapping_add(tables >> PAGE_SHIFT);
@@ -177,29 +177,29 @@ unsafe fn cr4_set_bits_and_update_boot(mask: c_ulong) {
     if !trampoline_cr4_features.is_null() {
         *trampoline_cr4_features = mmu_cr4_features as u32;
     }
-    cr4_set_bits(mask);
+    b::rust_mm_cr4_set_bits(mask);
 }
 #[cold]
 #[link_section = ".init.text"]
 unsafe fn probe_page_size_mask() {
-    if boot_has_pse() && !debug_pagealloc_enabled() {
+    if b::rust_mm_boot_has_pse() && !b::rust_mm_debug_pagealloc_enabled() {
         page_size_mask |= 1 << PG_LEVEL_2M;
     } else {
         direct_gbpages = 0;
     }
-    if boot_has_pse() {
+    if b::rust_mm_boot_has_pse() {
         cr4_set_bits_and_update_boot(b::RUST_MM_X86_CR4_PSE);
     }
     __supported_pte_mask &= !(_PAGE_GLOBAL as pteval_t);
-    if boot_has_pge() {
+    if b::rust_mm_boot_has_pge() {
         cr4_set_bits_and_update_boot(b::RUST_MM_X86_CR4_PGE);
         __supported_pte_mask |= _PAGE_GLOBAL as pteval_t;
     }
     __default_kernel_pte_mask = __supported_pte_mask;
-    if feature_pti() {
+    if b::rust_mm_feature_pti() {
         __default_kernel_pte_mask &= !(_PAGE_GLOBAL as pteval_t);
     }
-    if direct_gbpages != 0 && boot_has_gbpages() {
+    if direct_gbpages != 0 && b::rust_mm_boot_has_gbpages() {
         b::rust_mm_log_gbpages();
         page_size_mask |= 1 << PG_LEVEL_1G;
     } else {
@@ -209,7 +209,7 @@ unsafe fn probe_page_size_mask() {
 unsafe fn setup_pcid() {
     #[cfg(CONFIG_X86_64)]
     {
-        if !boot_has_pcid() {
+        if !b::rust_mm_boot_has_pcid() {
             return;
         }
         let matched = x86_match_cpu(addr_of!(invlpg_miss_ids).cast());
@@ -220,8 +220,8 @@ unsafe fn setup_pcid() {
             setup_clear_cpu_cap(b::RUST_MM_X86_FEATURE_PCID);
             return;
         }
-        if boot_has_pge() {
-            cr4_set_bits(b::RUST_MM_X86_CR4_PCIDE);
+        if b::rust_mm_boot_has_pge() {
+            b::rust_mm_cr4_set_bits(b::RUST_MM_X86_CR4_PCIDE);
         } else {
             setup_clear_cpu_cap(b::RUST_MM_X86_FEATURE_PCID);
         }
@@ -383,7 +383,7 @@ unsafe fn split_mem_range(
         nr -= 1;
     }
     for i in 0..nr {
-        debug_range(
+        b::rust_mm_debug_range(
             (*mr.add(i)).start,
             (*mr.add(i)).end.wrapping_sub(1),
             page_size_string(mr.add(i)),
@@ -429,7 +429,7 @@ pub unsafe extern "C" fn init_memory_mapping(
     end: c_ulong,
     prot: pgprot_t,
 ) -> c_ulong {
-    debug_init_mapping(start, end.wrapping_sub(1));
+    b::rust_mm_debug_init_mapping(start, end.wrapping_sub(1));
     let mut mr = [map_range {
         start: 0,
         end: 0,
@@ -473,7 +473,7 @@ unsafe fn init_range_memory_mapping(r_start: c_ulong, r_end: c_ulong) -> c_ulong
         }
         can_use_brk_pgt = max(start, (pgt_buf_end as u64).wrapping_shl(PAGE_SHIFT))
             >= min(end, (pgt_buf_top as u64).wrapping_shl(PAGE_SHIFT));
-        init_memory_mapping(start as c_ulong, end as c_ulong, page_kernel());
+        init_memory_mapping(start as c_ulong, end as c_ulong, b::rust_mm_page_kernel());
         mapped_ram_size = mapped_ram_size.wrapping_add(end.wrapping_sub(start) as c_ulong);
         can_use_brk_pgt = true;
     }
@@ -549,12 +549,12 @@ unsafe fn memory_map_bottom_up(map_start: c_ulong, map_end: c_ulong) {
 unsafe fn init_trampoline() {
     #[cfg(CONFIG_X86_64)]
     {
-        if !kaslr_memory_enabled() {
+        if !b::rust_mm_kaslr_memory_enabled() {
             trampoline_pgd_entry = *addr_of!(init_top_pgt)
                 .cast::<pgd_t>()
-                .add(pgd_index(page_offset_base()));
+                .add(pgd_index(b::rust_mm_page_offset_base()));
         } else {
-            init_trampoline_kaslr();
+            b::rust_mm_init_trampoline_kaslr();
         }
     }
 }
@@ -562,7 +562,7 @@ unsafe fn init_trampoline() {
 #[cold]
 #[link_section = ".init.text"]
 pub unsafe extern "C" fn init_mem_mapping() {
-    pti_check_boottime_disable();
+    b::rust_mm_pti_check_boottime_disable();
     probe_page_size_mask();
     setup_pcid();
     let end = if cfg!(CONFIG_X86_64) {
@@ -570,10 +570,10 @@ pub unsafe extern "C" fn init_mem_mapping() {
     } else {
         max_low_pfn.wrapping_shl(PAGE_SHIFT)
     };
-    init_memory_mapping(0, b::RUST_MM_ISA_END_ADDRESS, page_kernel());
+    init_memory_mapping(0, b::RUST_MM_ISA_END_ADDRESS, b::rust_mm_page_kernel());
     init_trampoline();
-    if memblock_bottom_up() {
-        let kernel_end = pa_symbol(addr_of!(_end).cast());
+    if b::rust_mm_memblock_bottom_up() {
+        let kernel_end = b::rust_mm_pa_symbol(addr_of!(_end).cast());
         memory_map_bottom_up(kernel_end, end);
         memory_map_bottom_up(b::RUST_MM_ISA_END_ADDRESS, kernel_end);
     } else {
@@ -585,10 +585,10 @@ pub unsafe extern "C" fn init_mem_mapping() {
     }
     #[cfg(CONFIG_X86_32)]
     early_ioremap_page_table_range_init();
-    load_swapper_cr3();
-    __flush_tlb_all();
+    b::rust_mm_load_swapper_cr3();
+    b::rust_mm___flush_tlb_all();
     ((*addr_of!(x86_init.hyper.init_mem_mapping)).unwrap())();
-    early_memtest(0, max_pfn_mapped.wrapping_shl(PAGE_SHIFT) as phys_addr_t);
+    b::rust_mm_early_memtest(0, max_pfn_mapped.wrapping_shl(PAGE_SHIFT) as phys_addr_t);
 }
 #[no_mangle]
 #[cold]
@@ -597,24 +597,24 @@ pub unsafe extern "C" fn poking_init() {
     let mut ptl: *mut spinlock_t = null_mut();
     text_poke_mm = mm_alloc();
     bug_on(text_poke_mm.is_null());
-    paravirt_enter_mmap(text_poke_mm);
-    set_notrack_mm(text_poke_mm);
-    text_poke_mm_addr = task_unmapped_base();
+    b::rust_mm_paravirt_enter_mmap(text_poke_mm);
+    b::rust_mm_set_notrack_mm(text_poke_mm);
+    text_poke_mm_addr = b::rust_mm_task_unmapped_base();
     #[cfg(CONFIG_RANDOMIZE_BASE)]
     {
         text_poke_mm_addr = text_poke_mm_addr.wrapping_add(
             (kaslr_get_random_long(c"Poking".as_ptr().cast::<c_char>()) & PAGE_MASK)
-                % task_size()
-                    .wrapping_sub(task_unmapped_base())
+                % b::rust_mm_task_size()
+                    .wrapping_sub(b::rust_mm_task_unmapped_base())
                     .wrapping_sub(3 * PAGE_SIZE),
         );
     }
     if text_poke_mm_addr.wrapping_add(PAGE_SIZE) & !PMD_MASK == 0 {
         text_poke_mm_addr = text_poke_mm_addr.wrapping_add(PAGE_SIZE);
     }
-    let ptep = get_locked_pte(text_poke_mm, text_poke_mm_addr, &mut ptl);
+    let ptep = b::rust_mm_get_locked_pte(text_poke_mm, text_poke_mm_addr, &mut ptl);
     bug_on(ptep.is_null());
-    pte_unmap_unlock(ptep, ptl);
+    b::rust_mm_pte_unmap_unlock(ptep, ptl);
 }
 #[no_mangle]
 pub unsafe extern "C" fn devmem_is_allowed(pagenr: c_ulong) -> c_int {
@@ -640,16 +640,16 @@ pub unsafe extern "C" fn free_init_pages(
 ) {
     let begin_aligned = round_up(begin, PAGE_SIZE);
     let end_aligned = end & PAGE_MASK;
-    if warn_free_init_alignment(begin_aligned != begin || end_aligned != end) {
+    if b::rust_mm_warn_free_init_alignment(begin_aligned != begin || end_aligned != end) {
         begin = begin_aligned;
         end = end_aligned;
     }
     if begin >= end {
         return;
     }
-    if debug_pagealloc_enabled() {
+    if b::rust_mm_debug_pagealloc_enabled() {
         b::rust_mm_log_unmapping_init(begin, end.wrapping_sub(1));
-        kmemleak_free_part(begin as *const c_void, end.wrapping_sub(begin) as usize);
+        b::rust_mm_kmemleak_free_part(begin as *const c_void, end.wrapping_sub(begin) as usize);
         set_memory_np(begin, (end.wrapping_sub(begin) >> PAGE_SHIFT) as c_int);
     } else {
         set_memory_nx(begin, (end.wrapping_sub(begin) >> PAGE_SHIFT) as c_int);
@@ -673,7 +673,7 @@ pub unsafe extern "C" fn free_kernel_image_pages(
     let len_pages = e.wrapping_sub(b) >> PAGE_SHIFT;
     free_init_pages(what, b, e);
     #[cfg(CONFIG_X86_64)]
-    if feature_pti() {
+    if b::rust_mm_feature_pti() {
         set_memory_np_noalias(b, len_pages as c_int);
     }
 }
@@ -681,7 +681,7 @@ pub unsafe extern "C" fn free_kernel_image_pages(
 #[link_section = ".ref.text"]
 pub unsafe extern "C" fn free_initmem() {
     e820__reallocate_tables();
-    mem_encrypt_free_decrypted_mem();
+    b::rust_mm_mem_encrypt_free_decrypted_mem();
     free_kernel_image_pages(
         c"unused kernel image (initmem)".as_ptr().cast::<c_char>(),
         addr_of_mut!(__init_begin).cast(),
@@ -731,8 +731,8 @@ pub unsafe extern "C" fn update_cache_mode_entry(entry: c_uint, cache: page_cach
 #[no_mangle]
 pub unsafe extern "C" fn arch_max_swapfile_size() -> c_ulong {
     let mut pages = generic_max_swapfile_size();
-    if boot_bug_l1tf() && l1tf_mitigation != L1TF_MITIGATION_OFF {
-        let mut limit = l1tf_pfn_limit() as u64;
+    if b::rust_mm_boot_bug_l1tf() && l1tf_mitigation != L1TF_MITIGATION_OFF {
+        let mut limit = b::rust_mm_l1tf_pfn_limit() as u64;
         // PAE and x86-64 have >2 levels; native header carries the exact shift.
         limit = limit.wrapping_shl(b::RUST_MM_SWAP_LIMIT_SHIFT);
         pages = min(limit, pages as u64) as c_ulong;
@@ -745,26 +745,29 @@ static mut execmem_info: b::execmem_info = unsafe { MaybeUninit::zeroed().assume
 #[cfg(all(CONFIG_EXECMEM, CONFIG_ARCH_HAS_EXECMEM_ROX))]
 #[no_mangle]
 pub unsafe extern "C" fn execmem_fill_trapping_insns(ptr: *mut c_void, size: usize) {
-    write_bytes(ptr.cast::<u8>(), b::RUST_MM_INT3_INSN_OPCODE as u8, size);
+    core::ptr::write_bytes(ptr.cast::<u8>(), b::RUST_MM_INT3_INSN_OPCODE as u8, size);
 }
 #[cfg(CONFIG_EXECMEM)]
 #[no_mangle]
 #[cold]
 #[link_section = ".init.text"]
 pub unsafe extern "C" fn execmem_arch_setup() -> *mut b::execmem_info {
-    let offset = if kaslr_enabled() {
-        (get_random_u32_inclusive(1, 1024) as c_ulong).wrapping_mul(PAGE_SIZE)
+    let offset = if b::rust_mm_kaslr_enabled() {
+        (b::rust_mm_get_random_u32_inclusive(1, 1024) as c_ulong).wrapping_mul(PAGE_SIZE)
     } else {
         0
     };
-    let start = modules_vaddr().wrapping_add(offset);
-    let (prot, flags) = if cfg!(CONFIG_ARCH_HAS_EXECMEM_ROX) && feature_pse() {
-        (page_kernel_rox(), EXECMEM_KASAN_SHADOW | EXECMEM_ROX_CACHE)
+    let start = b::rust_mm_modules_vaddr().wrapping_add(offset);
+    let (prot, flags) = if cfg!(CONFIG_ARCH_HAS_EXECMEM_ROX) && b::rust_mm_feature_pse() {
+        (
+            b::rust_mm_page_kernel_rox(),
+            EXECMEM_KASAN_SHADOW | EXECMEM_ROX_CACHE,
+        )
     } else {
-        (page_kernel(), EXECMEM_KASAN_SHADOW)
+        (b::rust_mm_page_kernel(), EXECMEM_KASAN_SHADOW)
     };
     // Compound assignment in C zeros every unspecified range/member.
-    write_bytes(addr_of_mut!(execmem_info), 0, 1);
+    core::ptr::write_bytes(addr_of_mut!(execmem_info), 0, 1);
     let ranges = addr_of_mut!(execmem_info.ranges).cast::<execmem_range>();
     for idx in [
         EXECMEM_MODULE_TEXT,
@@ -780,11 +783,11 @@ pub unsafe extern "C" fn execmem_arch_setup() -> *mut b::execmem_info {
             flags
         };
         (*r).start = start;
-        (*r).end = modules_end();
+        (*r).end = b::rust_mm_modules_end();
         (*r).pgprot = if idx == EXECMEM_KPROBES {
-            page_kernel_rox()
+            b::rust_mm_page_kernel_rox()
         } else if idx == EXECMEM_MODULE_DATA {
-            page_kernel()
+            b::rust_mm_page_kernel()
         } else {
             prot
         };
