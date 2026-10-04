@@ -57,10 +57,10 @@ quiet_cmd_boot_bindgen = BINDGEN BOOT $@
 	--no-prepend-enum-name --with-derive-default \
 	--blocklist-type '__kernel_(size_t|ssize_t|ptrdiff_t)' \
 	--allowlist-type '(boot_params|setup_header|screen_info|port_io_ops|mem_vector|boot_e820_entry|setup_data|setup_indirect|efi_memory_desc_t|kho_data|kho_scratch|Elf32_Ehdr|Elf32_Phdr|Elf64_Ehdr|Elf64_Phdr|boot_memptr|acpi_physical_address|phys_addr_t|z_stream|z_stream_s|z_streamp|inflate_state|inflate_workspace|inflate_mode|code|codetype)' \
-	--allowlist-function '(get_cmd_line_ptr|cmdline_find_option.*|__putstr|__puthex|__putdec|warn|error|malloc|free|memcpy|memmove|memset|strcmp|strncmp|strchr|strlen|strnlen|strstr|simple_strto.*|skip_spaces|boot_kstrtoul|has_cpuflag|count_immovable_mem_regions|__efi_soft_reserve_enabled|lupos_boot_maxmem)' \
-	--allowlist-var '(LUPOS_BOOT_.*|CONFIG_PHYSICAL_ALIGN|COMMAND_LINE_SIZE|RDRAND_RETRY_LOOPS|X86_FEATURE_RDRAND|X86_FEATURE_TSC|EINVAL|ENOMEM|SETUP_.*|EFI_.*|EFI32_LOADER_SIGNATURE|EFI64_LOADER_SIGNATURE|E820_TYPE_RAM|EI_MAG.*|ELFMAG.*|PT_LOAD|KASLR_FLAG|XLF_MEM_ENCRYPTION|Z_.*|MAX_WBITS|ENOUGH|MAXD|boot_params_ptr|pio_ops|immovable_mem)' \
+	--allowlist-function '(get_cmd_line_ptr|cmdline_find_option.*|__putstr|__puthex|__putdec|warn|error|malloc|free|memcpy|memmove|memset|strcmp|strncmp|strchr|strlen|strnlen|strstr|simple_strto.*|skip_spaces|boot_kstrtoul|has_cpuflag|count_immovable_mem_regions|__efi_soft_reserve_enabled)' \
+	--allowlist-var '(LUPOS_BOOT_.*|CONFIG_PHYSICAL_ALIGN|COMMAND_LINE_SIZE|RDRAND_RETRY_LOOPS|X86_FEATURE_RDRAND|X86_FEATURE_TSC|EINVAL|ENOMEM|SETUP_.*|EFI_.*|EFI32_LOADER_SIGNATURE|EFI64_LOADER_SIGNATURE|E820_TYPE_RAM|EI_MAG.*|ELFMAG.*|PT_LOAD|KASLR_FLAG|XLF_MEM_ENCRYPTION|Z_.*|MAX_WBITS|ENOUGH|MAXD|boot_params_ptr|pio_ops|immovable_mem|__pgtable_l5_enabled)' \
 	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
-$(obj)/boot_bindings_generated.rs: $(src)/boot_bindings.h $(obj)/../voffset.h FORCE
+$(obj)/boot_bindings_generated.rs: $(src)/boot_maxmem_bindings.h $(src)/boot_bindings.h $(obj)/../voffset.h FORCE
 	$(call if_changed_dep,boot_bindgen)
 
 # Firmware layouts and C declarations only. Keep the aligned EFI GUID typedef
@@ -203,7 +203,8 @@ $(obj)/boot_ident_map_bindings_generated.rs: $(wildcard $(BINDGEN))
 $(obj)/boot_efi_bindings_generated.rs: $(wildcard $(BINDGEN))
 $(obj)/boot_acpi_bindings_generated.rs: $(wildcard $(BINDGEN))
 
-# The helper includes the generated offsets even on its first parallel build.
+# Preserve the original C helper's standalone reference-build dependency.
+# It is not linked into the selected Rust compressed kernel.
 $(obj)/boot_helpers.o: $(obj)/../voffset.h
 # Version stamps cover PATH-resolved tools as well as explicit executable paths.
 $(boot-rust-target) $(obj)/libcore.rlib: $(wildcard $(objtree)/include/config/RUSTC_VERSION_TEXT)

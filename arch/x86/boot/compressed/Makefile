@@ -99,7 +99,7 @@ vmlinux-objs-$(CONFIG_RANDOMIZE_BASE) += $(obj)/kaslr.o
 ifeq ($(CONFIG_RUST_X86_COMPRESSED),y)
 include $(srctree)/arch/x86/boot/compressed/Makefile.rust
 vmlinux-objs-y := $(filter-out $(addprefix $(obj)/,misc.o cmdline.o error.o kaslr.o string.o cpuflags.o early_serial_console.o),$(vmlinux-objs-y))
-vmlinux-objs-y += $(obj)/boot.o $(obj)/boot_helpers.o
+vmlinux-objs-y += $(obj)/boot.o
 endif
 ifdef CONFIG_X86_64
 ifneq ($(CONFIG_RUST_X86_COMPRESSED),y)

@@ -12,9 +12,19 @@ use core::ptr::{addr_of, addr_of_mut, read, read_unaligned};
 use crate::bindings as b;
 use b::{boot_e820_entry, boot_params, mem_vector, setup_data, setup_indirect};
 
-// These are data/macro or inline-header bridges, never C algorithm fallbacks.
-extern "C" {
-    fn lupos_boot_maxmem() -> c_ulong;
+#[inline]
+unsafe fn maxmem() -> c_ulong {
+    // misc.h selects the early-boot variable predicate, not cpu_feature_enabled.
+    // Bindgen evaluates native MAXMEM for each branch without a C runtime body.
+    // SAFETY: configure_5level_paging initializes this native unsigned-int flag
+    // before KASLR, and compressed boot has exclusive access to its state.
+    unsafe {
+        if b::__pgtable_l5_enabled != 0 {
+            b::LUPOS_BOOT_MAXMEM_L5 as c_ulong
+        } else {
+            b::LUPOS_BOOT_MAXMEM_L4 as c_ulong
+        }
+    }
 }
 
 #[inline]
@@ -900,7 +910,7 @@ pub(crate) unsafe extern "C" fn choose_random_location(
         MEM_LIMIT = if cfg!(CONFIG_X86_32) {
             b::KERNEL_IMAGE_SIZE as u64
         } else {
-            lupos_boot_maxmem() as u64
+            maxmem() as u64
         };
         mem_avoid_init(input, input_size, *output);
         let min_addr = align_ulong(
