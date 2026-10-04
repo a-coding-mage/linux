@@ -176,7 +176,9 @@ RM_VOID(count_mthp_stat, (unsigned int o, unsigned int e), count_mthp_stat(o, e)
 #ifdef CONFIG_NUMA_BALANCING
 RM_VOID(count_memcg_folio_events, (struct folio *f, unsigned int e, unsigned long n), count_memcg_folio_events(f, e, n))
 #endif
-RM_VOID(perf_sw_event, (unsigned int e, u64 n, struct pt_regs *r, unsigned long a), perf_sw_event(e, n, r, a))
+/* Each original perf site needs a constant static-key address for asm goto. */
+RM_VOID(perf_sw_event_page_faults_maj, (u64 n, struct pt_regs *r, unsigned long a), perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MAJ, n, r, a))
+RM_VOID(perf_sw_event_page_faults_min, (u64 n, struct pt_regs *r, unsigned long a), perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS_MIN, n, r, a))
 RM_RET(bool, arch_vma_access_permitted, (struct vm_area_struct *v, bool w, bool x, bool f), arch_vma_access_permitted(v, w, x, f))
 RM_VOID(mem_cgroup_enter_user_fault, (void), mem_cgroup_enter_user_fault())
 RM_VOID(mem_cgroup_exit_user_fault, (void), mem_cgroup_exit_user_fault())

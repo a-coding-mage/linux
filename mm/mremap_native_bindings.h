@@ -25,12 +25,14 @@ struct vma_remap_struct {
 };
 #define MR_CONST(type, name) static const type RUST_MREMAP_##name = name
 MR_CONST(unsigned long, PAGE_SIZE);
-MR_CONST(unsigned long, PAGE_MASK);
+/* Keep high-bit masks in Rust const evaluation while checking the exact
+ * relationship against the current architecture's native definitions. */
+static_assert(PAGE_MASK == ~(PAGE_SIZE - 1));
 MR_CONST(unsigned int, PAGE_SHIFT);
 MR_CONST(unsigned long, PMD_SIZE);
-MR_CONST(unsigned long, PMD_MASK);
+static_assert(PMD_MASK == ~(PMD_SIZE - 1));
 MR_CONST(unsigned long, PUD_SIZE);
-MR_CONST(unsigned long, PUD_MASK);
+static_assert(PUD_MASK == ~(PUD_SIZE - 1));
 #ifdef CONFIG_PGTABLE_HAS_HUGE_LEAVES
 MR_CONST(unsigned long, HPAGE_PMD_SIZE);
 MR_CONST(unsigned long, HPAGE_PUD_SIZE);

@@ -42,7 +42,6 @@ mod memory_faults {
     const PTE_MARKER_POISONED: c_ulong = RUST_MEMORY_FAULT_PTE_MARKER_POISONED as c_ulong;
     const PTE_MARKER_GUARD: c_ulong = RUST_MEMORY_FAULT_PTE_MARKER_GUARD as c_ulong;
     const PTRS_PER_PTE: c_ulong = RUST_MEMORY_FAULT_PTRS_PER_PTE as c_ulong;
-    const PUD_MASK: c_ulong = RUST_MEMORY_FAULT_PUD_MASK as c_ulong;
     const PGREUSE: c_uint = RUST_MEMORY_FAULT_PGREUSE as c_uint;
     const PGMAJFAULT: c_uint = RUST_MEMORY_FAULT_PGMAJFAULT as c_uint;
     const PGFAULT: c_uint = RUST_MEMORY_FAULT_PGFAULT as c_uint;
@@ -55,7 +54,7 @@ mod memory_faults {
     const RMAP_NONE: rmap_t = RUST_MEMORY_FAULT_RMAP_NONE as rmap_t;
     const RMAP_EXCLUSIVE: rmap_t = RUST_MEMORY_FAULT_RMAP_EXCLUSIVE as rmap_t;
     const MMU_NOTIFY_CLEAR: c_uint = RUST_MEMORY_FAULT_MMU_NOTIFY_CLEAR as c_uint;
-    const TVA_PAGEFAULT: c_uint = RUST_MEMORY_FAULT_TVA_PAGEFAULT as c_uint;
+    const TVA_PAGEFAULT: c_ulong = RUST_MEMORY_FAULT_TVA_PAGEFAULT as c_ulong;
     const GFP_HIGHUSER_MOVABLE: gfp_t = RUST_MEMORY_FAULT_GFP_HIGHUSER_MOVABLE as gfp_t;
     const ZAP_FLAG_DROP_MARKER: zap_flags_t = RUST_MEMORY_FAULT_ZAP_FLAG_DROP_MARKER as zap_flags_t;
     const SWP_SYNCHRONOUS_IO: c_ulong = RUST_MEMORY_FAULT_SWP_SYNCHRONOUS_IO as c_ulong;
@@ -76,10 +75,6 @@ mod memory_faults {
     const LAST_CPUPID_MASK: c_int = RUST_MEMORY_FAULT_LAST_CPUPID_MASK as c_int;
     const PGTABLE_LEVEL_PTE: pgtable_level = RUST_MEMORY_FAULT_PGTABLE_LEVEL_PTE as pgtable_level;
     const PGTABLE_LEVEL_PMD: pgtable_level = RUST_MEMORY_FAULT_PGTABLE_LEVEL_PMD as pgtable_level;
-    const PERF_COUNT_SW_PAGE_FAULTS_MAJ: c_uint =
-        RUST_MEMORY_FAULT_PERF_COUNT_SW_PAGE_FAULTS_MAJ as c_uint;
-    const PERF_COUNT_SW_PAGE_FAULTS_MIN: c_uint =
-        RUST_MEMORY_FAULT_PERF_COUNT_SW_PAGE_FAULTS_MIN as c_uint;
     const GFP_FS: gfp_t = RUST_MEMORY_FAULT_GFP_FS as gfp_t;
     const GFP_IO: gfp_t = RUST_MEMORY_FAULT_GFP_IO as gfp_t;
     const LAST_CPUPID_RESET: c_int = RUST_MEMORY_FAULT_LAST_CPUPID_RESET as c_int;
@@ -88,7 +83,7 @@ mod memory_faults {
     #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
     const THP_FILE_MAPPED: c_uint = RUST_MEMORY_FAULT_THP_FILE_MAPPED as c_uint;
     #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
-    const HPAGE_PMD_MASK: c_ulong = RUST_MEMORY_FAULT_HPAGE_PMD_MASK as c_ulong;
+    const HPAGE_PMD_MASK: c_ulong = !((RUST_MEMORY_FAULT_HPAGE_PMD_SIZE as c_ulong) - 1);
     #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
     const HPAGE_PMD_NR: c_uint = RUST_MEMORY_FAULT_HPAGE_PMD_NR as c_uint;
     #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
@@ -2521,16 +2516,11 @@ mod memory_faults {
         if regs.is_null() {
             return;
         }
-        rust_memory_perf_sw_event(
-            if major {
-                PERF_COUNT_SW_PAGE_FAULTS_MAJ
-            } else {
-                PERF_COUNT_SW_PAGE_FAULTS_MIN
-            },
-            1,
-            regs,
-            address,
-        );
+        if major {
+            rust_memory_perf_sw_event_page_faults_maj(1, regs, address);
+        } else {
+            rust_memory_perf_sw_event_page_faults_min(1, regs, address);
+        }
     }
     unsafe fn lru_gen_enter_fault(vma: *mut vm_area_struct) {
         #[cfg(CONFIG_LRU_GEN)]

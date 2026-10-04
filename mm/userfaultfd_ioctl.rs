@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // Original unit lines 3689-4886: user API, negotiated features and entry points.
+// Native UFFD_API_IOCTLS identity is checked by userfaultfd_native_includes.h.
+// Use the generated native ioctl numbers, including the full-width API bit.
+const UFFD_API_IOCTLS: u64 = (1u64 << _UFFDIO_REGISTER)
+    | (1u64 << _UFFDIO_UNREGISTER)
+    | (1u64 << _UFFDIO_SET_MODE)
+    | (1u64 << _UFFDIO_API);
 unsafe fn validate_unaligned_range(mm: *mut mm_struct, start: u64, len: u64) -> c_int {
     let size = mm_task_size(mm) as u64;
     if len & !(PAGE_MASK as u64) != 0
@@ -89,8 +95,7 @@ unsafe fn userfaultfd_register(c: *mut userfaultfd_ctx, arg: c_ulong) -> c_int {
             return error(EINVAL);
         }
         let mut v = first;
-        let mut found = false;
-        loop {
+        let found = loop {
             cond_resched();
             vm_warn!(
                 warn_044,
@@ -123,12 +128,11 @@ unsafe fn userfaultfd_register(c: *mut userfaultfd_ctx, arg: c_ulong) -> c_int {
             if is_vm_hugetlb_page(v) {
                 basic = true;
             }
-            found = true;
             v = vma_find(&mut i, end);
             if v.is_null() {
-                break;
+                break true;
             }
-        }
+        };
         vm_warn!(warn_045, !found);
         userfaultfd_register_range(c, first, flags, start, end, wp_async)
     })();
@@ -184,8 +188,7 @@ unsafe fn userfaultfd_unregister(c: *mut userfaultfd_ctx, arg: c_ulong) -> c_int
             return error(EINVAL);
         }
         let mut v = first;
-        let mut found = false;
-        loop {
+        let found = loop {
             cond_resched();
             vm_warn!(
                 warn_046,
@@ -194,12 +197,11 @@ unsafe fn userfaultfd_unregister(c: *mut userfaultfd_ctx, arg: c_ulong) -> c_int
             if !vctx(v).is_null() && vctx(v) != c || !vma_can_userfault(v, vflags(v), wp_async) {
                 return error(EINVAL);
             }
-            found = true;
             v = vma_find(&mut i, end);
             if v.is_null() {
-                break;
+                break true;
             }
-        }
+        };
         vm_warn!(warn_047, !found);
         vma_iter_set(&mut i, start);
         let mut prev = vma_prev(&mut i);
@@ -634,7 +636,7 @@ unsafe fn userfaultfd_api(c: *mut userfaultfd_ctx, arg: c_ulong) -> c_int {
         if f & !api.features != 0 {
             return error(EINVAL);
         }
-        api.ioctls = RUST_UFFD_UFFD_API_IOCTLS;
+        api.ioctls = UFFD_API_IOCTLS;
         if copy_to_user(
             arg as _,
             &api as *const _ as _,
@@ -706,12 +708,14 @@ unsafe extern "C" fn userfaultfd_show_fdinfo(m: *mut seq_file, f: *mut file) {
     spin_unlock_irq(addr_of_mut!((*c).fault_pending_wqh.lock));
     seq_printf(
         m,
-        c"pending:\t%lu\ntotal:\t%lu\nAPI:\t%Lx:%x:%Lx\n".as_ptr(),
+        c"pending:\t%lu\ntotal:\t%lu\nAPI:\t%Lx:%x:%Lx\n"
+            .as_ptr()
+            .cast::<c_char>(),
         pending,
         total,
         RUST_UFFD_UFFD_API,
         userfaultfd_features(c),
-        RUST_UFFD_UFFD_API_IOCTLS | RUST_UFFD_UFFD_API_RANGE_IOCTLS,
+        UFFD_API_IOCTLS | RUST_UFFD_UFFD_API_RANGE_IOCTLS,
     );
 }
 // SAFETY: These generated native callback records are immutable static tables.
@@ -771,7 +775,7 @@ unsafe fn new_userfaultfd(flags: c_int) -> c_int {
         return fd;
     }
     let f = anon_inode_create_getfile(
-        c"[userfaultfd]".as_ptr(),
+        c"[userfaultfd]".as_ptr().cast::<c_char>(),
         addr_of!(userfaultfd_fops),
         c as _,
         (RUST_UFFD_O_RDONLY | ((flags as u32) & RUST_UFFD_UFFD_SHARED_FCNTL_FLAGS)) as c_int,
@@ -821,7 +825,7 @@ static userfaultfd_dev_fops: file_operations = file_operations {
 };
 static mut userfaultfd_misc: miscdevice = miscdevice {
     minor: RUST_UFFD_MISC_DYNAMIC_MINOR as c_int,
-    name: c"userfaultfd".as_ptr(),
+    name: c"userfaultfd".as_ptr().cast::<c_char>(),
     fops: addr_of!(userfaultfd_dev_fops),
     ..unsafe { zeroed() }
 };
@@ -833,7 +837,7 @@ pub unsafe extern "C" fn rust_uffd_init() -> c_int {
         return ret;
     }
     userfaultfd_ctx_cachep = kmem_cache_create(
-        c"userfaultfd_ctx_cache".as_ptr(),
+        c"userfaultfd_ctx_cache".as_ptr().cast::<c_char>(),
         size_of::<userfaultfd_ctx>() as _,
         0,
         (RUST_UFFD_SLAB_HWCACHE_ALIGN | RUST_UFFD_SLAB_PANIC) as _,

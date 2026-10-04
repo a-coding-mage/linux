@@ -27,6 +27,8 @@
 #include <asm/tlb.h>
 #include "internal.h"
 #include "swap.h"
+/* pgoff_t is a native preprocessor type macro, not a bindgen-visible typedef. */
+typedef pgoff_t rust_uffd_pgoff_t;
 /* Complete original private record layouts, shared with native field leaves. */
 struct userfaultfd_fork_ctx { struct userfaultfd_ctx *orig, *new; struct list_head list; };
 struct userfaultfd_unmap_ctx { struct userfaultfd_ctx *ctx; unsigned long start, end; struct list_head list; };
@@ -35,4 +37,8 @@ struct userfaultfd_wake_range { unsigned long start, len; };
 static_assert(sizeof(struct uffd_msg) == 32);
 static_assert(PAGE_MASK == ~(PAGE_SIZE - 1));
 static_assert(!(UFFD_USER_MODE_ONLY & UFFD_SHARED_FCNTL_FLAGS));
+static_assert(UFFD_API_IOCTLS == (((__u64)1 << _UFFDIO_REGISTER) |
+                                ((__u64)1 << _UFFDIO_UNREGISTER) |
+                                ((__u64)1 << _UFFDIO_SET_MODE) |
+                                ((__u64)1 << _UFFDIO_API)));
 #endif

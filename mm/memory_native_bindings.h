@@ -2,6 +2,8 @@
 #ifndef RUST_MEMORY_NATIVE_BINDINGS_H
 #define RUST_MEMORY_NATIVE_BINDINGS_H
 #include "memory_native_includes.h"
+/* pgoff_t is a macro in linux/types.h; give bindgen a native typedef. */
+typedef pgoff_t rust_memory_pgoff_t;
 /* Every constant is evaluated under the same configured original headers. */
 #define RM_CONST(name) static const __typeof__(name) RUST_MEMORY_##name = (name)
 RM_CONST(FAULT_FLAG_ORIG_PTE_VALID);
@@ -22,16 +24,14 @@ RM_CONST(MMU_NOTIFY_UNMAP);
 RM_CONST(MM_ANONPAGES);
 RM_CONST(MM_SWAPENTS);
 RM_CONST(NR_MM_COUNTERS);
-RM_CONST(P4D_MASK);
-RM_CONST(PAGE_MASK);
+RM_CONST(P4D_SIZE);
 RM_CONST(PAGE_SHIFT);
 RM_CONST(PAGE_SIZE);
 RM_CONST(PGTBL_PTE_MODIFIED);
-RM_CONST(PMD_MASK);
 RM_CONST(PMD_SIZE);
 RM_CONST(PTE_MARKER_UFFD_WP);
 RM_CONST(PTRS_PER_PTE);
-RM_CONST(PUD_MASK);
+RM_CONST(PUD_SIZE);
 RM_CONST(RMAP_EXCLUSIVE);
 RM_CONST(SINGLE_DEPTH_NESTING);
 RM_CONST(TAINT_BAD_PAGE);
@@ -48,6 +48,11 @@ RM_CONST(VM_WRITE);
 RM_CONST(ZAP_FLAG_DROP_MARKER);
 RM_CONST(ZAP_FLAG_UNMAP);
 #undef RM_CONST
+/* Bindgen cannot emit the unsigned complemented masks as Rust constants. */
+static_assert(PAGE_MASK == ~(PAGE_SIZE - 1));
+static_assert(PMD_MASK == ~(PMD_SIZE - 1));
+static_assert(PUD_MASK == ~(PUD_SIZE - 1));
+static_assert(P4D_MASK == ~(P4D_SIZE - 1));
 #ifdef arch_wants_old_prefaulted_pte
 static const bool RUST_MEMORY_CFG_ARCH_WANTS_OLD_PREFAULTED_PTE = true;
 #endif

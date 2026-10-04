@@ -27,11 +27,15 @@ use b::*;
 use core::mem::{size_of, zeroed};
 use core::ptr::{addr_of, addr_of_mut, null, null_mut};
 use kernel::ffi::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
+type pgoff_t = rust_memory_pgoff_t;
 const PAGE_SIZE: c_ulong = RUST_MEMORY_PAGE_SIZE as c_ulong;
-const PAGE_MASK: c_ulong = RUST_MEMORY_PAGE_MASK as c_ulong;
+// The configured native header asserts these size/mask identities.
+const PAGE_MASK: c_ulong = !(PAGE_SIZE - 1);
 const PAGE_SHIFT: u32 = RUST_MEMORY_PAGE_SHIFT as u32;
 const PMD_SIZE: c_ulong = RUST_MEMORY_PMD_SIZE as c_ulong;
-const PMD_MASK: c_ulong = RUST_MEMORY_PMD_MASK as c_ulong;
+const PMD_MASK: c_ulong = !(PMD_SIZE - 1);
+const PUD_MASK: c_ulong = !((RUST_MEMORY_PUD_SIZE as c_ulong) - 1);
+const P4D_MASK: c_ulong = !((RUST_MEMORY_P4D_SIZE as c_ulong) - 1);
 const GFP_KERNEL: gfp_t = RUST_MEMORY_GFP_KERNEL as gfp_t;
 const NR_MM_COUNTERS: usize = RUST_MEMORY_NR_MM_COUNTERS as usize;
 #[inline]
@@ -39,7 +43,7 @@ unsafe fn vmf_orig_pte_uffd_wp(vmf: *mut vm_fault) -> bool {
     if !rust_memory_userfaultfd_wp(rust_memory_vmf_vma(vmf)) {
         return false;
     }
-    if (*vmf).flags & RUST_MEMORY_FAULT_FLAG_ORIG_PTE_VALID == 0 {
+    if (*vmf).flags & (RUST_MEMORY_FAULT_FLAG_ORIG_PTE_VALID as c_uint) == 0 {
         return false;
     }
     rust_memory_pte_is_uffd_wp_marker(rust_memory_vmf_orig_pte(vmf))
@@ -104,12 +108,12 @@ unsafe fn free_pmd_range(
             break;
         }
     }
-    start &= RUST_MEMORY_PUD_MASK;
+    start &= PUD_MASK;
     if start < floor {
         return;
     }
     if ceiling != 0 {
-        ceiling &= RUST_MEMORY_PUD_MASK;
+        ceiling &= PUD_MASK;
         if ceiling == 0 {
             return;
         }
@@ -143,12 +147,12 @@ unsafe fn free_pud_range(
             break;
         }
     }
-    start &= RUST_MEMORY_P4D_MASK;
+    start &= P4D_MASK;
     if start < floor {
         return;
     }
     if ceiling != 0 {
-        ceiling &= RUST_MEMORY_P4D_MASK;
+        ceiling &= P4D_MASK;
         if ceiling == 0 {
             return;
         }
@@ -371,15 +375,15 @@ unsafe fn ptval_bytes_to_hex_str(
     entry_size: usize,
 ) {
     if rust_memory_warn_ptval_size(n < entry_size.wrapping_mul(2).wrapping_add(1)) {
-        snprintf(buf, n, c"overflow".as_ptr());
+        snprintf(buf, n, c"overflow".as_ptr().cast());
         return;
     }
     match entry_size {
         4 => {
-            snprintf(buf, n, c"%08x".as_ptr(), *entry.cast::<u32>());
+            snprintf(buf, n, c"%08x".as_ptr().cast(), *entry.cast::<u32>());
         }
         8 => {
-            snprintf(buf, n, c"%016llx".as_ptr(), *entry.cast::<u64>());
+            snprintf(buf, n, c"%016llx".as_ptr().cast(), *entry.cast::<u64>());
         }
         #[cfg(RUST_MEMORY_INT128)]
         16 => {
@@ -387,13 +391,13 @@ unsafe fn ptval_bytes_to_hex_str(
             snprintf(
                 buf,
                 n,
-                c"%016llx%016llx".as_ptr(),
+                c"%016llx%016llx".as_ptr().cast(),
                 (v >> 64) as u64,
                 v as u64,
             );
         }
         _ => {
-            snprintf(buf, n, c"unsupported".as_ptr());
+            snprintf(buf, n, c"unsupported".as_ptr().cast());
         }
     }
 }
@@ -465,7 +469,7 @@ unsafe fn print_bad_page_map(
     );
     __print_bad_page_map_pgtable((*vma).vm_mm, addr);
     if !page.is_null() {
-        dump_page(page, c"bad page map".as_ptr());
+        dump_page(page, c"bad page map".as_ptr().cast());
     }
     rust_memory_log_bad_map_location(
         addr as *mut c_void,

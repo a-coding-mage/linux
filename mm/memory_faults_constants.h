@@ -36,7 +36,6 @@ static const unsigned long RUST_MEMORY_FAULT_VM_UFFD_RWP = VM_UFFD_RWP;
 static const unsigned long RUST_MEMORY_FAULT_PTE_MARKER_POISONED = PTE_MARKER_POISONED;
 static const unsigned long RUST_MEMORY_FAULT_PTE_MARKER_GUARD = PTE_MARKER_GUARD;
 static const unsigned long RUST_MEMORY_FAULT_PTRS_PER_PTE = PTRS_PER_PTE;
-static const unsigned long RUST_MEMORY_FAULT_PUD_MASK = PUD_MASK;
 static const unsigned int RUST_MEMORY_FAULT_PGREUSE = PGREUSE;
 static const unsigned int RUST_MEMORY_FAULT_PGMAJFAULT = PGMAJFAULT;
 static const unsigned int RUST_MEMORY_FAULT_PGFAULT = PGFAULT;
@@ -51,7 +50,7 @@ static const unsigned int RUST_MEMORY_FAULT_PUD_ORDER = PUD_ORDER;
 static const unsigned int RUST_MEMORY_FAULT_RMAP_NONE = RMAP_NONE;
 static const unsigned int RUST_MEMORY_FAULT_RMAP_EXCLUSIVE = RMAP_EXCLUSIVE;
 static const unsigned int RUST_MEMORY_FAULT_MMU_NOTIFY_CLEAR = MMU_NOTIFY_CLEAR;
-static const unsigned int RUST_MEMORY_FAULT_TVA_PAGEFAULT = TVA_PAGEFAULT;
+static const unsigned long RUST_MEMORY_FAULT_TVA_PAGEFAULT = TVA_PAGEFAULT;
 static const unsigned int RUST_MEMORY_FAULT_GFP_HIGHUSER_MOVABLE = GFP_HIGHUSER_MOVABLE;
 static const unsigned int RUST_MEMORY_FAULT_ZAP_FLAG_DROP_MARKER = ZAP_FLAG_DROP_MARKER;
 static const unsigned long RUST_MEMORY_FAULT_SWP_SYNCHRONOUS_IO = SWP_SYNCHRONOUS_IO;
@@ -84,7 +83,8 @@ static const unsigned int RUST_MEMORY_FAULT_COW_KSM = COW_KSM;
 static const unsigned int RUST_MEMORY_FAULT_THP_FILE_MAPPED = THP_FILE_MAPPED;
 #endif
 #if defined(CONFIG_TRANSPARENT_HUGEPAGE)
-static const unsigned long RUST_MEMORY_FAULT_HPAGE_PMD_MASK = HPAGE_PMD_MASK;
+static const unsigned long RUST_MEMORY_FAULT_HPAGE_PMD_SIZE = HPAGE_PMD_SIZE;
+static_assert(HPAGE_PMD_MASK == ~(HPAGE_PMD_SIZE - 1));
 #endif
 #if defined(CONFIG_TRANSPARENT_HUGEPAGE)
 static const unsigned int RUST_MEMORY_FAULT_HPAGE_PMD_NR = HPAGE_PMD_NR;

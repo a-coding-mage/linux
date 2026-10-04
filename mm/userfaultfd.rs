@@ -83,7 +83,7 @@ macro_rules! container {
     };
 }
 macro_rules! vm_warn {
-    ($site:ident,$cond:expr) => {{
+    ($site:ident,$cond:expr $(,)?) => {{
         #[cfg(CONFIG_DEBUG_VM)]
         {
             $site($cond);

@@ -15,7 +15,7 @@ struct mfill_retry_state {
     ops: *const vm_uffd_ops,
     file: *mut file,
     flags: vma_flags_t,
-    pgoff: pgoff_t,
+    pgoff: rust_uffd_pgoff_t,
 }
 unsafe extern "C" fn anon_can_userfault(vma: *mut vm_area_struct, flags: vm_flags_t) -> bool {
     flags & RUST_UFFD_VM_UFFD_MINOR == 0
@@ -184,7 +184,7 @@ unsafe fn mfill_file_over_size(v: *mut vm_area_struct, a: c_ulong) -> bool {
     linear_page_index(v, a)
         >= sz
             .wrapping_add(PAGE_SIZE as u64 - 1)
-            .wrapping_div(PAGE_SIZE as u64) as pgoff_t
+            .wrapping_div(PAGE_SIZE as u64) as rust_uffd_pgoff_t
 }
 unsafe fn mfill_atomic_install_pte(
     pmd: *mut pmd_t,

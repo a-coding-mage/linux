@@ -220,7 +220,7 @@ unsafe fn move_pages_ptes(
     let mut si = null_mut();
     let mut sp = null_mut();
     let mut dp = null_mut();
-    let mut f = null_mut();
+    let mut f: *mut folio = null_mut();
     let mut fpte: pte_t = zeroed();
     let mut range = zeroed();
     mmu_notifier_range_init(

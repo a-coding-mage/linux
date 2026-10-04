@@ -28,11 +28,12 @@ use core::ptr::{addr_of_mut, null_mut};
 use kernel::ffi::{c_int, c_long, c_ulong, c_void};
 const PAGE_SIZE: c_ulong = RUST_MREMAP_PAGE_SIZE as c_ulong;
 const PAGE_SHIFT: u32 = RUST_MREMAP_PAGE_SHIFT as u32;
-const PAGE_MASK: c_ulong = RUST_MREMAP_PAGE_MASK as c_ulong;
+// The native binding header verifies each mask against its native size.
+const PAGE_MASK: c_ulong = !(PAGE_SIZE - 1);
 const PMD_SIZE: c_ulong = RUST_MREMAP_PMD_SIZE as c_ulong;
-const PMD_MASK: c_ulong = RUST_MREMAP_PMD_MASK as c_ulong;
+const PMD_MASK: c_ulong = !(PMD_SIZE - 1);
 const PUD_SIZE: c_ulong = RUST_MREMAP_PUD_SIZE as c_ulong;
-const PUD_MASK: c_ulong = RUST_MREMAP_PUD_MASK as c_ulong;
+const PUD_MASK: c_ulong = !(PUD_SIZE - 1);
 #[cfg(CONFIG_PGTABLE_HAS_HUGE_LEAVES)]
 const HPAGE_PMD_SIZE: c_ulong = RUST_MREMAP_HPAGE_PMD_SIZE as c_ulong;
 #[cfg(CONFIG_PGTABLE_HAS_HUGE_LEAVES)]
@@ -646,7 +647,7 @@ unsafe fn vrm_set_new_addr(v: *mut vma_remap_struct) -> c_ulong {
     if (*v).flags & MREMAP_FIXED as c_ulong != 0 {
         map_flags |= MAP_FIXED as c_ulong;
     }
-    if test(vma, VMA_MAYSHARE_BIT) {
+    if test(vma, VMA_MAYSHARE_BIT as vma_flag_t) {
         map_flags |= MAP_SHARED as c_ulong;
     }
     let res =
@@ -658,7 +659,7 @@ unsafe fn vrm_set_new_addr(v: *mut vma_remap_struct) -> c_ulong {
     0
 }
 unsafe fn vrm_calc_charge(v: *mut vma_remap_struct) -> bool {
-    if !test((*v).vma, VMA_ACCOUNT_BIT) {
+    if !test((*v).vma, VMA_ACCOUNT_BIT as vma_flag_t) {
         return true;
     }
     let charged = if (*v).flags & MREMAP_DONTUNMAP as c_ulong != 0 {
@@ -673,7 +674,7 @@ unsafe fn vrm_calc_charge(v: *mut vma_remap_struct) -> bool {
     true
 }
 unsafe fn vrm_uncharge(v: *mut vma_remap_struct) {
-    if !test((*v).vma, VMA_ACCOUNT_BIT) {
+    if !test((*v).vma, VMA_ACCOUNT_BIT as vma_flag_t) {
         return;
     }
     rust_mremap_vm_unacct_memory((*v).charged as c_long);
@@ -684,7 +685,7 @@ unsafe fn vrm_stat_account(v: *mut vma_remap_struct, bytes: c_ulong) {
     let mm = mm();
     let vma = (*v).vma;
     vm_stat_account(mm, flags(vma), pages as c_long);
-    if test(vma, VMA_LOCKED_BIT) {
+    if test(vma, VMA_LOCKED_BIT as vma_flag_t) {
         let locked = rust_mremap_mm_locked_vm(mm);
         *locked = (*locked).wrapping_add(pages);
     }
@@ -744,11 +745,12 @@ unsafe fn unmap_source_vma(v: *mut vma_remap_struct) {
     let len = (*v).old_len;
     let vma = (*v).vma;
     let mut vmi = iterator(mm, addr);
-    let accountable = test(vma, VMA_ACCOUNT_BIT) && (*v).flags & MREMAP_DONTUNMAP as c_ulong == 0;
+    let accountable =
+        test(vma, VMA_ACCOUNT_BIT as vma_flag_t) && (*v).flags & MREMAP_DONTUNMAP as c_ulong == 0;
     let mut vm_start = 0;
     let mut vm_end = 0;
     if accountable {
-        rust_mremap_vma_clear_flag(vma, VMA_ACCOUNT_BIT);
+        rust_mremap_vma_clear_flag(vma, VMA_ACCOUNT_BIT as vma_flag_t);
         vm_start = start(vma);
         vm_end = end(vma);
     }
@@ -764,12 +766,12 @@ unsafe fn unmap_source_vma(v: *mut vma_remap_struct) {
         if vm_start < addr {
             let prev = rust_mremap_vma_prev(&mut vmi);
             rust_mremap_vma_start_write(prev);
-            rust_mremap_vma_set_flag(prev, VMA_ACCOUNT_BIT);
+            rust_mremap_vma_set_flag(prev, VMA_ACCOUNT_BIT as vma_flag_t);
         }
         if vm_end > end {
             let next = rust_mremap_vma_next(&mut vmi);
             rust_mremap_vma_start_write(next);
-            rust_mremap_vma_set_flag(next, VMA_ACCOUNT_BIT);
+            rust_mremap_vma_set_flag(next, VMA_ACCOUNT_BIT as vma_flag_t);
         }
     }
 }
@@ -1056,12 +1058,15 @@ unsafe fn check_prep_vma(v: *mut vma_remap_struct) -> c_int {
     }
     let mut old_len = (*v).old_len;
     let new_len = (*v).new_len;
-    if old_len == 0 && !test(vma, VMA_SHARED_BIT) && !test(vma, VMA_MAYSHARE_BIT) {
+    if old_len == 0
+        && !test(vma, VMA_SHARED_BIT as vma_flag_t)
+        && !test(vma, VMA_MAYSHARE_BIT as vma_flag_t)
+    {
         rust_mremap_warn_private_duplication();
         return ierr(EINVAL);
     }
     if (*v).flags & MREMAP_DONTUNMAP as c_ulong != 0
-        && (test(vma, VMA_DONTEXPAND_BIT) || test(vma, VMA_PFNMAP_BIT))
+        && (test(vma, VMA_DONTEXPAND_BIT as vma_flag_t) || test(vma, VMA_PFNMAP_BIT as vma_flag_t))
     {
         return ierr(EINVAL);
     }
@@ -1074,17 +1079,17 @@ unsafe fn check_prep_vma(v: *mut vma_remap_struct) -> c_int {
     if new_len == old_len {
         return 0;
     }
-    if test(vma, VMA_LOCKED_BIT) {
+    if test(vma, VMA_LOCKED_BIT as vma_flag_t) {
         (*v).populate_expand = true;
     }
     let pgoff = rust_mremap_linear_page_index(vma, addr);
     if pgoff.wrapping_add(new_len >> PAGE_SHIFT) < pgoff {
         return ierr(EINVAL);
     }
-    if test(vma, VMA_DONTEXPAND_BIT) || test(vma, VMA_PFNMAP_BIT) {
+    if test(vma, VMA_DONTEXPAND_BIT as vma_flag_t) || test(vma, VMA_PFNMAP_BIT as vma_flag_t) {
         return ierr(EFAULT);
     }
-    if !mlock_future_ok(mm, test(vma, VMA_LOCKED_BIT), (*v).delta) {
+    if !mlock_future_ok(mm, test(vma, VMA_LOCKED_BIT as vma_flag_t), (*v).delta) {
         return ierr(EAGAIN);
     }
     if !may_expand_vm(mm, rust_mremap_vma_flags(vma), (*v).delta >> PAGE_SHIFT) {

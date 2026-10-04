@@ -224,7 +224,7 @@ unsafe fn userfaultfd_ctx_put(c: *mut userfaultfd_ctx) {
     if refcount_dec_and_test(addr_of_mut!((*c).refcount)) {
         vm_warn!(
             warn_ctx_pending_lock,
-            spin_is_locked(addr_of!((*c).fault_pending_wqh.lock))
+            spin_is_locked(addr_of_mut!((*c).fault_pending_wqh.lock))
         );
         vm_warn!(
             warn_ctx_pending_queue,
@@ -232,7 +232,7 @@ unsafe fn userfaultfd_ctx_put(c: *mut userfaultfd_ctx) {
         );
         vm_warn!(
             warn_ctx_fault_lock,
-            spin_is_locked(addr_of!((*c).fault_wqh.lock))
+            spin_is_locked(addr_of_mut!((*c).fault_wqh.lock))
         );
         vm_warn!(
             warn_ctx_fault_queue,
@@ -240,13 +240,16 @@ unsafe fn userfaultfd_ctx_put(c: *mut userfaultfd_ctx) {
         );
         vm_warn!(
             warn_ctx_event_lock,
-            spin_is_locked(addr_of!((*c).event_wqh.lock))
+            spin_is_locked(addr_of_mut!((*c).event_wqh.lock))
         );
         vm_warn!(
             warn_ctx_event_queue,
             waitqueue_active(addr_of_mut!((*c).event_wqh))
         );
-        vm_warn!(warn_ctx_fd_lock, spin_is_locked(addr_of!((*c).fd_wqh.lock)));
+        vm_warn!(
+            warn_ctx_fd_lock,
+            spin_is_locked(addr_of_mut!((*c).fd_wqh.lock))
+        );
         vm_warn!(
             warn_ctx_fd_queue,
             waitqueue_active(addr_of_mut!((*c).fd_wqh))
@@ -769,7 +772,7 @@ unsafe fn resolve_userfault_fork(
     msg: *mut uffd_msg,
 ) -> c_int {
     let fd = anon_inode_create_getfd(
-        c"[userfaultfd]".as_ptr(),
+        c"[userfaultfd]".as_ptr().cast::<c_char>(),
         addr_of!(userfaultfd_fops),
         new as _,
         (RUST_UFFD_O_RDONLY | ((*new).flags & RUST_UFFD_UFFD_SHARED_FCNTL_FLAGS)) as c_int,
