@@ -7,10 +7,12 @@ work=${1:?work directory}; logs=${2:?host or runtime evidence directory}
 fail() { printf 'TELEMETRY_FAILED metric=%s\n' "$1" >&2; exit 79; }
 integer() { [[ $1 =~ ^(0|[1-9][0-9]*)$ && ${#1} -le 18 ]]; }
 allocated() {
-  local raw value status attempt rest line path summaries errors remaining
+  local raw value status attempt rest line path summaries errors remaining diagnostic_bytes=0
   # Only a complete successful traversal supplies a measurement. GNU du can
   # print a partial total and exit 1 when a build removes an entry mid-walk.
-  for attempt in 1 2 3; do
+  # Fast transient failures may use more complete attempts, but never extend
+  # the same five-second allocation deadline shared by every root below.
+  for ((attempt=1; attempt<=32; attempt++)); do
     [[ -d $1 && ! -L $1 && $1 != *$'\n'* && $1 != *$'\t'* ]] || return 79
     remaining=$((allocation_deadline-SECONDS))
     (( remaining > 0 )) || return 79
@@ -54,6 +56,7 @@ allocated() {
       return 0
     fi
     printf '%sTELEMETRY_DU_FAILED attempt=%s status=%s\n' "$raw" "$attempt" "$status" >&2 || return 79
+    diagnostic_bytes=$((diagnostic_bytes+${#raw}+256))
     [[ $status == '1 0' ]] || return 79
     rest=$raw; summaries=0; errors=0
     while [[ $rest == *$'\n'* ]]; do
@@ -71,7 +74,13 @@ allocated() {
       fi
     done
     [[ -z $rest && $summaries == 1 && $errors -gt 0 ]] || return 79
-    (( attempt < 3 )) || return 79
+    (( attempt < 32 )) || return 79
+    # Retain every failure; reserve a full worst-case capture before retrying.
+    # Preserve three full attempts and leave terminal-report space below 64 KiB.
+    (( diagnostic_bytes+16640 <= 65024 )) || {
+      printf 'TELEMETRY_FAILED metric=allocated_retry_diagnostics\n' >&2
+      return 79
+    }
     printf 'TELEMETRY_RETRY metric=allocated attempt=%s reason=vanished_descendant\n' "$attempt" >&2 || return 79
     sleep .1 || return 79
   done
