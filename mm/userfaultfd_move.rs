@@ -219,7 +219,8 @@ unsafe fn move_pages_ptes(
 ) -> c_long {
     let mut si = null_mut();
     let mut sp = null_mut();
-    let mut dp = null_mut();
+    // Every loop exit follows the destination mapping assignment below.
+    let mut dp: *mut pte_t;
     let mut f: *mut folio = null_mut();
     let mut fpte: pte_t = zeroed();
     let mut range = zeroed();
@@ -296,7 +297,6 @@ unsafe fn move_pages_ptes(
                     pte_unmap(sp);
                     pte_unmap(dp);
                     sp = null_mut();
-                    dp = null_mut();
                     folio_lock(f);
                     continue 'retry;
                 }
@@ -357,7 +357,6 @@ unsafe fn move_pages_ptes(
                     pte_unmap(sp);
                     pte_unmap(dp);
                     sp = null_mut();
-                    dp = null_mut();
                     put_swap_device(si);
                     si = null_mut();
                     folio_lock(f);
