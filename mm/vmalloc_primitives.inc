@@ -66,7 +66,9 @@ RVM_LEAF(struct page *, p4d_page, (p4d_t p), p4d_page(p))
 RVM_LEAF(bool, arch_vmap_p4d_supported, (pgprot_t p), arch_vmap_p4d_supported(p))
 RVM_LEAF(int, p4d_set_huge, (p4d_t *p, phys_addr_t a, pgprot_t v), p4d_set_huge(p,a,v))
 RVM_LEAF(void, p4d_clear_huge, (p4d_t *p), p4d_clear_huge(p))
-RVM_LEAF(int, p4d_free_pud_page, (p4d_t *p, unsigned long a), p4d_free_pud_page(p,a))
+/* Keep the original caller's native capability guard at this ABI boundary too.
+ * A declaration need not have an architecture definition when support is false. */
+RVM_LEAF(int, p4d_free_pud_page, (p4d_t *p, unsigned long a, pgprot_t prot), arch_vmap_p4d_supported(prot) ? p4d_free_pud_page(p,a) : 0)
 RVM_LEAF(unsigned long, pud_addr_end, (unsigned long a, unsigned long e), pud_addr_end(a,e))
 RVM_LEAF(bool, pud_none, (pud_t p), pud_none(p))
 RVM_LEAF(bool, pud_bad, (pud_t p), pud_bad(p))

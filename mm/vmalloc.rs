@@ -215,7 +215,7 @@ unsafe fn vmap_pte_range(
     0
 }
 macro_rules! huge_try {
-    ($fn:ident, $ty:ty, $shift:ident, $size:ident, $supported:ident, $present:ident, $set:ident, $free:ident) => {
+    ($fn:ident, $ty:ty, $shift:ident, $size:ident, $supported:ident, $present:ident, $set:ident, $free:expr) => {
         unsafe fn $fn(
             p: *mut $ty,
             addr: ULong,
@@ -238,7 +238,7 @@ macro_rules! huge_try {
             if !mmap_read_trylock(&raw mut init_mm) {
                 return 0;
             }
-            let ret = if $free(p, addr) == 0 {
+            let ret = if ($free)(p, addr, prot) == 0 {
                 0
             } else {
                 $set(p, phys_addr, prot)
@@ -256,7 +256,7 @@ huge_try!(
     arch_vmap_pmd_supported,
     pmd_present,
     pmd_set_huge,
-    pmd_free_pte_page
+    |p, addr, _prot| pmd_free_pte_page(p, addr)
 );
 huge_try!(
     vmap_try_huge_pud,
@@ -266,7 +266,7 @@ huge_try!(
     arch_vmap_pud_supported,
     pud_present,
     pud_set_huge,
-    pud_free_pmd_page
+    |p, addr, _prot| pud_free_pmd_page(p, addr)
 );
 huge_try!(
     vmap_try_huge_p4d,

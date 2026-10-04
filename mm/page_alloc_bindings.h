@@ -203,8 +203,13 @@ bool rust_pa_node_reclaim_enabled(void);
 bool rust_pa_waitqueue_active(wait_queue_head_t *wq);
 int rust_pa_node_distance(int a, int b);
 int rust_pa_gfp_migratetype(gfp_t gfp);
-static const unsigned long RUST_PA_LIST_POISON1 = (unsigned long)LIST_POISON1;
-static const unsigned long RUST_PA_LIST_POISON2 = (unsigned long)LIST_POISON2;
+/* Native integer enumerators give bindgen values, not external data imports. */
+enum {
+ RUST_PA_LIST_POISON1 = (unsigned long)LIST_POISON1,
+ RUST_PA_LIST_POISON2 = (unsigned long)LIST_POISON2,
+};
+static_assert((unsigned long)RUST_PA_LIST_POISON1 == (unsigned long)LIST_POISON1);
+static_assert((unsigned long)RUST_PA_LIST_POISON2 == (unsigned long)LIST_POISON2);
 struct list_head *rust_pa_read_list_ptr(struct list_head * const *p);
 void rust_pa_write_list_ptr(struct list_head **p, struct list_head *v);
 #ifdef CONFIG_LIST_HARDENED

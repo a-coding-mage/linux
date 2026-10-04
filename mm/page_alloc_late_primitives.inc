@@ -29,7 +29,7 @@ PA_LATE(void, cpuset_memory_pressure_bump, (void), { cpuset_memory_pressure_bump
 PA_LATE(bool, cpuset_nodemask_valid, (const nodemask_t *mask), { return cpuset_nodemask_valid_mems_allowed(mask); })
 PA_LATE(unsigned int, read_mems_allowed_begin, (void), { return read_mems_allowed_begin(); })
 PA_LATE(bool, read_mems_allowed_retry, (unsigned int seq), { return read_mems_allowed_retry(seq); })
-PA_LATE(void, cpuset_init_current_mems_allowed, (void), { cpuset_init_current_mems_allowed(); })
+PA_LATE(void __init, cpuset_init_current_mems_allowed, (void), { cpuset_init_current_mems_allowed(); })
 PA_LATE(void, cond_resched, (void), { cond_resched(); })
 PA_LATE(bool, oom_trylock, (void), { return mutex_trylock(&oom_lock); })
 PA_LATE(void, oom_unlock, (void), { mutex_unlock(&oom_lock); })
