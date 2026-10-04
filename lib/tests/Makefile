@@ -68,6 +68,15 @@ obj-$(CONFIG_PRINTF_KUNIT_TEST) += printf_kunit.o
 obj-$(CONFIG_RANDSTRUCT_KUNIT_TEST) += randstruct_kunit.o
 obj-$(CONFIG_SCANF_KUNIT_TEST) += scanf_kunit.o
 obj-$(CONFIG_SEQ_BUF_KUNIT_TEST) += seq_buf_kunit.o
+ifeq ($(CONFIG_RUST_PANIC),y)
+ifneq ($(filter y m,$(CONFIG_SEQ_BUF_KUNIT_TEST)),)
+# Keep the unchanged suite's tristate, module identity and original flags.
+# The explicit control build tests C header inlines without changing panic.o.
+ifneq ($(LUPOS_SEQ_BUF_KUNIT_C_CONTROL),y)
+CFLAGS_seq_buf_kunit.o += -include $(srctree)/kernel/panic_seq_buf_test_route.h
+endif
+endif
+endif
 obj-$(CONFIG_SIPHASH_KUNIT_TEST) += siphash_kunit.o
 obj-$(CONFIG_SLUB_KUNIT_TEST) += slub_kunit.o
 obj-$(CONFIG_TEST_SORT) += test_sort.o

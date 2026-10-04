@@ -65,6 +65,10 @@ static const unsigned int LUPOS_IRQ_UP_UNLOCKED = __ARCH_SPIN_LOCK_UNLOCKED;
 static const unsigned long LUPOS_IRQ_JUMP_TYPE_FALSE = JUMP_TYPE_FALSE;
 #endif
 extern const struct kobj_type lupos_irq_kobj_type;
+/* Rust algorithm providers, exposed for separately routed original-C tests. */
+bool lupos_irq_rcuref_put(rcuref_t *ref);
+int lupos_irq_pm_resume_get(struct device *dev);
+void lupos_irq_print_desc(unsigned int irq, struct irq_desc *desc);
 /* Only calling-convention/config-sensitive primitives live in the companion. */
 #define IRQ_PRIMITIVE(ret, name, args, body) ret lupos_irq_##name args;
 #include "irq_core_primitives.inc"

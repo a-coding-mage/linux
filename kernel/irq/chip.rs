@@ -16,6 +16,28 @@
 )]
 include!("irq_core.rs");
 
+// include/linux/pm_runtime.h: __pm_runtime_resume is a separate service. The
+// negative-result compensation and success normalization belong to this owner.
+#[inline(always)]
+unsafe fn lupos_irq_pm_get_active(dev: *mut device, rpmflags: c_int) -> c_int {
+    #[cfg(CONFIG_PM)]
+    let ret = __pm_runtime_resume(dev, RPM_GET_PUT as c_int | rpmflags);
+    // The native !CONFIG_PM __pm_runtime_resume stub returns 1, not -ENOSYS.
+    #[cfg(not(CONFIG_PM))]
+    let ret = 1;
+    if ret < 0 {
+        #[cfg(CONFIG_PM)]
+        lupos_irq_atomic_add_unless(addr_of_mut!((*dev).power.usage_count), -1, 0);
+        return ret;
+    }
+    0
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn lupos_irq_pm_resume_get(dev: *mut device) -> c_int {
+    lupos_irq_pm_get_active(dev, 0)
+}
+
 unsafe extern "C" fn bad_chained_irq(irq: c_int, _: *mut c_void) -> irqreturn_t {
     lupos_irq_warn_chained(irq);
     IRQ_NONE

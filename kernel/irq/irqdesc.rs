@@ -15,6 +15,27 @@
     clippy::all
 )]
 include!("irq_core.rs");
+
+// include/linux/rcuref.h: keep the release atomic and every preemption/lockdep
+// operation native. rcuref_put_slowpath remains an explicit subsystem provider.
+#[inline(always)]
+unsafe fn __lupos_irq_rcuref_put(reference: *mut rcuref_t) -> bool {
+    lupos_irq_rcuref_put_assert();
+    let count = lupos_irq_atomic_sub_return_release(1, addr_of_mut!((*reference).refcnt));
+    if count >= 0 {
+        return false;
+    }
+    rcuref_put_slowpath(reference, count as c_uint)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn lupos_irq_rcuref_put(reference: *mut rcuref_t) -> bool {
+    lupos_irq_preempt_disable();
+    let released = __lupos_irq_rcuref_put(reference);
+    lupos_irq_preempt_enable();
+    released
+}
+
 include!("irq_core_storage.rs");
 
 static mut irq_desc_lock_class: lock_class_key = unsafe { zeroed() };

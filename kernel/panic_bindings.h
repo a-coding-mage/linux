@@ -117,6 +117,9 @@ void lupos_panic_print_modules(void);
 struct task_struct *lupos_panic_current(void);
 void lupos_panic_print_irqtrace_events(struct task_struct *task);
 void lupos_panic_trace_error_report_end(enum error_detector detector, unsigned long id);
+bool lupos_panic_seq_buf_warn_zero(bool zero);
+/* Rust providers, also callable by a separately routed original-C test build. */
+void lupos_panic_seq_buf_clear(struct seq_buf *s);
 void lupos_panic_seq_buf_init(struct seq_buf *s, char *buf, unsigned int size);
 const char *lupos_panic_seq_buf_str(struct seq_buf *s);
 void lupos_panic_vprintk_args(struct warn_args *args);

@@ -59,6 +59,47 @@ unsafe impl<T> Sync for ReadOnly<T> {}
 
 include!("panic_data.rs");
 
+// include/linux/seq_buf.h. Keep these entry points externally callable so the
+// unchanged C seq_buf tests can later be routed to the actual Rust providers.
+#[no_mangle]
+pub unsafe extern "C" fn lupos_panic_seq_buf_clear(s: *mut seq_buf) {
+    (*s).len = 0;
+    if (*s).size != 0 {
+        *(*s).buffer = 0;
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn lupos_panic_seq_buf_init(
+    s: *mut seq_buf,
+    buf: *mut c_char,
+    size: c_uint,
+) {
+    (*s).buffer = buf;
+    (*s).size = size as usize;
+    lupos_panic_seq_buf_clear(s);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn lupos_panic_seq_buf_str(s: *mut seq_buf) -> *const c_char {
+    if lupos_panic_seq_buf_warn_zero((*s).size == 0) {
+        return cstr!("");
+    }
+    // seq_buf_buffer_left returns unsigned int, despite size/len being size_t.
+    // Preserve its narrowing, including a non-overflowed 2^32-byte remainder.
+    let left = if (*s).len > (*s).size {
+        0
+    } else {
+        (*s).size.wrapping_sub((*s).len) as c_uint
+    };
+    if left != 0 {
+        *(*s).buffer.add((*s).len) = 0;
+    } else {
+        *(*s).buffer.add((*s).size.wrapping_sub(1)) = 0;
+    }
+    (*s).buffer
+}
+
 // include/linux/irqflags.h's tracing decisions must be inlined into vpanic:
 // trace_hardirqs_* captures its caller address. Native adapters expose only
 // architecture primitives, preserving paravirtualized arch implementations.

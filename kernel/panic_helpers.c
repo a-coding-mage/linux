@@ -4,6 +4,17 @@
  * here. In particular panic()/vpanic() are Rust C-variadic entry points. */
 #include "panic_bindings.h"
 
+/* Metadata only: the exported definitions remain the actual Rust helpers.
+ * The original seq_buf suite is tristate; namespaced KUnit exports permit its
+ * module form without adding a second implementation or changing its source.
+ */
+#if IS_ENABLED(CONFIG_SEQ_BUF_KUNIT_TEST)
+#include <kunit/visibility.h>
+EXPORT_SYMBOL_IF_KUNIT(lupos_panic_seq_buf_clear);
+EXPORT_SYMBOL_IF_KUNIT(lupos_panic_seq_buf_init);
+EXPORT_SYMBOL_IF_KUNIT(lupos_panic_seq_buf_str);
+#endif
+
 #if !defined(CONFIG_X86_64) || !defined(CONFIG_PRINTK) || defined(CONFIG_PRINTK_INDEX) || defined(CONFIG_CFI)
 #error "Rust panic native boundary is outside its admitted configuration"
 #endif
@@ -58,9 +69,7 @@ struct task_struct *lupos_panic_current(void) { return current; }
 void lupos_panic_print_irqtrace_events(struct task_struct *task) { print_irqtrace_events(task); }
 void lupos_panic_trace_error_report_end(enum error_detector detector, unsigned long id)
 { trace_error_report_end(detector, id); }
-void lupos_panic_seq_buf_init(struct seq_buf *s, char *buf, unsigned int size)
-{ seq_buf_init(s, buf, size); }
-const char *lupos_panic_seq_buf_str(struct seq_buf *s) { return seq_buf_str(s); }
+bool lupos_panic_seq_buf_warn_zero(bool zero) { return WARN_ON(zero); }
 void lupos_panic_vprintk_args(struct warn_args *args) { vprintk(args->fmt, args->args); }
 bool lupos_panic_warn_rcu_enter(void) { return warn_rcu_enter(); }
 void lupos_panic_warn_rcu_exit(bool rcu) { warn_rcu_exit(rcu); }

@@ -16,6 +16,53 @@
 )]
 include!("irq_core.rs");
 
+// kernel/irq/debug.h: native leaves retain the ratelimit state and typed printk
+// callsites; Rust performs the exact gate, null check and ordered flag tests.
+#[no_mangle]
+pub unsafe extern "C" fn lupos_irq_print_desc(irq: c_uint, desc: *mut irq_desc) {
+    if !lupos_irq_print_desc_ratelimit() {
+        return;
+    }
+    lupos_irq_print_desc_summary(irq, desc);
+    lupos_irq_print_desc_flow(desc);
+    lupos_irq_print_desc_chip(desc);
+    lupos_irq_print_desc_action(desc);
+    if !(*desc).action.is_null() {
+        lupos_irq_print_desc_handler(desc);
+    }
+    if setting(desc, _IRQ_LEVEL) {
+        lupos_irq_print_desc_level();
+    }
+    if setting(desc, _IRQ_PER_CPU) {
+        lupos_irq_print_desc_per_cpu();
+    }
+    if setting(desc, _IRQ_NOPROBE) {
+        lupos_irq_print_desc_noprobe();
+    }
+    if setting(desc, _IRQ_NOREQUEST) {
+        lupos_irq_print_desc_norequest();
+    }
+    if setting(desc, _IRQ_NOTHREAD) {
+        lupos_irq_print_desc_nothread();
+    }
+    if setting(desc, _IRQ_NOAUTOEN) {
+        lupos_irq_print_desc_noautoen();
+    }
+    if *state(desc) & IRQS_AUTODETECT != 0 {
+        lupos_irq_print_desc_autodetect();
+    }
+    if *state(desc) & IRQS_REPLAY != 0 {
+        lupos_irq_print_desc_replay();
+    }
+    if *state(desc) & IRQS_WAITING != 0 {
+        lupos_irq_print_desc_waiting();
+    }
+    if *state(desc) & IRQS_PENDING != 0 {
+        lupos_irq_print_desc_pending();
+    }
+    // ___PD(IRQS_INPROGRESS/DISABLED/MASKED) intentionally emits nothing.
+}
+
 #[cfg(CONFIG_GENERIC_IRQ_MULTI_HANDLER)]
 #[no_mangle]
 #[link_section = ".data..ro_after_init"]
