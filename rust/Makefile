@@ -1021,3 +1021,5 @@ include $(srctree)/kernel/exit_bindgen.mk
 include $(srctree)/kernel/softirq_bindgen.mk
 include $(srctree)/kernel/panic_bindgen.mk
 include $(srctree)/arch/x86/kernel/setup-bindgen.mk
+include $(srctree)/arch/x86/kernel/early-platform-bindgen.mk
+include $(srctree)/arch/x86/kernel/x86-platform-callbacks-bindgen.mk

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+# These structs are only pointed to. Bindgen retains their native pointer ABI.
+--opaque-type 'cpuinfo_x86|device_node|ghcb|irq_domain|pt_regs'
+--allowlist-type 'rust_x86_platform_callbacks_constants|x86_init_ops|x86_cpuinit_ops|x86_platform_ops|x86_apic_ops|of_device_id|timespec64'
+--allowlist-function 'probe_roms|reserve_standard_io_resources|e820__memory_setup_default|dmi_setup|mpparse_find_mptable|mpparse_parse_early_smp_config|mpparse_parse_smp_config|init_ISA_irqs|native_init_IRQ|apic_intr_mode_select|apic_intr_mode_init|native_create_pci_msi_domain|default_banner|native_pagetable_init|paging_init|setup_boot_APIC_clock|setup_secondary_APIC_clock|hpet_time_init|pci_acpi_init|pci_legacy_init|pcibios_irq_init|pcibios_fixup_irqs|x86_default_set_root_pointer|x86_default_get_root_pointer|acpi_generic_reduced_hw_init|native_calibrate_cpu_early|native_calibrate_tsc|mach_get_cmos_time|mach_set_cmos_time|tsc_save_sched_clock_state|tsc_restore_sched_clock_state|reserve_real_mode|init_real_mode|native_io_apic_read|native_restore_boot_irq_mode|of_find_matching_node_and_match|of_device_is_available'
+--allowlist-var 'RUST_X86_PLATFORM_.*|X86_LEGACY_I8042_PLATFORM_ABSENT'

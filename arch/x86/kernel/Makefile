@@ -66,6 +66,7 @@ obj-y			+= head_$(BITS).o
 include $(srctree)/arch/x86/kernel/head64-rust.mk
 obj-y			+= ebda.o
 obj-y			+= platform-quirks.o
+include $(srctree)/arch/x86/kernel/early-platform-rust.mk
 obj-y			+= process_$(BITS).o signal.o signal_$(BITS).o
 obj-y			+= traps.o idt.o irq.o irq_$(BITS).o dumpstack_$(BITS).o
 obj-y			+= time.o ioport.o dumpstack.o nmi.o
@@ -73,6 +74,7 @@ obj-$(CONFIG_X86_FRED)	+= fred.o
 obj-$(CONFIG_MODIFY_LDT_SYSCALL)	+= ldt.o
 obj-$(CONFIG_X86_KERNEL_IBT)		+= ibt_selftest.o
 obj-y			+= setup.o x86_init.o i8259.o irqinit.o
+include $(srctree)/arch/x86/kernel/x86-platform-callbacks-rust.mk
 include $(srctree)/arch/x86/kernel/setup-rust.mk
 obj-$(CONFIG_JUMP_LABEL)	+= jump_label.o
 obj-$(CONFIG_IRQ_WORK)  += irq_work.o

@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_X86_PLATFORM_CALLBACKS
+	bool "Rust x86-64 platform callbacks and operation tables"
+	depends on RUST && X86_64
+	default y
+	help
+	  Build the Rust owner of x86_init.o, including the platform operation
+	  tables and their local callbacks. Configured native headers supply
+	  layouts and declarations for other implementation owners.
+	  The adjacent C source remains the reference for control builds and
+	  is not compiled for this object when this option is selected.
+	  Clang with KCOV, KSTACK_ERASE and GCC_PLUGIN_LATENT_ENTROPY currently
+	  produce explicit build errors because their init/runtime
+	  instrumentation contracts have not been implemented for this owner.

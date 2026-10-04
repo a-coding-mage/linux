@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_X86_EARLY_PLATFORM
+	bool "Rust x86-64 early platform owners"
+	depends on RUST && X86_64
+	default y
+	help
+	  Build the Rust implementations of ebda.o and platform-quirks.o.
+	  Rust owns BIOS memory reservation, initial legacy platform features,
+	  subarchitecture quirks and the PNPBIOS-disabled queries. Native
+	  configured headers supply data layouts, constants and callee ABIs.
+	  The adjacent original C sources remain available for configurations
+	  without these Rust owners and are not linked when this is selected.
+	  GCC_PLUGIN_LATENT_ENTROPY currently produces an explicit build error:
+	  its C init-function instrumentation is not implemented by this owner.
+	  Combining RUST_INLINE_HELPERS and KSTACK_ERASE currently produces an
+	  explicit build error: the helper-bitcode codegen path has no Rust
+	  equivalent of the original C init-only stack-depth exemption.
