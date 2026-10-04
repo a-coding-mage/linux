@@ -13,7 +13,7 @@ include $(srctree)/scripts/Makefile.rust-native-policy
 x86-mm-init-owners := init init_64
 x86-mm-init-bindings := $(objtree)/rust/bindings/x86_mm_init_generated.rs
 x86-mm-init-inputs := $(x86-mm-init-bindings) \
-    $(src)/init_support.rs $(src)/init_identity_support.rs $(src)/init_percpu.rs $(src)/init_cpu_ids.rs $(src)/ident_map.rs $(rust-native-policy-inputs)
+    $(src)/init_support.rs $(src)/init_pgtable.rs $(src)/init_identity_support.rs $(src)/init_percpu.rs $(src)/init_cpu_ids.rs $(src)/ident_map.rs $(rust-native-policy-inputs)
 x86-mm-init-targets := $(addprefix $(obj)/,\
     $(foreach owner,$(x86-mm-init-owners),\
         $(owner).o $(owner).s $(owner).ll $(owner).rsi \

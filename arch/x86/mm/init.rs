@@ -11,6 +11,7 @@
     unreachable_pub
 )]
 include!("init_support.rs");
+include!("init_pgtable.rs");
 include!("init_percpu.rs");
 include!("init_cpu_ids.rs");
 

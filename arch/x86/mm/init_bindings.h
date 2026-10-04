@@ -65,6 +65,24 @@
 #include <asm/ftrace.h>
 #include "mm_internal.h"
 
+/* RUST_X86_MM_INIT is X86_64-only. Its canonical Kconfig always selects five
+ * compile-time levels; LA57-disabled machines fold PGD at runtime. Keep Rust's
+ * native field construction tied to that authoritative layout.
+ */
+#ifdef CONFIG_X86_64
+_Static_assert(CONFIG_PGTABLE_LEVELS == 5, "x86-64 init page-table levels");
+_Static_assert(sizeof(pgd_t) == sizeof(pgdval_t) && offsetof(pgd_t, pgd) == 0,
+	       "native pgd layout");
+_Static_assert(sizeof(p4d_t) == sizeof(p4dval_t) && offsetof(p4d_t, p4d) == 0,
+	       "native p4d layout");
+_Static_assert(sizeof(pud_t) == sizeof(pudval_t) && offsetof(pud_t, pud) == 0,
+	       "native pud layout");
+_Static_assert(sizeof(pmd_t) == sizeof(pmdval_t) && offsetof(pmd_t, pmd) == 0,
+	       "native pmd layout");
+_Static_assert(sizeof(pte_t) == sizeof(pteval_t) && offsetof(pte_t, pte) == 0,
+	       "native pte layout");
+#endif
+
 #define RUST_MM_INIT_PGD_PAGE_TABLES 4
 #ifdef CONFIG_RANDOMIZE_MEMORY
 #define RUST_MM_INIT_PGD_PAGE_COUNT (4 * RUST_MM_INIT_PGD_PAGE_TABLES)
@@ -102,6 +120,9 @@ _Static_assert((unsigned long)RUST_MM_VSYSCALL_ADDR == VSYSCALL_ADDR, "vsyscall 
 #define MM_UINT(name, value) static const unsigned int RUST_MM_##name = (value)
 MM_UINT(PAGE_SHIFT, PAGE_SHIFT);
 MM_UINT(PMD_SHIFT, PMD_SHIFT);
+MM_UINT(PUD_SHIFT, PUD_SHIFT);
+MM_UINT(P4D_SHIFT, P4D_SHIFT);
+MM_UINT(PHYSICAL_MASK_SHIFT, __PHYSICAL_MASK_SHIFT);
 MM_ULONG(PAGE_SIZE, PAGE_SIZE);
 MM_ULONG(PMD_SIZE, PMD_SIZE);
 MM_ULONG(PUD_SIZE, PUD_SIZE);
@@ -114,11 +135,19 @@ MM_ULONG(PAGE_PWT, _PAGE_PWT);
 MM_ULONG(PAGE_PCD, _PAGE_PCD);
 MM_ULONG(PAGE_PAT, _PAGE_PAT);
 MM_ULONG(PAGE_PSE, _PAGE_PSE);
+MM_ULONG(PAGE_PRESENT, _PAGE_PRESENT);
+MM_ULONG(PAGE_PROTNONE, _PAGE_PROTNONE);
+MM_ULONG(PAGE_DIRTY, _PAGE_DIRTY);
+MM_ULONG(PAGE_RW, _PAGE_RW);
+MM_ULONG(PAGE_PAT_LARGE, _PAGE_PAT_LARGE);
+MM_ULONG(PAGE_KNL_ERRATUM_MASK, _PAGE_KNL_ERRATUM_MASK);
+MM_ULONG(PAGE_TABLE_NOENC, _PAGE_TABLE_NOENC);
 MM_ULONG(PAGE_USER, _PAGE_USER);
 MM_ULONG(PAGE_GLOBAL, _PAGE_GLOBAL);
 MM_ULONG(PAGE_NOPTISHADOW, _PAGE_NOPTISHADOW);
 MM_ULONG(PAGE_CACHE_MASK, _PAGE_CACHE_MASK);
 MM_UINT(PAGE_BIT_PAT, _PAGE_BIT_PAT);
+MM_UINT(PAGE_BIT_PAT_LARGE, _PAGE_BIT_PAT_LARGE);
 MM_UINT(PAGE_BIT_PCD, _PAGE_BIT_PCD);
 MM_UINT(PAGE_BIT_PWT, _PAGE_BIT_PWT);
 MM_ULONG(INIT_PGT_BUF_SIZE, RUST_MM_INIT_PGT_BYTES);
@@ -188,6 +217,9 @@ bool rust_mm_warn_free_init_alignment(bool condition);
 bool rust_mm_warn_prot_pat(bool condition);
 bool rust_mm_warn_add_pages_end(bool condition);
 bool rust_mm_warn_add_pages_ret(bool condition);
+#ifdef CONFIG_DEBUG_VM
+void rust_mm_warn_check_pgprot(pgprotval_t original, pgprotval_t unsupported, pgprotval_t supported);
+#endif
 void rust_mm_assert_folded_pgd(pgd_t *pgd);
 void rust_mm_assert_no_p4d_leaf(p4d_t *p4d);
 void rust_mm_debug_range(unsigned long start, unsigned long end, const char *size);

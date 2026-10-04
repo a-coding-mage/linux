@@ -86,8 +86,7 @@ bool lupos_kthread_warn(bool value);
 void *lupos_kthread_alloc(size_t bytes);
 void *lupos_kthread_zalloc(size_t bytes);
 char *lupos_kthread_vasprintf(const char *format, void *args);
-void lupos_kthread_strscpy(char *dst, const char *src, size_t len);
-void lupos_kthread_strscpy_pad(char *dst, const char *src, size_t len);
+ssize_t lupos_kthread_strscpy(char *dst, const char *src, size_t len);
 void lupos_kthread_init_completion(struct completion *done);
 struct completion *lupos_kthread_xchg_done(struct completion **done);
 bool lupos_kthread_test_bit(unsigned int bit, const unsigned long *flags);
@@ -108,9 +107,11 @@ void lupos_kthread_set_special_state(unsigned int state);
 void lupos_kthread_preempt_disable(void);
 void lupos_kthread_preempt_enable(void);
 void lupos_kthread_might_sleep(void);
-bool lupos_kthread_freezing(struct task_struct *task);
 bool lupos_kthread_refrigerator(bool check_stop);
-void lupos_kthread_try_to_freeze(void);
+#ifdef CONFIG_FREEZER
+bool lupos_kthread_freezer_active(void);
+void lupos_kthread_debug_no_locks_held(void);
+#endif
 void lupos_kthread_set_freezable(void);
 void lupos_kthread_cond_resched(void);
 void lupos_kthread_cgroup_ready(void);
@@ -136,10 +137,17 @@ void lupos_kthread_raw_lock_irq(raw_spinlock_t *lock);
 void lupos_kthread_raw_unlock_irq(raw_spinlock_t *lock);
 void lupos_kthread_notify_signal(struct task_struct *task);
 void lupos_kthread_get_task(struct task_struct *task);
-void lupos_kthread_put_task(struct task_struct *task);
+bool lupos_kthread_task_usage_dec_and_test(struct task_struct *task);
+void lupos_kthread_task_release_rcu(struct task_struct *task);
 void lupos_kthread_set_comm(struct task_struct *task, const char *comm);
 void lupos_kthread_ignore_signals(struct task_struct *task);
-void lupos_kthread_set_mems_allowed(void);
+#ifdef CONFIG_CPUSETS
+nodemask_t lupos_kthread_memory_nodes(void);
+unsigned long lupos_kthread_irq_save(void);
+void lupos_kthread_irq_restore(unsigned long flags);
+void lupos_kthread_mems_seq_begin(struct task_struct *task);
+void lupos_kthread_mems_seq_end(struct task_struct *task);
+#endif
 int lupos_kthread_cpuhp_setup(const char *name);
 void lupos_kthread_init_worker_key(struct kthread_worker *worker);
 unsigned long lupos_kthread_jiffies(void);
@@ -150,9 +158,8 @@ void lupos_kthread_trace_execute_start(struct kthread_work *work);
 void lupos_kthread_trace_execute_end(struct kthread_work *work, kthread_work_func_t func);
 void lupos_kthread_trace_queue_work(struct kthread_worker *worker, struct kthread_work *work);
 void lupos_kthread_mmgrab(struct mm_struct *mm);
-void lupos_kthread_mmdrop(struct mm_struct *mm);
-void lupos_kthread_mmgrab_lazy(struct mm_struct *mm);
-void lupos_kthread_mmdrop_lazy(struct mm_struct *mm);
+bool lupos_kthread_mm_count_dec_and_test(struct mm_struct *mm);
+void lupos_kthread_mb(void);
 void lupos_kthread_task_lock(struct task_struct *task);
 void lupos_kthread_task_unlock(struct task_struct *task);
 void lupos_kthread_irq_disable(void);
@@ -163,8 +170,18 @@ void lupos_kthread_finish_arch_post_lock_switch(void);
 void lupos_kthread_mb_after_spinlock(void);
 void lupos_kthread_enter_lazy_tlb(struct mm_struct *mm, struct task_struct *task);
 #ifdef CONFIG_BLK_CGROUP
-void lupos_kthread_css_put(struct cgroup_subsys_state *css);
-void lupos_kthread_css_get(struct cgroup_subsys_state *css);
+enum {
+	LUPOS_KTHREAD_CSS_NO_REF = CSS_NO_REF,
+	LUPOS_KTHREAD_PERCPU_REF_ATOMIC_DEAD = __PERCPU_REF_ATOMIC_DEAD,
+};
+unsigned int lupos_kthread_css_flags(struct cgroup_subsys_state *css);
+struct percpu_ref *lupos_kthread_css_refcount(struct cgroup_subsys_state *css);
+unsigned long lupos_kthread_percpu_ref_read_mode(struct percpu_ref *ref);
+void lupos_kthread_percpu_ref_cpu_add(unsigned long pointer, unsigned long nr);
+void lupos_kthread_percpu_ref_cpu_sub(unsigned long pointer, unsigned long nr);
+void lupos_kthread_percpu_ref_atomic_add(struct percpu_ref *ref, unsigned long nr);
+bool lupos_kthread_percpu_ref_atomic_sub_and_test(struct percpu_ref *ref, unsigned long nr);
+void lupos_kthread_percpu_ref_release(struct percpu_ref *ref);
 #endif
 
 /* C variadic and callback envelopes: no task/worker policy here. */

@@ -5,7 +5,7 @@ include $(srctree)/scripts/Makefile.rust-native-policy
 obj-y := $(patsubst kthread.o,kthread.o kthread_helpers.o,$(obj-y))
 RUSTFLAGS_kthread.o += -Zfunction-sections=n
 RUST_ALLOWED_FEATURES_kthread.o += cfi_encoding
-$(obj)/kthread.o: $(src)/kthread.rs $(objtree)/rust/bindings/kthread_generated.rs $(rust-native-policy-inputs) FORCE
+$(obj)/kthread.o: $(src)/kthread.rs $(src)/kthread_header_algorithms.rs $(objtree)/rust/bindings/kthread_generated.rs $(rust-native-policy-inputs) FORCE
 	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 
 # Explicit targets need the same stem, module ownership and per-object policy.
@@ -15,16 +15,16 @@ $(addprefix $(obj)/,kthread.o kthread.s kthread.ll kthread.rsi .rust-listing/kth
 $(addprefix $(obj)/,kthread.s kthread.ll kthread.rsi): private target-stem := kthread
 $(addprefix $(obj)/,kthread.s kthread.ll kthread.rsi): private part-of-builtin = $(if $(filter $(obj)/kthread.o,$(real-obj-y) $(lib-y)),y)
 $(addprefix $(obj)/,kthread.s kthread.ll kthread.rsi): private part-of-module = $(if $(filter $(obj)/kthread.o,$(real-obj-m)),y)
-$(obj)/kthread.s: $(src)/kthread.rs $(objtree)/rust/bindings/kthread_generated.rs $(rust-native-policy-inputs) FORCE
+$(obj)/kthread.s: $(src)/kthread.rs $(src)/kthread_header_algorithms.rs $(objtree)/rust/bindings/kthread_generated.rs $(rust-native-policy-inputs) FORCE
 	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_s,rustc_s_rs))
-$(obj)/kthread.ll: $(src)/kthread.rs $(objtree)/rust/bindings/kthread_generated.rs $(rust-native-policy-inputs) FORCE
+$(obj)/kthread.ll: $(src)/kthread.rs $(src)/kthread_header_algorithms.rs $(objtree)/rust/bindings/kthread_generated.rs $(rust-native-policy-inputs) FORCE
 	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_ll,rustc_ll_rs))
 quiet_cmd_kthread_rust_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
       cmd_kthread_rust_rsi = \
 	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
 	command -v $(RUSTFMT) >/dev/null || exit $$?; \
 	$(RUSTFMT) --config-path $(srctree)/.rustfmt.toml $@ || exit $$?
-$(obj)/kthread.rsi: $(src)/kthread.rs $(objtree)/rust/bindings/kthread_generated.rs FORCE
+$(obj)/kthread.rsi: $(src)/kthread.rs $(src)/kthread_header_algorithms.rs $(objtree)/rust/bindings/kthread_generated.rs FORCE
 	+$(call if_changed_dep,kthread_rust_rsi)
 
 # Dedicated unlinked object for source-interleaved listing, including LTO.
@@ -34,7 +34,7 @@ $(obj)/.rust-listing/kthread.o: private part-of-module = $(if $(filter $(obj)/kt
 $(obj)/.rust-listing/kthread.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
 $(obj)/.rust-listing/kthread.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
 $(obj)/.rust-listing/kthread.o: private override KBUILD_CFLAGS += -g
-$(obj)/.rust-listing/kthread.o: $(src)/kthread.rs $(objtree)/rust/bindings/kthread_generated.rs $(rust-native-policy-inputs) FORCE
+$(obj)/.rust-listing/kthread.o: $(src)/kthread.rs $(src)/kthread_header_algorithms.rs $(objtree)/rust/bindings/kthread_generated.rs $(rust-native-policy-inputs) FORCE
 	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 quiet_cmd_kthread_rust_lst_elf = LD      $@
       cmd_kthread_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<

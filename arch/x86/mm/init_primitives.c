@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/* Native header, compiler, tracepoint, per-CPU and registration primitives.
+/* Native header, compiler, tracepoint, per-CPU and registration boundary.
  * No algorithm or function body from init.c / init_64.c is included here.
+ * The H2 page-table header algorithms are in init_pgtable.rs. Other retained
+ * header/subsystem dependencies remain explicit migration work.
  */
 #include "init_bindings.h"
 
@@ -31,6 +33,18 @@ bool rust_mm_warn_free_init_alignment(bool condition) { return WARN_ON(condition
 bool rust_mm_warn_prot_pat(bool condition) { return WARN_ON_ONCE(condition); }
 bool rust_mm_warn_add_pages_end(bool condition) { return WARN_ON_ONCE(condition); }
 bool rust_mm_warn_add_pages_ret(bool condition) { return WARN_ON_ONCE(condition); }
+#ifdef CONFIG_DEBUG_VM
+/* Rust evaluates check_pgprot's predicate and operands. Its original static
+ * inline has one WARN_ONCE record shared by pfn_pte/pmd/pud in this TU.
+ */
+void rust_mm_warn_check_pgprot(pgprotval_t original,
+			      pgprotval_t unsupported, pgprotval_t supported)
+{
+	WARN_ONCE(1, "attempted to set unsupported pgprot: %016llx "
+		  "bits: %016llx supported: %016llx\n",
+		  (u64)original, (u64)unsupported, (u64)supported);
+}
+#endif
 void rust_mm_assert_folded_pgd(pgd_t *pgd) { MAYBE_BUILD_BUG_ON(pgd_none(*pgd)); }
 void rust_mm_assert_no_p4d_leaf(p4d_t *p4d) { BUILD_BUG_ON(p4d_leaf(*p4d)); }
 

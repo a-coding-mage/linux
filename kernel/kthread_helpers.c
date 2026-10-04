@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/* Compiler/native primitive boundary only. The algorithms in kthread.c are
- * implemented in kthread.rs, never included or called as a second provider. */
+/* Native primitives, ABI adapters, and explicitly retained provider gaps.
+ * kthread.c is never included or called as a second provider. The H3/H4/H5
+ * header policy is in kthread_header_algorithms.rs, with leaves below. */
 #include "kthread_bindings.h"
 #include <trace/events/sched.h>
 
@@ -20,8 +21,8 @@ void *lupos_kthread_alloc(size_t bytes) { return kmalloc(bytes, GFP_KERNEL); }
 void *lupos_kthread_zalloc(size_t bytes) { return kzalloc(bytes, GFP_KERNEL); }
 char *lupos_kthread_vasprintf(const char *format, void *args)
 { return kvasprintf(GFP_KERNEL, format, *(va_list *)args); }
-void lupos_kthread_strscpy(char *dst, const char *src, size_t len) { strscpy(dst, src, len); }
-void lupos_kthread_strscpy_pad(char *dst, const char *src, size_t len) { strscpy_pad(dst, src, len); }
+ssize_t lupos_kthread_strscpy(char *dst, const char *src, size_t len)
+{ return sized_strscpy(dst, src, len); }
 void lupos_kthread_init_completion(struct completion *done) { init_completion(done); }
 struct completion *lupos_kthread_xchg_done(struct completion **done) { return xchg(done, NULL); }
 bool lupos_kthread_test_bit(unsigned int bit, const unsigned long *flags) { return test_bit(bit, flags); }
@@ -42,9 +43,11 @@ void lupos_kthread_set_special_state(unsigned int state) { set_special_state(sta
 void lupos_kthread_preempt_disable(void) { preempt_disable(); }
 void lupos_kthread_preempt_enable(void) { preempt_enable(); }
 void lupos_kthread_might_sleep(void) { might_sleep(); }
-bool lupos_kthread_freezing(struct task_struct *task) { return freezing(task); }
 bool lupos_kthread_refrigerator(bool check_stop) { return __refrigerator(check_stop); }
-void lupos_kthread_try_to_freeze(void) { try_to_freeze(); }
+#ifdef CONFIG_FREEZER
+bool lupos_kthread_freezer_active(void) { return static_branch_unlikely(&freezer_active); }
+void lupos_kthread_debug_no_locks_held(void) { debug_check_no_locks_held(); }
+#endif
 void lupos_kthread_set_freezable(void) { set_freezable(); }
 void lupos_kthread_cond_resched(void) { cond_resched(); }
 void lupos_kthread_cgroup_ready(void) { cgroup_kthread_ready(); }
@@ -78,11 +81,29 @@ void lupos_kthread_raw_unlock_irqrestore(raw_spinlock_t *lock, unsigned long fla
 void lupos_kthread_raw_lock_irq(raw_spinlock_t *lock) { raw_spin_lock_irq(lock); }
 void lupos_kthread_raw_unlock_irq(raw_spinlock_t *lock) { raw_spin_unlock_irq(lock); }
 void lupos_kthread_notify_signal(struct task_struct *task) { set_tsk_thread_flag(task, TIF_NOTIFY_SIGNAL); }
-void lupos_kthread_get_task(struct task_struct *task) { get_task_struct(task); }
-void lupos_kthread_put_task(struct task_struct *task) { put_task_struct(task); }
+void lupos_kthread_get_task(struct task_struct *task) { refcount_inc(&task->usage); }
+bool lupos_kthread_task_usage_dec_and_test(struct task_struct *task)
+{ return refcount_dec_and_test(&task->usage); }
+/* The selected public callback is the existing fork Rust implementation.
+ * Keep its native call_rcu function-pointer identity and deferred lifetime. */
+void lupos_kthread_task_release_rcu(struct task_struct *task)
+{ call_rcu(&task->rcu, __put_task_struct_rcu_cb); }
 void lupos_kthread_set_comm(struct task_struct *task, const char *comm) { __set_task_comm(task, comm, false); }
 void lupos_kthread_ignore_signals(struct task_struct *task) { ignore_signals(task); }
-void lupos_kthread_set_mems_allowed(void) { set_mems_allowed(node_states[N_MEMORY]); }
+#ifdef CONFIG_CPUSETS
+nodemask_t lupos_kthread_memory_nodes(void) { return node_states[N_MEMORY]; }
+unsigned long lupos_kthread_irq_save(void)
+{
+	unsigned long flags;
+	local_irq_save(flags);
+	return flags;
+}
+void lupos_kthread_irq_restore(unsigned long flags) { local_irq_restore(flags); }
+void lupos_kthread_mems_seq_begin(struct task_struct *task)
+{ write_seqcount_begin(&task->mems_allowed_seq); }
+void lupos_kthread_mems_seq_end(struct task_struct *task)
+{ write_seqcount_end(&task->mems_allowed_seq); }
+#endif
 void lupos_kthread_init_worker_key(struct kthread_worker *worker) { kthread_init_worker(worker); }
 unsigned long lupos_kthread_jiffies(void) { return jiffies; }
 bool lupos_kthread_timer_callback_matches(struct timer_list *timer)
@@ -94,10 +115,10 @@ void lupos_kthread_trace_execute_end(struct kthread_work *work, kthread_work_fun
 { trace_sched_kthread_work_execute_end(work, func); }
 void lupos_kthread_trace_queue_work(struct kthread_worker *worker, struct kthread_work *work)
 { trace_sched_kthread_work_queue_work(worker, work); }
-void lupos_kthread_mmgrab(struct mm_struct *mm) { mmgrab(mm); }
-void lupos_kthread_mmdrop(struct mm_struct *mm) { mmdrop(mm); }
-void lupos_kthread_mmgrab_lazy(struct mm_struct *mm) { mmgrab_lazy_tlb(mm); }
-void lupos_kthread_mmdrop_lazy(struct mm_struct *mm) { mmdrop_lazy_tlb(mm); }
+void lupos_kthread_mmgrab(struct mm_struct *mm) { atomic_inc(&mm->mm_count); }
+bool lupos_kthread_mm_count_dec_and_test(struct mm_struct *mm)
+{ return atomic_dec_and_test(&mm->mm_count); }
+void lupos_kthread_mb(void) { smp_mb(); }
 void lupos_kthread_task_lock(struct task_struct *task) { task_lock(task); }
 void lupos_kthread_task_unlock(struct task_struct *task) { task_unlock(task); }
 void lupos_kthread_irq_disable(void) { local_irq_disable(); }
@@ -114,8 +135,29 @@ void lupos_kthread_finish_arch_post_lock_switch(void)
 void lupos_kthread_mb_after_spinlock(void) { smp_mb__after_spinlock(); }
 void lupos_kthread_enter_lazy_tlb(struct mm_struct *mm, struct task_struct *task) { enter_lazy_tlb(mm, task); }
 #ifdef CONFIG_BLK_CGROUP
-void lupos_kthread_css_put(struct cgroup_subsys_state *css) { css_put(css); }
-void lupos_kthread_css_get(struct cgroup_subsys_state *css) { css_get(css); }
+unsigned int lupos_kthread_css_flags(struct cgroup_subsys_state *css) { return css->flags; }
+struct percpu_ref *lupos_kthread_css_refcount(struct cgroup_subsys_state *css)
+{ return &css->refcnt; }
+unsigned long lupos_kthread_percpu_ref_read_mode(struct percpu_ref *ref)
+{ return READ_ONCE(ref->percpu_count_ptr); }
+/* Rust passes the very same READ_ONCE value that it tested for mode flags.
+ * These leaves must never reload ref->percpu_count_ptr. */
+void lupos_kthread_percpu_ref_cpu_add(unsigned long pointer, unsigned long nr)
+{
+	unsigned long __percpu *count = (unsigned long __percpu *)pointer;
+	this_cpu_add(*count, nr);
+}
+void lupos_kthread_percpu_ref_cpu_sub(unsigned long pointer, unsigned long nr)
+{
+	unsigned long __percpu *count = (unsigned long __percpu *)pointer;
+	this_cpu_sub(*count, nr);
+}
+void lupos_kthread_percpu_ref_atomic_add(struct percpu_ref *ref, unsigned long nr)
+{ atomic_long_add(nr, &ref->data->count); }
+bool lupos_kthread_percpu_ref_atomic_sub_and_test(struct percpu_ref *ref, unsigned long nr)
+{ return atomic_long_sub_and_test(nr, &ref->data->count); }
+/* Native indirect-call/CFI identity only; Rust selects the zero transition. */
+void lupos_kthread_percpu_ref_release(struct percpu_ref *ref) { ref->data->release(ref); }
 #endif
 
 /* Native callback identities avoid guessing LLVM CFI type encodings. */

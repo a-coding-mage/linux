@@ -28,6 +28,8 @@ use core::mem::{offset_of, size_of, zeroed};
 use core::ptr::{addr_of, addr_of_mut, null_mut};
 use kernel::ffi::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
 
+include!("kthread_header_algorithms.rs");
+
 static mut kthread_create_list: list_head = list_head {
     next: addr_of_mut!(kthread_create_list),
     prev: addr_of_mut!(kthread_create_list),
@@ -77,7 +79,7 @@ pub unsafe extern "C" fn get_kthread_comm(buf: *mut c_char, size: usize, task: *
         lupos_kthread_strscpy(buf, addr_of!((*task).comm).cast(), size);
         return;
     }
-    lupos_kthread_strscpy_pad(buf, (*k).full_name, size);
+    header_sized_strscpy_pad(buf, (*k).full_name, size);
 }
 
 #[no_mangle]
@@ -135,7 +137,7 @@ pub unsafe extern "C" fn kthread_should_stop_or_park() -> bool {
 pub unsafe extern "C" fn kthread_freezable_should_stop(was_frozen: *mut bool) -> bool {
     let mut frozen = false;
     lupos_kthread_might_sleep();
-    if lupos_kthread_freezing(current()) {
+    if header_freezing(current()) {
         frozen = lupos_kthread_refrigerator(true);
     }
     if !was_frozen.is_null() {
@@ -474,14 +476,14 @@ pub unsafe extern "C" fn kthread_stop(task: *mut task_struct) -> c_int {
     wake_up_process(task);
     wait_for_completion(addr_of_mut!((*k).exited));
     let result = (*k).result;
-    lupos_kthread_put_task(task);
+    header_put_task_struct(task);
     lupos_kthread_trace_stop_ret(result);
     result
 }
 #[no_mangle]
 pub unsafe extern "C" fn kthread_stop_put(task: *mut task_struct) -> c_int {
     let result = kthread_stop(task);
-    lupos_kthread_put_task(task);
+    header_put_task_struct(task);
     result
 }
 #[no_mangle]
@@ -489,7 +491,7 @@ pub unsafe extern "C" fn kthreadd(_unused: *mut c_void) -> c_int {
     let task = current();
     lupos_kthread_set_comm(task, b"kthreadd\0".as_ptr().cast());
     lupos_kthread_ignore_signals(task);
-    lupos_kthread_set_mems_allowed();
+    header_set_mems_allowed();
     (*task).flags |= PF_NOFREEZE;
     lupos_kthread_cgroup_init();
     kthread_affine_node();
@@ -650,12 +652,12 @@ pub unsafe extern "C" fn kthread_worker_fn(arg: *mut c_void) -> c_int {
             (*work).func.unwrap_unchecked()(work);
             // Callback may free work. Only its address and saved func survive.
             lupos_kthread_trace_execute_end(work, func);
-        } else if !lupos_kthread_freezing(task) {
+        } else if !header_freezing(task) {
             schedule();
         } else {
             lupos_kthread_set_state_relaxed(TASK_RUNNING as _);
         }
-        lupos_kthread_try_to_freeze();
+        header_try_to_freeze();
         lupos_kthread_cond_resched();
     }
 }
@@ -948,7 +950,7 @@ pub unsafe extern "C" fn kthread_use_mm(mm: *mut mm_struct) {
     lupos_kthread_irq_enable();
     lupos_kthread_task_unlock(task);
     lupos_kthread_finish_arch_post_lock_switch();
-    lupos_kthread_mmdrop_lazy(active_mm);
+    header_mmdrop_lazy_tlb(active_mm);
 }
 #[no_mangle]
 pub unsafe extern "C" fn kthread_unuse_mm(mm: *mut mm_struct) {
@@ -960,11 +962,11 @@ pub unsafe extern "C" fn kthread_unuse_mm(mm: *mut mm_struct) {
     lupos_kthread_irq_disable();
     (*task).mm = null_mut();
     lupos_kthread_membarrier_update(null_mut());
-    lupos_kthread_mmgrab_lazy(mm);
+    header_mmgrab_lazy_tlb(mm);
     lupos_kthread_enter_lazy_tlb(mm, task);
     lupos_kthread_irq_enable();
     lupos_kthread_task_unlock(task);
-    lupos_kthread_mmdrop(mm);
+    header_mmdrop(mm);
 }
 #[cfg(CONFIG_BLK_CGROUP)]
 #[no_mangle]
@@ -978,11 +980,11 @@ pub unsafe extern "C" fn kthread_associate_blkcg(css: *mut cgroup_subsys_state) 
         return;
     }
     if !(*k).blkcg_css.is_null() {
-        lupos_kthread_css_put((*k).blkcg_css);
+        header_css_put((*k).blkcg_css);
         (*k).blkcg_css = null_mut();
     }
     if !css.is_null() {
-        lupos_kthread_css_get(css);
+        header_css_get(css);
         (*k).blkcg_css = css;
     }
 }
