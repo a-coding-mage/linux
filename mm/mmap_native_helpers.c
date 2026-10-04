@@ -3,7 +3,7 @@
  * mmap.c algorithms and its eleven explicit named globals are Rust-owned.
  * Macro-created once-state, lock keys, and registration/trace/export metadata
  * remain native; DATA.tsv inventories that storage boundary explicitly. */
-#define CREATE_TRACE_POINTS
+#define RUST_MMAP_NATIVE_CREATE_TRACE_POINTS
 #undef KBUILD_MODNAME
 #define KBUILD_MODNAME "mmap"
 #include "mmap_native_bindings.h"

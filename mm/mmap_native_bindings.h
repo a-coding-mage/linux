@@ -2,7 +2,6 @@
 #ifndef RUST_MMAP_NATIVE_BINDINGS_H
 #define RUST_MMAP_NATIVE_BINDINGS_H
 #include "mmap_native_includes.h"
-#include <trace/events/mmap.h>
 #include "mmap_native_primitives.h"
 #define RM_CONST(type, name) static const type RUST_MMAP_##name = name
 RM_CONST(unsigned long, PAGE_SIZE);

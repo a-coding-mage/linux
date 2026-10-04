@@ -44,6 +44,13 @@
 #include <asm/cacheflush.h>
 #include <asm/tlb.h>
 #include <asm/mmu_context.h>
+
+/* Match mmap.c: create only mmap tracepoints, after the architecture headers. */
+#ifdef RUST_MMAP_NATIVE_CREATE_TRACE_POINTS
+#define CREATE_TRACE_POINTS
+#endif
+#include <trace/events/mmap.h>
+
 #include "internal.h"
 #ifndef arch_mmap_check
 #define arch_mmap_check(addr, len, flags) (0)
