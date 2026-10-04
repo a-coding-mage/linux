@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'tlb_state|x86_cpu_id|pte_t|pmd_t|pud_t|p4d_t|pgd_t|pgprot_t|pteval_t|pgprotval_t|page_cache_mode|range|phys_addr_t|resource_size_t|kernel_ulong_t|mm_struct|page|ptdesc|spinlock_t|x86_mapping_info|mhp_params|vmem_altmap|dev_pagemap|kcore_list|execmem_info|execmem_range|node_states'
+--allowlist-var 'RUST_MM_.*|rust_mm_.*|_PAGE_CACHE_MODE_.*|PG_LEVEL_.*|ZONE_.*|EXECMEM_.*|N_MEMORY|N_NORMAL_MEMORY|KCORE_USER|E820_TYPE_.*|IORES_DESC_NONE|REGION_DISJOINT|ENOMEM|EINVAL|ERANGE|L1TF_MITIGATION_OFF|l1tf_mitigation|mmu_cr4_features|trampoline_cr4_features|__supported_pte_mask|__default_kernel_pte_mask|direct_gbpages|boot_cpu_data|max_pfn|max_low_pfn|max_pfn_mapped|max_low_pfn_mapped|init_top_pgt|trampoline_pgd_entry|_end|_text|_etext|_sdata|_brk_end|__init_begin|__init_end|__start_rodata|__end_rodata|__end_rodata_hpage_align|x86_init|text_poke_mm|text_poke_mm_addr|init_mm|pgd_list|pgd_lock|after_bootmem|level2_kernel_pgt|memblock|high_memory'
+--allowlist-function 'rust_mm_.*|_printk|panic|strcmp|memchr_inv|memblock_phys_alloc_range|memblock_phys_free|extend_brk|x86_match_cpu|setup_clear_cpu_cap|memblock_is_region_memory|add_range_with_merge|clean_sort_range|kernel_physical_mapping_init|init_memory_mapping|__next_mem_pfn_range|init_trampoline_kaslr|early_ioremap_page_table_range_init|early_memtest|mm_alloc|kaslr_get_random_long|region_intersects|iomem_is_exclusive|set_memory_np|set_memory_nx|set_memory_rw|set_memory_ro|set_memory_np_noalias|free_reserved_area|free_kernel_image_pages|e820__reallocate_tables|generic_max_swapfile_size|pgd_page_get_mm|flush_tlb_one_kernel|alloc_low_pages|e820__mapped_any|x86_numa_init|memblock_set_node|__add_pages|vmem_altmap_free|__free_pages|__remove_pages|pci_iommu_alloc|get_gate_vma|vmemmap_verify|vmemmap_populate_basepages|vmemmap_populate_hugepages'
+# Canonical tagged C types used by externally reachable/indirect signatures.
+--with-attribute-custom-struct=x86_mapping_info='#[cfi_encoding="16x86_mapping_info"]'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'
+--with-attribute-custom-struct=page='#[cfi_encoding="4page"]'
+--with-attribute-custom-struct=ptdesc='#[cfi_encoding="6ptdesc"]'
+--with-attribute-custom-struct=pgprot='#[cfi_encoding="6pgprot"]'
+--with-attribute-custom-struct=mhp_params='#[cfi_encoding="10mhp_params"]'
+--with-attribute-custom-struct=vmem_altmap='#[cfi_encoding="11vmem_altmap"]'
+--with-attribute-custom-struct=dev_pagemap='#[cfi_encoding="11dev_pagemap"]'
+--with-attribute-custom-struct=execmem_info='#[cfi_encoding="12execmem_info"]'
+--with-attribute-custom-struct=execmem_range='#[cfi_encoding="13execmem_range"]'
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'

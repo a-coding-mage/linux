@@ -1,176 +1,794 @@
-// Translated from init.c. Included kernel dependencies are supplied elsewhere.
+// SPDX-License-Identifier: GPL-2.0-only
+// Rust owner of the unchanged adjacent init.c.
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unreachable_pub
+)]
+include!("init_support.rs");
+include!("init_percpu.rs");
+include!("init_cpu_ids.rs");
 
-static mut __cachemode2pte_tbl: [u16; _PAGE_CACHE_MODE_NUM as usize] = [0; _PAGE_CACHE_MODE_NUM as usize];
-static mut __pte2cachemode_tbl: [u8; 8] = [0; 8];
-
-pub unsafe fn cachemode2protval(pcm: page_cache_mode) -> c_ulong {
-    if likely(pcm == 0) { return 0; }
-    __cachemode2pte_tbl[pcm as usize] as c_ulong
+const fn cache_to_pte_defaults() -> [u16; _PAGE_CACHE_MODE_NUM as usize] {
+    let mut table = [0; _PAGE_CACHE_MODE_NUM as usize];
+    table[_PAGE_CACHE_MODE_WC as usize] = _PAGE_PCD as u16;
+    table[_PAGE_CACHE_MODE_UC_MINUS as usize] = _PAGE_PCD as u16;
+    table[_PAGE_CACHE_MODE_UC as usize] = (_PAGE_PWT | _PAGE_PCD) as u16;
+    table[_PAGE_CACHE_MODE_WT as usize] = _PAGE_PCD as u16;
+    table[_PAGE_CACHE_MODE_WP as usize] = _PAGE_PCD as u16;
+    table
 }
-
-pub unsafe fn x86_has_pat_wp() -> bool {
-    let prot = __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP as usize];
-    __pte2cachemode_tbl[__pte2cm_idx(prot as c_ulong) as usize] == _PAGE_CACHE_MODE_WP as u8
+static mut __cachemode2pte_tbl: [u16; _PAGE_CACHE_MODE_NUM as usize] = cache_to_pte_defaults();
+static mut __pte2cachemode_tbl: [u8; 8] = [
+    _PAGE_CACHE_MODE_WB as u8,
+    _PAGE_CACHE_MODE_UC_MINUS as u8,
+    _PAGE_CACHE_MODE_UC_MINUS as u8,
+    _PAGE_CACHE_MODE_UC as u8,
+    _PAGE_CACHE_MODE_WB as u8,
+    _PAGE_CACHE_MODE_UC_MINUS as u8,
+    _PAGE_CACHE_MODE_UC_MINUS as u8,
+    _PAGE_CACHE_MODE_UC as u8,
+];
+#[inline(always)]
+fn pte2cm_idx(value: c_ulong) -> usize {
+    (((value >> (b::RUST_MM_PAGE_BIT_PAT - 2)) & 4)
+        | ((value >> (b::RUST_MM_PAGE_BIT_PCD - 1)) & 2)
+        | ((value >> b::RUST_MM_PAGE_BIT_PWT) & 1)) as usize
 }
-
-pub unsafe fn pgprot2cachemode(pgprot: pgprot_t) -> page_cache_mode {
+#[inline(always)]
+fn cm_idx2pte(value: c_uint) -> c_ulong {
+    (((value & 4) << (b::RUST_MM_PAGE_BIT_PAT - 2))
+        | ((value & 2) << (b::RUST_MM_PAGE_BIT_PCD - 1))
+        | ((value & 1) << b::RUST_MM_PAGE_BIT_PWT)) as c_ulong
+}
+#[no_mangle]
+pub unsafe extern "C" fn cachemode2protval(pcm: page_cache_mode) -> c_ulong {
+    if pcm == 0 {
+        0
+    } else {
+        *addr_of!(__cachemode2pte_tbl)
+            .cast::<u16>()
+            .add(pcm as usize) as c_ulong
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn x86_has_pat_wp() -> bool {
+    let prot = *addr_of!(__cachemode2pte_tbl)
+        .cast::<u16>()
+        .add(_PAGE_CACHE_MODE_WP as usize);
+    *addr_of!(__pte2cachemode_tbl)
+        .cast::<u8>()
+        .add(pte2cm_idx(prot as c_ulong))
+        == _PAGE_CACHE_MODE_WP as u8
+}
+#[no_mangle]
+pub unsafe extern "C" fn pgprot2cachemode(pgprot: pgprot_t) -> page_cache_mode {
     let masked = pgprot_val(pgprot) & _PAGE_CACHE_MASK;
-    if likely(masked == 0) { return 0 as page_cache_mode; }
-    __pte2cachemode_tbl[__pte2cm_idx(masked) as usize] as page_cache_mode
+    if masked == 0 {
+        0
+    } else {
+        *addr_of!(__pte2cachemode_tbl)
+            .cast::<u8>()
+            .add(pte2cm_idx(masked)) as page_cache_mode
+    }
 }
-
+#[link_section = ".init.data"]
 static mut pgt_buf_start: c_ulong = 0;
+#[link_section = ".init.data"]
 static mut pgt_buf_end: c_ulong = 0;
+#[link_section = ".init.data"]
 static mut pgt_buf_top: c_ulong = 0;
 static mut min_pfn_mapped: c_ulong = 0;
+#[link_section = ".init.data"]
 static mut can_use_brk_pgt: bool = true;
+#[no_mangle]
+pub static mut after_bootmem: c_int = 0;
+#[no_mangle]
+pub static mut direct_gbpages: c_int = if cfg!(CONFIG_X86_DIRECT_GBPAGES) {
+    1
+} else {
+    0
+};
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn rust_mm_parse_gbpages_on(_: *mut c_char) -> c_int {
+    direct_gbpages = 1;
+    0
+}
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn rust_mm_parse_gbpages_off(_: *mut c_char) -> c_int {
+    direct_gbpages = 0;
+    0
+}
 
-pub unsafe fn alloc_low_pages(num: c_uint) -> *mut c_void {
-    let mut pfn: c_ulong;
-    if after_bootmem {
-        let order = get_order((num as c_ulong) << PAGE_SHIFT);
-        return __get_free_pages(GFP_ATOMIC | __GFP_ZERO, order) as *mut c_void;
+#[no_mangle]
+#[link_section = ".ref.text"]
+pub unsafe extern "C" fn alloc_low_pages(num: c_uint) -> *mut c_void {
+    if after_bootmem != 0 {
+        let order = get_order((num as c_ulong).wrapping_shl(PAGE_SHIFT));
+        return alloc_low_after_bootmem(order) as *mut c_void;
     }
-    if pgt_buf_end + num as c_ulong > pgt_buf_top || !can_use_brk_pgt {
-        let mut ret: c_ulong = 0;
+    let pfn;
+    if pgt_buf_end.wrapping_add(num as c_ulong) > pgt_buf_top || !can_use_brk_pgt {
+        let mut ret = 0;
         if min_pfn_mapped < max_pfn_mapped {
-            ret = memblock_phys_alloc_range(PAGE_SIZE * num as c_ulong, PAGE_SIZE,
-                min_pfn_mapped << PAGE_SHIFT, max_pfn_mapped << PAGE_SHIFT);
+            ret = memblock_phys_alloc_range(
+                PAGE_SIZE.wrapping_mul(num as c_ulong) as phys_addr_t,
+                PAGE_SIZE as phys_addr_t,
+                min_pfn_mapped.wrapping_shl(PAGE_SHIFT) as phys_addr_t,
+                max_pfn_mapped.wrapping_shl(PAGE_SHIFT) as phys_addr_t,
+            ) as c_ulong;
         }
-        if ret == 0 && can_use_brk_pgt { ret = __pa(extend_brk(PAGE_SIZE * num as c_ulong, PAGE_SIZE)); }
-        if ret == 0 { panic!("alloc_low_pages: can not alloc memory"); }
+        if ret == 0 && can_use_brk_pgt {
+            ret = __pa(extend_brk(
+                PAGE_SIZE.wrapping_mul(num as c_ulong),
+                PAGE_SIZE,
+            ));
+        }
+        if ret == 0 {
+            panic(
+                c"alloc_low_pages: can not alloc memory"
+                    .as_ptr()
+                    .cast::<c_char>(),
+            );
+        }
         pfn = ret >> PAGE_SHIFT;
     } else {
         pfn = pgt_buf_end;
-        pgt_buf_end += num as c_ulong;
+        pgt_buf_end = pgt_buf_end.wrapping_add(num as c_ulong);
     }
-    for i in 0..num { clear_page(__va((pfn + i as c_ulong) << PAGE_SHIFT)); }
-    __va(pfn << PAGE_SHIFT)
+    for i in 0..num {
+        clear_page(__va(
+            pfn.wrapping_add(i as c_ulong).wrapping_shl(PAGE_SHIFT),
+        ));
+    }
+    __va(pfn.wrapping_shl(PAGE_SHIFT))
 }
-
-const INIT_PGD_PAGE_TABLES: usize = 4;
-#[cfg(not(CONFIG_RANDOMIZE_MEMORY))]
-const INIT_PGD_PAGE_COUNT: usize = 2 * INIT_PGD_PAGE_TABLES;
-#[cfg(CONFIG_RANDOMIZE_MEMORY)]
-const INIT_PGD_PAGE_COUNT: usize = 4 * INIT_PGD_PAGE_TABLES;
-const INIT_PGT_BUF_SIZE: usize = INIT_PGD_PAGE_COUNT * PAGE_SIZE as usize;
-RESERVE_BRK!(early_pgt_alloc, INIT_PGT_BUF_SIZE);
-
-pub unsafe fn early_alloc_pgt_buf() {
-    let tables = INIT_PGT_BUF_SIZE as c_ulong;
-    let base = __pa(extend_brk(tables, PAGE_SIZE));
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn early_alloc_pgt_buf() {
+    let tables = b::RUST_MM_INIT_PGT_BUF_SIZE as c_ulong;
+    let base = __pa(extend_brk(tables as usize, PAGE_SIZE as usize));
     pgt_buf_start = base >> PAGE_SHIFT;
     pgt_buf_end = pgt_buf_start;
-    pgt_buf_top = pgt_buf_start + (tables >> PAGE_SHIFT);
+    pgt_buf_top = pgt_buf_start.wrapping_add(tables >> PAGE_SHIFT);
 }
 
-pub static mut after_bootmem: c_int = 0;
-early_param_on_off!("gbpages", "nogbpages", direct_gbpages, CONFIG_X86_DIRECT_GBPAGES);
-
+#[derive(Clone, Copy)]
 #[repr(C)]
-pub struct map_range { pub start: c_ulong, pub end: c_ulong, pub page_size_mask: c_ulong }
+struct map_range {
+    start: c_ulong,
+    end: c_ulong,
+    page_size_mask: c_uint,
+}
 static mut page_size_mask: c_int = 0;
-
+#[inline]
 unsafe fn cr4_set_bits_and_update_boot(mask: c_ulong) {
     mmu_cr4_features |= mask;
-    if !trampoline_cr4_features.is_null() { *trampoline_cr4_features = mmu_cr4_features; }
+    if !trampoline_cr4_features.is_null() {
+        *trampoline_cr4_features = mmu_cr4_features as u32;
+    }
     cr4_set_bits(mask);
 }
-
+#[cold]
+#[link_section = ".init.text"]
 unsafe fn probe_page_size_mask() {
-    if boot_cpu_has(X86_FEATURE_PSE) && !debug_pagealloc_enabled() { page_size_mask |= 1 << PG_LEVEL_2M; } else { direct_gbpages = 0; }
-    if boot_cpu_has(X86_FEATURE_PSE) { cr4_set_bits_and_update_boot(X86_CR4_PSE); }
-    __supported_pte_mask &= !_PAGE_GLOBAL;
-    if boot_cpu_has(X86_FEATURE_PGE) { cr4_set_bits_and_update_boot(X86_CR4_PGE); __supported_pte_mask |= _PAGE_GLOBAL; }
+    if boot_has_pse() && !debug_pagealloc_enabled() {
+        page_size_mask |= 1 << PG_LEVEL_2M;
+    } else {
+        direct_gbpages = 0;
+    }
+    if boot_has_pse() {
+        cr4_set_bits_and_update_boot(b::RUST_MM_X86_CR4_PSE);
+    }
+    __supported_pte_mask &= !(_PAGE_GLOBAL as pteval_t);
+    if boot_has_pge() {
+        cr4_set_bits_and_update_boot(b::RUST_MM_X86_CR4_PGE);
+        __supported_pte_mask |= _PAGE_GLOBAL as pteval_t;
+    }
     __default_kernel_pte_mask = __supported_pte_mask;
-    if cpu_feature_enabled(X86_FEATURE_PTI) { __default_kernel_pte_mask &= !_PAGE_GLOBAL; }
-    if direct_gbpages != 0 && boot_cpu_has(X86_FEATURE_GBPAGES) {
-        printk(KERN_INFO, "Using GB pages for direct mapping\n"); page_size_mask |= 1 << PG_LEVEL_1G;
-    } else { direct_gbpages = 0; }
+    if feature_pti() {
+        __default_kernel_pte_mask &= !(_PAGE_GLOBAL as pteval_t);
+    }
+    if direct_gbpages != 0 && boot_has_gbpages() {
+        b::rust_mm_log_gbpages();
+        page_size_mask |= 1 << PG_LEVEL_1G;
+    } else {
+        direct_gbpages = 0;
+    }
 }
-
 unsafe fn setup_pcid() {
-    if !IS_ENABLED(CONFIG_X86_64) || !boot_cpu_has(X86_FEATURE_PCID) { return; }
-    let m = x86_match_cpu(invlpg_miss_ids.as_ptr());
-    if !m.is_null() && boot_cpu_data.microcode < (*m).driver_data { pr_info!("Incomplete global flushes, disabling PCID"); setup_clear_cpu_cap(X86_FEATURE_PCID); return; }
-    if boot_cpu_has(X86_FEATURE_PGE) { cr4_set_bits(X86_CR4_PCIDE); } else { setup_clear_cpu_cap(X86_FEATURE_PCID); }
-}
-
-static invlpg_miss_ids: [x86_cpu_id; 7] = [
-    X86_MATCH_VFM!(INTEL_ALDERLAKE, 0x2e), X86_MATCH_VFM!(INTEL_ALDERLAKE_L, 0x42c),
-    X86_MATCH_VFM!(INTEL_ATOM_GRACEMONT, 0x11), X86_MATCH_VFM!(INTEL_RAPTORLAKE, 0x118),
-    X86_MATCH_VFM!(INTEL_RAPTORLAKE_P, 0x4117), X86_MATCH_VFM!(INTEL_RAPTORLAKE_S, 0x2e),
-    X86_CPU_ID_EMPTY,
-];
-
-const NR_RANGE_MR: usize = if cfg!(CONFIG_X86_32) { 3 } else { 5 };
-
-unsafe fn save_mr(mr: *mut map_range, mut nr: usize, start_pfn: c_ulong, end_pfn: c_ulong, mask: c_ulong) -> usize {
-    if start_pfn < end_pfn {
-        if nr >= NR_RANGE_MR { panic!("run out of range for init_memory_mapping\n"); }
-        (*mr.add(nr)).start = start_pfn << PAGE_SHIFT; (*mr.add(nr)).end = end_pfn << PAGE_SHIFT;
-        (*mr.add(nr)).page_size_mask = mask; nr += 1;
-    } nr
-}
-
-unsafe fn adjust_range_page_size_mask(mr: *mut map_range, nr: usize) {
-    for i in 0..nr {
-        if page_size_mask & (1 << PG_LEVEL_2M) != 0 && (*mr.add(i)).page_size_mask & (1 << PG_LEVEL_2M) == 0 {
-            let start = round_down((*mr.add(i)).start, PMD_SIZE); let end = round_up((*mr.add(i)).end, PMD_SIZE);
-            if (!IS_ENABLED(CONFIG_X86_32) || (end >> PAGE_SHIFT) <= max_low_pfn) && memblock_is_region_memory(start, end-start) { (*mr.add(i)).page_size_mask |= 1 << PG_LEVEL_2M; }
+    #[cfg(CONFIG_X86_64)]
+    {
+        if !boot_has_pcid() {
+            return;
         }
-        if page_size_mask & (1 << PG_LEVEL_1G) != 0 && (*mr.add(i)).page_size_mask & (1 << PG_LEVEL_1G) == 0 {
-            let start = round_down((*mr.add(i)).start, PUD_SIZE); let end = round_up((*mr.add(i)).end, PUD_SIZE);
-            if memblock_is_region_memory(start, end-start) { (*mr.add(i)).page_size_mask |= 1 << PG_LEVEL_1G; }
+        let matched = x86_match_cpu(addr_of!(invlpg_miss_ids).cast());
+        if !matched.is_null()
+            && (boot_cpu_data.microcode as kernel_ulong_t) < (*matched).driver_data
+        {
+            b::rust_mm_log_disable_pcid();
+            setup_clear_cpu_cap(b::RUST_MM_X86_FEATURE_PCID);
+            return;
+        }
+        if boot_has_pge() {
+            cr4_set_bits(b::RUST_MM_X86_CR4_PCIDE);
+        } else {
+            setup_clear_cpu_cap(b::RUST_MM_X86_FEATURE_PCID);
         }
     }
 }
-
-unsafe fn page_size_string(mr: *const map_range) -> *const c_char {
-    static S1: &[u8] = b"1G\0"; static S2: &[u8] = b"2M\0"; static S4: &[u8] = b"4M\0"; static S4K: &[u8] = b"4k\0";
-    if (*mr).page_size_mask & (1<<PG_LEVEL_1G) != 0 { return S1.as_ptr() as *const c_char; }
-    if IS_ENABLED(CONFIG_X86_32) && !IS_ENABLED(CONFIG_X86_PAE) && (*mr).page_size_mask & (1<<PG_LEVEL_2M) != 0 { return S4.as_ptr() as *const c_char; }
-    if (*mr).page_size_mask & (1<<PG_LEVEL_2M) != 0 { return S2.as_ptr() as *const c_char; }
-    S4K.as_ptr() as *const c_char
+const NR_RANGE_MR: usize = if cfg!(CONFIG_X86_32) { 3 } else { 5 };
+#[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
+#[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
+unsafe fn save_mr(
+    mr: *mut map_range,
+    mut nr: usize,
+    start: c_ulong,
+    end: c_ulong,
+    mask: c_ulong,
+) -> usize {
+    if start < end {
+        if nr >= NR_RANGE_MR {
+            panic(
+                c"run out of range for init_memory_mapping\n"
+                    .as_ptr()
+                    .cast::<c_char>(),
+            );
+        }
+        (*mr.add(nr)).start = start.wrapping_shl(PAGE_SHIFT);
+        (*mr.add(nr)).end = end.wrapping_shl(PAGE_SHIFT);
+        (*mr.add(nr)).page_size_mask = mask as c_uint;
+        nr += 1;
+    }
+    nr
 }
-
-unsafe fn split_mem_range(mr: *mut map_range, mut nr: usize, start: c_ulong, end: c_ulong) -> usize {
-    let limit = PFN_DOWN(end); let mut pfn = PFN_DOWN(start); let mut end_pfn;
-    end_pfn = if IS_ENABLED(CONFIG_X86_32) && pfn == 0 { PFN_DOWN(PMD_SIZE) } else { round_up(pfn, PFN_DOWN(PMD_SIZE)) }; end_pfn = min(end_pfn, limit);
-    if pfn < end_pfn { nr=save_mr(mr,nr,pfn,end_pfn,0); pfn=end_pfn; }
-    let mut start_pfn=round_up(pfn,PFN_DOWN(PMD_SIZE));
-    end_pfn=if IS_ENABLED(CONFIG_X86_32){round_down(limit,PFN_DOWN(PMD_SIZE))}else{min(round_up(pfn,PFN_DOWN(PUD_SIZE)),round_down(limit,PFN_DOWN(PMD_SIZE)))};
-    if start_pfn<end_pfn {nr=save_mr(mr,nr,start_pfn,end_pfn,page_size_mask as c_ulong & (1<<PG_LEVEL_2M));pfn=end_pfn;}
-    #[cfg(CONFIG_X86_64)] { start_pfn=round_up(pfn,PFN_DOWN(PUD_SIZE));end_pfn=round_down(limit,PFN_DOWN(PUD_SIZE));if start_pfn<end_pfn{nr=save_mr(mr,nr,start_pfn,end_pfn,page_size_mask as c_ulong & ((1<<PG_LEVEL_2M)|(1<<PG_LEVEL_1G)));pfn=end_pfn;} start_pfn=round_up(pfn,PFN_DOWN(PMD_SIZE));end_pfn=round_down(limit,PFN_DOWN(PMD_SIZE));if start_pfn<end_pfn{nr=save_mr(mr,nr,start_pfn,end_pfn,page_size_mask as c_ulong&(1<<PG_LEVEL_2M));pfn=end_pfn;} }
-    nr=save_mr(mr,nr,pfn,limit,0); if after_bootmem==0 {adjust_range_page_size_mask(mr,nr);} nr
+#[link_section = ".ref.text"]
+unsafe fn adjust_range_page_size_mask(mr: *mut map_range, nr: usize) {
+    for i in 0..nr {
+        let r = mr.add(i);
+        if page_size_mask & (1 << PG_LEVEL_2M) != 0 && (*r).page_size_mask & (1 << PG_LEVEL_2M) == 0
+        {
+            let start = round_down((*r).start, PMD_SIZE);
+            let end = round_up((*r).end, PMD_SIZE);
+            #[cfg(CONFIG_X86_32)]
+            if (end >> PAGE_SHIFT) > max_low_pfn {
+                continue;
+            }
+            if memblock_is_region_memory(
+                start as phys_addr_t,
+                end.wrapping_sub(start) as phys_addr_t,
+            ) {
+                (*r).page_size_mask |= 1 << PG_LEVEL_2M;
+            }
+        }
+        if page_size_mask & (1 << PG_LEVEL_1G) != 0 && (*r).page_size_mask & (1 << PG_LEVEL_1G) == 0
+        {
+            let start = round_down((*r).start, PUD_SIZE);
+            let end = round_up((*r).end, PUD_SIZE);
+            if memblock_is_region_memory(
+                start as phys_addr_t,
+                end.wrapping_sub(start) as phys_addr_t,
+            ) {
+                (*r).page_size_mask |= 1 << PG_LEVEL_1G;
+            }
+        }
+    }
 }
-
-#[repr(C)] pub struct range { pub start: c_ulong, pub end: c_ulong }
-pub static mut pfn_mapped: [range; E820_MAX_ENTRIES as usize] = [range{start:0,end:0}; E820_MAX_ENTRIES as usize];
+unsafe fn page_size_string(r: *const map_range) -> *const c_char {
+    if (*r).page_size_mask & (1 << PG_LEVEL_1G) != 0 {
+        return c"1G".as_ptr().cast::<c_char>();
+    }
+    if cfg!(all(CONFIG_X86_32, not(CONFIG_X86_PAE)))
+        && (*r).page_size_mask & (1 << PG_LEVEL_2M) != 0
+    {
+        return c"4M".as_ptr().cast::<c_char>();
+    }
+    if (*r).page_size_mask & (1 << PG_LEVEL_2M) != 0 {
+        return c"2M".as_ptr().cast::<c_char>();
+    }
+    c"4k".as_ptr().cast::<c_char>()
+}
+#[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
+#[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
+unsafe fn split_mem_range(
+    mr: *mut map_range,
+    mut nr: usize,
+    start: c_ulong,
+    end: c_ulong,
+) -> usize {
+    let limit = end >> PAGE_SHIFT;
+    let mut pfn = start >> PAGE_SHIFT;
+    let mut end_pfn = if cfg!(CONFIG_X86_32) && pfn == 0 {
+        PMD_SIZE >> PAGE_SHIFT
+    } else {
+        round_up(pfn, PMD_SIZE >> PAGE_SHIFT)
+    };
+    end_pfn = min(end_pfn, limit);
+    if pfn < end_pfn {
+        nr = save_mr(mr, nr, pfn, end_pfn, 0);
+        pfn = end_pfn;
+    }
+    let mut start_pfn = round_up(pfn, PMD_SIZE >> PAGE_SHIFT);
+    end_pfn = if cfg!(CONFIG_X86_32) {
+        round_down(limit, PMD_SIZE >> PAGE_SHIFT)
+    } else {
+        min(
+            round_up(pfn, PUD_SIZE >> PAGE_SHIFT),
+            round_down(limit, PMD_SIZE >> PAGE_SHIFT),
+        )
+    };
+    if start_pfn < end_pfn {
+        nr = save_mr(
+            mr,
+            nr,
+            start_pfn,
+            end_pfn,
+            page_size_mask as c_ulong & (1 << PG_LEVEL_2M),
+        );
+        pfn = end_pfn;
+    }
+    #[cfg(CONFIG_X86_64)]
+    {
+        start_pfn = round_up(pfn, PUD_SIZE >> PAGE_SHIFT);
+        end_pfn = round_down(limit, PUD_SIZE >> PAGE_SHIFT);
+        if start_pfn < end_pfn {
+            nr = save_mr(
+                mr,
+                nr,
+                start_pfn,
+                end_pfn,
+                page_size_mask as c_ulong & ((1 << PG_LEVEL_2M) | (1 << PG_LEVEL_1G)),
+            );
+            pfn = end_pfn;
+        }
+        start_pfn = round_up(pfn, PMD_SIZE >> PAGE_SHIFT);
+        end_pfn = round_down(limit, PMD_SIZE >> PAGE_SHIFT);
+        if start_pfn < end_pfn {
+            nr = save_mr(
+                mr,
+                nr,
+                start_pfn,
+                end_pfn,
+                page_size_mask as c_ulong & (1 << PG_LEVEL_2M),
+            );
+            pfn = end_pfn;
+        }
+    }
+    nr = save_mr(mr, nr, pfn, limit, 0);
+    if after_bootmem == 0 {
+        adjust_range_page_size_mask(mr, nr);
+    }
+    // memmove semantics: the ranges overlap. Revisit this index after a merge.
+    let mut i = 0;
+    while nr > 1 && i < nr - 1 {
+        if (*mr.add(i)).end != (*mr.add(i + 1)).start
+            || (*mr.add(i)).page_size_mask != (*mr.add(i + 1)).page_size_mask
+        {
+            i += 1;
+            continue;
+        }
+        let old_start = (*mr.add(i)).start;
+        core::ptr::copy(mr.add(i + 1), mr.add(i), nr - 1 - i);
+        (*mr.add(i)).start = old_start;
+        nr -= 1;
+    }
+    for i in 0..nr {
+        debug_range(
+            (*mr.add(i)).start,
+            (*mr.add(i)).end.wrapping_sub(1),
+            page_size_string(mr.add(i)),
+        );
+    }
+    nr
+}
+#[no_mangle]
+pub static mut pfn_mapped: [range; b::RUST_MM_E820_MAX_ENTRIES as usize] =
+    unsafe { MaybeUninit::zeroed().assume_init() };
+#[no_mangle]
 pub static mut nr_pfn_mapped: c_int = 0;
-unsafe fn add_pfn_range_mapped(start: c_ulong,end: c_ulong){nr_pfn_mapped=add_range_with_merge(pfn_mapped.as_mut_ptr(),E820_MAX_ENTRIES,nr_pfn_mapped,start,end);nr_pfn_mapped=clean_sort_range(pfn_mapped.as_mut_ptr(),E820_MAX_ENTRIES);max_pfn_mapped=max(max_pfn_mapped,end);if start<(1UL<<(32-PAGE_SHIFT)){max_low_pfn_mapped=max(max_low_pfn_mapped,min(end,1UL<<(32-PAGE_SHIFT)));}}
-pub unsafe fn pfn_range_is_mapped(start:c_ulong,end:c_ulong)->bool{for i in 0..nr_pfn_mapped as usize{if start>=pfn_mapped[i].start&&end<=pfn_mapped[i].end{return true;}}false}
-
-pub unsafe fn init_memory_mapping(start:c_ulong,end:c_ulong,prot:pgprot_t)->c_ulong{let mut mr:[map_range;NR_RANGE_MR]=[map_range{start:0,end:0,page_size_mask:0};NR_RANGE_MR];let nr=split_mem_range(mr.as_mut_ptr(),0,start,end);let mut ret=0;for i in 0..nr{ret=kernel_physical_mapping_init(mr[i].start,mr[i].end,mr[i].page_size_mask,prot);}add_pfn_range_mapped(start>>PAGE_SHIFT,ret>>PAGE_SHIFT);ret>>PAGE_SHIFT}
-
-// The remaining routines preserve the original control flow and use the kernel symbols supplied by other translation units.
-pub unsafe fn free_init_pages(what:*const c_char, mut begin:c_ulong, mut end:c_ulong){let ba=PAGE_ALIGN(begin);let ea=end&_PAGE_MASK;if WARN_ON(ba!=begin||ea!=end){begin=ba;end=ea;}if begin>=end{return;}if debug_pagealloc_enabled(){pr_info!("debug: unmapping init [mem %#010lx-%#010lx]",begin,end-1);kmemleak_free_part(begin as *mut c_void,end-begin);set_memory_np(begin,(end-begin)>>PAGE_SHIFT);}else{set_memory_nx(begin,(end-begin)>>PAGE_SHIFT);set_memory_rw(begin,(end-begin)>>PAGE_SHIFT);free_reserved_area(begin as *mut c_void,end as *mut c_void,POISON_FREE_INITMEM,what);}}
-pub unsafe fn free_kernel_image_pages(what:*const c_char,begin:*mut c_void,end:*mut c_void){let b=begin as c_ulong;let e=end as c_ulong;free_init_pages(what,b,e);if IS_ENABLED(CONFIG_X86_64)&&cpu_feature_enabled(X86_FEATURE_PTI){set_memory_np_noalias(b,(e-b)>>PAGE_SHIFT);}}
-pub unsafe fn free_initmem(){e820__reallocate_tables();mem_encrypt_free_decrypted_mem();free_kernel_image_pages(b"unused kernel image (initmem)\0".as_ptr() as *const c_char,&__init_begin as *const _ as *mut c_void,&__init_end as *const _ as *mut c_void);}
-#[cfg(CONFIG_BLK_DEV_INITRD)] pub unsafe fn free_initrd_mem(start:c_ulong,end:c_ulong){free_init_pages(b"initrd\0".as_ptr() as *const c_char,start,PAGE_ALIGN(end));}
-pub unsafe fn arch_zone_limits_init(max_zone_pfns:*mut c_ulong){#[cfg(CONFIG_ZONE_DMA)]{*max_zone_pfns.add(ZONE_DMA as usize)=min(MAX_DMA_PFN,max_low_pfn);}#[cfg(CONFIG_ZONE_DMA32)]{*max_zone_pfns.add(ZONE_DMA32 as usize)=min(MAX_DMA32_PFN,max_low_pfn);}*max_zone_pfns.add(ZONE_NORMAL as usize)=max_low_pfn;#[cfg(CONFIG_HIGHMEM)]{*max_zone_pfns.add(ZONE_HIGHMEM as usize)=max_pfn;}}
-pub unsafe fn update_cache_mode_entry(entry:c_uint,cache:page_cache_mode){BUG_ON(entry==0&&cache!=_PAGE_CACHE_MODE_WB);__cachemode2pte_tbl[cache as usize]=__cm_idx2pte(entry) as u16;__pte2cachemode_tbl[entry as usize]=cache as u8;}
-
-unsafe fn init_range_memory_mapping(rs:c_ulong,re:c_ulong)->c_ulong{let mut total=0;let mut i=0;let mut sp=0;let mut ep=0;while for_each_mem_pfn_range(i,MAX_NUMNODES,&mut sp,&mut ep,core::ptr::null_mut()){let s=clamp_val(PFN_PHYS(sp),rs,re);let e=clamp_val(PFN_PHYS(ep),rs,re);if s<e{can_use_brk_pgt=max(s,(pgt_buf_end as u64)<<PAGE_SHIFT)>=min(e,(pgt_buf_top as u64)<<PAGE_SHIFT);init_memory_mapping(s,e,PAGE_KERNEL);total+=e-s;can_use_brk_pgt=true;}i+=1;true} { } total}
-unsafe fn memory_map_bottom_up(ms:c_ulong,me:c_ulong){let mut start=ms;let mut step=PMD_SIZE;let mut total=0;min_pfn_mapped=start>>PAGE_SHIFT;while start<me{let next=if step!=0&&me-start>step{min(round_up(start+1,step),me)}else{me};total+=init_range_memory_mapping(start,next);start=next;if total>=step{step=get_new_step_size(step);}}}
-unsafe fn get_new_step_size(step:c_ulong)->c_ulong{step<<(PMD_SHIFT-PAGE_SHIFT-1)}
-unsafe fn memory_map_top_down(ms:c_ulong,me:c_ulong){let a=memblock_phys_alloc_range(PMD_SIZE,PMD_SIZE,ms,me);let real=if a==0{max(ms,ALIGN_DOWN(me,PMD_SIZE))}else{memblock_phys_free(a,PMD_SIZE);a+PMD_SIZE};let mut step=PMD_SIZE;max_pfn_mapped=0;min_pfn_mapped=real>>PAGE_SHIFT;let mut last=real;let mut total=0;while last>ms{let start=if last>step{max(round_down(last-1,step),ms)}else{ms};total+=init_range_memory_mapping(start,last);last=start;min_pfn_mapped=last>>PAGE_SHIFT;if total>=step{step=get_new_step_size(step);}}if real<me{init_range_memory_mapping(real,me);}}
-unsafe fn init_trampoline(){#[cfg(CONFIG_X86_64)]{if !kaslr_memory_enabled(){trampoline_pgd_entry=init_top_pgt[pgd_index(__PAGE_OFFSET)];}else{init_trampoline_kaslr();}}}
-pub unsafe fn init_mem_mapping(){pti_check_boottime_disable();probe_page_size_mask();setup_pcid();let end=if IS_ENABLED(CONFIG_X86_64){max_pfn<<PAGE_SHIFT}else{max_low_pfn<<PAGE_SHIFT};init_memory_mapping(0,ISA_END_ADDRESS,PAGE_KERNEL);init_trampoline();if memblock_bottom_up(){let ke=__pa_symbol(_end);memory_map_bottom_up(ke,end);memory_map_bottom_up(ISA_END_ADDRESS,ke);}else{memory_map_top_down(ISA_END_ADDRESS,end);}if IS_ENABLED(CONFIG_X86_64)&&max_pfn>max_low_pfn{max_low_pfn=max_pfn;}else if !IS_ENABLED(CONFIG_X86_64){early_ioremap_page_table_range_init();}load_cr3(swapper_pg_dir);__flush_tlb_all();x86_init.hyper.init_mem_mapping();early_memtest(0,max_pfn_mapped<<PAGE_SHIFT);}
-pub unsafe fn poking_init(){let mut ptl: *mut spinlock_t=core::ptr::null_mut();text_poke_mm=mm_alloc();BUG_ON(text_poke_mm.is_null());paravirt_enter_mmap(text_poke_mm);set_notrack_mm(text_poke_mm);text_poke_mm_addr=TASK_UNMAPPED_BASE;if IS_ENABLED(CONFIG_RANDOMIZE_BASE){text_poke_mm_addr+=(kaslr_get_random_long(b"Poking\0".as_ptr() as *const c_char)&PAGE_MASK)%(TASK_SIZE-TASK_UNMAPPED_BASE-3*PAGE_SIZE);}if ((text_poke_mm_addr+PAGE_SIZE)&!PMD_MASK)==0{text_poke_mm_addr+=PAGE_SIZE;}let ptep=get_locked_pte(text_poke_mm,text_poke_mm_addr,&mut ptl);BUG_ON(ptep.is_null());pte_unmap_unlock(ptep,ptl);}
-pub unsafe fn devmem_is_allowed(pagenr:c_ulong)->c_int{if region_intersects(PFN_PHYS(pagenr),PAGE_SIZE,IORESOURCE_SYSTEM_RAM,IORES_DESC_NONE)!=REGION_DISJOINT{if pagenr<256{return 2;}return 0;}if iomem_is_exclusive(pagenr<<PAGE_SHIFT){if pagenr<256{return 1;}return 0;}1}
-#[cfg(CONFIG_SWAP)] pub unsafe fn arch_max_swapfile_size()->c_ulong{let mut pages=generic_max_swapfile_size();if boot_cpu_has_bug(X86_BUG_L1TF)&&l1tf_mitigation!=L1TF_MITIGATION_OFF{let mut lim=l1tf_pfn_limit();#[cfg(any())] {lim<<=PAGE_SHIFT-SWP_OFFSET_FIRST_BIT;}pages=min(lim,pages);}pages}
-#[cfg(CONFIG_EXECMEM)] pub static mut execmem_info: execmem_info_t=execmem_info_t::zeroed();
-#[cfg(CONFIG_EXECMEM)] pub unsafe fn execmem_arch_setup()->*mut execmem_info_t{let mut off=0;if kaslr_enabled(){off=get_random_u32_inclusive(1,1024) as c_ulong*PAGE_SIZE;}let start=MODULES_VADDR+off;execmem_info=execmem_info_t::default_for(start,MODULES_END,MODULE_ALIGN);&mut execmem_info}
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+unsafe fn add_pfn_range_mapped(start: c_ulong, end: c_ulong) {
+    let ranges = addr_of_mut!(pfn_mapped).cast();
+    nr_pfn_mapped = add_range_with_merge(
+        ranges,
+        b::RUST_MM_E820_MAX_ENTRIES as c_int,
+        nr_pfn_mapped,
+        start as u64,
+        end as u64,
+    );
+    nr_pfn_mapped = clean_sort_range(ranges, b::RUST_MM_E820_MAX_ENTRIES as c_int);
+    max_pfn_mapped = max(max_pfn_mapped, end);
+    let low_limit = (1 as c_ulong) << (32 - PAGE_SHIFT);
+    if start < low_limit {
+        max_low_pfn_mapped = max(max_low_pfn_mapped, min(end, low_limit));
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn pfn_range_is_mapped(start: c_ulong, end: c_ulong) -> bool {
+    for i in 0..nr_pfn_mapped as usize {
+        let r = addr_of!(pfn_mapped).cast::<range>().add(i);
+        if start as u64 >= (*r).start && end as u64 <= (*r).end {
+            return true;
+        }
+    }
+    false
+}
+#[no_mangle]
+#[link_section = ".ref.text"]
+pub unsafe extern "C" fn init_memory_mapping(
+    start: c_ulong,
+    end: c_ulong,
+    prot: pgprot_t,
+) -> c_ulong {
+    debug_init_mapping(start, end.wrapping_sub(1));
+    let mut mr = [map_range {
+        start: 0,
+        end: 0,
+        page_size_mask: 0,
+    }; NR_RANGE_MR];
+    let nr = split_mem_range(mr.as_mut_ptr(), 0, start, end);
+    let mut ret = 0;
+    for r in &mr[..nr] {
+        ret = kernel_physical_mapping_init(r.start, r.end, r.page_size_mask as c_ulong, prot);
+    }
+    add_pfn_range_mapped(start >> PAGE_SHIFT, ret >> PAGE_SHIFT);
+    ret >> PAGE_SHIFT
+}
+#[cold]
+#[link_section = ".init.text"]
+unsafe fn init_range_memory_mapping(r_start: c_ulong, r_end: c_ulong) -> c_ulong {
+    let mut i: c_int = -1;
+    let (mut start_pfn, mut end_pfn): (c_ulong, c_ulong) = (0, 0);
+    let mut mapped_ram_size: c_ulong = 0;
+    loop {
+        __next_mem_pfn_range(
+            &mut i,
+            b::RUST_MM_MAX_NUMNODES as c_int,
+            &mut start_pfn,
+            &mut end_pfn,
+            null_mut(),
+        );
+        if i < 0 {
+            break;
+        }
+        let start = max(
+            r_start as u64,
+            min(r_end as u64, (start_pfn as u64).wrapping_shl(PAGE_SHIFT)),
+        );
+        let end = max(
+            r_start as u64,
+            min(r_end as u64, (end_pfn as u64).wrapping_shl(PAGE_SHIFT)),
+        );
+        if start >= end {
+            continue;
+        }
+        can_use_brk_pgt = max(start, (pgt_buf_end as u64).wrapping_shl(PAGE_SHIFT))
+            >= min(end, (pgt_buf_top as u64).wrapping_shl(PAGE_SHIFT));
+        init_memory_mapping(start as c_ulong, end as c_ulong, page_kernel());
+        mapped_ram_size = mapped_ram_size.wrapping_add(end.wrapping_sub(start) as c_ulong);
+        can_use_brk_pgt = true;
+    }
+    mapped_ram_size
+}
+#[cold]
+#[link_section = ".init.text"]
+fn get_new_step_size(step: c_ulong) -> c_ulong {
+    step.wrapping_shl(PMD_SHIFT - PAGE_SHIFT - 1)
+}
+#[cold]
+#[link_section = ".init.text"]
+unsafe fn memory_map_top_down(map_start: c_ulong, map_end: c_ulong) {
+    let addr = memblock_phys_alloc_range(
+        PMD_SIZE as phys_addr_t,
+        PMD_SIZE as phys_addr_t,
+        map_start as phys_addr_t,
+        map_end as phys_addr_t,
+    ) as c_ulong;
+    let real_end;
+    if addr == 0 {
+        b::rust_mm_log_release_failed();
+        real_end = max(map_start, round_down(map_end, PMD_SIZE));
+    } else {
+        memblock_phys_free(addr as phys_addr_t, PMD_SIZE as phys_addr_t);
+        real_end = addr.wrapping_add(PMD_SIZE);
+    }
+    let mut step_size = PMD_SIZE;
+    max_pfn_mapped = 0;
+    min_pfn_mapped = real_end >> PAGE_SHIFT;
+    let mut last_start = real_end;
+    let mut mapped_ram_size: c_ulong = 0;
+    while last_start > map_start {
+        let start = if last_start > step_size {
+            max(round_down(last_start.wrapping_sub(1), step_size), map_start)
+        } else {
+            map_start
+        };
+        mapped_ram_size =
+            mapped_ram_size.wrapping_add(init_range_memory_mapping(start, last_start));
+        last_start = start;
+        min_pfn_mapped = last_start >> PAGE_SHIFT;
+        if mapped_ram_size >= step_size {
+            step_size = get_new_step_size(step_size);
+        }
+    }
+    if real_end < map_end {
+        init_range_memory_mapping(real_end, map_end);
+    }
+}
+#[cold]
+#[link_section = ".init.text"]
+unsafe fn memory_map_bottom_up(map_start: c_ulong, map_end: c_ulong) {
+    let mut start = map_start;
+    let mut step_size = PMD_SIZE;
+    let mut mapped_ram_size: c_ulong = 0;
+    min_pfn_mapped = start >> PAGE_SHIFT;
+    while start < map_end {
+        let next = if step_size != 0 && map_end.wrapping_sub(start) > step_size {
+            min(round_up(start.wrapping_add(1), step_size), map_end)
+        } else {
+            map_end
+        };
+        mapped_ram_size = mapped_ram_size.wrapping_add(init_range_memory_mapping(start, next));
+        start = next;
+        if mapped_ram_size >= step_size {
+            step_size = get_new_step_size(step_size);
+        }
+    }
+}
+#[cold]
+#[link_section = ".init.text"]
+unsafe fn init_trampoline() {
+    #[cfg(CONFIG_X86_64)]
+    {
+        if !kaslr_memory_enabled() {
+            trampoline_pgd_entry = *addr_of!(init_top_pgt)
+                .cast::<pgd_t>()
+                .add(pgd_index(page_offset_base()));
+        } else {
+            init_trampoline_kaslr();
+        }
+    }
+}
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn init_mem_mapping() {
+    pti_check_boottime_disable();
+    probe_page_size_mask();
+    setup_pcid();
+    let end = if cfg!(CONFIG_X86_64) {
+        max_pfn.wrapping_shl(PAGE_SHIFT)
+    } else {
+        max_low_pfn.wrapping_shl(PAGE_SHIFT)
+    };
+    init_memory_mapping(0, b::RUST_MM_ISA_END_ADDRESS, page_kernel());
+    init_trampoline();
+    if memblock_bottom_up() {
+        let kernel_end = pa_symbol(addr_of!(_end).cast());
+        memory_map_bottom_up(kernel_end, end);
+        memory_map_bottom_up(b::RUST_MM_ISA_END_ADDRESS, kernel_end);
+    } else {
+        memory_map_top_down(b::RUST_MM_ISA_END_ADDRESS, end);
+    }
+    #[cfg(CONFIG_X86_64)]
+    if max_pfn > max_low_pfn {
+        max_low_pfn = max_pfn;
+    }
+    #[cfg(CONFIG_X86_32)]
+    early_ioremap_page_table_range_init();
+    load_swapper_cr3();
+    __flush_tlb_all();
+    ((*addr_of!(x86_init.hyper.init_mem_mapping)).unwrap())();
+    early_memtest(0, max_pfn_mapped.wrapping_shl(PAGE_SHIFT) as phys_addr_t);
+}
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn poking_init() {
+    let mut ptl: *mut spinlock_t = null_mut();
+    text_poke_mm = mm_alloc();
+    bug_on(text_poke_mm.is_null());
+    paravirt_enter_mmap(text_poke_mm);
+    set_notrack_mm(text_poke_mm);
+    text_poke_mm_addr = task_unmapped_base();
+    #[cfg(CONFIG_RANDOMIZE_BASE)]
+    {
+        text_poke_mm_addr = text_poke_mm_addr.wrapping_add(
+            (kaslr_get_random_long(c"Poking".as_ptr().cast::<c_char>()) & PAGE_MASK)
+                % task_size()
+                    .wrapping_sub(task_unmapped_base())
+                    .wrapping_sub(3 * PAGE_SIZE),
+        );
+    }
+    if text_poke_mm_addr.wrapping_add(PAGE_SIZE) & !PMD_MASK == 0 {
+        text_poke_mm_addr = text_poke_mm_addr.wrapping_add(PAGE_SIZE);
+    }
+    let ptep = get_locked_pte(text_poke_mm, text_poke_mm_addr, &mut ptl);
+    bug_on(ptep.is_null());
+    pte_unmap_unlock(ptep, ptl);
+}
+#[no_mangle]
+pub unsafe extern "C" fn devmem_is_allowed(pagenr: c_ulong) -> c_int {
+    if region_intersects(
+        (pagenr as resource_size_t).wrapping_shl(PAGE_SHIFT),
+        PAGE_SIZE as usize,
+        b::RUST_MM_IORESOURCE_SYSTEM_RAM,
+        IORES_DESC_NONE as c_ulong,
+    ) != REGION_DISJOINT as c_int
+    {
+        return if pagenr < 256 { 2 } else { 0 };
+    }
+    if iomem_is_exclusive(pagenr.wrapping_shl(PAGE_SHIFT) as u64) {
+        return if pagenr < 256 { 1 } else { 0 };
+    }
+    1
+}
+#[no_mangle]
+pub unsafe extern "C" fn free_init_pages(
+    what: *const c_char,
+    mut begin: c_ulong,
+    mut end: c_ulong,
+) {
+    let begin_aligned = round_up(begin, PAGE_SIZE);
+    let end_aligned = end & PAGE_MASK;
+    if warn_free_init_alignment(begin_aligned != begin || end_aligned != end) {
+        begin = begin_aligned;
+        end = end_aligned;
+    }
+    if begin >= end {
+        return;
+    }
+    if debug_pagealloc_enabled() {
+        b::rust_mm_log_unmapping_init(begin, end.wrapping_sub(1));
+        kmemleak_free_part(begin as *const c_void, end.wrapping_sub(begin) as usize);
+        set_memory_np(begin, (end.wrapping_sub(begin) >> PAGE_SHIFT) as c_int);
+    } else {
+        set_memory_nx(begin, (end.wrapping_sub(begin) >> PAGE_SHIFT) as c_int);
+        set_memory_rw(begin, (end.wrapping_sub(begin) >> PAGE_SHIFT) as c_int);
+        free_reserved_area(
+            begin as *mut c_void,
+            end as *mut c_void,
+            b::RUST_MM_POISON_FREE_INITMEM as c_int,
+            what,
+        );
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn free_kernel_image_pages(
+    what: *const c_char,
+    begin: *mut c_void,
+    end: *mut c_void,
+) {
+    let b = begin as c_ulong;
+    let e = end as c_ulong;
+    let len_pages = e.wrapping_sub(b) >> PAGE_SHIFT;
+    free_init_pages(what, b, e);
+    #[cfg(CONFIG_X86_64)]
+    if feature_pti() {
+        set_memory_np_noalias(b, len_pages as c_int);
+    }
+}
+#[no_mangle]
+#[link_section = ".ref.text"]
+pub unsafe extern "C" fn free_initmem() {
+    e820__reallocate_tables();
+    mem_encrypt_free_decrypted_mem();
+    free_kernel_image_pages(
+        c"unused kernel image (initmem)".as_ptr().cast::<c_char>(),
+        addr_of_mut!(__init_begin).cast(),
+        addr_of_mut!(__init_end).cast(),
+    );
+}
+#[cfg(CONFIG_BLK_DEV_INITRD)]
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn free_initrd_mem(start: c_ulong, end: c_ulong) {
+    free_init_pages(
+        c"initrd".as_ptr().cast::<c_char>(),
+        start,
+        round_up(end, PAGE_SIZE),
+    );
+}
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn arch_zone_limits_init(max_zone_pfns: *mut c_ulong) {
+    #[cfg(CONFIG_ZONE_DMA)]
+    {
+        *max_zone_pfns.add(ZONE_DMA as usize) = min(b::RUST_MM_MAX_DMA_PFN, max_low_pfn);
+    }
+    #[cfg(CONFIG_ZONE_DMA32)]
+    {
+        *max_zone_pfns.add(ZONE_DMA32 as usize) = min(b::RUST_MM_MAX_DMA32_PFN, max_low_pfn);
+    }
+    *max_zone_pfns.add(ZONE_NORMAL as usize) = max_low_pfn;
+    #[cfg(CONFIG_HIGHMEM)]
+    {
+        *max_zone_pfns.add(ZONE_HIGHMEM as usize) = max_pfn;
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn update_cache_mode_entry(entry: c_uint, cache: page_cache_mode) {
+    bug_on(entry == 0 && cache != _PAGE_CACHE_MODE_WB);
+    *addr_of_mut!(__cachemode2pte_tbl)
+        .cast::<u16>()
+        .add(cache as usize) = cm_idx2pte(entry) as u16;
+    *addr_of_mut!(__pte2cachemode_tbl)
+        .cast::<u8>()
+        .add(entry as usize) = cache as u8;
+}
+#[cfg(CONFIG_SWAP)]
+#[no_mangle]
+pub unsafe extern "C" fn arch_max_swapfile_size() -> c_ulong {
+    let mut pages = generic_max_swapfile_size();
+    if boot_bug_l1tf() && l1tf_mitigation != L1TF_MITIGATION_OFF {
+        let mut limit = l1tf_pfn_limit() as u64;
+        // PAE and x86-64 have >2 levels; native header carries the exact shift.
+        limit = limit.wrapping_shl(b::RUST_MM_SWAP_LIMIT_SHIFT);
+        pages = min(limit, pages as u64) as c_ulong;
+    }
+    pages
+}
+#[cfg(CONFIG_EXECMEM)]
+#[link_section = ".data..ro_after_init"]
+static mut execmem_info: b::execmem_info = unsafe { MaybeUninit::zeroed().assume_init() };
+#[cfg(all(CONFIG_EXECMEM, CONFIG_ARCH_HAS_EXECMEM_ROX))]
+#[no_mangle]
+pub unsafe extern "C" fn execmem_fill_trapping_insns(ptr: *mut c_void, size: usize) {
+    write_bytes(ptr.cast::<u8>(), b::RUST_MM_INT3_INSN_OPCODE as u8, size);
+}
+#[cfg(CONFIG_EXECMEM)]
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn execmem_arch_setup() -> *mut b::execmem_info {
+    let offset = if kaslr_enabled() {
+        (get_random_u32_inclusive(1, 1024) as c_ulong).wrapping_mul(PAGE_SIZE)
+    } else {
+        0
+    };
+    let start = modules_vaddr().wrapping_add(offset);
+    let (prot, flags) = if cfg!(CONFIG_ARCH_HAS_EXECMEM_ROX) && feature_pse() {
+        (page_kernel_rox(), EXECMEM_KASAN_SHADOW | EXECMEM_ROX_CACHE)
+    } else {
+        (page_kernel(), EXECMEM_KASAN_SHADOW)
+    };
+    // Compound assignment in C zeros every unspecified range/member.
+    write_bytes(addr_of_mut!(execmem_info), 0, 1);
+    let ranges = addr_of_mut!(execmem_info.ranges).cast::<execmem_range>();
+    for idx in [
+        EXECMEM_MODULE_TEXT,
+        EXECMEM_KPROBES,
+        EXECMEM_FTRACE,
+        EXECMEM_BPF,
+        EXECMEM_MODULE_DATA,
+    ] {
+        let r = ranges.add(idx as usize);
+        (*r).flags = if idx == EXECMEM_MODULE_DATA {
+            EXECMEM_KASAN_SHADOW
+        } else {
+            flags
+        };
+        (*r).start = start;
+        (*r).end = modules_end();
+        (*r).pgprot = if idx == EXECMEM_KPROBES {
+            page_kernel_rox()
+        } else if idx == EXECMEM_MODULE_DATA {
+            page_kernel()
+        } else {
+            prot
+        };
+        (*r).alignment = b::RUST_MM_MODULE_ALIGN as c_uint;
+    }
+    addr_of_mut!(execmem_info)
+}

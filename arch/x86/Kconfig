@@ -3171,3 +3171,5 @@ source "arch/x86/kernel/Kconfig.rust-platform-callbacks"
 source "arch/x86/boot/compressed/Kconfig.rust"
 
 source "arch/x86/boot/startup/Kconfig.rust"
+
+source "arch/x86/mm/Kconfig.rust-init"

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 menu "IRQ subsystem"
+
+source "kernel/irq/Kconfig.rust-core"
 # Options selectable by the architecture code
 
 # Make sparse irq Kconfig switch below available

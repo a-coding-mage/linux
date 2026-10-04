@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_X86_MM_INIT
+	bool "Rust x86-64 memory initialization owners"
+	depends on RUST && X86_64
+	default y
+	help
+	  Select Rust as the canonical init.o and init_64.o owners. Rust owns
+	  page-size selection, early page allocation, physical mapping,
+	  page-table walking, memory hotplug, vmemmap lifecycle, execmem,
+	  rodata protection, and identity mapping through ident_map.rs.
+	  Native headers provide the configured type layout and primitive ABI.
+	  Macro-only glue retains tracepoints, per-CPU declarations, boot
+	  registration, exports, diagnostics and architecture inline primitives.
+	  Original C, headers, assembly and tests remain available unchanged.
+	  The shared native-policy build route preserves the original stack
+	  protection and rejects unreviewed instrumentation combinations.

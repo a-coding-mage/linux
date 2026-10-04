@@ -1029,3 +1029,6 @@ include $(srctree)/arch/x86/kernel/early-platform-bindgen.mk
 include $(srctree)/arch/x86/kernel/x86-platform-callbacks-bindgen.mk
 
 include $(srctree)/mm/memblock_bindgen.mk
+
+include $(srctree)/kernel/irq/irq_core_bindgen.mk
+include $(srctree)/arch/x86/mm/init-bindgen.mk

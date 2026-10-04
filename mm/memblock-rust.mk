@@ -3,12 +3,10 @@
 ifeq ($(CONFIG_RUST_MEMBLOCK),y)
 obj-y := $(patsubst memblock.o,memblock.o memblock_helpers.o,$(obj-y))
 
-# The source phase must not silently discard native compiler instrumentation.
-# The shared native-policy integration can replace these diagnostics after
-# inspecting this owner's mixed runtime / __init / __init_memblock functions.
-ifeq ($(CONFIG_STACKPROTECTOR),y)
-$(error RUST_MEMBLOCK requires reviewed native stack-protector policy integration)
-endif
+# Original memblock.c uses native strong protection with no SSP exemptions.
+include $(srctree)/scripts/Makefile.rust-native-policy
+
+# Preserve the remaining unimplemented mixed-function instrumentation gates.
 ifeq ($(CONFIG_GCC_PLUGIN_LATENT_ENTROPY),y)
 $(error RUST_MEMBLOCK native per-init latent-entropy instrumentation is not integrated)
 endif
@@ -29,7 +27,7 @@ RUST_ALLOWED_FEATURES_memblock.o += cfi_encoding
 RUSTC_OUT_DIR_memblock.o = $(dir $@).$(notdir $@).rustc/
 
 memblock-rust-inputs := $(src)/memblock_reserved.rs \
-    $(objtree)/rust/bindings/memblock_generated.rs
+    $(objtree)/rust/bindings/memblock_generated.rs $(rust-native-policy-inputs)
 memblock-rust-targets := $(addprefix $(obj)/,memblock.o memblock.s memblock.ll \
     memblock.rsi .memblock-rust-listing/memblock.o)
 $(memblock-rust-targets): private target-stem := memblock
@@ -42,11 +40,11 @@ $(memblock-rust-targets): private part-of-module :=
 
 # Explicit Rust recipes take precedence over the unchanged adjacent C file.
 $(obj)/memblock.o: $(src)/memblock.rs $(memblock-rust-inputs) FORCE
-	+$(call if_changed_rule,rustc_o_rs)
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 $(obj)/memblock.s: $(src)/memblock.rs $(memblock-rust-inputs) FORCE
-	+$(call if_changed_dep,rustc_s_rs)
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_s,rustc_s_rs))
 $(obj)/memblock.ll: $(src)/memblock.rs $(memblock-rust-inputs) FORCE
-	+$(call if_changed_dep,rustc_ll_rs)
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_ll,rustc_ll_rs))
 quiet_cmd_memblock_rust_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
       cmd_memblock_rust_rsi = \
 	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
@@ -59,7 +57,7 @@ $(obj)/memblock.rsi: $(src)/memblock.rs $(memblock-rust-inputs) FORCE
 $(obj)/.memblock-rust-listing/memblock.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
 $(obj)/.memblock-rust-listing/memblock.o: private override KBUILD_CFLAGS += -g
 $(obj)/.memblock-rust-listing/memblock.o: $(src)/memblock.rs $(memblock-rust-inputs) FORCE
-	+$(call if_changed_rule,rustc_o_rs)
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 quiet_cmd_memblock_rust_lst_elf = LD      $@
       cmd_memblock_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
 $(obj)/.memblock-rust-listing-elf/memblock.o: $(obj)/.memblock-rust-listing/memblock.o FORCE

@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_IRQ_CORE
+	bool "Rust interrupt descriptor, dispatch and irqchip core"
+	depends on RUST
+	default y
+	help
+	  Select Rust ownership of irqdesc.c, handle.c and chip.c. Configured
+	  native layouts are generated from the original kernel headers. The
+	  compiler primitive and registration companion contains no original
+	  C owner bodies. Sparse and flat descriptor modes, SMP affinity,
+	  domain hierarchy, SYSFS and statistics retain their native branches.
+	  Existing C IRQ/KUnit tests link against the selected Rust symbols.
+	  Disabling this option selects the unchanged original C providers.

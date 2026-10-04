@@ -6,13 +6,15 @@ use warnings;
 use FindBin qw($Bin);
 my ($mode, $owner, $file, @args) = @ARGV;
 my %owners;
+my %native_zero;
 open my $manifest, '<', "$Bin/rust-native-policy-owners" or die "owner manifest: $!\n";
 while (<$manifest>) {
     next if /^\s*(?:#|$)/;
     chomp;
     my @fields = split /\s+/;
-    die "invalid owner field count\n" unless @fields == 3;
+    die "invalid owner field count\n" unless @fields == 3 || @fields == 4;
     my ($name, $strategy, $exceptions) = @fields;
+    die "invalid native object admission\n" if @fields == 4 && $fields[3] ne 'native-zero';
     die "invalid owner policy\n" unless defined($exceptions) && $name =~ m{^[A-Za-z_0-9/]+$} && $strategy eq 'strong';
     die "duplicate owner policy $name\n" if exists $owners{$name};
     my @exceptions = $exceptions eq '-' ? () : split /,/, $exceptions;
@@ -20,6 +22,9 @@ while (<$manifest>) {
     my %seen;
     die "duplicate function exemption\n" if grep { $seen{$_}++ } @exceptions;
     $owners{$name} = \@exceptions;
+    # An original strong-policy object may legitimately need no guard. This
+    # fact changes only object witness admission, never function attributes.
+    $native_zero{$name} = @fields == 4;
 }
 close $manifest;
 die "usage: $0 MODE OWNER FILE [OUTPUT|OBJDUMP]\n" unless defined($file) && $owners{$owner};
@@ -118,10 +123,14 @@ if ($mode eq 'prepare') {
     open my $p, '-|', @args, '-dr', '--no-show-raw-insn', $file or die $!;
     local $/; my $s = <$p>; close $p or die "objdump failed\n";
     # This is build admission, not the separate all-exits acceptance audit.
-    # Require native protection somewhere in each independently audited owner.
+    # Existing guarded native references require a corresponding object
+    # witness. An explicitly inventoried zero-guard native owner may remain
+    # empty; strong IR attributes and native metadata are still mandatory.
     my $guards = () = $s =~ /%gs:(?:0x0)?\(%rip\)[^\n]*\n\s*[0-9a-f]+:\s+R_X86_64_PC32\s+__ref_stack_chk_guard-0x4/g;
     my $failures = () = $s =~ /R_X86_64_PLT32\s+__stack_chk_fail-0x4/g;
-    die "native guard/check/failure references absent\n" unless $guards >= 2 && $failures >= 1;
+    die "native guard/check/failure references absent\n"
+        unless ($guards >= 2 && $failures >= 1)
+        || ($native_zero{$owner} && $guards == 0 && $failures == 0);
     for my $exempt (keys %exempt) {
         my @bodies = $s =~ /^[0-9a-f]+ <\Q$exempt\E>:\n(.*?)(?=^[0-9a-f]+ <|\z)/msg;
         die "missing/duplicate exempt body\n" unless @bodies == 1;
