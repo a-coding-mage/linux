@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # The existing obj-y entry owns exit.o; do not add a second provider.
 ifeq ($(CONFIG_RUST_EXIT),y)
+include $(srctree)/scripts/Makefile.rust-native-policy
 obj-y := $(patsubst exit.o,exit.o exit_helpers.o,$(obj-y))
 RUSTFLAGS_exit.o += -Zfunction-sections=n
 RUST_ALLOWED_FEATURES_exit.o += cfi_encoding,linkage
 # abort retains native weak and function alignment metadata in its entry shell.
-$(obj)/exit.o: $(src)/exit.rs $(filter-out $(src)/exit.rs,$(wildcard $(src)/exit_*.rs)) $(objtree)/rust/bindings/exit_generated.rs FORCE
-	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/exit.o: $(src)/exit.rs $(filter-out $(src)/exit.rs,$(wildcard $(src)/exit_*.rs)) $(objtree)/rust/bindings/exit_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 
 # Explicit targets need the same stem, module ownership and per-object policy.
 $(addprefix $(obj)/,exit.o exit.s exit.ll exit.rsi .rust-listing/exit.o): private modname-multi = \
@@ -15,10 +16,10 @@ $(addprefix $(obj)/,exit.o exit.s exit.ll exit.rsi .rust-listing/exit.o): privat
 $(addprefix $(obj)/,exit.s exit.ll exit.rsi): private target-stem := exit
 $(addprefix $(obj)/,exit.s exit.ll exit.rsi): private part-of-builtin = $(if $(filter $(obj)/exit.o,$(real-obj-y) $(lib-y)),y)
 $(addprefix $(obj)/,exit.s exit.ll exit.rsi): private part-of-module = $(if $(filter $(obj)/exit.o,$(real-obj-m)),y)
-$(obj)/exit.s: $(src)/exit.rs $(filter-out $(src)/exit.rs,$(wildcard $(src)/exit_*.rs)) $(objtree)/rust/bindings/exit_generated.rs FORCE
-	+$(call if_changed_dep,rustc_s_rs)
-$(obj)/exit.ll: $(src)/exit.rs $(filter-out $(src)/exit.rs,$(wildcard $(src)/exit_*.rs)) $(objtree)/rust/bindings/exit_generated.rs FORCE
-	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/exit.s: $(src)/exit.rs $(filter-out $(src)/exit.rs,$(wildcard $(src)/exit_*.rs)) $(objtree)/rust/bindings/exit_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_s,rustc_s_rs))
+$(obj)/exit.ll: $(src)/exit.rs $(filter-out $(src)/exit.rs,$(wildcard $(src)/exit_*.rs)) $(objtree)/rust/bindings/exit_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_ll,rustc_ll_rs))
 quiet_cmd_exit_rust_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
       cmd_exit_rust_rsi = \
 	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
@@ -34,8 +35,8 @@ $(obj)/.rust-listing/exit.o: private part-of-module = $(if $(filter $(obj)/exit.
 $(obj)/.rust-listing/exit.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
 $(obj)/.rust-listing/exit.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
 $(obj)/.rust-listing/exit.o: private override KBUILD_CFLAGS += -g
-$(obj)/.rust-listing/exit.o: $(src)/exit.rs $(filter-out $(src)/exit.rs,$(wildcard $(src)/exit_*.rs)) $(objtree)/rust/bindings/exit_generated.rs FORCE
-	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/.rust-listing/exit.o: $(src)/exit.rs $(filter-out $(src)/exit.rs,$(wildcard $(src)/exit_*.rs)) $(objtree)/rust/bindings/exit_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 quiet_cmd_exit_rust_lst_elf = LD      $@
       cmd_exit_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
 $(obj)/.rust-listing-elf/exit.o: $(obj)/.rust-listing/exit.o FORCE

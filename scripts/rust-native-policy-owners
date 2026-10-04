@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Canonical owner     reviewed effective C strategy     explicit C exemptions
+# Enrollment requires original native flags/function-annotation review.
+# Exemptions name emitted symbols, never whole-file wildcard matches.
+# init/main.c explicitly marks start_kernel __no_stack_protector because it
+# initializes the guard itself. The other five original files have no exemption.
+init/main                 strong start_kernel
+init/initramfs            strong -
+kernel/fork               strong -
+kernel/exit               strong -
+kernel/panic              strong -
+arch/x86/kernel/setup     strong -

@@ -17,6 +17,8 @@ use kernel::ffi::c_char;
 /// stack, initial task and early address-space prerequisites. This routine must
 /// be compiled without stack protection and address sanitizer instrumentation,
 /// as it initializes both facilities before the final nonreturning handoff.
+/// The owner-specific native-policy recipe preserves the original C
+/// __no_stack_protector exemption for this symbol alone.
 #[no_mangle]
 #[no_sanitize(address)]
 #[link_section = ".init.text"]

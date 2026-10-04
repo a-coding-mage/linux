@@ -3,22 +3,23 @@
 # Preserve the original archive slot and the canonical setup object identity.
 clean-files += .setup-rust-listing/ .setup-rust-listing-elf/
 ifeq ($(CONFIG_RUST_X86_SETUP),y)
+include $(srctree)/scripts/Makefile.rust-native-policy
 obj-y := $(patsubst setup.o,setup.o setup_primitives.o setup_header_calls.o,$(obj-y))
 RUSTFLAGS_setup.o += -Zfunction-sections=n
 
 # Explicit rules prevent the adjacent, unchanged C source from being selected.
-$(obj)/setup.o: $(src)/setup.rs $(objtree)/rust/bindings/x86_setup_generated.rs FORCE
-	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/setup.o: $(src)/setup.rs $(objtree)/rust/bindings/x86_setup_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 $(addprefix $(obj)/,setup.o setup.s setup.ll setup.rsi .setup-rust-listing/setup.o): private modname-multi = \
     $(sort $(foreach m,$(multi-obj-ym),\
         $(if $(filter $(target-stem).o,$(call suffix-search,$m,.o,-objs -y -m)),$(m:.o=))))
 $(addprefix $(obj)/,setup.s setup.ll setup.rsi): private target-stem := setup
 $(addprefix $(obj)/,setup.s setup.ll setup.rsi): private part-of-builtin = $(if $(filter $(obj)/setup.o,$(real-obj-y) $(lib-y)),y)
 $(addprefix $(obj)/,setup.s setup.ll setup.rsi): private part-of-module :=
-$(obj)/setup.s: $(src)/setup.rs $(objtree)/rust/bindings/x86_setup_generated.rs FORCE
-	+$(call if_changed_dep,rustc_s_rs)
-$(obj)/setup.ll: $(src)/setup.rs $(objtree)/rust/bindings/x86_setup_generated.rs FORCE
-	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/setup.s: $(src)/setup.rs $(objtree)/rust/bindings/x86_setup_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_s,rustc_s_rs))
+$(obj)/setup.ll: $(src)/setup.rs $(objtree)/rust/bindings/x86_setup_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_ll,rustc_ll_rs))
 quiet_cmd_setup_rust_rsi = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
       cmd_setup_rust_rsi = \
 	$(rust_common_cmd) -Zunpretty=expanded $< >$@ || exit $$?; \
@@ -33,8 +34,8 @@ $(obj)/.setup-rust-listing/setup.o: private part-of-builtin = $(if $(filter $(ob
 $(obj)/.setup-rust-listing/setup.o: private part-of-module :=
 $(obj)/.setup-rust-listing/setup.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
 $(obj)/.setup-rust-listing/setup.o: private override KBUILD_CFLAGS += -g
-$(obj)/.setup-rust-listing/setup.o: $(src)/setup.rs $(objtree)/rust/bindings/x86_setup_generated.rs FORCE
-	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/.setup-rust-listing/setup.o: $(src)/setup.rs $(objtree)/rust/bindings/x86_setup_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 quiet_cmd_setup_rust_lst_elf = LD      $@
       cmd_setup_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
 $(obj)/.setup-rust-listing-elf/setup.o: $(obj)/.setup-rust-listing/setup.o FORCE

@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Included only by owners whose original effective C policy was audited.
+ifndef rust-native-policy-included
+rust-native-policy-included := y
+
+ifeq ($(CONFIG_STACKPROTECTOR),y)
+ifneq ($(CONFIG_CC_IS_CLANG)$(CONFIG_X86_64)$(CONFIG_SMP)$(CONFIG_STACKPROTECTOR_STRONG),yyyy)
+$(error Rust core stack policy requires reviewed Clang x86-64 SMP strong policy)
+endif
+ifneq ($(filter y,$(CONFIG_RUST_INLINE_HELPERS) $(CONFIG_LTO_CLANG) $(CONFIG_KSTACK_ERASE) $(CONFIG_GCC_PLUGIN_LATENT_ENTROPY)),)
+$(error Rust core native stack policy requires separate review for inline helpers, LTO, stack-depth or latent-entropy instrumentation)
+endif
+ifeq ($(CONFIG_KCOV),y)
+$(error Rust core native stack policy requires per-init-function KCOV exemption review)
+endif
+
+rust-native-policy := y
+rust-native-policy-source := $(srctree)/scripts/rust_native_policy.c
+rust-native-policy-inputs := $(rust-native-policy-source) \
+	$(srctree)/scripts/rust-core-stack-policy.pl \
+	$(srctree)/scripts/rust-native-policy-owners \
+	$(srctree)/scripts/rust-native-codegen.pl \
+	$(srctree)/scripts/Makefile.rust-native-policy
+rust-native-policy-check = $(PERL) $(srctree)/scripts/rust-core-stack-policy.pl
+rust-native-policy-owner = $(obj)/$(target-stem)
+rust_native_ir = \
+	$(PERL) $(srctree)/scripts/rust-native-codegen.pl --check-policy $(CC) $(c_flags) && \
+	$(CC) $(subst $(depfile),$@.native.d,$(c_flags)) -S -emit-llvm \
+		-o $@.native.ll $(rust-native-policy-source) && \
+	$(rust-native-policy-check) empty $(rust-native-policy-owner) $@.native.ll && \
+	rust_native_debug_flags=$$($(rust-native-policy-check) rust-debug $(rust-native-policy-owner) $@.native.ll) && \
+	$(rust_common_cmd) $$rust_native_debug_flags -Zstack-protector=strong \
+		--emit=llvm-ir=$@.rust.ll $< && \
+	$(rust-native-policy-check) prepare $(rust-native-policy-owner) $@.rust.ll $@.policy.ll && \
+	$(LLVM_LINK) -S $@.policy.ll $@.native.ll -o $@.linked.ll && \
+	$(rust-native-policy-check) metadata $(rust-native-policy-owner) $@.linked.ll && \
+	$(rust-native-policy-check) rust $(rust-native-policy-owner) $@.linked.ll && \
+	cat $@.native.d >> $(depfile)
+rust_native_cc = $(PERL) $(srctree)/scripts/rust-native-codegen.pl $(CC) $(c_flags)
+
+quiet_cmd_rust_native_o = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
+      cmd_rust_native_o = $(rust_native_ir) && \
+	$(rust_native_cc) -c $@.linked.ll -o $@ && \
+	$(rust-native-policy-check) object $(rust-native-policy-owner) $@ $(OBJDUMP) || exit $$? \
+	$(cmd_ld_single) $(cmd_objtool)
+define rule_rust_native_o
+	$(call cmd_and_fixdep,rust_native_o)
+	$(call cmd,gen_objtooldep)
+	$(call cmd,gen_symversions_rs)
+endef
+quiet_cmd_rust_native_s = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
+      cmd_rust_native_s = $(rust_native_ir) && \
+	$(rust_native_cc) -S $@.linked.ll -o $@ || exit $$?
+quiet_cmd_rust_native_ll = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
+      cmd_rust_native_ll = $(rust_native_ir) && \
+	$(rust_native_cc) -S -emit-llvm $@.linked.ll -o $@ && \
+	$(rust-native-policy-check) metadata $(rust-native-policy-owner) $@ && \
+	$(rust-native-policy-check) rust $(rust-native-policy-owner) $@ || exit $$?
+endif
+endif

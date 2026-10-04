@@ -7,6 +7,12 @@ ccflags-y := -fno-function-sections -fno-data-sections
 
 obj-y                          := main.o version.o mounts.o
 
+init-rust-native-owners := $(if $(filter y,$(CONFIG_RUST_INIT_MAIN)),main) \
+	$(if $(filter y,$(CONFIG_RUST_INIT_INITRAMFS)),initramfs)
+ifneq ($(strip $(init-rust-native-owners)),)
+include $(srctree)/scripts/Makefile.rust-native-policy
+endif
+
 # Keep selected Rust source/assembly listings with their native boot owners.
 # The generic .lst rule instead compiles the adjacent C source into $*.o.
 clean-files += .rust-listing/ .rust-listing-elf/
@@ -39,8 +45,8 @@ $(obj)/.rust-listing/$1.o: private part-of-builtin = $$(if $$(filter $(obj)/$1.o
 $(obj)/.rust-listing/$1.o: private part-of-module :=
 $(obj)/.rust-listing/$1.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
 $(obj)/.rust-listing/$1.o: private override KBUILD_CFLAGS += -g
-$(obj)/.rust-listing/$1.o: $(src)/$1.rs $2 FORCE
-	+$$(call if_changed_rule,rustc_o_rs)
+$(obj)/.rust-listing/$1.o: $(src)/$1.rs $2 $$(if $$(filter $1,$$(init-rust-native-owners)),$$(rust-native-policy-inputs)) FORCE
+	+$$(call if_changed_rule,$$(if $$(and $$(rust-native-policy),$$(filter $1,$$(init-rust-native-owners))),rust_native_o,rustc_o_rs))
 $(obj)/.rust-listing-elf/$1.o: $(obj)/.rust-listing/$1.o FORCE
 	$$(call if_changed,init_rust_lst_elf)
 $(obj)/$1.lst: $(obj)/.rust-listing-elf/$1.o $(srctree)/scripts/makelst \
@@ -57,12 +63,12 @@ RUST_ALLOWED_FEATURES_main.o := linkage,no_sanitize
 RUSTFLAGS_main.o += --extern init_main_bindings -Zfunction-sections=n
 $(eval $(call init-rust-inspection,main,$(objtree)/rust/libinit_main_bindings.rmeta))
 
-$(obj)/main.o: $(src)/main.rs $(objtree)/rust/libinit_main_bindings.rmeta FORCE
-	+$(call if_changed_rule,rustc_o_rs)
-$(obj)/main.s: $(src)/main.rs $(objtree)/rust/libinit_main_bindings.rmeta FORCE
-	+$(call if_changed_dep,rustc_s_rs)
-$(obj)/main.ll: $(src)/main.rs $(objtree)/rust/libinit_main_bindings.rmeta FORCE
-	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/main.o: $(src)/main.rs $(objtree)/rust/libinit_main_bindings.rmeta $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
+$(obj)/main.s: $(src)/main.rs $(objtree)/rust/libinit_main_bindings.rmeta $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_s,rustc_s_rs))
+$(obj)/main.ll: $(src)/main.rs $(objtree)/rust/libinit_main_bindings.rmeta $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_ll,rustc_ll_rs))
 
 # Canonical compiler/shared-infrastructure boundaries; init sequencing and
 # trace registration/callbacks are owned by main.rs.
@@ -90,12 +96,12 @@ ifeq ($(CONFIG_RUST_INIT_INITRAMFS),y)
 RUST_ALLOWED_FEATURES_initramfs.o := linkage
 RUSTFLAGS_initramfs.o += -Zfunction-sections=n
 $(eval $(call init-rust-inspection,initramfs,$(objtree)/rust/bindings/init_initramfs_generated.rs))
-$(obj)/initramfs.o: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs FORCE
-	+$(call if_changed_rule,rustc_o_rs)
-$(obj)/initramfs.s: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs FORCE
-	+$(call if_changed_dep,rustc_s_rs)
-$(obj)/initramfs.ll: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs FORCE
-	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/initramfs.o: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
+$(obj)/initramfs.s: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_s,rustc_s_rs))
+$(obj)/initramfs.ll: $(src)/initramfs.rs $(objtree)/rust/bindings/init_initramfs_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_ll,rustc_ll_rs))
 obj-y += initramfs_abi.o
 endif
 endif

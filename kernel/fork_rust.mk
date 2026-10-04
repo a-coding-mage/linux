@@ -1,10 +1,11 @@
 ifeq ($(CONFIG_RUST_FORK),y)
+include $(srctree)/scripts/Makefile.rust-native-policy
 # Keep the original fork subsys_initcall before later kernel owners.
 obj-y := $(patsubst fork.o,fork.o fork_helpers.o,$(obj-y))
 RUST_ALLOWED_FEATURES_fork.o := linkage
 RUSTFLAGS_fork.o += -Zfunction-sections=n
-$(obj)/fork.o: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs FORCE
-	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/fork.o: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 
 # Explicit targets have no implicit stem; keep the canonical owner identity.
 $(addprefix $(obj)/,fork.o fork.s fork.ll fork.rsi .rust-listing/fork.o): private modname-multi = \
@@ -15,10 +16,10 @@ $(addprefix $(obj)/,fork.o fork.s fork.ll fork.rsi .rust-listing/fork.o): privat
 $(addprefix $(obj)/,fork.s fork.ll fork.rsi): private target-stem := fork
 $(addprefix $(obj)/,fork.s fork.ll fork.rsi): private part-of-builtin = $(if $(filter $(obj)/fork.o,$(real-obj-y) $(lib-y)),y)
 $(addprefix $(obj)/,fork.s fork.ll fork.rsi): private part-of-module = $(if $(filter $(obj)/fork.o,$(real-obj-m)),y)
-$(obj)/fork.s: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs FORCE
-	+$(call if_changed_dep,rustc_s_rs)
-$(obj)/fork.ll: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs FORCE
-	+$(call if_changed_dep,rustc_ll_rs)
+$(obj)/fork.s: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_s,rustc_s_rs))
+$(obj)/fork.ll: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_dep,$(if $(rust-native-policy),rust_native_ll,rustc_ll_rs))
 $(obj)/fork.rsi: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs FORCE
 	+$(call if_changed_dep,fork_rust_rsi)
 
@@ -34,8 +35,8 @@ $(obj)/.rust-listing/fork.o: private part-of-module = $(if $(filter $(obj)/fork.
 $(obj)/.rust-listing/fork.o: private override RUSTFLAGS_KERNEL += -Cdebuginfo=2
 $(obj)/.rust-listing/fork.o: private override RUSTFLAGS_MODULE += -Cdebuginfo=2
 $(obj)/.rust-listing/fork.o: private override KBUILD_CFLAGS += -g
-$(obj)/.rust-listing/fork.o: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs FORCE
-	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/.rust-listing/fork.o: $(src)/fork.rs $(objtree)/rust/bindings/fork_generated.rs $(rust-native-policy-inputs) FORCE
+	+$(call if_changed_rule,$(if $(rust-native-policy),rust_native_o,rustc_o_rs))
 quiet_cmd_fork_rust_lst_elf = LD      $@
       cmd_fork_rust_lst_elf = $(LD) $(ld_flags) -r -o $@ $<
 $(obj)/.rust-listing-elf/fork.o: $(obj)/.rust-listing/fork.o FORCE
