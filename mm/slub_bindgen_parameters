@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-prepend-enum-name
+--allowlist-type '^(kmem_cache|slab|freeptr_t|slab_sheaf|slub_percpu_sheaves|kmem_cache_node|node_barn|slub_flush_work|deferred_percpu_work|slab_alloc_context|partial_bulk_context|slab_obj_iter|track|track_item|add_mode|stat_item|slab_flags|freelist_counters|kmem_cache_order_objects|slab_flags_t|gfp_t|slabobj_ext|codetag_ref|alloc_tag|nodemask_t|list_head|rcu_head|callback_head|work_struct|workqueue_struct|spinlock_t|mutex|kernel_param|kernel_param_ops|kmem_cache_args|kmem_cache_stats|slabinfo|kmem_obj_info|location|loc_track|slab_attribute|saved_alias|kobj_type|kobj_uevent_env|kobject|kset|sysfs_ops|seq_operations|file_operations|file|inode|dentry|seq_file|notifier_block|memory_notify|irq_work|llist_head|llist_node|rnd_state|zone|zonelist|zoneref|mempolicy|page|pglist_data|atomic_long_t|rcu_delayed_free|kunit|kunit_resource|depot_stack_handle_t|slab_stat_type)$'
+--allowlist-function '^(rust_slub_.*|__kmalloc_large_node_noprof|__kmem_cache_alloc_bulk|__kmem_cache_free_bulk|__memcg_kmem_charge_page|__memcg_slab_free_hook|__memcg_slab_post_alloc_hook|__refill_objects_node|memcg_alloc_abort_single|add_taint|cache_random_seq_create|cache_random_seq_destroy|call_rcu|cpus_read_lock|cpus_read_unlock|dump_stack|flush_work|free_frozen_pages|free_frozen_pages_nolock|free_percpu|kfree|kmalloc_fix_flags|kmalloc_size_roundup|kmalloc_slab|kmem_cache_free|kmem_cache_free_bulk|memchr_inv|mempolicy_slab_node|print_tainted|queue_work_on|rcu_barrier|stack_depot_print|stack_depot_save|stack_trace_save|strchrnul|strlen|strnchr|strncmp|vfree|vfree_atomic)$'
+--allowlist-var '^(RSL_.*|SL_.*|SO_.*|TRACK_.*|ADD_TO_.*|ALLOC_.*|FREE_.*|ORDER_FALLBACK|CMPXCHG_DOUBLE_FAIL|SHEAF_.*|BARN_.*|NR_.*|KMALLOC_.*|SLUB_RED_.*|POISON_.*|TAINT_BAD_PAGE|LOCKDEP_NOW_UNRELIABLE|DUMP_PREFIX_ADDRESS|MPOL_BIND|NR_SLAB_.*|ENOMEM|EINVAL|EBUSY|E2BIG|ENOSYS|ERANGE|EIO|kmem_cache|gfp_allowed_mask|slab_mutex|slab_caches|slab_state|flush_lock|object_map_lock|nr_cpu_ids|nr_node_ids|nr_online_nodes|nr_online_cpus|N_.*|SLAB_.*|DOWN|PARTIAL|UP|FULL|SYSFS|KOBJ_.*|MEM_.*|NOTIFY_.*|GFP_.*|__GFP_.*|FMODE_.*|GFP_NOWAIT|GFP_ATOMIC)$'
+--with-attribute-custom-struct=kmem_cache='#[cfi_encoding="10kmem_cache"]'
+--with-attribute-custom-struct=slab='#[cfi_encoding="4slab"]'
+--with-attribute-custom-struct=callback_head='#[cfi_encoding="13callback_head"]'
+--with-attribute-custom-struct=work_struct='#[cfi_encoding="11work_struct"]'
+--with-attribute-custom-struct=irq_work='#[cfi_encoding="8irq_work"]'
+--with-attribute-custom-struct=kernel_param='#[cfi_encoding="12kernel_param"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=inode='#[cfi_encoding="5inode"]'
+--with-attribute-custom-struct=kobject='#[cfi_encoding="7kobject"]'
+--with-attribute-custom-struct=kset='#[cfi_encoding="4kset"]'
+--with-attribute-custom-struct=kobj_uevent_env='#[cfi_encoding="15kobj_uevent_env"]'
+--with-attribute-custom-struct=notifier_block='#[cfi_encoding="14notifier_block"]'
+--with-attribute-custom-struct=attribute='#[cfi_encoding="9attribute"]'

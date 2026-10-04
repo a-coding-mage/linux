@@ -2,6 +2,20 @@
 
 menu "Memory Management options"
 
+config RUST_SLUB
+	bool "Rust SLUB allocator algorithms"
+	depends on RUST && SLUB
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build slub.o from the Rust allocator using configured native
+	  types and constants. Allocation, free, sheaf, slab, debug and
+	  cache-management decisions execute in Rust. Thin native public
+	  entry points preserve original caller-IP and macro-selected ABI;
+	  native header and compiler boundaries remain explicit work.
+	  The retained original slub.c implementation is not linked.
+	  Compiler protection and original C acceptance remain required.
+
 config RUST_VMSCAN
 	bool "Rust classic and multigeneration reclaim"
 	depends on RUST

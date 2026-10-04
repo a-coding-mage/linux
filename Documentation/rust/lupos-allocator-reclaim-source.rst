@@ -58,3 +58,45 @@ checks passed; this candidate has not undergone native compilation, generated
 ABI/signature validation, compiler-instrumentation and link ownership checks,
 configuration matrix coverage, boot or original C regression execution.
 These remain gates for the later combined build-fix and acceptance phases.
+
+SLUB allocator
+--------------
+
+The two SLUB source lanes are composed under one native header/private-type
+authority. Their inventories map 224 original first-half and 174 second-half
+function-definition occurrences, including configuration variants, plus the
+macro-generated statistics callbacks. Allocation/free, sheaf and barn control,
+slab state, cache geometry, debug/proc/sysfs and hotplug decisions have Rust
+source bodies. Reciprocal source review repaired a stale allocation pointer
+after disposal and CPU-iteration boundary mismatches. Counts describe source
+inventory only; configured compilation and runtime behavior remain unverified.
+
+``mm/slub_allocation_exports.c`` retains thin native runtime entry points for
+caller-IP and macro-selected parameter ABI. Most capture ``_RET_IP_`` at the
+public entry and pass it to a Rust algorithm body; the caller-tracking entry
+passes its explicit caller argument instead. Capturing it in an ordinary leaf
+called from Rust would identify an intermediate callsite. These veneers are
+real C runtime code and own their public symbols. They are not metadata-only,
+and this source checkpoint does not claim a completely Rust-emitted public
+API. Header algorithms, native static storage and registration leaves also
+remain explicit native work; none forwards to the retained ``mm/slub.c`` body.
+
+The public veneers are: ``kmem_cache_alloc_noprof``,
+``kmem_cache_alloc_lru_noprof``, ``kmem_cache_alloc_node_noprof``,
+``kmem_cache_alloc_from_sheaf_noprof``, ``__kmalloc_large_noprof``,
+``__kmalloc_large_node_noprof``, ``__kmalloc_node_noprof``,
+``__kmalloc_noprof``, ``__kmalloc_node_track_caller_noprof``,
+``_kmalloc_nolock_noprof``, ``__kmalloc_cache_noprof``,
+``__kmalloc_cache_node_noprof``, ``__kmalloc_flags_noprof``,
+``kmem_cache_free``, ``kvfree_rcu_cb``, ``kfree``,
+``krealloc_node_align_noprof``, ``__kvmalloc_node_noprof``,
+``kvrealloc_node_align_noprof``, ``kmem_cache_free_bulk``,
+``__kmem_cache_free_bulk``, ``__kmem_cache_alloc_bulk``,
+``__refill_objects_node`` and configured ``memcg_alloc_abort_single``.
+
+Native companions inherit the original SLUB KASAN, KCSAN and KCOV exclusions;
+the two original KMSAN function exemptions remain local. This is no proof of
+equivalent Rust sanitizer coverage. Configured native types, callback and
+public ABI, stack/compiler protection, caller-IP profiling, static data and
+section lifetimes, original C suites and all configuration branches remain
+gates for the later integrated build-fix and acceptance phases.

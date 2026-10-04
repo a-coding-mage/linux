@@ -74,6 +74,7 @@ obj-y += memblock.o
 include $(srctree)/mm/memblock-rust.mk
 obj-y += $(memory-hotplug-y)
 obj-y += slub.o
+include $(srctree)/mm/slub-rust.mk
 
 ifdef CONFIG_MMU
 	obj-$(CONFIG_ADVISE_SYSCALLS)	+= madvise.o

@@ -37,3 +37,5 @@ mm/mprotect               strong -
 mm/rmap                   strong -
 
 mm/vmscan                 strong -
+
+mm/slub                   strong -
