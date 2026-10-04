@@ -41,3 +41,5 @@ mm/vmscan                 strong -
 mm/slub                   strong -
 
 mm/slab_common            strong -
+
+mm/compaction             strong -

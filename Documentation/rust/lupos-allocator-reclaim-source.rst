@@ -126,3 +126,30 @@ checks passed. No bindgen, compiler, configuration, native probe, kernel build,
 guest or original C test was run for this source checkpoint. Native signature,
 layout, compiler-protection and section/data/callback identity, all branch
 configurations and runtime error/lock/RCU behavior remain unverified gates.
+
+Memory compaction
+-----------------
+
+The compaction source candidate maps all 85 original function-definition
+occurrences (77 unique names), including disabled configuration alternatives.
+Independent body review covered isolation and rollback, free/migration scans,
+allocation/free callbacks, direct and proactive policy, kcompactd, sysctl,
+sysfs and hotplug. It corrected a draft's plain list accesses to the original
+header READ_ONCE/WRITE_ONCE operations. Native ``compact_control`` counter and
+search-order widths, node iteration limits, integer promotion and truncation
+were retained explicitly. Disabled macros discard their original arguments.
+
+Configured private kernel headers supply actual types. Original native header,
+architecture/atomic/list/RCU operations, allocation-profile wrappers,
+tracepoints, warning sites and init registration remain native boundaries.
+No original compaction decision body is forwarded to C. The freezer wait macro
+re-evaluates the Rust predicate at its native wait points; its operational ABI
+and profiling/callback identity remain later validation gates.
+
+The original ``compaction.o`` remains applicable even with COMPACTION disabled;
+the selector therefore does not incorrectly require that feature. Unsupported
+native compiler policies fail closed. Formatting, full source inventory,
+independent source review and patch checks passed. Generated types/signatures,
+compiler instrumentation, dependency/selection/inspection targets, link,
+configuration and original C runtime tests are still pending. No per-owner
+build or guest was run.

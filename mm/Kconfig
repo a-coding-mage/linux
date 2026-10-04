@@ -2,6 +2,20 @@
 
 menu "Memory Management options"
 
+config RUST_COMPACTION
+	bool "Rust memory compaction owner"
+	depends on RUST
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build compaction.o from Rust with layouts and constants generated
+	  from the configured original kernel headers. Isolation, free and
+	  migrate scanning, direct/proactive policy and kcompactd lifecycle
+	  execute in Rust. Native header/architecture/atomic, tracepoint,
+	  allocation-profiling and registration leaves remain explicit.
+	  Native instrumentation, ABI/link and original C runtime acceptance
+	  remain required. The retained original C owner is not linked.
+
 config RUST_SLAB_COMMON
 	bool "Rust common slab cache and deferred-free algorithms"
 	depends on RUST

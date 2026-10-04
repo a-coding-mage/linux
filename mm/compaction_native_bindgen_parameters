@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(page|folio|zone|pglist_data|pg_data_t|compact_control|capture_control|alloc_context|list_head|spinlock_t|free_area|lruvec|address_space|task_struct|mem_cgroup|ctl_table|device|device_attribute|attribute|node|nodemask_t|zonelist|zoneref|gfp_t|isolate_mode_t|compact_priority|compact_result|migrate_mode|migrate_reason|vm_event_item|node_stat_item|zone_stat_item|zone_type|migratetype|fallback_result|vmscan_throttle_state|new_folio_t|free_folio_t|loff_t)$'
+--allowlist-function '^(rust_compaction_.*|lru_add_drain_all|proc_dointvec_minmax|proc_dointvec|device_create_file|device_remove_file|kthread_should_stop|drain_all_pages|wake_up_process|kthread_stop|post_alloc_hook|__free_pages|__isolate_free_page|reclaim_throttle|isolate_movable_ops_page|folio_unlock|putback_movable_pages|extfrag_for_order|find_suitable_fallback|fragmentation_index|zone_reclaimable_pages|lru_add_drain|migrate_pages|lru_add_drain_cpu_zone|prep_compound_page|free_pages_prepare)$'
+--allowlist-var '^(RUST_COMPACTION_.*|defrag_mode|sysctl_vals|NR_.*|MAX_NR_ZONES|MIGRATE_.*|COMPACT.*|MIN_COMPACT_PRIORITY|MR_COMPACTION|VMSCAN_THROTTLE_ISOLATED|FALLBACK_FOUND|KCOMPACTD_.*)$'
+# Header layouts are generated from the selected original native configuration.
+# Page/folio address arithmetic needs their true native size; no Rust replicas.
+--with-attribute-custom-struct=page='#[cfi_encoding="4page"]'
+--with-attribute-custom-struct=folio='#[cfi_encoding="5folio"]'
+--with-attribute-custom-struct=zone='#[cfi_encoding="4zone"]'
+--with-attribute-custom-struct=pglist_data='#[cfi_encoding="11pglist_data"]'
+--with-attribute-custom-struct=compact_control='#[cfi_encoding="15compact_control"]'
+--with-attribute-custom-struct=capture_control='#[cfi_encoding="15capture_control"]'
+--with-attribute-custom-struct=alloc_context='#[cfi_encoding="13alloc_context"]'
+--with-attribute-custom-struct=ctl_table='#[cfi_encoding="9ctl_table"]'
+--with-attribute-custom-struct=device='#[cfi_encoding="6device"]'
+--with-attribute-custom-struct=device_attribute='#[cfi_encoding="16device_attribute"]'
