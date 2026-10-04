@@ -1,0 +1,100 @@
+# SPDX-License-Identifier: GPL-2.0
+# Distinct startup ABI: reuse configured x86 target features, but rebuild a
+# private core for small/PIC/-Os. Never link kernel or decompressor metadata.
+startup-rust-lib-src := $(if $(RUST_LIB_SRC),$(RUST_LIB_SRC),$(shell $(RUSTC) --print sysroot)/lib/rustlib/src/rust/library)
+startup-rust-target := $(objtree)/scripts/target.json
+startup-rust-native-flags := $(filter -Zcf-protection=% -Zfunction-return=% \
+	-Zpatchable-function-entry=% -Ctarget-cpu=% -Ztune-cpu=% \
+	-Cforce-frame-pointers=% -Zllvm_module_flag=frame-pointer:%,$(KBUILD_RUSTFLAGS))
+startup-rust-flags := $(rust_common_flags) \
+	--target=$(startup-rust-target) --sysroot=/dev/null \
+	-Cpanic=abort -Cembed-bitcode=y -Clto=n -Ccodegen-units=1 \
+	-Cforce-unwind-tables=n -Csymbol-mangling-version=v0 \
+	-Copt-level=s -Ccode-model=small -Crelocation-model=pic -Cno-redzone=y \
+	-Ctarget-feature=-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2 \
+	-Zfunction-sections=y -Zno-jump-tables \
+	-Zdefault-visibility=hidden -Zdirect-access-external-data=y \
+	-Zrelax-elf-relocations=n -Zplt=y $(startup-rust-native-flags) \
+	-Cdebug-assertions=$(if $(CONFIG_RUST_DEBUG_ASSERTIONS),y,n) \
+	-Coverflow-checks=$(if $(CONFIG_RUST_OVERFLOW_CHECKS),y,n) \
+	$(if $(CONFIG_WERROR),-Dwarnings) $(KRUSTFLAGS)
+startup-rust-cfg := @$(objtree)/include/generated/rustc_cfg
+startup-rust-deps := $(src)/startup_gdt_bindings.rs $(src)/gdt_idt.rs \
+	$(src)/startup_map_bindings.rs $(src)/map_kernel.rs
+startup-rust-generated := $(obj)/startup_gdt_bindings_generated.rs \
+	$(obj)/startup_map_bindings_generated.rs
+startup-rust-roots := startup_64_load_idt startup_64_setup_gdt_idt __startup_64
+
+targets += startup-rust.o startup.a libcore.rlib libcompiler_builtins.rlib \
+	startup_gdt_bindings_generated.rs startup_map_bindings_generated.rs \
+	startup-rust.o.objtool.log
+
+quiet_cmd_startup_core = RUSTC STARTUP $@
+      cmd_startup_core = $(RUSTC) $(filter-out --edition=2021 -Wunreachable_pub,$(startup-rust-flags)) \
+	--edition=$(if $(call rustc-min-version,108700),2024,2021) --cfg no_fp_fmt_parse \
+	--crate-name core --crate-type rlib --emit=link=$@,dep-info=$(depfile) $<
+$(obj)/libcore.rlib: $(startup-rust-lib-src)/core/src/lib.rs $(startup-rust-target) FORCE
+	$(call if_changed_dep,startup_core)
+
+quiet_cmd_startup_builtins = RUSTC STARTUP $@
+      cmd_startup_builtins = $(RUSTC) $(startup-rust-flags) --crate-name compiler_builtins \
+	--crate-type rlib --extern core=$(obj)/libcore.rlib --emit=link=$@,dep-info=$(depfile) $<
+$(obj)/libcompiler_builtins.rlib: $(src)/startup_compiler_builtins.rs $(obj)/libcore.rlib FORCE
+	$(call if_changed_dep,startup_builtins)
+
+quiet_cmd_startup_gdt_bindgen = BINDGEN STARTUP GDT $@
+      cmd_startup_gdt_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
+	--no-prepend-enum-name --with-derive-default \
+	--allowlist-type '(gate_desc|desc_ptr|gdt_page)' \
+	--allowlist-function 'vc_no_ghcb' \
+	--allowlist-var '(gdt_page|GDT_SIZE|NUM_EXCEPTION_VECTORS|GATE_INTERRUPT|X86_TRAP_VC|LUPOS_STARTUP_GDT_.*)' \
+	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
+$(obj)/startup_gdt_bindings_generated.rs: $(src)/startup_gdt_bindings.h FORCE
+	$(call if_changed_dep,startup_gdt_bindgen)
+
+quiet_cmd_startup_map_bindgen = BINDGEN STARTUP MAP $@
+      cmd_startup_map_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
+	--no-prepend-enum-name --with-derive-default \
+	--allowlist-type '(boot_params|cpuinfo_x86|pgd_t|p4d_t|pud_t|pmd_t|pgdval_t|p4dval_t|pudval_t|pmdval_t)' \
+	--allowlist-function '(sme_encrypt_kernel|early_snp_set_memory_shared)' \
+	--allowlist-var '(LUPOS_STARTUP_MAP_.*|early_dynamic_pgts|next_early_pgt|__pgtable_l5_enabled|pgdir_shift|ptrs_per_p4d|phys_base|early_top_pgt|level4_kernel_pgt|level3_kernel_pgt|level2_fixmap_pgt|level2_kernel_pgt|sme_me_mask|boot_cpu_data|_text|_end|__start_bss_decrypted|__end_bss_decrypted)' \
+	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
+$(obj)/startup_map_bindings_generated.rs: $(src)/startup_map_bindings.h FORCE
+	$(call if_changed_dep,startup_map_bindgen)
+
+quiet_cmd_startup_rust = RUSTC STARTUP $@
+      cmd_startup_rust = LUPOS_STARTUP_OBJ=$(abspath $(obj)) \
+	$(RUSTC) $(filter-out -Clto=n,$(startup-rust-flags)) -Clto=fat $(startup-rust-cfg) \
+	--crate-name startup --crate-type staticlib -Ldependency=$(obj) \
+	--extern core=$(obj)/libcore.rlib \
+	--extern compiler_builtins=$(obj)/libcompiler_builtins.rlib \
+	--emit=link=$@,dep-info=$(depfile) $<
+$(obj)/startup.a: $(src)/startup.rs $(startup-rust-deps) $(startup-rust-generated) \
+	$(obj)/libcompiler_builtins.rlib $(objtree)/include/generated/rustc_cfg FORCE
+	$(call if_changed_dep,startup_rust)
+
+# Local LTO/GC discards unused core metadata while retaining the genuine panic
+# path. Keep native noabs validation and configured deferred/full objtool policy.
+# The parent Makefile adds --link for this intentional multi-file collection.
+quiet_cmd_startup_rust_link = LD STARTUP $@
+      cmd_startup_rust_link = $(LD) -r --gc-sections \
+	$(addprefix --undefined=,$(startup-rust-roots)) -o $@ \
+	--whole-archive $(obj)/startup.a --no-whole-archive || exit $$?; \
+	{ status=0; $(objtool) $(objtool-args) $@ > $@.objtool.log 2>&1 || status=$$?; \
+	  cat $@.objtool.log; test $$status -eq 0 || exit $$status; \
+	  test ! -s $@.objtool.log || exit 1; }
+define rule_startup_rust_link
+	$(call cmd_and_savecmd,startup_rust_link)
+	$(call cmd,gen_objtooldep)
+endef
+$(obj)/startup-rust.o: $(obj)/startup.a FORCE
+	$(call if_changed_rule,startup_rust_link)
+
+# Compiler/header configuration and tool changes must invalidate private output.
+$(obj)/libcore.rlib $(obj)/libcompiler_builtins.rlib $(obj)/startup.a: \
+	$(wildcard $(RUSTC)) $(wildcard $(objtree)/include/config/RUSTC_VERSION_TEXT)
+$(startup-rust-generated): $(wildcard $(BINDGEN)) \
+	$(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT) \
+	$(objtree)/include/generated/autoconf.h

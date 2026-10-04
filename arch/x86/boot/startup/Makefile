@@ -18,7 +18,21 @@ KMSAN_SANITIZE	:= n
 UBSAN_SANITIZE	:= n
 KCOV_INSTRUMENT	:= n
 
+ifeq ($(CONFIG_RUST_X86_STARTUP),y)
+# Both selected owners are Rust; a Rust failure must not select the C bodies.
+obj-y				+= startup-rust.o
+include $(srctree)/arch/x86/boot/startup/Makefile.rust
+# Generic single-file/inspection rules would otherwise rediscover retained C
+# references (or compile these Rust modules without the startup crate context).
+# The combined object is the only supported selected owner and inspection unit.
+startup-rust-retired-targets := $(foreach suffix,o s i ll lst rsi,\
+	$(addsuffix .$(suffix),gdt_idt map_kernel))
+$(addprefix $(obj)/,$(startup-rust-retired-targets)): FORCE
+	@echo "RUST_X86_STARTUP: $@ is a retired per-file target; build and inspect $(obj)/startup-rust.o" >&2
+	@false
+else
 obj-$(CONFIG_X86_64)		+= gdt_idt.o map_kernel.o
+endif
 obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= sme.o sev-startup.o
 pi-objs				:= $(patsubst %.o,$(obj)/%.o,$(obj-y))
 
@@ -37,6 +51,10 @@ $(patsubst %.o,$(obj)/%.o,$(lib-y)): OBJECT_FILES_NON_STANDARD := y
 #
 $(pi-objs): objtool-enabled	= 1
 $(pi-objs): objtool-args	= $(if $(delay-objtool),--dry-run,$(objtool-args-y)) --noabs
+
+# Unlike the native single translation units, this is an ld -r collection.
+# --link changes the input kind; the native noabs and configured checks remain.
+$(obj)/startup-rust.o: objtool-args = $(if $(delay-objtool),--dry-run,$(objtool-args-y)) --noabs --link
 
 #
 # Confine the startup code by prefixing all symbols with __pi_ (for position

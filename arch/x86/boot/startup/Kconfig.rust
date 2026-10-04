@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_X86_STARTUP
+	bool "Rust x86-64 initial descriptor tables and kernel mapping"
+	depends on RUST && X86_64 && CC_IS_CLANG && LD_IS_LLD && OBJTOOL
+	depends on !AMD_MEM_ENCRYPT && !CFI
+	default y
+	help
+	  Build the initial GDT/IDT setup and kernel page-table relocation in
+	  an isolated Rust startup crate with native small-model PIC code,
+	  size optimization, configured x86 mitigations and the noabs check.
+	  Both selected C function owners are excluded when this is enabled.
+
+	  AMD memory encryption and CFI configurations are not yet supported
+	  by this owner integration. Original C sources remain the reference
+	  and the implementation when this option is disabled. Native entry
+	  assembly, inherited storage/aliases and other startup subsystems
+	  remain separate migration work; this does not make all startup Rust.

@@ -3161,3 +3161,5 @@ source "arch/x86/kernel/Kconfig.rust-head64"
 source "arch/x86/kernel/Kconfig.rust-setup"
 
 source "arch/x86/boot/compressed/Kconfig.rust"
+
+source "arch/x86/boot/startup/Kconfig.rust"
