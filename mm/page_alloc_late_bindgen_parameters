@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Append to the foundation's parameters; no same-unit Rust definitions exposed as imports.
+--allowlist-type '^(compact_control|migration_target_control|acr_flags_t|cpu_cacheinfo|loff_t|system_states|pb_isolate_mode|migrate_mode|migrate_reason)$'
+--allowlist-var '^(sysctl_vals|sysctl_min_unmapped_ratio|sysctl_min_slab_ratio|system_state|SYSTEM_.*|ZONELIST_.*|MAX_NR_ZONES|MAX_ZONELISTS|MR_.*|MIN_COMPACT_.*|INIT_COMPACT_.*)$'
+--allowlist-function '^(__show_mem|out_of_memory|try_to_compact_pages|compaction_defer_reset|compaction_zonelist_suitable|try_to_free_pages|zone_reclaimable_pages|schedule_timeout_uninterruptible|warn_alloc|get_cpu_cacheinfo|lru_add_drain_cpu|int_sqrt|proc_dointvec_minmax|proc_dostring|lru_cache_disable|lru_cache_enable|isolate_migratepages_range|reclaim_clean_pages_from_list|putback_movable_pages|start_isolate_page_range|test_pages_isolated|isolate_freepages_range|undo_isolate_page_range|page_is_unmovable|free_percpu|offline_mem_sections|range_contains_unaccepted_memory|accept_memory)$'
+--blocklist-function '^(rust_pa_warn_alloc_allowed|rust_pa_warn_alloc_finish|rust_pa_fs_reclaim_acquire|rust_pa_fs_reclaim_release|rust_pa_has_managed_zone|accept_memory_parse)$'
+--with-attribute-custom-struct=ctl_table='#[cfi_encoding="9ctl_table"]'
+--with-attribute-custom-struct=compact_control='#[cfi_encoding="15compact_control"]'
+--with-attribute-custom-struct=migration_target_control='#[cfi_encoding="24migration_target_control"]'

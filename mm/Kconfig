@@ -2,6 +2,42 @@
 
 menu "Memory Management options"
 
+config RUST_PAGE_ALLOC
+	bool "Rust page allocator decisions and zone management"
+	depends on RUST
+	default y
+	help
+	  Build page_alloc.o from the combined Rust allocator owner using
+	  configured native layouts and ABI. Native primitives, compiler
+	  metadata and existing external subsystem boundaries remain.
+	  The original C implementation is not linked when this is enabled.
+	  Native compiler policy gates must pass before build admission.
+
+config RUST_MMAP
+	bool "Rust userspace mappings and VMA lifetime"
+	depends on RUST && MMU
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build mmap.o from Rust: mapping checks, limits and accounting,
+	  unmapped-area selection, syscall bodies, stack expansion, VMA
+	  teardown and duplication, special mappings, and VM reserve policy.
+	  Native leaves retain header primitives and syscall/trace metadata.
+	  Original mmap.c is only the reference source when this is selected.
+	  Native compiler instrumentation must pass the owner policy checks.
+
+config RUST_VMALLOC
+	bool "Use Rust vmalloc and virtual address allocator"
+	depends on RUST && MMU
+	default y
+	help
+	  Build vmalloc.o from Rust with configured native layouts and ABI.
+	  Page-table walking, virtual address allocation, lazy purging,
+	  per-CPU block management and allocation lifetimes execute in Rust.
+	  The original C implementation is not linked when this is enabled.
+	  Native compiler instrumentation policies must pass the owner's
+	  Kbuild checks before enabling this source-phase implementation.
+
 config RUST_MEMBLOCK
 	bool "Use Rust early logical-memory allocator"
 	depends on RUST

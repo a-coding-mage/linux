@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-prepend-enum-name
+--allowlist-type '^(page|folio|zone|pglist_data|per_cpu_pages|per_cpu_zonestat|per_cpu_nodestat|free_area|alloc_context|capture_control|oom_control|nodemask_t|cpumask|zonelist|zoneref|folio_batch|list_head|llist_head|llist_node|task_struct|mutex|spinlock_t|raw_spinlock_t|static_key_true|static_key_false|ctl_table|ctl_table_header|seq_file|seq_buf|ratelimit_state|alloc_tag|codetag_ref|pgtag_ref_handle|alloc_tag_kernel_section|alloc_tag_module_section|page_ext|page_ext_operations|compact_result|compact_priority|meminit_context|migratetype|zone_type|pageblock_bits|fallback_result|node_states|zone_stat_item|numa_stat_item|vm_event_item|lockdep_map|lock_class_key|wait_queue_head_t|gfp_t|phys_addr_t|nodemask_t|cpumask_t)$'
+--allowlist-function '^rust_pa_.*'
+--allowlist-var '^(RUST_PA_.*|MIGRATE_.*|ZONE_.*|WMARK_.*|NR_.*|N_.*|PB_.*|__NR_PAGEBLOCK_BITS|FALLBACK_.*|MEMINIT_.*|PG[A-Z_]*|NUMA_.*|TAINT_.*|LOCKDEP_.*|COMPACT_.*|DEF_.*|MTHP_.*|ENO.*|EINVAL|EBUSY|EINTR|ENOMEM|UINT_MAX|INT_MAX|ULONG_MAX|MAX_ORDER|pcp_batch_high_lock|pcpu_drain_mutex|vm_numa_stat_key|deferred_pages|check_pages_enabled|node_reclaim_mode|vm_total_pages|totalreserve_pages|highest_memmap_pfn|jiffies|jiffies_64|movable_zone|node_states|sysctl_compact_unevictable_allowed|sysctl_lowmem_reserve_ratio|watermark_boost_factor|watermark_scale_factor)$'
+--allowlist-function '^(__next_zones_zonelist|first_online_pgdat|next_online_pgdat|next_zone|deferred_grow_zone|dump_page|print_modules|add_taint|wakeup_kswapd|node_dirty_ok|node_reclaim|drain_zonestat)$'
+--with-attribute-custom-struct=page='#[cfi_encoding="4page"]'
+--with-attribute-custom-struct=folio='#[cfi_encoding="5folio"]'
+--with-attribute-custom-struct=zone='#[cfi_encoding="4zone"]'
+--with-attribute-custom-struct=pglist_data='#[cfi_encoding="11pglist_data"]'
+--with-attribute-custom-struct=per_cpu_pages='#[cfi_encoding="13per_cpu_pages"]'
+--with-attribute-custom-struct=free_area='#[cfi_encoding="9free_area"]'
+--with-attribute-custom-struct=alloc_context='#[cfi_encoding="13alloc_context"]'
+--with-attribute-custom-struct=capture_control='#[cfi_encoding="15capture_control"]'
+--with-attribute-custom-struct=nodemask_t='#[cfi_encoding="10nodemask_t"]'
+--with-attribute-custom-struct=folio_batch='#[cfi_encoding="11folio_batch"]'
+--blocklist-function '^rust_pa_impl_.*'

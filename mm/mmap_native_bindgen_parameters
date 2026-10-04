@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(mm_struct|vm_area_struct|vm_unmapped_area_info|vm_fault|vm_special_mapping|vm_operations_struct|mmap_arg_struct|file|inode|list_head|vma_flags_t|vma_flag_t|vm_flags_t|vma_iterator|unmap_desc|mmu_gather|memory_block_state|page|ctl_table|notifier_block)$'
+--allowlist-function '^(rust_mmap_.*|vma_wants_writenotify|do_vmi_align_munmap|do_vmi_munmap|do_brk_flags|capable|mmap_region|fget|fput|vm_mmap_pgoff|unmapped_area_topdown|unmapped_area|arch_get_unmapped_area|arch_get_unmapped_area_topdown|shmem_get_unmapped_area|mt_find|simple_strtoul|expand_upwards|expand_downwards|populate_vma_page_range|__vm_munmap|remove_vma|unmap_vmas|free_pgtables|__mt_destroy|__install_special_mapping|proc_dointvec_minmax|__register_sysctl_init|vma_state_init|dup_mm_exe_file|__mt_dup|vm_area_dup|vm_area_free|anon_vma_fork|mapping_rmap_tree_insert_after|copy_page_range|unmap_region)$'
+--allowlist-var '^(RUST_MMAP_.*|E[A-Z0-9_]+|RLIMIT_.*|CAP_IPC_LOCK|READ_IMPLIES_EXEC|PROT_.*|MAP_.*|VMA_.*_BIT|VM_UNMAPPED_AREA_TOPDOWN|MMF_.*|MEM_ONLINE|MEM_OFFLINE|NOTIFY_OK|DEFAULT_CALLBACK_PRI|SINGLE_DEPTH_NESTING|OVERCOMMIT_NEVER|mmap_min_addr|sysctl_overcommit_memory|sysctl_max_map_count|sysctl_vals|vm_committed_as|sysctl_user_reserve_kbytes|sysctl_admin_reserve_kbytes)$'
+# Opaque views below remain compiler-sized and compiler-aligned. mmap.rs uses
+# native field-address leaves for anonymous/randomized mm members.
+--opaque-type '^(mm_struct|task_struct|signal_struct|sighand_struct|files_struct|fs_struct|dentry|super_block|page|folio|mem_cgroup|lruvec|kmem_cache|shrinker|device|mem_section|zone|pglist_data|net|socket|cred)$'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=vm_fault='#[cfi_encoding="8vm_fault"]'
+--with-attribute-custom-struct=vm_special_mapping='#[cfi_encoding="18vm_special_mapping"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=notifier_block='#[cfi_encoding="14notifier_block"]'
+--with-attribute-custom-struct=ctl_table='#[cfi_encoding="9ctl_table"]'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'
+--with-attribute-custom-struct=vm_unmapped_area_info='#[cfi_encoding="21vm_unmapped_area_info"]'
+--with-attribute-custom-struct=list_head='#[cfi_encoding="9list_head"]'

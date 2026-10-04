@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--with-attribute-custom-struct=work_struct='#[cfi_encoding="11work_struct"]'
+--allowlist-type 'sched_clock_data|work_struct'
+--allowlist-function 'lupos_clock_.*|sched_clock'
+--allowlist-var 'LUPOS_CLOCK_.*|timekeeping_suspended'

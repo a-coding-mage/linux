@@ -54,7 +54,9 @@
 #include "stats.h"
 #include "autogroup.h"
 
+#ifndef CONFIG_RUST_SCHED_CLOCK
 #include "clock.c"
+#endif
 
 #ifdef CONFIG_CGROUP_CPUACCT
 # include "cpuacct.c"

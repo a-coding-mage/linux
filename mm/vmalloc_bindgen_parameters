@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-prepend-enum-name
+--allowlist-type '^(vmap_area|vm_struct|vmap_node|vmap_pool|rb_list|vmap_block|vmap_block_queue|vfree_deferred|vmap_pfn_data|rb_augment_callbacks|rb_node|rb_root|list_head|llist_head|llist_node|cpumask_t|cpumask|spinlock_t|work_struct|shrinker|shrink_control|vm_area_struct|iov_iter|page|pgd_t|p4d_t|pud_t|pmd_t|pte_t|pgprot_t|gfp_t|phys_addr_t|pgtbl_mod_mask|kasan_vmalloc_flags_t|xa_mark_t|vm_flags_t|seq_file)$'
+--allowlist-function '^(rust_vmalloc_.*|rb_insert_color|rb_erase|rb_prev|kmem_cache_free|kfree|kvfree|memset|memcpy|blocking_notifier_call_chain|blocking_notifier_chain_register|blocking_notifier_chain_unregister|flush_work|xa_erase|xa_load|xa_find|xa_find_after|free_pages_bulk|apply_to_page_range|alloc_pages_noprof|alloc_pages_bulk_mempolicy_noprof|split_page|schedule_timeout_uninterruptible|copy_page_to_iter_nofault|vm_insert_page|seq_printf|seq_puts|seq_putc|proc_create_single|shrinker_alloc|shrinker_register|dump_page|get_random_bytes|_printk)$'
+--allowlist-var '^(RVM_.*|VM_.*|KASAN_VMALLOC_PAGE_RANGE|KASAN_VMALLOC_TLB_FLUSH|MAX_PAGE_ORDER|NR_VMALLOC|SHRINK_EMPTY|SHRINK_STOP|EINVAL|ENOMEM|EBUSY|E2BIG|ERANGE|ENOENT|init_mm|nr_cpu_ids)$'
+--opaque-type '^(page|folio|task_struct|mm_struct|file|inode|dentry|address_space|mem_cgroup|lruvec|kmem_cache|timer_list|delayed_work|resource|device|cpumask|nodemask_t|pglist_data|zone|anon_vma|anon_vma_chain|vm_operations_struct|mempolicy|numa_policy|userfaultfd_ctx|userfaultfd_unmap_ctx|kioctx|kiocb|iov_iter|proc_dir_entry)$'
+--with-attribute-custom-struct=rb_node='#[cfi_encoding="7rb_node"]'
+--with-attribute-custom-struct=work_struct='#[cfi_encoding="11work_struct"]'
+--with-attribute-custom-struct=shrinker='#[cfi_encoding="8shrinker"]'
+--with-attribute-custom-struct=shrink_control='#[cfi_encoding="14shrink_control"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
+--with-attribute-custom-struct=page='#[cfi_encoding="4page"]'
+--with-attribute-custom-struct=vm_struct='#[cfi_encoding="9vm_struct"]'
+--with-attribute-custom-struct=vmap_area='#[cfi_encoding="9vmap_area"]'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=pte_t='#[cfi_encoding="5pte_t"]'

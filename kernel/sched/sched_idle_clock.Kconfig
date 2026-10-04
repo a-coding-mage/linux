@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_IDLE
+	bool "Rust owner for the generic scheduler idle loop and idle class"
+	depends on RUST
+	help
+	  Build the generic idle loop and idle scheduling-class decisions from
+	  idle.rs, replacing the idle.c inclusion in build_policy.c. Native
+	  architecture, synchronization and compiler metadata leaves remain.
+
+config RUST_SCHED_CLOCK
+	bool "Rust owner for the scheduler clock"
+	depends on RUST
+	help
+	  Build scheduler-clock initialization, stabilization and per-CPU clock
+	  filtering from clock.rs, replacing the clock.c inclusion in
+	  build_utility.c. Native architecture, atomic, static-key and per-CPU
+	  placement leaves remain.

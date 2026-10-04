@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+# Preserve native CFI names for all Rust callbacks used by C metadata.
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=hrtimer='#[cfi_encoding="7hrtimer"]'
+--newtype-global-enum 'hrtimer_restart|cpuhp_state'
+--with-attribute-custom-enum=hrtimer_restart='#[cfi_encoding="15hrtimer_restart"]'
+--with-attribute-custom-enum=cpuhp_state='#[cfi_encoding="11cpuhp_state"]'
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
+--allowlist-type 'rq|rq_flags|task_struct|sched_entity|sched_avg|sched_dl_entity|cfs_rq|cpuidle_state|cpuidle_device|cpuidle_driver|idle_timer|hrtimer|hrtimer_restart|cpuhp_state'
+--allowlist-function 'lupos_idle_.*|arch_cpu_idle.*|schedule_idle|resched_curr|update_rq_avg_idle|__update_idle_core|__scx_update_idle|dl_server_update_idle'
+--allowlist-var 'LUPOS_IDLE_.*|HRTIMER_NORESTART|__cpuidle_text_start|__cpuidle_text_end'

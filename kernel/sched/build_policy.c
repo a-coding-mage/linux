@@ -47,7 +47,9 @@
 
 /* Source code modules: */
 
+#ifndef CONFIG_RUST_SCHED_IDLE
 #include "idle.c"
+#endif
 
 #include "rt.c"
 #include "cpudeadline.c"

@@ -40,3 +40,5 @@ obj-y += core.o
 obj-y += fair.o
 obj-y += build_policy.o
 obj-y += build_utility.o
+
+include $(srctree)/kernel/sched/sched_idle_clock_rust.mk

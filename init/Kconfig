@@ -2602,3 +2602,5 @@ config RUST_INIT_MM
 	  generated from the original headers. Initialization has no runtime C
 	  companion. Disable only for an explicit C reference comparison;
 	  a saved configuration with this option disabled remains untranslated.
+
+source "kernel/sched/sched_idle_clock.Kconfig"

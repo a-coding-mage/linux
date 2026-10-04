@@ -1029,6 +1029,11 @@ include $(srctree)/arch/x86/kernel/early-platform-bindgen.mk
 include $(srctree)/arch/x86/kernel/x86-platform-callbacks-bindgen.mk
 
 include $(srctree)/mm/memblock_bindgen.mk
+include $(srctree)/mm/page_alloc_bindgen.mk
+include $(srctree)/mm/vmalloc_bindgen.mk
+include $(srctree)/mm/mmap_native_bindgen.mk
 
 include $(srctree)/kernel/irq/irq_core_bindgen.mk
 include $(srctree)/arch/x86/mm/init-bindgen.mk
+
+include $(srctree)/kernel/sched/sched_idle_clock_bindgen.mk

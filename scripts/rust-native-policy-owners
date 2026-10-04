@@ -22,3 +22,9 @@ kernel/kthread            strong -
 kernel/irq/irqdesc        strong -
 kernel/irq/handle         strong -
 kernel/irq/chip           strong -
+# Original allocator and scheduler owners use strong protection, without SSP exemptions.
+mm/page_alloc             strong -
+mm/mmap                   strong -
+mm/vmalloc                strong -
+kernel/sched/idle         strong -
+kernel/sched/clock        strong -

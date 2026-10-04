@@ -39,6 +39,8 @@ mmu-$(CONFIG_MMU)	:= highmem.o memory.o mincore.o \
 			   msync.o page_vma_mapped.o pagewalk.o \
 			   pgtable-generic.o rmap.o vmalloc.o vma.o vma_exec.o
 
+include $(srctree)/mm/vmalloc-rust.mk
+
 
 ifdef CONFIG_CROSS_MEMORY_ATTACH
 mmu-$(CONFIG_MMU)	+= process_vm_access.o
@@ -59,6 +61,7 @@ obj-y			:= filemap.o mempool.o oom_kill.o fadvise.o \
 
 # Give 'page_alloc' its own module-parameter namespace
 page-alloc-y := page_alloc.o
+include $(srctree)/mm/page_alloc-rust.mk
 page-alloc-$(CONFIG_SHUFFLE_PAGE_ALLOCATOR) += shuffle.o
 
 # Give 'memory_hotplug' its own module-parameter namespace
@@ -257,3 +260,5 @@ targets += init-mm.s init-mm.ll init-mm.rsi init-mm.lst \
 endif
 # mm/Makefile already lists .rust-listing/ and .rust-listing-elf/ in clean-files
 # outside the selector, preserving sidecar cleanup after deselection.
+
+include $(srctree)/mm/mmap_native_rust.mk
