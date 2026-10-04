@@ -268,24 +268,16 @@ unsafe fn __set_pte_vaddr(pud: *mut pud_t, vaddr: c_ulong, new_pte: pte_t) {
     flush_tlb_one_kernel(vaddr);
 }
 #[no_mangle]
-pub unsafe extern "C" fn set_pte_vaddr_p4d(
-    b::rust_mm_p4d_page: *mut p4d_t,
-    vaddr: c_ulong,
-    new_pte: pte_t,
-) {
+pub unsafe extern "C" fn set_pte_vaddr_p4d(p4d_table: *mut p4d_t, vaddr: c_ulong, new_pte: pte_t) {
     __set_pte_vaddr(
-        fill_pud(b::rust_mm_p4d_page.add(p4d_index(vaddr)), vaddr),
+        fill_pud(p4d_table.add(p4d_index(vaddr)), vaddr),
         vaddr,
         new_pte,
     );
 }
 #[no_mangle]
-pub unsafe extern "C" fn set_pte_vaddr_pud(
-    b::rust_mm_pud_page: *mut pud_t,
-    vaddr: c_ulong,
-    new_pte: pte_t,
-) {
-    __set_pte_vaddr(b::rust_mm_pud_page.add(pud_index(vaddr)), vaddr, new_pte);
+pub unsafe extern "C" fn set_pte_vaddr_pud(pud_table: *mut pud_t, vaddr: c_ulong, new_pte: pte_t) {
+    __set_pte_vaddr(pud_table.add(pud_index(vaddr)), vaddr, new_pte);
 }
 #[no_mangle]
 pub unsafe extern "C" fn set_pte_vaddr(vaddr: c_ulong, pteval: pte_t) {
@@ -390,7 +382,7 @@ pub unsafe extern "C" fn cleanup_highmap() {
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn phys_pte_init(
-    b::rust_mm_pte_page: *mut pte_t,
+    pte_table: *mut pte_t,
     mut paddr: c_ulong,
     paddr_end: c_ulong,
     prot: pgprot_t,
@@ -398,7 +390,7 @@ unsafe fn phys_pte_init(
 ) -> c_ulong {
     let mut pages: c_ulong = 0;
     let mut paddr_last = paddr_end;
-    let mut pte = b::rust_mm_pte_page.add(pte_index(paddr));
+    let mut pte = pte_table.add(pte_index(paddr));
     for _ in pte_index(paddr)..PTRS_PER_PTE {
         let paddr_next = (paddr & PAGE_MASK).wrapping_add(PAGE_SIZE);
         if paddr >= paddr_end {
@@ -431,7 +423,7 @@ unsafe fn phys_pte_init(
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn phys_pmd_init(
-    b::rust_mm_pmd_page: *mut pmd_t,
+    pmd_table: *mut pmd_t,
     mut paddr: c_ulong,
     paddr_end: c_ulong,
     page_size_mask: c_ulong,
@@ -441,7 +433,7 @@ unsafe fn phys_pmd_init(
     let mut pages: c_ulong = 0;
     let mut paddr_last = paddr_end;
     for _ in pmd_index(paddr)..PTRS_PER_PMD {
-        let pmd = b::rust_mm_pmd_page.add(pmd_index(paddr));
+        let pmd = pmd_table.add(pmd_index(paddr));
         let mut new_prot = prot;
         let paddr_next = (paddr & PMD_MASK).wrapping_add(PMD_SIZE);
         if paddr >= paddr_end {
@@ -504,7 +496,7 @@ unsafe fn phys_pmd_init(
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn phys_pud_init(
-    b::rust_mm_pud_page: *mut pud_t,
+    pud_table: *mut pud_t,
     mut paddr: c_ulong,
     paddr_end: c_ulong,
     page_size_mask: c_ulong,
@@ -514,7 +506,7 @@ unsafe fn phys_pud_init(
     let mut pages: c_ulong = 0;
     let mut paddr_last = paddr_end;
     for _ in pud_index(b::rust_mm___va(paddr) as c_ulong)..PTRS_PER_PUD {
-        let pud = b::rust_mm_pud_page.add(pud_index(b::rust_mm___va(paddr) as c_ulong));
+        let pud = pud_table.add(pud_index(b::rust_mm___va(paddr) as c_ulong));
         let mut prot = base_prot;
         let paddr_next = (paddr & PUD_MASK).wrapping_add(PUD_SIZE);
         if paddr >= paddr_end {
@@ -575,7 +567,7 @@ unsafe fn phys_pud_init(
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), cold)]
 #[cfg_attr(not(CONFIG_MEMORY_HOTPLUG), link_section = ".init.text")]
 unsafe fn phys_p4d_init(
-    b::rust_mm_p4d_page: *mut p4d_t,
+    p4d_table: *mut p4d_t,
     mut paddr: c_ulong,
     paddr_end: c_ulong,
     page_size_mask: c_ulong,
@@ -587,7 +579,7 @@ unsafe fn phys_p4d_init(
     let vaddr_end = b::rust_mm___va(paddr_end) as c_ulong;
     if !b::rust_mm_pgtable_l5_enabled() {
         return phys_pud_init(
-            b::rust_mm_p4d_page.cast(),
+            p4d_table.cast(),
             paddr,
             paddr_end,
             page_size_mask,
@@ -596,7 +588,7 @@ unsafe fn phys_p4d_init(
         );
     }
     while vaddr < vaddr_end {
-        let p4d = b::rust_mm_p4d_page.add(p4d_index(vaddr));
+        let p4d = p4d_table.add(p4d_index(vaddr));
         let vaddr_next = (vaddr & P4D_MASK).wrapping_add(P4D_SIZE);
         paddr = b::rust_mm___pa(vaddr as *const c_void);
         if paddr >= paddr_end {
