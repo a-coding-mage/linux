@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
+# Let c_flags emit Clang dependencies with the input header first.
+# Bindgen depfiles sort includes, violating native fixdep's source contract.
 # Distinct startup ABI: reuse configured x86 target features, but rebuild a
 # private core for small/PIC/-Os. Never link kernel or decompressor metadata.
 startup-rust-lib-src := $(if $(RUST_LIB_SRC),$(RUST_LIB_SRC),$(shell $(RUSTC) --print sysroot)/lib/rustlib/src/rust/library)
@@ -43,7 +45,7 @@ $(obj)/libcompiler_builtins.rlib: $(src)/startup_compiler_builtins.rs $(obj)/lib
 	$(call if_changed_dep,startup_builtins)
 
 quiet_cmd_startup_gdt_bindgen = BINDGEN STARTUP GDT $@
-      cmd_startup_gdt_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_startup_gdt_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--allowlist-type '(gate_desc|desc_ptr|gdt_page)' \
@@ -54,7 +56,7 @@ $(obj)/startup_gdt_bindings_generated.rs: $(src)/startup_gdt_bindings.h FORCE
 	$(call if_changed_dep,startup_gdt_bindgen)
 
 quiet_cmd_startup_map_bindgen = BINDGEN STARTUP MAP $@
-      cmd_startup_map_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_startup_map_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--allowlist-type '(boot_params|cpuinfo_x86|pgd_t|p4d_t|pud_t|pmd_t|pgdval_t|p4dval_t|pudval_t|pmdval_t)' \

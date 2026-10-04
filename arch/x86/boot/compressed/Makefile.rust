@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
+# Let c_flags emit Clang dependencies with the input header first.
+# Bindgen depfiles sort includes, violating native fixdep's source contract.
 # The ordinary %.rs rule injects kernel/alloc/metadata and the kernel code model.
 # These rules deliberately use an isolated, freestanding early-boot sysroot.
 boot-rust-lib-src := $(if $(RUST_LIB_SRC),$(RUST_LIB_SRC),$(shell $(RUSTC) --print sysroot)/lib/rustlib/src/rust/library)
@@ -52,7 +54,7 @@ $(obj)/libcompiler_builtins.rlib: $(src)/boot_compiler_builtins.rs $(obj)/libcor
 	$(call if_changed_dep,boot_builtins)
 
 quiet_cmd_boot_bindgen = BINDGEN BOOT $@
-      cmd_boot_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_boot_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--blocklist-type '__kernel_(size_t|ssize_t|ptrdiff_t)' \
@@ -66,7 +68,7 @@ $(obj)/boot_bindings_generated.rs: $(src)/boot_maxmem_bindings.h $(src)/boot_bin
 # Firmware layouts and C declarations only. Keep the aligned EFI GUID typedef
 # and boot_params identity shared with the Rust EFI owner and its ACPI caller.
 quiet_cmd_boot_efi_bindgen = BINDGEN BOOT EFI $@
-      cmd_boot_efi_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_boot_efi_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--blocklist-type '(boot_params|efi_guid_t)' \
@@ -80,7 +82,7 @@ $(obj)/boot_efi_bindings_generated.rs: $(src)/boot_efi_bindings.h FORCE
 # The setup/decompressor CPUID ABI conflicts by name with the kernel's API.
 # Generate from its own native header, without importing broad kernel headers.
 quiet_cmd_boot_cpu_bindgen = BINDGEN BOOT CPU $@
-      cmd_boot_cpu_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_boot_cpu_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--allowlist-type 'cpu_features' \
@@ -92,7 +94,7 @@ $(obj)/boot_cpu_bindings_generated.rs: $(src)/boot_cpu_bindings.h FORCE
 
 # Packed descriptor layouts and bitfields come from the native x86 headers.
 quiet_cmd_boot_idt_bindgen = BINDGEN BOOT IDT $@
-      cmd_boot_idt_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_boot_idt_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--allowlist-type '(gate_desc|desc_ptr)' \
@@ -104,7 +106,7 @@ $(obj)/boot_idt_bindings_generated.rs: $(src)/boot_idt_bindings.h FORCE
 
 # Native page-table layout, assembly declarations and macro values only.
 quiet_cmd_boot_pgtable_bindgen = BINDGEN BOOT PGTABLE $@
-      cmd_boot_pgtable_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_boot_pgtable_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--allowlist-type 'pgd_t' \
@@ -116,7 +118,7 @@ $(obj)/boot_pgtable_bindings_generated.rs: $(src)/boot_pgtable_bindings.h FORCE
 
 # Layout/constant boundary only; mapping and privileged instructions are Rust.
 quiet_cmd_boot_ident_map_bindgen = BINDGEN BOOT IDENT MAP $@
-      cmd_boot_ident_map_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_boot_ident_map_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--allowlist-type '(x86_pf_error_code|x86_mapping_info|pgd_t|p4d_t|pud_t|pmd_t|pte_t|pt_regs|phys_addr_t)' \
@@ -128,7 +130,7 @@ $(obj)/boot_ident_map_bindings_generated.rs: $(src)/boot_ident_map_bindings.h FO
 
 # Native packed tables and configured constants only; ACPI bodies are Rust.
 quiet_cmd_boot_acpi_bindgen = BINDGEN BOOT ACPI $@
-      cmd_boot_acpi_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+      cmd_boot_acpi_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core \
 	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
 	--no-prepend-enum-name --with-derive-default \
 	--allowlist-type '(acpi_table_rsdp|acpi_table_header|acpi_table_srat|acpi_subtable_header|acpi_srat_mem_affinity|acpi_srat_type)' \
