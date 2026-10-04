@@ -116,7 +116,8 @@ RFV(arch_thread_struct_whitelist, (unsigned long *o, unsigned long *s), arch_thr
 RFR(size_t, arch_task_struct_size, (void), arch_task_struct_size)
 RFV(set_userns_rlimit_max, (struct user_namespace *ns, enum rlimit_type t, unsigned long max), set_userns_rlimit_max(ns, t, max))
 RFV(lockdep_init_task, (struct task_struct *p), lockdep_init_task(p))
-RFV(uprobes_init, (void), uprobes_init())
+void __init rust_fork_uprobes_init(void);
+void __init rust_fork_uprobes_init(void) { uprobes_init(); }
 RFR(unsigned long *, end_of_stack, (struct task_struct *p), end_of_stack(p))
 RFR(int, tsk_fork_get_node, (struct task_struct *p), tsk_fork_get_node(p))
 RFV(setup_thread_stack, (struct task_struct *p, struct task_struct *orig), setup_thread_stack(p, orig))

@@ -52,7 +52,7 @@ bool rust_memblock_pfn_valid(unsigned long pfn) { return pfn_valid(pfn); }
 #endif
 unsigned long rust_memblock_pageblock_start(unsigned long pfn) { return pageblock_start_pfn(pfn); }
 unsigned long rust_memblock_pageblock_align(unsigned long pfn) { return pageblock_align(pfn); }
-int rust_memblock_early_pfn_to_nid(unsigned long pfn) { return early_pfn_to_nid(pfn); }
+int __meminit rust_memblock_early_pfn_to_nid(unsigned long pfn) { return early_pfn_to_nid(pfn); }
 void rust_memblock_atomic_long_set(atomic_long_t *ptr, long value) { atomic_long_set(ptr, value); }
 void rust_memblock_totalram_pages_add(unsigned long pages) { totalram_pages_add(pages); }
 bool rust_memblock_kho_scratch_overlap(phys_addr_t start, size_t size) { return kho_scratch_overlap(start, size); }

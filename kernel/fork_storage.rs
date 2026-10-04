@@ -118,6 +118,8 @@ macro_rules! FORK_RW_LOCK_UNLOCKED {
 const _: () = {
     assert!(RUST_FORK_TASKLIST_OFFSET == 0);
     assert!(RUST_FORK_MMLIST_OFFSET == 0);
+    assert!(offset_of!(rust_fork_tasklist_storage, value) == RUST_FORK_TASKLIST_OFFSET as usize);
+    assert!(offset_of!(rust_fork_mmlist_storage, value) == RUST_FORK_MMLIST_OFFSET as usize);
     assert!(size_of::<rwlock_t>() == RUST_FORK_RWLOCK_SIZE as usize);
     assert!(size_of::<raw_spinlock_t>() == RUST_FORK_RAW_LOCK_SIZE as usize);
     assert!(core::mem::align_of::<raw_spinlock_t>() == RUST_FORK_RAW_LOCK_ALIGN as usize);
@@ -133,14 +135,24 @@ const _: () = {
 #[cfg(not(CONFIG_X86_64))]
 compile_error!("fork lock and per-CPU storage initializers require the audited x86_64 layout");
 
-// Alignment wrappers are generated C types with native alignment and member
-// offset zero. Consumers still name the original lock symbol/type at offset 0.
-#[export_name = "tasklist_lock"]
+// Rust alignment applies to a type and rounds its size up. Keep that padding
+// private: each public ELF object below names only the actual native lock
+// subobject, not the enclosing alignment record. The generated repr(C) records
+// give their offset-zero fields the original variable alignment; the static
+// attributes retain the original sections.
+// Both fields have static mutable storage and retain their typed initializers;
+// no references to the records are created. This owner accesses them through
+// the native rwlock_t/spinlock_t declarations in sched/task.h. `used` and the
+// asm `sym` operands retain the backing records even though Rust never reads
+// them; explicit internal linkage keeps those records out of the public ABI.
+#[used]
+#[linkage = "internal"]
 #[link_section = ".data..cacheline_aligned"]
 static mut TASKLIST_STORAGE: rust_fork_tasklist_storage = rust_fork_tasklist_storage {
     value: FORK_RW_LOCK_UNLOCKED!(tasklist_lock),
 };
-#[export_name = "mmlist_lock"]
+#[used]
+#[linkage = "internal"]
 #[cfg_attr(all(CONFIG_SMP, CONFIG_X86_VSMP), link_section = ".data..page_aligned")]
 #[cfg_attr(
     all(CONFIG_SMP, not(CONFIG_X86_VSMP)),
@@ -149,6 +161,22 @@ static mut TASKLIST_STORAGE: rust_fork_tasklist_storage = rust_fork_tasklist_sto
 static mut MMLIST_STORAGE: rust_fork_mmlist_storage = rust_fork_mmlist_storage {
     value: __SPIN_LOCK_UNLOCKED!(mmlist_lock),
 };
+core::arch::global_asm!(
+    ".globl tasklist_lock",
+    ".type tasklist_lock,@object",
+    ".set tasklist_lock, {tasklist_storage} + {tasklist_offset}",
+    ".size tasklist_lock, {tasklist_size}",
+    ".globl mmlist_lock",
+    ".type mmlist_lock,@object",
+    ".set mmlist_lock, {mmlist_storage} + {mmlist_offset}",
+    ".size mmlist_lock, {mmlist_size}",
+    tasklist_storage = sym TASKLIST_STORAGE,
+    tasklist_offset = const offset_of!(rust_fork_tasklist_storage, value),
+    tasklist_size = const size_of::<rwlock_t>(),
+    mmlist_storage = sym MMLIST_STORAGE,
+    mmlist_offset = const offset_of!(rust_fork_mmlist_storage, value),
+    mmlist_size = const size_of::<spinlock_t>(),
+);
 // asm-generic/percpu.h's built-in PER_CPU_BASE_SECTION on x86_64. Access stays
 // through native per-CPU addressing instructions; all storage is defined here.
 #[export_name = "process_counts"]

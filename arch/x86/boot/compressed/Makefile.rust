@@ -48,7 +48,11 @@ $(obj)/libcore.rlib: $(boot-rust-lib-src)/core/src/lib.rs $(boot-rust-target) FO
 	$(call if_changed_dep,boot_core)
 
 quiet_cmd_boot_builtins = RUSTC BOOT $@
-      cmd_boot_builtins = $(RUSTC) $(boot-rust-flags) --crate-name compiler_builtins \
+# This empty no_builtins marker is excluded from rustc's LTO. Its embedded
+# bitcode would survive the partial link as non-alloc .llvmbc/.llvmcmd sections.
+# Keep core's bitcode and the compressed crate's fat LTO unchanged.
+      cmd_boot_builtins = $(RUSTC) $(filter-out -Cembed-bitcode=%,$(boot-rust-flags)) \
+	-Cembed-bitcode=n --crate-name compiler_builtins \
 	--crate-type rlib --extern core=$(obj)/libcore.rlib --emit=link=$@,dep-info=$(depfile) $<
 $(obj)/libcompiler_builtins.rlib: $(src)/boot_compiler_builtins.rs $(obj)/libcore.rlib FORCE
 	$(call if_changed_dep,boot_builtins)
