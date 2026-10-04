@@ -411,7 +411,7 @@ RM_RET(int, swap_retry_table_alloc, (softleaf_t p, gfp_t g), swap_retry_table_al
 RM_VOID(dump_stack, (void), dump_stack())
 #include "memory_diagnostics_primitives.h"
 /* Registration data lives in the native metadata unit; decision is Rust. */
-void rust_memory_register_mmu_sysctl(void);
+void __init rust_memory_register_mmu_sysctl(void);
 #include "memory_faults_primitives.h"
 #undef RM_RET
 #undef RM_VOID

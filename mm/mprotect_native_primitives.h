@@ -136,7 +136,9 @@ RMP_RET(bool, p4d_none_or_clear_bad, (p4d_t *p), p4d_none_or_clear_bad(p))
 RMP_RET(bool, pgd_none_or_clear_bad, (pgd_t *p), pgd_none_or_clear_bad(p))
 RMP_VOID(split_huge_pmd, (struct vm_area_struct *v, pmd_t *p, unsigned long a, bool freeze), __split_huge_pmd(v, p, a, freeze))
 RMP_VOID(split_huge_pud, (struct vm_area_struct *v, pud_t *p, unsigned long a), __split_huge_pud(v, p, a))
+#ifdef CONFIG_TRANSPARENT_HUGEPAGE
 RMP_RET(long, change_huge_pmd, (struct mmu_gather *t, struct vm_area_struct *v, pmd_t *p, unsigned long a, pgprot_t prot, unsigned long f), change_huge_pmd(t, v, p, a, prot, f))
+#endif
 RMP_RET(long, change_huge_pud, (struct mmu_gather *t, struct vm_area_struct *v, pud_t *p, unsigned long a, pgprot_t prot, unsigned long f), change_huge_pud(t, v, p, a, prot, f))
 RMP_VOID(count_vm_numa_huge_updates, (unsigned long n), count_vm_numa_events(NUMA_HUGE_PTE_UPDATES, n))
 RMP_VOID(cond_resched, (void), cond_resched())

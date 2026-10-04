@@ -15,7 +15,7 @@ static const struct ctl_table mmu_sysctl_table[] = {
         .proc_handler = proc_dointvec,
     },
 };
-void rust_memory_register_mmu_sysctl(void)
+void __init rust_memory_register_mmu_sysctl(void)
 {
     register_sysctl_init("kernel", mmu_sysctl_table);
 }

@@ -493,7 +493,8 @@ unsafe fn change_pmd_range(
                 break;
             }
             let entry = rust_mprotect_pmdp_get_lockless(pmd);
-            #[cfg(CONFIG_PGTABLE_HAS_HUGE_LEAVES)]
+            // Native pmd_is_huge() is always false without THP.
+            #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
             if rust_mprotect_pmd_is_huge(entry) {
                 if next.wrapping_sub(addr) != RUST_MPROTECT_HPAGE_PMD_SIZE as c_ulong
                     || pgtable_split_needed(vma, cp_flags)
