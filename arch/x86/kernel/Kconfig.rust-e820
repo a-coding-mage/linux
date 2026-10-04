@@ -17,3 +17,8 @@ config RUST_X86_E820
 	  per-callsite printk index records and per-init-function coverage
 	  exemptions are implemented. PRINTK=n preserves the native no-output
 	  inline semantics without referring to a nonexistent external symbol.
+	  With stack protection enabled, this owner currently requires Clang,
+	  x86-64 SMP and strong protection without Clang LTO or inline helpers.
+	  An empty C translation unit carries the native compiler's configured
+	  guard metadata into the Rust bitcode; it defines no runtime code or
+	  data. Object, assembly and IR targets verify the same native policy.
