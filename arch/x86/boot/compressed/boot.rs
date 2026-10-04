@@ -5,6 +5,13 @@
 
 #[path = "boot_bindings.rs"]
 mod bindings;
+#[cfg(CONFIG_ACPI)]
+mod acpi;
+#[cfg(CONFIG_ACPI)]
+mod boot_acpi_bindings;
+mod boot_efi_bindings;
+#[cfg(CONFIG_EFI)]
+mod efi;
 #[path = "cmdline.rs"]
 mod boot_cmdline;
 #[cfg(CONFIG_X86_64)]

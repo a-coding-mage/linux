@@ -114,11 +114,15 @@ endif
 	vmlinux-objs-$(CONFIG_AMD_MEM_ENCRYPT) += $(obj)/sev.o $(obj)/sev-handle-vc.o
 endif
 
+ifneq ($(CONFIG_RUST_X86_COMPRESSED),y)
 vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
+endif
 vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o $(obj)/tdcall.o $(obj)/tdx-shared.o
 vmlinux-objs-$(CONFIG_UNACCEPTED_MEMORY) += $(obj)/mem.o
 
+ifneq ($(CONFIG_RUST_X86_COMPRESSED),y)
 vmlinux-objs-$(CONFIG_EFI) += $(obj)/efi.o
+endif
 vmlinux-libs-$(CONFIG_EFI_STUB) += $(objtree)/drivers/firmware/efi/libstub/lib.a
 vmlinux-libs-$(CONFIG_X86_64)	+= $(objtree)/arch/x86/boot/startup/lib.a
 vmlinux-objs-$(CONFIG_EFI_SBAT) += $(obj)/sbat.o

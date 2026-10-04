@@ -17,6 +17,8 @@ boot-rust-flags := $(rust_common_flags) \
 	$(if $(CONFIG_WERROR),-Dwarnings) $(KRUSTFLAGS)
 boot-rust-cfg := @$(objtree)/include/generated/rustc_cfg --cfg lupos_boot --cfg PREBOOT
 boot-rust-deps := $(src)/boot_bindings.rs $(src)/cmdline.rs $(src)/error.rs \
+	$(if $(CONFIG_ACPI),$(src)/acpi.rs $(src)/boot_acpi_bindings.rs) \
+	$(src)/boot_efi_bindings.rs $(if $(CONFIG_EFI),$(src)/efi.rs) \
 	$(src)/boot_cpu_bindings.rs $(src)/cpuflags.rs $(src)/../cpuflags.rs \
 	$(if $(CONFIG_EARLY_PRINTK),$(src)/early_serial_console.rs $(src)/../early_serial_console.rs) \
 	$(if $(CONFIG_X86_64),$(src)/boot_idt_bindings.rs $(src)/idt_64.rs) \
@@ -33,6 +35,8 @@ targets += boot_cpu_bindings_generated.rs
 targets += boot_idt_bindings_generated.rs
 targets += boot_pgtable_bindings_generated.rs
 targets += boot_ident_map_bindings_generated.rs
+targets += boot_efi_bindings_generated.rs
+targets += boot_acpi_bindings_generated.rs
 
 quiet_cmd_boot_core = RUSTC BOOT $@
       cmd_boot_core = $(RUSTC) $(filter-out --edition=2021 -Wunreachable_pub,$(boot-rust-flags)) \
@@ -58,6 +62,20 @@ quiet_cmd_boot_bindgen = BINDGEN BOOT $@
 	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
 $(obj)/boot_bindings_generated.rs: $(src)/boot_bindings.h $(obj)/../voffset.h FORCE
 	$(call if_changed_dep,boot_bindgen)
+
+# Firmware layouts and C declarations only. Keep the aligned EFI GUID typedef
+# and boot_params identity shared with the Rust EFI owner and its ACPI caller.
+quiet_cmd_boot_efi_bindgen = BINDGEN BOOT EFI $@
+      cmd_boot_efi_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
+	--no-prepend-enum-name --with-derive-default \
+	--blocklist-type '(boot_params|efi_guid_t)' \
+	--allowlist-type '(efi_type|efi_setup_data|efi_config_table_64_t|efi_config_table_32_t|efi_system_table_64_t|efi_system_table_32_t)' \
+	--allowlist-function '(efi_get_type|efi_get_system_table|efi_get_conf_table|efi_find_vendor_table)' \
+	--allowlist-var '(EFI_TYPE_.*|LUPOS_BOOT_EFI_.*)' \
+	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
+$(obj)/boot_efi_bindings_generated.rs: $(src)/boot_efi_bindings.h FORCE
+	$(call if_changed_dep,boot_efi_bindgen)
 
 # The setup/decompressor CPUID ABI conflicts by name with the kernel's API.
 # Generate from its own native header, without importing broad kernel headers.
@@ -108,6 +126,17 @@ quiet_cmd_boot_ident_map_bindgen = BINDGEN BOOT IDENT MAP $@
 $(obj)/boot_ident_map_bindings_generated.rs: $(src)/boot_ident_map_bindings.h FORCE
 	$(call if_changed_dep,boot_ident_map_bindgen)
 
+# Native packed tables and configured constants only; ACPI bodies are Rust.
+quiet_cmd_boot_acpi_bindgen = BINDGEN BOOT ACPI $@
+      cmd_boot_acpi_bindgen = $(BINDGEN) $< --rust-target 1.85 --use-core --depfile $(depfile) \
+	--ctypes-prefix core::ffi --no-layout-tests --wrap-unsafe-ops --no-debug '.*' \
+	--no-prepend-enum-name --with-derive-default \
+	--allowlist-type '(acpi_table_rsdp|acpi_table_header|acpi_table_srat|acpi_subtable_header|acpi_srat_mem_affinity|acpi_srat_type)' \
+	--allowlist-var '(LUPOS_BOOT_ACPI_.*|ACPI_SIG_RSDP|ACPI_SIG_SRAT|ACPI_RSDP_.*|ACPI_EBDA_PTR_LOCATION|ACPI_EBDA_WINDOW_SIZE|ACPI_HI_RSDP_WINDOW_BASE|ACPI_HI_RSDP_WINDOW_SIZE|ACPI_SRAT_TYPE_MEMORY_AFFINITY|ACPI_SRAT_MEM_HOT_PLUGGABLE)' \
+	-o $@ -- $(c_flags) -fno-builtin -D__BINDGEN__
+$(obj)/boot_acpi_bindings_generated.rs: $(src)/boot_acpi_bindings.h FORCE
+	$(call if_changed_dep,boot_acpi_bindgen)
+
 # Preserve the C source's exact concatenated build entropy including its NUL.
 $(obj)/boot_build.rs: $(src)/boot_build.rs.S FORCE
 	$(call if_changed_dep,rustc_rs_rs_S)
@@ -120,9 +149,11 @@ quiet_cmd_boot_rust = RUSTC BOOT $@
 	--extern compiler_builtins=$(obj)/libcompiler_builtins.rlib \
 	--emit=link=$@,dep-info=$(depfile) $<
 $(obj)/boot.a: $(src)/boot.rs $(boot-rust-deps) $(obj)/boot_bindings_generated.rs \
+	$(obj)/boot_efi_bindings_generated.rs \
 	$(obj)/boot_cpu_bindings_generated.rs $(if $(CONFIG_X86_64),$(obj)/boot_idt_bindings_generated.rs) \
 	$(if $(CONFIG_X86_64),$(obj)/boot_pgtable_bindings_generated.rs) \
 	$(if $(CONFIG_X86_64),$(obj)/boot_ident_map_bindings_generated.rs) \
+	$(if $(CONFIG_ACPI),$(obj)/boot_acpi_bindings_generated.rs) \
 	$(obj)/boot_build.rs $(obj)/libcompiler_builtins.rlib FORCE
 	$(call if_changed_dep,boot_rust)
 
@@ -134,6 +165,7 @@ $(obj)/boot.a: $(src)/boot.rs $(boot-rust-deps) $(obj)/boot_bindings_generated.r
 # Private section collection prevents unused core routines from entering the
 # decompressor. These are all C/assembly-visible roots of the replaced units.
 boot-rust-roots := extract_kernel decompress_kernel kernel_text_size kernel_inittext_size kernel_inittext_offset \
+	$(if $(CONFIG_EFI),efi_get_type efi_get_system_table efi_get_conf_table efi_find_vendor_table) \
 	kernel_total_size memcmp bcmp strcmp strncmp strnlen simple_strtoull simple_strtol strlen strstr strchr boot_kstrtoul memcpy memmove memset boot_params_ptr pio_ops free_mem_ptr free_mem_end_ptr \
 	spurious_nmi_count malloc free __putstr __puthex __putdec warn error \
 	get_cmd_line_ptr cmdline_find_option cmdline_find_option_bool \
@@ -142,6 +174,7 @@ boot-rust-roots := extract_kernel decompress_kernel kernel_text_size kernel_init
 	$(if $(CONFIG_X86_64),load_stage1_idt load_stage2_idt cleanup_exception_handling) \
 	$(if $(CONFIG_X86_64),configure_5level_paging __pgtable_l5_enabled pgdir_shift ptrs_per_p4d trampoline_32bit) \
 	$(if $(CONFIG_X86_64),initialize_identity_maps kernel_add_identity_map kernel_ident_mapping_init kernel_ident_mapping_free set_page_decrypted set_page_encrypted set_page_non_present do_boot_page_fault do_boot_nmi_trap __default_kernel_pte_mask physical_mask) \
+	$(if $(CONFIG_ACPI),get_rsdp_addr immovable_mem $(if $(and $(CONFIG_RANDOMIZE_BASE),$(CONFIG_MEMORY_HOTREMOVE)),count_immovable_mem_regions)) \
 	__cmdline_find_option __cmdline_find_option_bool \
 	inflate_fast zlib_inflate zlib_inflateEnd zlib_inflateIncomp \
 	zlib_inflateInit2 zlib_inflateReset zlib_inflate_table zlib_inflate_workspacesize \
@@ -167,6 +200,8 @@ $(obj)/libcore.rlib $(obj)/libcompiler_builtins.rlib $(obj)/boot.a: $(wildcard $
 $(obj)/boot_bindings_generated.rs $(obj)/boot_cpu_bindings_generated.rs $(obj)/boot_idt_bindings_generated.rs: $(wildcard $(BINDGEN))
 $(obj)/boot_pgtable_bindings_generated.rs: $(wildcard $(BINDGEN))
 $(obj)/boot_ident_map_bindings_generated.rs: $(wildcard $(BINDGEN))
+$(obj)/boot_efi_bindings_generated.rs: $(wildcard $(BINDGEN))
+$(obj)/boot_acpi_bindings_generated.rs: $(wildcard $(BINDGEN))
 
 # The helper includes the generated offsets even on its first parallel build.
 $(obj)/boot_helpers.o: $(obj)/../voffset.h
@@ -175,3 +210,5 @@ $(boot-rust-target) $(obj)/libcore.rlib: $(wildcard $(objtree)/include/config/RU
 $(obj)/boot_bindings_generated.rs $(obj)/boot_cpu_bindings_generated.rs $(obj)/boot_idt_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
 $(obj)/boot_pgtable_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
 $(obj)/boot_ident_map_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
+$(obj)/boot_efi_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
+$(obj)/boot_acpi_bindings_generated.rs: $(wildcard $(objtree)/include/config/BINDGEN_VERSION_TEXT)
