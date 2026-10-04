@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(mm_struct|vm_area_struct|vm_area_desc|mmap_action|vm_fault|vm_operations_struct|mmu_gather|mmu_notifier_range|zap_details|unlink_vma_file_batch|unmap_desc|pte_t|pmd_t|pud_t|p4d_t|pgd_t|pgtable_t|pgprot_t|pgtable_level|pte_fn_t|pgtbl_mod_mask|vm_fault_t|softleaf_t|pte_marker|fpb_t|zap_flags_t|pgoff_t|gfp_t|phys_addr_t|rmap_t|file|page|folio|ptdesc|kref|pfnmap_track_ctx|spinlock_t|ctl_table|follow_pfnmap_args|swap_info_struct|swp_entry_t|task_struct|pt_regs|resource_size_t|loff_t|slab_flags_t|kmem_cache)$'
+--allowlist-function '^(rust_memory_.*|snprintf|mas_find|unlink_anon_vmas|dump_page|add_taint|kfree)$'
+--allowlist-var '^(RUST_MEMORY_.*|E[A-Z0-9_]+|VMA_.*_BIT|PGTABLE_LEVEL_.*|init_mm)$'
+# Compiler-sized opaque views avoid manually recreating anonymous/randomized
+# layouts. Each used opaque field is accessed by a configured native leaf.
+--opaque-type '^(mm_struct|task_struct|signal_struct|sighand_struct|files_struct|fs_struct|dentry|super_block|page|folio|ptdesc|mem_cgroup|lruvec|kmem_cache|shrinker|device|mem_section|zone|pglist_data|net|socket|cred)$'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=vm_fault='#[cfi_encoding="8vm_fault"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'
+--with-attribute-custom-struct=ctl_table='#[cfi_encoding="9ctl_table"]'

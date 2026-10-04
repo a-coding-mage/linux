@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(mm_struct|vm_area_struct|vm_operations_struct|vma_flags_t|vma_flag_t|vm_flags_t|vma_iterator|mmu_gather|mmu_notifier_range|mm_walk|mm_walk_ops|page|folio|pte_t|pmd_t|pud_t|p4d_t|pgd_t|pgprot_t|softleaf_t|swp_entry_t|fpb_t|spinlock_t)$'
+--allowlist-function '^(rust_mprotect_.*|vm_normal_page|vm_get_page_prot|walk_page_range_vma|may_expand_vm|vma_modify_flags|vma_set_page_prot|populate_vma_page_range|vm_stat_account)$'
+--allowlist-var '^(RUST_MPROTECT_.*|E[A-Z0-9_]+|READ_IMPLIES_EXEC|PROT_.*|VMA_.*_BIT|PGWALK_WRLOCK)$'
+# Opaque types retain compiler-sized/aligned storage. Page pointer arithmetic
+# therefore uses the configured sizeof(struct page), never a synthetic layout.
+--opaque-type '^(mm_struct|task_struct|signal_struct|sighand_struct|files_struct|fs_struct|dentry|super_block|page|folio|mem_cgroup|lruvec|kmem_cache|shrinker|device|mem_section|zone|pglist_data|net|socket|cred)$'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=vm_operations_struct='#[cfi_encoding="20vm_operations_struct"]'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'
+--with-attribute-custom-struct=mm_walk='#[cfi_encoding="7mm_walk"]'
+--with-attribute-custom-struct=mm_walk_ops='#[cfi_encoding="11mm_walk_ops"]'
+--with-attribute-custom-struct=vma_iterator='#[cfi_encoding="12vma_iterator"]'
+--with-attribute-custom-struct=mmu_gather='#[cfi_encoding="10mmu_gather"]'

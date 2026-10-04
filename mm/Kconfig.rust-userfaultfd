@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_USERFAULTFD
+	bool "Rust userfaultfd memory management and file API"
+	depends on RUST && USERFAULTFD && MMU
+	depends on X86_64 && SMP && CC_IS_CLANG
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	depends on !KSTACK_ERASE && !RUST_INLINE_HELPERS && !LTO_CLANG && !KCOV
+	default y
+	help
+	  Build userfaultfd.o from the Rust implementation. Page filling,
+	  move, write/read-write protection, context lifetime, fault retry,
+	  event delivery, ioctl negotiation and access decisions run in Rust.
+	  The original C file remains a reference and is not compiled for
+	  this object when selected. Native header and architecture leaves
+	  retain their configured ABI and instrumentation. This source-phase
+	  implementation still requires the combined build and runtime audit.

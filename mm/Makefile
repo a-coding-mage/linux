@@ -262,3 +262,8 @@ endif
 # outside the selector, preserving sidecar cleanup after deselection.
 
 include $(srctree)/mm/mmap_native_rust.mk
+
+include $(srctree)/mm/memory_native_rust.mk
+include $(srctree)/mm/userfaultfd_native_rust.mk
+include $(srctree)/mm/mremap_native_rust.mk
+include $(srctree)/mm/mprotect_native_rust.mk

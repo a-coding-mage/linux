@@ -2,6 +2,21 @@
 
 menu "Memory Management options"
 
+source "mm/Kconfig.rust-mprotect"
+
+config RUST_MEMORY
+	bool "Rust core page-table and fault handling"
+	depends on RUST && MMU
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build memory.o from the full Rust memory.c owner using configured
+	  original header types. Page-table freeing, fork, unmap, insertion,
+	  remap and fault decisions execute in Rust. Native architecture,
+	  compiler, atomic and header-only boundaries remain explicit.
+	  The original C file is retained as a reference and is not linked.
+	  Native compiler instrumentation gates must pass before admission.
+
 config RUST_PAGE_ALLOC
 	bool "Rust page allocator decisions and zone management"
 	depends on RUST
@@ -12,6 +27,18 @@ config RUST_PAGE_ALLOC
 	  metadata and existing external subsystem boundaries remain.
 	  The original C implementation is not linked when this is enabled.
 	  Native compiler policy gates must pass before build admission.
+
+config RUST_MREMAP
+	bool "Rust mremap and page-table movement"
+	depends on RUST && MMU
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build mremap.o from Rust: PTE/PMD/PUD moves, VMA resizing and
+	  relocation, rollback, memory accounting, and syscall decisions.
+	  Native leaves retain architecture and header operations plus
+	  syscall metadata; original mremap.c is not linked when selected.
+	  Native compiler instrumentation policy must pass owner checks.
 
 config RUST_MMAP
 	bool "Rust userspace mappings and VMA lifetime"
@@ -1569,3 +1596,5 @@ config LAZY_MMU_MODE_KUNIT_TEST
 source "mm/damon/Kconfig"
 
 endmenu
+
+source "mm/Kconfig.rust-userfaultfd"

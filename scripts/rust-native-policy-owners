@@ -28,3 +28,8 @@ mm/mmap                   strong -
 mm/vmalloc                strong -
 kernel/sched/idle         strong -
 kernel/sched/clock        strong -
+
+mm/memory                 strong -
+mm/userfaultfd            strong -
+mm/mremap                 strong -
+mm/mprotect               strong -

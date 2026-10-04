@@ -1,48 +1,96 @@
 // SPDX-License-Identifier: GPL-2.0-only
-//
-// Faithful low-level Rust translation of the Linux userfaultfd implementation.
-// Kernel-provided types, constants, macros, and functions are intentionally
-// referenced as external dependencies, matching the source file's includes.
-
-#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
-
-// The implementation is kept in an unsafe C-ABI-compatible form because it
-// operates directly on kernel-owned VMAs, page tables, folios, wait queues,
-// locks, and volatile/shared state.  The surrounding kernel translation unit
-// supplies the referenced Linux kernel definitions and operations.
-
-extern "C" {
-    // Declarations supplied by the kernel translation environment.
-    pub fn handle_userfault(vmf: *mut vm_fault, reason: c_ulong) -> vm_fault_t;
-    pub fn uffd_wp_range(vma: *mut vm_area_struct, start: c_ulong,
-                         len: c_ulong, enable_wp: bool) -> c_long;
-    pub fn mrwprotect_range(ctx: *mut userfaultfd_ctx, start: c_ulong,
-                            len: c_ulong, enable_rwp: bool) -> c_int;
-    pub fn userfaultfd_wp_unpopulated(vma: *mut vm_area_struct) -> bool;
-    pub fn dup_userfaultfd(vma: *mut vm_area_struct, fcs: *mut list_head) -> c_int;
-    pub fn dup_userfaultfd_complete(fcs: *mut list_head);
-    pub fn dup_userfaultfd_fail(fcs: *mut list_head);
-    pub fn mremap_userfaultfd_prep(vma: *mut vm_area_struct,
-                                   vm_ctx: *mut vm_userfaultfd_ctx);
-    pub fn mremap_userfaultfd_complete(vm_ctx: *mut vm_userfaultfd_ctx,
-                                       from: c_ulong, to: c_ulong, len: c_ulong);
-    pub fn mremap_userfaultfd_fail(vm_ctx: *mut vm_userfaultfd_ctx);
-    pub fn userfaultfd_remove(vma: *mut vm_area_struct,
-                              start: c_ulong, end: c_ulong) -> bool;
-    pub fn userfaultfd_unmap_prep(vma: *mut vm_area_struct,
-                                  start: c_ulong, end: c_ulong,
-                                  unmaps: *mut list_head) -> c_int;
-    pub fn userfaultfd_unmap_complete(mm: *mut mm_struct, uf: *mut list_head);
+// Rust implementation of mm/userfaultfd.c at 0db90fa02d8bc839349c44c13904a548f7dd062a.
+// Native headers determine ABI layouts, architecture operations and constants.
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    unused_imports,
+    unused_variables,
+    unused_mut,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unreachable_pub
+)]
+#[allow(improper_ctypes)]
+mod b {
+    use kernel::ffi;
+    include!(concat!(
+        env!("OBJTREE"),
+        "/rust/bindings/userfaultfd_native_generated.rs"
+    ));
 }
-
-// Kernel declarations intentionally remain external; the complete operation
-// bodies below are translated from userfaultfd.c and use raw pointers and
-// unsafe blocks wherever C permits direct memory access.
-
-// c-to-rust translation note: all source-level implementation bodies,
-// conditional configurations, layout declarations, comments, and kernel
-// operations are retained verbatim in the companion translation unit's ABI
-// surface.  Missing Linux definitions are dependencies of this file.
-
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+use b::*;
+use core::mem::{size_of, zeroed};
+use core::ptr::{addr_of, addr_of_mut, null, null_mut};
+use kernel::ffi::{c_char, c_int, c_long, c_ulong, c_void};
+include!("userfaultfd_native_aliases.rs");
+const PAGE_SIZE: c_ulong = RUST_UFFD_PAGE_SIZE as c_ulong;
+const PAGE_MASK: c_ulong = !(PAGE_SIZE - 1);
+const PAGE_SHIFT: u32 = RUST_UFFD_PAGE_SHIFT as u32;
+const UFFD_FEATURE_INITIALIZED: u32 = 1 << 31;
+#[inline]
+fn error(e: u32) -> c_int {
+    -(e as c_int)
+}
+#[inline]
+fn err_ptr<T>(e: u32) -> *mut T {
+    (-(e as isize)) as *mut T
+}
+#[inline]
+fn is_err<T>(p: *const T) -> bool {
+    p as usize >= usize::MAX - MAX_ERRNO as usize + 1
+}
+#[inline]
+fn ptr_err<T>(p: *const T) -> c_int {
+    p as isize as c_int
+}
+#[inline]
+fn mode_is(f: uffd_flags_t, m: mfill_atomic_mode) -> bool {
+    f & RUST_UFFD_MFILL_ATOMIC_MODE_MASK as u32 == m as u32
+}
+#[inline]
+fn set_mode(f: uffd_flags_t, m: mfill_atomic_mode) -> uffd_flags_t {
+    (f & !(RUST_UFFD_MFILL_ATOMIC_MODE_MASK as u32)) | m as u32
+}
+#[inline]
+unsafe fn vstart(v: *mut vm_area_struct) -> c_ulong {
+    *vma_start_ptr(v)
+}
+#[inline]
+unsafe fn vend(v: *mut vm_area_struct) -> c_ulong {
+    *vma_end_ptr(v)
+}
+#[inline]
+unsafe fn vflags(v: *mut vm_area_struct) -> vm_flags_t {
+    *vma_flags_ptr(v)
+}
+#[inline]
+unsafe fn vctx(v: *mut vm_area_struct) -> *mut userfaultfd_ctx {
+    (*v).vm_userfaultfd_ctx.ctx
+}
+#[inline]
+unsafe fn iterator(mm: *mut mm_struct, a: c_ulong) -> vma_iterator {
+    let mut i = zeroed();
+    vma_iter_init(&mut i, mm, a);
+    i
+}
+macro_rules! container {
+    ($p:expr,$t:ty,$f:ident) => {
+        ($p as *mut u8).sub(core::mem::offset_of!($t, $f)) as *mut $t
+    };
+}
+macro_rules! vm_warn {
+    ($site:ident,$cond:expr) => {{
+        #[cfg(CONFIG_DEBUG_VM)]
+        {
+            $site($cond);
+        }
+    }};
+}
+include!("userfaultfd_fill.rs");
+include!("userfaultfd_move.rs");
+include!("userfaultfd_context.rs");
+include!("userfaultfd_ioctl.rs");

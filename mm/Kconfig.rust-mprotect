@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_MPROTECT
+	bool "Use Rust memory protection and protection-key operations"
+	depends on RUST && MMU
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build mprotect.o from Rust with configured native layouts and ABI.
+	  The PTE through PGD protection walks, batch/sub-batch decisions,
+	  userfaultfd and NUMA protections, VMA accounting and permission
+	  changes, and mprotect/pkey syscall bodies execute in Rust.
+	  Native leaves retain architecture/header operations and syscall
+	  metadata. The original mprotect.c is preserved as reference only.
+	  Native compiler policy checks must pass before build admission.

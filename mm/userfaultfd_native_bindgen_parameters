@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(userfaultfd_.*|vm_userfaultfd_ctx|vm_uffd_ops|uffd_msg|uffdio_.*|uffd_flags_t|mfill_atomic_mode|vm_fault|vm_fault_t|mm_struct|vm_area_struct|vm_operations_struct|file|file_operations|inode|kiocb|iov_iter|poll_table|seq_file|miscdevice|vma_flags_t|vm_flags_t|vma_flag_t|vma_iterator|mmu_gather|mmu_notifier_range|folio|page|list_head|wait_queue_entry_t|wait_queue_head_t|rmap_t)$'
+--allowlist-function '^(rust_uffd_.*|__pte_alloc|folio_add_new_anon_rmap|fput|hugetlb_fault_mutex_hash|huge_pte_alloc|hugetlb_mfill_atomic_pte|copy_folio_from_user|mutex_lock|mutex_unlock|down_read|up_read|down_write|up_write|change_protection|folio_move_anon_rmap|migration_entry_wait|move_pages_huge_pmd|vma_modify_flags_uffd|vma_set_page_prot|hugetlb_unshare_all_pmds|mmput|kmem_cache_free|kmem_cache_alloc|kfree|wake_up_state|schedule|__wake_up|__wake_up_locked_key|add_wait_queue|anon_inode_create_getfd|anon_inode_create_getfile|capable|seq_printf|compat_ptr_ioctl|noop_llseek|get_unused_fd_flags|put_unused_fd|fd_install|misc_register|kmem_cache_create|printk_ratelimit|dump_stack)$'
+--allowlist-var '^(RUST_UFFD_.*|E[A-Z0-9_]+|MAX_ERRNO|CAP_SYS_PTRACE|SINGLE_DEPTH_NESTING|_UFFDIO_.*|UFFD_EVENT_.*|MFILL_ATOMIC_.*|VMA_MAYWRITE_BIT|MMU_NOTIFY_CLEAR)$'
+# Complete configured, compiler-sized opaque records. Field accessors above
+# follow native randomized/anonymous layouts without guessed Rust offsets.
+--opaque-type '^(mm_struct|task_struct|signal_struct|sighand_struct|files_struct|fs_struct|dentry|super_block|page|folio|mem_cgroup|lruvec|kmem_cache|shrinker|device|mem_section|zone|pglist_data|net|socket|cred|vm_fault)$'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=vm_fault='#[cfi_encoding="8vm_fault"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=inode='#[cfi_encoding="5inode"]'
+--with-attribute-custom-struct=kiocb='#[cfi_encoding="5kiocb"]'
+--with-attribute-custom-struct=iov_iter='#[cfi_encoding="8iov_iter"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
+--with-attribute-custom-struct=poll_table_struct='#[cfi_encoding="17poll_table_struct"]'
+--with-attribute-custom-struct=wait_queue_entry='#[cfi_encoding="16wait_queue_entry"]'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'
