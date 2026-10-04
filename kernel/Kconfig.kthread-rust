@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_KTHREAD
+	bool "Rust kernel thread lifecycle and worker implementation"
+	depends on RUST
+	default y
+	help
+	  Select Rust as the production owner of kernel/kthread.o. All task
+	  creation, park/stop, affinity, worker queue/cancel/flush, address-space
+	  switching and block-cgroup association bodies are implemented in Rust
+	  using configured native layouts. The original C source is retained
+	  for reference and explicit control comparisons.
+
+	  The source retains NUMA, FREEZER, BLK_CGROUP, PREEMPT_RT, lockdep and
+	  debug/list behavior. Native compiler, instrumentation, configuration
+	  and runtime qualification is still pending; these profiles have not
+	  all been validated. The integrated production target must keep this
+	  selector enabled and resolve qualification failures explicitly, without
+	  silently falling back to the C implementation.

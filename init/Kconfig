@@ -2298,6 +2298,7 @@ source "kernel/Kconfig.pid-rust"
 source "kernel/Kconfig.exit-rust"
 source "kernel/Kconfig.softirq-rust"
 source "kernel/Kconfig.panic-rust"
+source "kernel/Kconfig.kthread-rust"
 
 config RUST_NATIVE_EXPORTS
 	bool "Native Rust library export bridge"

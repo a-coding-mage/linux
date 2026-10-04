@@ -2,6 +2,18 @@
 
 menu "Memory Management options"
 
+config RUST_MEMBLOCK
+	bool "Use Rust early logical-memory allocator"
+	depends on RUST
+	default y
+	help
+	  Build memblock.o from Rust while retaining the native memblock ABI,
+	  configured physical-address and NUMA layouts, boot parameters,
+	  named reservations, kexec handover and debugfs interfaces.
+	  The original C implementation is not linked when this is enabled.
+	  Native compiler instrumentation policies must pass the owner's
+	  Kbuild checks before enabling this source-phase implementation.
+
 config RUST_WORKINGSET
 	bool "Use Rust working-set tracking"
 	depends on RUST

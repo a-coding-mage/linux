@@ -68,6 +68,7 @@ obj-y += page-alloc.o
 obj-y += page_frag_cache.o
 obj-y += init-mm.o
 obj-y += memblock.o
+include $(srctree)/mm/memblock-rust.mk
 obj-y += $(memory-hotplug-y)
 obj-y += slub.o
 

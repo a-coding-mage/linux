@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+--no-doc-comments
+--no-prepend-enum-name
+--allowlist-type '^(memblock|memblock_type|memblock_region|memblock_flags|pglist_data|zone|seq_file)$'
+--allowlist-function '^(rust_memblock_.*|_printk|panic|kfree|snprintf|strlen|strcmp|strstr|memparse|memblock_free_pages|init_deferred_page|first_online_pgdat|next_online_pgdat|kho_is_enabled|kho_preserve_pages|kho_unpreserve_pages|kho_add_subtree|kho_remove_subtree|kho_retrieve_subtree|fdt_create|fdt_finish_reservemap|fdt_begin_node|fdt_property|fdt_end_node|fdt_finish|fdt_node_check_compatible|fdt_subnode_offset|fdt_getprop|seq_printf|string_get_size|debugfs_create_dir)$'
+--allowlist-function '^(memblock_add_node|memblock_add|memblock_remove|memblock_phys_free|__memblock_reserve|memblock_physmem_add|memblock_phys_alloc_range|memblock_alloc_exact_nid_raw|memblock_alloc_try_nid_raw|memblock_alloc_hugetlb|memblock_alloc_try_nid)$'
+--allowlist-var '^(RUST_MEMBLOCK_.*|MEMBLOCK_.*|RESERVE_MEM_KHO_NODE_COMPATIBLE|STRING_UNITS_2|ENOMEM|EINVAL|EBUSY|ENOENT|mirrored_kernelcore)$'
+# Opaque dependencies retain compiler-derived size and alignment, including page
+# pointer arithmetic used when releasing the unused memmap backing allocation.
+--opaque-type '^(page|folio|task_struct|vm_area_struct|mm_struct|file|inode|dentry|address_space|mem_cgroup|lruvec|kmem_cache|shrinker|wait_queue_entry|timer_list|work_struct|delayed_work|per_cpu_pages|per_cpu_zonestat|per_cpu_nodestat|mem_section|resource|device|rcu_head|rcuwait|cpumask|nodemask_t)$'
+--allowlist-function '^(__next_mem_range|__next_mem_range_rev)$'
+--with-attribute-custom-struct=memblock_type='#[cfi_encoding="13memblock_type"]'
+--with-attribute-custom-struct=memblock_region='#[cfi_encoding="15memblock_region"]'
+--with-attribute-custom-struct=memblock='#[cfi_encoding="8memblock"]'
+--with-attribute-custom-struct=pglist_data='#[cfi_encoding="11pglist_data"]'
+--with-attribute-custom-struct=zone='#[cfi_encoding="4zone"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
