@@ -3,6 +3,10 @@
 # Keep the original x86_init.o identity/position and all inherited Kbuild flags.
 clean-files += .x86-platform-callbacks-rust-listing/ .x86-platform-callbacks-rust-listing-elf/
 ifeq ($(CONFIG_RUST_X86_PLATFORM_CALLBACKS),y)
+# Distinct C callback functions have distinct addresses, even for equal bodies.
+# All inspection rules below use target-stem=x86_init and inherit this setting.
+RUSTFLAGS_x86_init.o += -Zmerge-functions=disabled
+
 # The explicit Rust rule is necessary while the unchanged x86_init.c is present.
 $(obj)/x86_init.o: $(src)/x86_init.rs \
     $(objtree)/rust/bindings/x86_platform_callbacks_generated.rs FORCE
