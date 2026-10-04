@@ -189,11 +189,10 @@ unsafe fn vmap_pte_range(
             }
             bug(true);
         }
-        let mut size = PAGE_SIZE;
+        #[cfg(not(CONFIG_HUGETLB_PAGE))]
+        let size = PAGE_SIZE;
         #[cfg(CONFIG_HUGETLB_PAGE)]
-        {
-            size = arch_vmap_pte_range_map_size(addr, end, pfn as u64, max_page_shift);
-        }
+        let size = arch_vmap_pte_range_map_size(addr, end, pfn as u64, max_page_shift);
         if size != PAGE_SIZE {
             #[cfg(CONFIG_HUGETLB_PAGE)]
             {
@@ -422,11 +421,10 @@ unsafe fn vunmap_pte_range(
     let mut pte = pte_offset_kernel(pmd, addr);
     lazy_mmu_mode_enable();
     loop {
-        let mut size = PAGE_SIZE;
+        #[cfg(not(CONFIG_HUGETLB_PAGE))]
+        let size = PAGE_SIZE;
         #[cfg(CONFIG_HUGETLB_PAGE)]
-        {
-            size = arch_vmap_pte_range_unmap_size(addr, pte);
-        }
+        let mut size = arch_vmap_pte_range_unmap_size(addr, pte);
         let ptent;
         #[cfg(CONFIG_HUGETLB_PAGE)]
         {

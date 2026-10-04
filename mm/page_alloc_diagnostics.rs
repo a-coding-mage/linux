@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // VM diagnostic arguments are unevaluated when DEBUG_VM is disabled, as in C.
 macro_rules! pa_vm_bug_page {
-    ($c:expr,$p:expr) => {
+    ($c:expr,$p:expr$(,)?) => {
         #[cfg(CONFIG_DEBUG_VM)]
         {
             rust_pa_bug_page($c, $p);

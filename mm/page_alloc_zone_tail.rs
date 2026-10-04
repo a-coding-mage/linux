@@ -805,7 +805,7 @@ const unsafe fn pa_sysctl_entry(
 static page_alloc_sysctl_table: PaSysctlTable = unsafe {
     PaSysctlTable([
         pa_sysctl_entry(
-            c"min_free_kbytes".as_ptr(),
+            c"min_free_kbytes".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(min_free_kbytes).cast(),
             core::mem::size_of::<i32>() as i32,
             min_free_kbytes_sysctl_handler,
@@ -813,7 +813,7 @@ static page_alloc_sysctl_table: PaSysctlTable = unsafe {
             null(),
         ),
         pa_sysctl_entry(
-            c"watermark_boost_factor".as_ptr(),
+            c"watermark_boost_factor".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(watermark_boost_factor).cast(),
             core::mem::size_of::<i32>() as i32,
             proc_dointvec_minmax,
@@ -821,7 +821,7 @@ static page_alloc_sysctl_table: PaSysctlTable = unsafe {
             null(),
         ),
         pa_sysctl_entry(
-            c"watermark_scale_factor".as_ptr(),
+            c"watermark_scale_factor".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(watermark_scale_factor).cast(),
             core::mem::size_of::<i32>() as i32,
             watermark_scale_factor_sysctl_handler,
@@ -829,7 +829,7 @@ static page_alloc_sysctl_table: PaSysctlTable = unsafe {
             pa_sysctl_value(RUST_PA_LATE_SYSCTL_THREE_THOUSAND_INDEX),
         ),
         pa_sysctl_entry(
-            c"defrag_mode".as_ptr(),
+            c"defrag_mode".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(defrag_mode).cast(),
             core::mem::size_of::<i32>() as i32,
             proc_dointvec_minmax,
@@ -837,7 +837,7 @@ static page_alloc_sysctl_table: PaSysctlTable = unsafe {
             pa_sysctl_value(RUST_PA_LATE_SYSCTL_ONE_INDEX),
         ),
         pa_sysctl_entry(
-            c"percpu_pagelist_high_fraction".as_ptr(),
+            c"percpu_pagelist_high_fraction".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(percpu_pagelist_high_fraction).cast(),
             core::mem::size_of::<i32>() as i32,
             percpu_pagelist_high_fraction_sysctl_handler,
@@ -845,7 +845,7 @@ static page_alloc_sysctl_table: PaSysctlTable = unsafe {
             null(),
         ),
         pa_sysctl_entry(
-            c"lowmem_reserve_ratio".as_ptr(),
+            c"lowmem_reserve_ratio".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(sysctl_lowmem_reserve_ratio).cast(),
             core::mem::size_of::<[i32; RUST_PA_MAX_NR_ZONES as usize]>() as i32,
             lowmem_reserve_ratio_sysctl_handler,
@@ -854,7 +854,7 @@ static page_alloc_sysctl_table: PaSysctlTable = unsafe {
         ),
         #[cfg(CONFIG_NUMA)]
         pa_sysctl_entry(
-            c"numa_zonelist_order".as_ptr(),
+            c"numa_zonelist_order".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(numa_zonelist_order).cast(),
             NUMA_ZONELIST_ORDER_LEN,
             numa_zonelist_order_handler,
@@ -863,7 +863,7 @@ static page_alloc_sysctl_table: PaSysctlTable = unsafe {
         ),
         #[cfg(CONFIG_NUMA)]
         pa_sysctl_entry(
-            c"min_unmapped_ratio".as_ptr(),
+            c"min_unmapped_ratio".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(sysctl_min_unmapped_ratio).cast(),
             core::mem::size_of::<i32>() as i32,
             sysctl_min_unmapped_ratio_sysctl_handler,
@@ -872,7 +872,7 @@ static page_alloc_sysctl_table: PaSysctlTable = unsafe {
         ),
         #[cfg(CONFIG_NUMA)]
         pa_sysctl_entry(
-            c"min_slab_ratio".as_ptr(),
+            c"min_slab_ratio".as_ptr().cast::<CChar>(),
             core::ptr::addr_of_mut!(sysctl_min_slab_ratio).cast(),
             core::mem::size_of::<i32>() as i32,
             sysctl_min_slab_ratio_sysctl_handler,
@@ -957,7 +957,10 @@ unsafe fn alloc_contig_dump_pages(list: *mut list_head) {
         rust_pa_late_dump_stack();
         let mut entry = (*list).next;
         while entry != list {
-            dump_page(rust_pa_late_lru_page(entry), c"migration failure".as_ptr());
+            dump_page(
+                rust_pa_late_lru_page(entry),
+                c"migration failure".as_ptr().cast::<CChar>(),
+            );
             entry = (*entry).next;
         }
     }
@@ -1452,10 +1455,10 @@ static mut lazy_accept: bool = true;
 #[cold]
 #[link_section = ".init.text"]
 unsafe extern "C" fn accept_memory_parse(p: *mut CChar) -> i32 {
-    if rust_pa_late_strcmp(p, c"lazy".as_ptr()) == 0 {
+    if rust_pa_late_strcmp(p, c"lazy".as_ptr().cast::<CChar>()) == 0 {
         lazy_accept = true;
         0
-    } else if rust_pa_late_strcmp(p, c"eager".as_ptr()) == 0 {
+    } else if rust_pa_late_strcmp(p, c"eager".as_ptr().cast::<CChar>()) == 0 {
         lazy_accept = false;
         0
     } else {

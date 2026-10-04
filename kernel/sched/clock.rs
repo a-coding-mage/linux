@@ -314,7 +314,7 @@ pub unsafe extern "C" fn sched_clock_idle_sleep_event() {
 #[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn sched_clock_idle_wakeup_event() {
-    if sched_clock_stable() != 0 || read_volatile(addr_of!(timekeeping_suspended)) {
+    if sched_clock_stable() != 0 || read_volatile(addr_of!(timekeeping_suspended)) != 0 {
         return;
     }
     let flags = lupos_clock_irq_save();

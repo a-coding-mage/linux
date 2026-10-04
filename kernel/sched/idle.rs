@@ -403,8 +403,15 @@ pub unsafe extern "C" fn lupos_idle_set_next_task(
 }
 #[no_mangle]
 pub unsafe extern "C" fn pick_task_idle(rq: *mut rq, _rf: *mut rq_flags) -> *mut task_struct {
-    if lupos_idle_scx_enabled() && (*(*rq).curr).flags & LUPOS_IDLE_PF_IDLE != 0 {
-        scx_update_idle(rq, true, false);
+    if lupos_idle_scx_enabled() {
+        // sched.h aliases donor and curr only when proxy execution is disabled.
+        #[cfg(CONFIG_SCHED_PROXY_EXEC)]
+        let curr = (*rq).curr;
+        #[cfg(not(CONFIG_SCHED_PROXY_EXEC))]
+        let curr = (*rq).__bindgen_anon_1.curr;
+        if (*curr).flags & LUPOS_IDLE_PF_IDLE != 0 {
+            scx_update_idle(rq, true, false);
+        }
     }
     (*rq).idle
 }

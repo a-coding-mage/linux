@@ -728,7 +728,9 @@ unsafe fn __alloc_pages_slowpath(gfp: gfp_t, order: u32, ac: *mut alloc_context)
             warn_alloc(
                 gfp,
                 (*ac).nodemask,
-                c"page allocation failure: order:%u".as_ptr(),
+                c"page allocation failure: order:%u"
+                    .as_ptr()
+                    .cast::<CChar>(),
                 order,
             );
             return null_mut();

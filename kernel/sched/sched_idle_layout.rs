@@ -7,8 +7,8 @@ macro_rules! native_type {
     };
 }
 macro_rules! native_field {
-    ($ty:ty, $field:ident, $offset:ident) => {
-        assert!(offset_of!($ty, $field) == $offset as usize);
+    ($ty:ty, $($field:ident).+, $offset:ident) => {
+        assert!(offset_of!($ty, $($field).+) == $offset as usize);
     };
 }
 const _: () = {
@@ -46,7 +46,10 @@ const _: () = {
     );
     native_type!(hrtimer, LUPOS_IDLE_SIZE_hrtimer, LUPOS_IDLE_ALIGN_hrtimer);
     native_field!(rq, idle, LUPOS_IDLE_OFF_rq_idle);
+    #[cfg(CONFIG_SCHED_PROXY_EXEC)]
     native_field!(rq, curr, LUPOS_IDLE_OFF_rq_curr);
+    #[cfg(not(CONFIG_SCHED_PROXY_EXEC))]
+    native_field!(rq, __bindgen_anon_1.curr, LUPOS_IDLE_OFF_rq_curr);
     native_field!(rq, cfs, LUPOS_IDLE_OFF_rq_cfs);
     native_field!(rq, avg_rt, LUPOS_IDLE_OFF_rq_avg_rt);
     native_field!(rq, avg_dl, LUPOS_IDLE_OFF_rq_avg_dl);
