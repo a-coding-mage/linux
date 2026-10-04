@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_X86_E820
+	bool "Rust x86-64 E820 memory map owner"
+	depends on RUST && X86_64
+	default y
+	help
+	  Use the Rust implementation for the canonical e820.o archive entry.
+	  Rust owns map queries, sanitation, mutation, PCI gap selection, boot
+	  parameter parsing, firmware ingestion, resources and memblock setup.
+	  Configured native headers provide types, constants and provider ABIs.
+	  Only BUG, the fixed LA57 CPU-feature compiler predicate, kmemdup's
+	  allocation compiler macros and initcall/export metadata use C glue.
+	  GCC_PLUGIN_LATENT_ENTROPY and KSTACK_ERASE currently cause explicit
+	  errors because their instrumentation parity has not been implemented.
+	  The original e820.c remains unchanged.
+	  PRINTK_INDEX and Clang KCOV also cause explicit errors until native
+	  per-callsite printk index records and per-init-function coverage
+	  exemptions are implemented. PRINTK=n preserves the native no-output
+	  inline semantics without referring to a nonexistent external symbol.

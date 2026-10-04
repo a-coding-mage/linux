@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'e820_entry|e820_table|e820_type|boot_e820_entry|setup_data|resource|resource_size_t|phys_addr_t|obs_kernel_param'
+--allowlist-var 'RUST_E820_.*|E820_TYPE_.*|IORES_DESC_.*|EINVAL|ENOENT|boot_params|max_pfn|max_mem_size|movable_node_enabled|memblock|iomem_resource|soft_reserve_resource|x86_init'
+--allowlist-function '_printk|panic|sort|early_memremap|early_memunmap|register_nosave_region|acpi_nvs_register|memblock_phys_alloc_range|setup_clear_cpu_cap|strcmp|strncmp|strchr|memparse|simple_strtoull|__memblock_alloc_or_panic|insert_resource|insert_resource_expand_to_fit|firmware_map_add_early|reserve_region_with_split|memblock_set_current_limit|memblock_allow_resize|__memblock_reserve|memblock_add|memblock_mark_kho_scratch|memblock_remove|memblock_trim_memory|memblock_dump_all|rust_e820_.*'
