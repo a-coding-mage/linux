@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* ABI/compiler/locking adapters for parts/mm.rs. Include after fork's headers.
  * Each function below is an accessor, a compiler/locking primitive, or one call
- * to an existing subsystem API. No fork.c lifetime/copy algorithm lives here.
+ * to an existing subsystem API. The selected task/MM header decisions live in
+ * fork_header_algorithms.rs, alongside the fork.c lifetime/copy algorithms.
  * Parse this header for the fork-specific generated bindings as well as include
  * it once in the helper translation unit. Types/constants come from Linux.
  */
@@ -127,6 +128,34 @@ RFMM_FIELD(file, file, f_path)
 RFMM_FIELD(binfmt, linux_binfmt, module)
 #undef RFMM_FIELD
 
+/* Addresses only: x86 context initialization and allocation lifetime policy
+ * belong to Rust. The RUST_FORK selector already requires X86_64. */
+#define RFMM_MM_MEMBER(name, member) \
+	__typeof__(((struct mm_struct *)0)->member) * \
+	rust_fork_mm_##name(struct mm_struct *mm); \
+	__typeof__(((struct mm_struct *)0)->member) * \
+	rust_fork_mm_##name(struct mm_struct *mm) { return &mm->member; }
+RFMM_MM_MEMBER(context_ctx_id, context.ctx_id)
+RFMM_MM_MEMBER(context_tlb_gen, context.tlb_gen)
+RFMM_MM_MEMBER(context_next_trim_cpumask, context.next_trim_cpumask)
+#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+RFMM_MM_MEMBER(context_pkey_allocation_map, context.pkey_allocation_map)
+RFMM_MM_MEMBER(context_execute_only_pkey, context.execute_only_pkey)
+#endif
+#ifdef CONFIG_ADDRESS_MASKING
+RFMM_MM_MEMBER(context_untag_mask, context.untag_mask)
+#endif
+#ifdef CONFIG_MODIFY_LDT_SYSCALL
+RFMM_MM_MEMBER(context_ldt, context.ldt)
+#endif
+#ifdef CONFIG_SCHED_MM_CID
+RFMM_MM_MEMBER(cid_pcpu, mm_cid.pcpu)
+#endif
+#ifdef CONFIG_SCHED_CACHE
+RFMM_MM_MEMBER(sched_pcpu, sc_stat.pcpu_sched)
+#endif
+#undef RFMM_MM_MEMBER
+
 #define RFMM_VOID(name, args, call) void rust_fork_mm_##name args; void rust_fork_mm_##name args { call; }
 #define RFMM_RET(type, name, args, call) type rust_fork_mm_##name args; type rust_fork_mm_##name args { return (call); }
 RFMM_RET(gfp_t, gfp_kernel, (void), GFP_KERNEL)
@@ -143,6 +172,40 @@ RFMM_RET(bool, refcount_dec_and_test, (refcount_t *r), refcount_dec_and_test(r))
 RFMM_RET(unsigned int, refcount_read, (const refcount_t *r), refcount_read(r))
 RFMM_VOID(refcount_set, (refcount_t *r, int n), refcount_set(r, n))
 RFMM_VOID(refcount_inc, (refcount_t *r), refcount_inc(r))
+/* These are the exact native operations used by the header, with one lockdep
+ * key at each original initialization site. Keep the native argument spelling
+ * so the lockdep names remain &mm->context.lock / &mm->context.ldt_usr_sem. */
+RFMM_VOID(init_context_lock, (struct mm_struct *mm), mutex_init(&mm->context.lock))
+RFMM_RET(s64, next_context_id, (void), atomic64_inc_return(&last_mm_ctx_id))
+RFMM_RET(unsigned long, context_jiffies, (void), jiffies)
+RFMM_RET(unsigned long, context_hz, (void), HZ)
+#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+RFMM_RET(bool, context_ospke_enabled, (void), cpu_feature_enabled(X86_FEATURE_OSPKE))
+#endif
+#ifdef CONFIG_MODIFY_LDT_SYSCALL
+RFMM_VOID(init_context_ldt_sem, (struct mm_struct *mm), init_rwsem(&mm->context.ldt_usr_sem))
+RFMM_VOID(destroy_context_ldt, (struct mm_struct *mm), destroy_context_ldt(mm))
+#endif
+/* External ASID/RCU providers. This unconditional enqueue preserves the
+ * public callback's native identity; Rust selects the last-reference branch. */
+RFMM_VOID(init_global_asid, (struct mm_struct *mm), mm_init_global_asid(mm))
+RFMM_VOID(free_global_asid, (struct mm_struct *mm), mm_free_global_asid(mm))
+RFMM_VOID(defer_task_release, (struct task_struct *t), call_rcu(&t->rcu, __put_task_struct_rcu_cb))
+
+/* Exactly one typed allocation/tag site per original mm_alloc_* call. Do not
+ * use a generic byte allocator: native sizeof/alignment, GFP and alloc_hooks
+ * metadata stay together. The external mm_init_cid/mm_init_sched providers do
+ * not allocate; their initialization is sequenced by Rust after success. */
+#ifdef CONFIG_SCHED_MM_CID
+RFMM_RET(struct mm_cid_pcpu __percpu *, alloc_cid_pcpu, (void), alloc_hooks(alloc_percpu_noprof(struct mm_cid_pcpu)))
+RFMM_VOID(free_cid_pcpu, (struct mm_cid_pcpu __percpu *pcpu), free_percpu(pcpu))
+RFMM_VOID(init_cid, (struct mm_struct *mm, struct task_struct *t), mm_init_cid(mm, t))
+#endif
+#ifdef CONFIG_SCHED_CACHE
+RFMM_RET(struct sched_cache_time __percpu *, alloc_sched_pcpu, (void), alloc_hooks(alloc_percpu_noprof(struct sched_cache_time)))
+RFMM_VOID(free_sched_pcpu, (struct sched_cache_time __percpu *pcpu), free_percpu(pcpu))
+RFMM_VOID(init_sched, (struct mm_struct *mm, struct sched_cache_time __percpu *pcpu), mm_init_sched(mm, pcpu))
+#endif
 RFMM_VOID(spin_lock, (spinlock_t *l), spin_lock(l))
 RFMM_VOID(spin_unlock, (spinlock_t *l), spin_unlock(l))
 RFMM_VOID(spin_lock_irq, (spinlock_t *l), spin_lock_irq(l))
@@ -250,11 +313,8 @@ RFMM_RET(struct cpumask *, cpumask, (struct mm_struct *m), mm_cpumask(m))
 RFMM_VOID(on_each_cpu_mask, (const struct cpumask *m, smp_call_func_t f, void *p, bool wait), on_each_cpu_mask(m, f, p, wait))
 RFMM_VOID(on_each_cpu, (smp_call_func_t f, void *p, bool wait), on_each_cpu(f, p, wait))
 RFMM_VOID(switch_mm, (struct mm_struct *p, struct mm_struct *n, struct task_struct *t), switch_mm(p, n, t))
-RFMM_VOID(destroy_sched, (struct mm_struct *m), mm_destroy_sched(m))
-RFMM_VOID(destroy_context, (struct mm_struct *m), destroy_context(m))
 RFMM_VOID(notifier_destroy, (struct mm_struct *m), mmu_notifier_subscriptions_destroy(m))
 RFMM_VOID(pasid_drop, (struct mm_struct *m), mm_pasid_drop(m))
-RFMM_VOID(destroy_cid, (struct mm_struct *m), mm_destroy_cid(m))
 RFMM_VOID(counter_destroy_many, (struct percpu_counter *p, unsigned int n), percpu_counter_destroy_many(p, n))
 RFMM_VOID(taskstats_tgid_free, (struct signal_struct *s), taskstats_tgid_free(s))
 RFMM_VOID(autogroup_exit, (struct signal_struct *s), sched_autogroup_exit(s))
@@ -281,9 +341,6 @@ RFMM_VOID(flags_clear_all, (struct mm_struct *m), mm_flags_clear_all(m))
 RFMM_RET(unsigned long, flags_get, (struct mm_struct *m), __mm_flags_get_word(m))
 RFMM_VOID(flags_overwrite, (struct mm_struct *m, unsigned long v), __mm_flags_overwrite_word(m, v))
 RFMM_RET(unsigned long, flags_initial, (unsigned long v), mmf_init_legacy_flags(v))
-RFMM_RET(int, init_new_context, (struct task_struct *t, struct mm_struct *m), init_new_context(t, m))
-RFMM_RET(int, alloc_cid, (struct mm_struct *m, struct task_struct *t), mm_alloc_cid(m, t))
-RFMM_RET(int, alloc_sched, (struct mm_struct *m), mm_alloc_sched(m))
 RFMM_RET(int, counter_init_many, (struct percpu_counter *p, s64 n, gfp_t g, unsigned int count), percpu_counter_init_many(p, n, g, count))
 RFMM_VOID(lru_gen_init, (struct mm_struct *m), lru_gen_init_mm(m))
 RFMM_VOID(uprobe_clear_state, (struct mm_struct *m), uprobe_clear_state(m))
@@ -295,7 +352,6 @@ RFMM_VOID(module_put, (struct module *m), module_put(m))
 RFMM_RET(bool, try_module_get, (struct module *m), try_module_get(m))
 RFMM_VOID(lru_gen_del, (struct mm_struct *m), lru_gen_del_mm(m))
 RFMM_VOID(futex_hash_free, (struct mm_struct *m), futex_hash_free(m))
-RFMM_VOID(mmdrop, (struct mm_struct *m), mmdrop(m))
 RFMM_VOID(mmget, (struct mm_struct *m), mmget(m))
 RFMM_RET(int, exe_deny_write_access, (struct file *f), exe_file_deny_write_access(f))
 RFMM_VOID(exe_allow_write_access, (struct file *f), exe_file_allow_write_access(f))
@@ -309,7 +365,6 @@ RFMM_RET(bool, path_equal, (const struct path *a, const struct path *b), path_eq
 RFMM_RET(bool, perfmon_capable, (void), perfmon_capable())
 RFMM_VOID(cgroup_enter_frozen, (void), cgroup_enter_frozen())
 RFMM_VOID(cgroup_leave_frozen, (bool b), cgroup_leave_frozen(b))
-RFMM_VOID(put_task_struct, (struct task_struct *t), put_task_struct(t))
 RFMM_VOID(uprobe_free_utask, (struct task_struct *t), uprobe_free_utask(t))
 RFMM_VOID(deactivate_mm, (struct task_struct *t, struct mm_struct *m), deactivate_mm(t, m))
 RFMM_VOID(futex_exit_exec_release, (struct task_struct *t), futex_exit_exec_release(t))

@@ -148,7 +148,8 @@ RFV(siginitsetinv, (sigset_t *s, unsigned long mask), siginitsetinv(s, mask))
 RFV(hlist_add_head, (struct hlist_node *n, struct hlist_head *h), hlist_add_head(n, h))
 RFV(hlist_del_init, (struct hlist_node *n), hlist_del_init(n))
 RFR(bool, task_sigpending, (struct task_struct *p), task_sigpending(p))
-RFR(ssize_t, strscpy_pad, (char *d, const char *s, size_t n), sized_strscpy_pad(d, s, n))
+/* Copy ABI/provider only. Padding decisions and extent are Rust-owned. */
+RFR(ssize_t, sized_strscpy, (char *d, const char *s, size_t n), sized_strscpy(d, s, n))
 RFV(ftrace_graph_init_task, (struct task_struct *p), ftrace_graph_init_task(p))
 RFV(assert_irqs_enabled, (void), lockdep_assert_irqs_enabled())
 #ifdef CONFIG_PROVE_LOCKING

@@ -134,14 +134,14 @@ pub unsafe extern "C" fn __mmdrop(mm: *mut mm_struct) {
     rust_fork_mm_warn_drop_current_mm(mm == *rust_fork_mm_task_mm(current_task()));
     cleanup_lazy_tlbs(mm);
     rust_fork_mm_warn_drop_active_mm(mm == *rust_fork_mm_task_active_mm(current_task()));
-    rust_fork_mm_destroy_sched(mm);
+    fork_mm_destroy_sched(mm);
     mm_free_pgd(mm);
     mm_free_id(mm);
-    rust_fork_mm_destroy_context(mm);
+    fork_destroy_context(mm);
     rust_fork_mm_notifier_destroy(mm);
     check_mm(mm);
     rust_fork_mm_pasid_drop(mm);
-    rust_fork_mm_destroy_cid(mm);
+    fork_mm_destroy_cid(mm);
     rust_fork_mm_counter_destroy_many(rust_fork_mm_mm_rss_stat(mm).cast(), NR_MM_COUNTERS as u32);
     free_mm(mm);
 }
@@ -299,11 +299,11 @@ unsafe fn mm_init(mm: *mut mm_struct, task: *mut task_struct) -> *mut mm_struct 
         0
     } else if mm_alloc_id(mm) != 0 {
         1
-    } else if rust_fork_mm_init_new_context(task, mm) != 0 {
+    } else if fork_init_new_context(task, mm) != 0 {
         2
-    } else if rust_fork_mm_alloc_cid(mm, task) != 0 {
+    } else if fork_mm_alloc_cid(mm, task) != 0 {
         3
-    } else if rust_fork_mm_alloc_sched(mm) != 0 {
+    } else if fork_mm_alloc_sched(mm) != 0 {
         4
     } else if rust_fork_mm_counter_init_many(
         rust_fork_mm_mm_rss_stat(mm).cast(),
@@ -318,13 +318,13 @@ unsafe fn mm_init(mm: *mut mm_struct, task: *mut task_struct) -> *mut mm_struct 
         return mm;
     };
     if completed >= 5 {
-        rust_fork_mm_destroy_sched(mm);
+        fork_mm_destroy_sched(mm);
     }
     if completed >= 4 {
-        rust_fork_mm_destroy_cid(mm);
+        fork_mm_destroy_cid(mm);
     }
     if completed >= 3 {
-        rust_fork_mm_destroy_context(mm);
+        fork_destroy_context(mm);
     }
     if completed >= 2 {
         mm_free_id(mm);
@@ -369,7 +369,7 @@ unsafe fn __mmput(mm: *mut mm_struct) {
     }
     rust_fork_mm_lru_gen_del(mm);
     rust_fork_mm_futex_hash_free(mm);
-    rust_fork_mm_mmdrop(mm);
+    fork_mmdrop(mm);
 }
 
 #[no_mangle]
@@ -553,7 +553,7 @@ unsafe fn wait_for_vfork_done(child: *mut task_struct, vfork: *mut completion) -
         *rust_fork_mm_task_vfork_done(child) = core::ptr::null_mut();
         rust_fork_mm_task_unlock(child);
     }
-    rust_fork_mm_put_task_struct(child);
+    fork_put_task_struct(child);
     killed
 }
 

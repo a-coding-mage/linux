@@ -4,18 +4,133 @@
 //   ptrace.h:201-220           ptrace_init_task
 //   rseq.h:132-162             rseq_reset and rseq_fork
 //   posix-timers.h:101-107     posix_cputimers_init
+//   sched/mm.h:47-56          mmdrop
+//   sched/task.h:129-162      put_task_struct
+//   asm/mmu_context.h:147-175 init_new_context and destroy_context
+//   mm_types.h:1590-1648      CID and scheduler allocation/destruction
+//   string.h:113-124          sized_strscpy_pad
 // Included in fork.rs with generated b types and the parent's current_task().
 // ABI scalar aliases deliberately use kernel::ffi, matching kernel bindings.
 //
-// Integration: replace the old C algorithm adapters at the four call sites.
-// The user-copy call adds a fifth parameter: the original destination object
+// The original user-copy translation adds a fifth parameter: destination object
 // size known at the call site (size_of::<clone_args>() in copy_clone_args_from_user).
 // This preserves __builtin_object_size(dst, 1)'s guard after moving ownership
 // across languages. An untyped-pointer C helper cannot recover that bound.
-// All size/tail/error decisions, tracing policy, rseq inheritance/reset, and
-// CPU-timer initialization are below in Rust. C provides only primitives.
+// Selected size/tail/error decisions, tracing policy, rseq inheritance/reset,
+// CPU-timer initialization and task/MM policies below are Rust-owned. Native
+// leaves and the separately identified external providers remain explicit.
 // CONFIG_RSEQ and CONFIG_POSIX_TIMERS disabled bodies match the header no-ops.
-// Source-reviewed only; configured binding and compiler validation are pending.
+// H3/H5 additions are source-reviewed only; configured binding and compiler
+// validation are pending. RCU, ASID, scheduler initialization and allocation
+// services remain external providers. The original C/H authorities are intact.
+
+unsafe fn fork_mmdrop(mm: *mut mm_struct) {
+    // This native atomic retains the full membarrier barrier, including when
+    // the decrement does not release the last reference.
+    if rust_fork_mm_atomic_dec_and_test(rust_fork_mm_mm_mm_count(mm)) {
+        __mmdrop(mm);
+    }
+}
+
+unsafe fn fork_put_task_struct(task: *mut task_struct) {
+    if !rust_fork_mm_refcount_dec_and_test(rust_fork_mm_task_usage(task)) {
+        return;
+    }
+    // The native leaf passes the actual public __put_task_struct_rcu_cb symbol
+    // to call_rcu. Its only definition is the existing Rust fork provider.
+    // The original always defers, including on non-RT kernels.
+    rust_fork_mm_defer_task_release(task);
+}
+
+unsafe fn fork_init_new_context(_task: *mut task_struct, mm: *mut mm_struct) -> c_int {
+    // Keep one native initializer/key for each original lock site.
+    rust_fork_mm_init_context_lock(mm);
+    *rust_fork_mm_context_ctx_id(mm) = rust_fork_mm_next_context_id() as _;
+    rust_fork_mm_atomic64_set(rust_fork_mm_context_tlb_gen(mm), 0);
+    *rust_fork_mm_context_next_trim_cpumask(mm) =
+        rust_fork_mm_context_jiffies().wrapping_add(rust_fork_mm_context_hz());
+
+    #[cfg(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)]
+    if rust_fork_mm_context_ospke_enabled() {
+        *rust_fork_mm_context_pkey_allocation_map(mm) = 0x1;
+        *rust_fork_mm_context_execute_only_pkey(mm) = -1;
+    }
+
+    rust_fork_mm_init_global_asid(mm);
+    #[cfg(CONFIG_ADDRESS_MASKING)]
+    {
+        // The authority assigns -1UL to its u64 field, preserving ulong width.
+        *rust_fork_mm_context_untag_mask(mm) = c_ulong::MAX as _;
+    }
+    #[cfg(CONFIG_MODIFY_LDT_SYSCALL)]
+    {
+        *rust_fork_mm_context_ldt(mm) = core::ptr::null_mut();
+        rust_fork_mm_init_context_ldt_sem(mm);
+    }
+    0
+}
+
+unsafe fn fork_destroy_context(mm: *mut mm_struct) {
+    #[cfg(CONFIG_MODIFY_LDT_SYSCALL)]
+    rust_fork_mm_destroy_context_ldt(mm);
+    rust_fork_mm_free_global_asid(mm);
+}
+
+#[cfg_attr(not(CONFIG_SCHED_MM_CID), allow(unused_variables))]
+unsafe fn fork_mm_alloc_cid(mm: *mut mm_struct, task: *mut task_struct) -> c_int {
+    #[cfg(CONFIG_SCHED_MM_CID)]
+    {
+        let pcpu = rust_fork_mm_alloc_cid_pcpu();
+        // Unlike the sched allocation, the original stores even a null result.
+        *rust_fork_mm_cid_pcpu(mm) = pcpu;
+        if pcpu.is_null() {
+            return -(ENOMEM as c_int);
+        }
+        rust_fork_mm_init_cid(mm, task);
+    }
+    0
+}
+
+#[cfg_attr(not(CONFIG_SCHED_MM_CID), allow(unused_variables))]
+unsafe fn fork_mm_destroy_cid(mm: *mut mm_struct) {
+    #[cfg(CONFIG_SCHED_MM_CID)]
+    {
+        rust_fork_mm_free_cid_pcpu(*rust_fork_mm_cid_pcpu(mm));
+        *rust_fork_mm_cid_pcpu(mm) = core::ptr::null_mut();
+    }
+}
+
+#[cfg_attr(not(CONFIG_SCHED_CACHE), allow(unused_variables))]
+unsafe fn fork_mm_alloc_sched(mm: *mut mm_struct) -> c_int {
+    #[cfg(CONFIG_SCHED_CACHE)]
+    {
+        let pcpu = rust_fork_mm_alloc_sched_pcpu();
+        if pcpu.is_null() {
+            return -(ENOMEM as c_int);
+        }
+        // The external initializer publishes pcpu_sched with store-release.
+        // Do not write that field early, including on the allocation failure.
+        rust_fork_mm_init_sched(mm, pcpu);
+    }
+    0
+}
+
+#[cfg_attr(not(CONFIG_SCHED_CACHE), allow(unused_variables))]
+unsafe fn fork_mm_destroy_sched(mm: *mut mm_struct) {
+    #[cfg(CONFIG_SCHED_CACHE)]
+    {
+        rust_fork_mm_free_sched_pcpu(*rust_fork_mm_sched_pcpu(mm));
+        *rust_fork_mm_sched_pcpu(mm) = core::ptr::null_mut();
+    }
+}
+
+unsafe fn fork_sized_strscpy_pad(dst: *mut c_char, src: *const c_char, count: usize) -> isize {
+    let wrote = rust_fork_sized_strscpy(dst, src, count);
+    if wrote >= 0 && (wrote as usize) < count {
+        core::ptr::write_bytes(dst.add(wrote as usize + 1), 0, count - wrote as usize - 1);
+    }
+    wrote
+}
 
 unsafe fn fork_copy_struct_from_user(
     dst: *mut kernel::ffi::c_void,

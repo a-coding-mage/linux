@@ -233,7 +233,7 @@ pub unsafe extern "C" fn copy_process(
             (*p).flags |= PF_IO_WORKER;
         }
         if !(*args).name.is_null() {
-            rust_fork_strscpy_pad((*p).comm.as_mut_ptr(), (*args).name, (*p).comm.len());
+            fork_sized_strscpy_pad((*p).comm.as_mut_ptr(), (*args).name, (*p).comm.len());
         }
         (*p).set_child_tid = if flags & CLONE_CHILD_SETTID as u64 != 0 {
             (*args).child_tid

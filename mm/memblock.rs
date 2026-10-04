@@ -1283,7 +1283,7 @@ pub unsafe extern "C" fn rust_memblock_early_param(p: *mut CChar) -> i32 {
 unsafe fn first_valid_pfn(mut pfn: ULong, end: ULong) -> ULong {
     #[cfg(all(CONFIG_SPARSEMEM, not(CONFIG_HAVE_ARCH_PFN_VALID)))]
     {
-        rust_memblock_first_valid_pfn(pfn, end)
+        sparse_pfn::first_valid_pfn(pfn, end)
     }
     #[cfg(not(all(CONFIG_SPARSEMEM, not(CONFIG_HAVE_ARCH_PFN_VALID))))]
     {
@@ -1297,13 +1297,191 @@ unsafe fn first_valid_pfn(mut pfn: ULong, end: ULong) -> ULong {
 unsafe fn next_valid_pfn(pfn: ULong, end: ULong) -> ULong {
     #[cfg(all(CONFIG_SPARSEMEM, not(CONFIG_HAVE_ARCH_PFN_VALID)))]
     {
-        rust_memblock_next_valid_pfn(pfn, end)
+        sparse_pfn::next_valid_pfn(pfn, end)
     }
     #[cfg(not(all(CONFIG_SPARSEMEM, not(CONFIG_HAVE_ARCH_PFN_VALID))))]
     {
         first_valid_pfn(pfn.wrapping_add(1), end)
     }
 }
+
+// The generic sparse mmzone.h algorithms are private to this owner. The
+// architecture-specific pfn_valid provider in the other branch remains external.
+#[cfg(all(CONFIG_SPARSEMEM, not(CONFIG_HAVE_ARCH_PFN_VALID)))]
+mod sparse_pfn {
+    use super::{bindings as b, ULong};
+    use core::ptr::{addr_of, addr_of_mut, null_mut};
+
+    #[inline(always)]
+    unsafe fn nr_section_roots() -> ULong {
+        #[cfg(CONFIG_X86_64)]
+        {
+            if b::rust_memblock_cpu_has_la57() {
+                b::RUST_MEMBLOCK_NR_SECTION_ROOTS_L5
+            } else {
+                b::RUST_MEMBLOCK_NR_SECTION_ROOTS_L4
+            }
+        }
+        #[cfg(not(CONFIG_X86_64))]
+        {
+            b::RUST_MEMBLOCK_NR_SECTION_ROOTS
+        }
+    }
+
+    // __nr_to_section: validate the root before either table access, and do
+    // not perform pointer arithmetic through a null EXTREME root.
+    #[inline(always)]
+    unsafe fn nr_to_section(nr: ULong) -> *mut b::mem_section {
+        let root = nr / b::RUST_MEMBLOCK_SECTIONS_PER_ROOT;
+        if root >= nr_section_roots() {
+            return null_mut();
+        }
+        #[cfg(CONFIG_SPARSEMEM_EXTREME)]
+        let sections = {
+            if b::mem_section.is_null() {
+                return null_mut();
+            }
+            let sections = *b::mem_section.add(root as usize);
+            if sections.is_null() {
+                return null_mut();
+            }
+            sections
+        };
+        #[cfg(not(CONFIG_SPARSEMEM_EXTREME))]
+        let sections = addr_of_mut!(b::mem_section)
+            .cast::<b::mem_section>()
+            .add(root.wrapping_mul(b::RUST_MEMBLOCK_SECTIONS_PER_ROOT) as usize);
+        sections.add((nr & b::RUST_MEMBLOCK_SECTION_ROOT_MASK) as usize)
+    }
+
+    // Exact rcu_read_{lock,unlock}_sched ordering, including traced preemption.
+    #[inline(always)]
+    unsafe fn rcu_read_lock_sched() {
+        b::rust_memblock_preempt_disable();
+        #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
+        b::rust_memblock_rcu_lock_acquire();
+        #[cfg(CONFIG_PROVE_RCU)]
+        b::rust_memblock_rcu_lock_warn();
+    }
+
+    #[inline(always)]
+    unsafe fn rcu_read_unlock_sched() {
+        #[cfg(CONFIG_PROVE_RCU)]
+        b::rust_memblock_rcu_unlock_warn();
+        #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
+        b::rust_memblock_rcu_lock_release();
+        b::rust_memblock_preempt_enable();
+    }
+
+    // include/linux/find.h::find_next_bit plus lib/find_bit.c::FIND_NEXT_BIT.
+    // SUBSECTIONS_PER_SECTION is a native constant: the selected x86-64
+    // profile takes the one-word path, including its GENMASK tail clipping.
+    #[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
+    #[inline(always)]
+    unsafe fn find_next_subsection(addr: *const ULong, start: ULong) -> ULong {
+        const SIZE: ULong = b::RUST_MEMBLOCK_SUBSECTIONS_PER_SECTION;
+        const BITS: ULong = b::RUST_MEMBLOCK_BITS_PER_LONG;
+        if start >= SIZE {
+            return SIZE;
+        }
+        if SIZE <= BITS {
+            let mask = ULong::MAX.wrapping_shl(start as u32)
+                & ULong::MAX.wrapping_shr(BITS.wrapping_sub(SIZE) as u32);
+            let val = b::rust_memblock_subsection_word(addr) & mask;
+            return if val != 0 {
+                val.trailing_zeros() as ULong
+            } else {
+                SIZE
+            };
+        }
+
+        let mask = ULong::MAX << (start & (BITS - 1));
+        let mut idx = start / BITS;
+        let mut val = b::rust_memblock_subsection_word(addr.add(idx as usize)) & mask;
+        while val == 0 {
+            if idx.wrapping_add(1).wrapping_mul(BITS) >= SIZE {
+                return SIZE;
+            }
+            idx = idx.wrapping_add(1);
+            val = b::rust_memblock_subsection_word(addr.add(idx as usize));
+        }
+        core::cmp::min(
+            idx.wrapping_mul(BITS)
+                .wrapping_add(val.trailing_zeros() as ULong),
+            SIZE,
+        )
+    }
+
+    #[inline(always)]
+    unsafe fn pfn_section_first_valid(ms: *mut b::mem_section, pfn: &mut ULong) -> bool {
+        #[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
+        {
+            // Exactly one READ_ONCE, before the index calculation as in C.
+            let usage = b::rust_memblock_read_usage(addr_of!((*ms).usage));
+            let idx = (*pfn & !(b::RUST_MEMBLOCK_PAGE_SECTION_MASK as ULong))
+                / b::RUST_MEMBLOCK_PAGES_PER_SUBSECTION;
+            if usage.is_null() {
+                return false;
+            }
+            let map = addr_of!((*usage).subsection_map).cast::<ULong>();
+            if b::rust_memblock_test_subsection_bit(idx, map) {
+                return true;
+            }
+            let bit = find_next_subsection(map, idx);
+            if bit == b::RUST_MEMBLOCK_SUBSECTIONS_PER_SECTION {
+                return false;
+            }
+            *pfn = (*pfn & b::RUST_MEMBLOCK_PAGE_SECTION_MASK as ULong)
+                .wrapping_add(bit.wrapping_mul(b::RUST_MEMBLOCK_PAGES_PER_SUBSECTION));
+            true
+        }
+        #[cfg(not(CONFIG_SPARSEMEM_VMEMMAP))]
+        {
+            let _ = (ms, pfn);
+            true
+        }
+    }
+
+    // Empty ranges still enter and leave RCU. A discovered subsection can
+    // start at or beyond end: retain the original result without clamping it.
+    #[inline(always)]
+    pub(super) unsafe fn first_valid_pfn(mut pfn: ULong, end: ULong) -> ULong {
+        let mut nr = pfn >> b::RUST_MEMBLOCK_PFN_SECTION_SHIFT;
+        rcu_read_lock_sched();
+        while nr <= b::__highest_present_section_nr && pfn < end {
+            let ms = nr_to_section(pfn >> b::RUST_MEMBLOCK_PFN_SECTION_SHIFT);
+            if !ms.is_null()
+                && ((*ms).section_mem_map & b::RUST_MEMBLOCK_SECTION_HAS_MEM_MAP) != 0
+                && (((*ms).section_mem_map & b::RUST_MEMBLOCK_SECTION_IS_EARLY) != 0
+                    || pfn_section_first_valid(ms, &mut pfn))
+            {
+                rcu_read_unlock_sched();
+                return pfn;
+            }
+            nr = nr.wrapping_add(1);
+            pfn = nr.wrapping_shl(b::RUST_MEMBLOCK_PFN_SECTION_SHIFT);
+        }
+        rcu_read_unlock_sched();
+        end
+    }
+
+    #[inline(always)]
+    pub(super) unsafe fn next_valid_pfn(pfn: ULong, end: ULong) -> ULong {
+        let pfn = pfn.wrapping_add(1);
+        if pfn >= end {
+            return end;
+        }
+        #[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
+        let mask = b::RUST_MEMBLOCK_PAGE_SUBSECTION_MASK as ULong;
+        #[cfg(not(CONFIG_SPARSEMEM_VMEMMAP))]
+        let mask = b::RUST_MEMBLOCK_PAGE_SECTION_MASK as ULong;
+        if pfn & !mask != 0 {
+            return pfn;
+        }
+        first_valid_pfn(pfn, end)
+    }
+}
+
 #[link_section = ".init.text"]
 unsafe fn free_memmap(start_pfn: ULong, end_pfn: ULong) {
     let start_pg = rust_memblock_pfn_to_page(start_pfn.wrapping_sub(1)).wrapping_add(1);

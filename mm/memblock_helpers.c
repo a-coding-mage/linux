@@ -39,14 +39,54 @@ void *rust_memblock_kasan_reset_tag(const void *ptr) { return kasan_reset_tag(pt
 void rust_memblock_free_reserved_page(struct page *page) { free_reserved_page(page); }
 void rust_memblock_set_page_reserved(struct page *page) { __SetPageReserved(page); }
 #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_HAVE_ARCH_PFN_VALID)
-unsigned long rust_memblock_first_valid_pfn(unsigned long pfn, unsigned long end)
+#ifdef CONFIG_X86_64
+bool rust_memblock_cpu_has_la57(void)
 {
- return first_valid_pfn(pfn, end);
+ return cpu_feature_enabled(X86_FEATURE_LA57);
 }
-unsigned long rust_memblock_next_valid_pfn(unsigned long pfn, unsigned long end)
+#endif
+/* Rust owns RCU-sched ordering; these retain native preemption, lockdep
+ * callsite identity and once-only warning metadata. */
+void rust_memblock_preempt_disable(void) { preempt_disable(); }
+void rust_memblock_preempt_enable(void) { preempt_enable(); }
+#ifdef CONFIG_DEBUG_LOCK_ALLOC
+void rust_memblock_rcu_lock_acquire(void)
 {
- return next_valid_pfn(pfn, end);
+ lock_acquire(&rcu_sched_lock_map, 0, 0, 2, 0, NULL, _THIS_IP_);
 }
+void rust_memblock_rcu_lock_release(void)
+{
+ lock_release(&rcu_sched_lock_map, _THIS_IP_);
+}
+#endif
+#ifdef CONFIG_PROVE_RCU
+void rust_memblock_rcu_lock_warn(void)
+{
+ RCU_LOCKDEP_WARN(!rcu_is_watching(),
+                 "rcu_read_lock_sched() used illegally while idle");
+}
+void rust_memblock_rcu_unlock_warn(void)
+{
+ RCU_LOCKDEP_WARN(!rcu_is_watching(),
+                 "rcu_read_unlock_sched() used illegally while idle");
+}
+#endif
+#ifdef CONFIG_SPARSEMEM_VMEMMAP
+struct mem_section_usage *rust_memblock_read_usage(struct mem_section_usage * const *ptr)
+{
+ return READ_ONCE(*ptr);
+}
+bool rust_memblock_test_subsection_bit(unsigned long nr, const unsigned long *addr)
+{
+ return test_bit(nr, addr);
+}
+/* The original find_next_bit scan uses ordinary native word loads, not
+ * READ_ONCE or test_bit for each scanned bit. Preserve that access boundary. */
+unsigned long rust_memblock_subsection_word(const unsigned long *addr)
+{
+ return *addr;
+}
+#endif
 #else
 bool rust_memblock_pfn_valid(unsigned long pfn) { return pfn_valid(pfn); }
 #endif

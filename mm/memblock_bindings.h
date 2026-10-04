@@ -21,6 +21,10 @@
 #include <linux/kasan.h>
 #include <linux/memory_hotplug.h>
 #include <linux/pageblock-flags.h>
+#include <linux/rcupdate.h>
+#ifdef CONFIG_X86_64
+#include <asm/cpufeature.h>
+#endif
 #include <asm/sections.h>
 #include <linux/io.h>
 #include "internal.h"
@@ -83,8 +87,61 @@ void *rust_memblock_kasan_reset_tag(const void *ptr);
 void rust_memblock_free_reserved_page(struct page *page);
 void rust_memblock_set_page_reserved(struct page *page);
 #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_HAVE_ARCH_PFN_VALID)
-unsigned long rust_memblock_first_valid_pfn(unsigned long pfn, unsigned long end);
-unsigned long rust_memblock_next_valid_pfn(unsigned long pfn, unsigned long end);
+/* Native types, constants and individual compiler/atomic leaves for the Rust
+ * mmzone.h search. No C section walk or bitmap search is exposed here. */
+#if defined(CONFIG_X86_64) && defined(USE_EARLY_PGTABLE_L5)
+#error "Rust memblock sparse search requires the normal kernel LA57 predicate"
+#endif
+#ifdef __BINDGEN__
+enum {
+ RUST_MEMBLOCK_PAGE_SECTION_MASK = PAGE_SECTION_MASK,
+ RUST_MEMBLOCK_PAGE_SUBSECTION_MASK = PAGE_SUBSECTION_MASK,
+};
+static_assert((unsigned long)RUST_MEMBLOCK_PAGE_SECTION_MASK == PAGE_SECTION_MASK);
+static_assert((unsigned long)RUST_MEMBLOCK_PAGE_SUBSECTION_MASK == PAGE_SUBSECTION_MASK);
+static const unsigned int RUST_MEMBLOCK_PFN_SECTION_SHIFT = PFN_SECTION_SHIFT;
+static const unsigned long RUST_MEMBLOCK_SECTIONS_PER_ROOT = SECTIONS_PER_ROOT;
+static const unsigned long RUST_MEMBLOCK_SECTION_ROOT_MASK = SECTION_ROOT_MASK;
+static const unsigned long RUST_MEMBLOCK_SECTION_HAS_MEM_MAP = SECTION_HAS_MEM_MAP;
+static const unsigned long RUST_MEMBLOCK_SECTION_IS_EARLY = SECTION_IS_EARLY;
+static const unsigned long RUST_MEMBLOCK_PAGES_PER_SUBSECTION = PAGES_PER_SUBSECTION;
+static const unsigned long RUST_MEMBLOCK_SUBSECTIONS_PER_SECTION = SUBSECTIONS_PER_SECTION;
+static const unsigned long RUST_MEMBLOCK_BITS_PER_LONG = BITS_PER_LONG;
+#ifdef CONFIG_X86_64
+/* Preserve both native runtime LA57 choices, as in physaddr_bindings.h. */
+#pragma push_macro("pgtable_l5_enabled")
+#undef pgtable_l5_enabled
+#define pgtable_l5_enabled() 0
+static const unsigned long RUST_MEMBLOCK_NR_SECTION_ROOTS_L4 = NR_SECTION_ROOTS;
+#undef pgtable_l5_enabled
+#define pgtable_l5_enabled() 1
+static const unsigned long RUST_MEMBLOCK_NR_SECTION_ROOTS_L5 = NR_SECTION_ROOTS;
+#pragma pop_macro("pgtable_l5_enabled")
+#else
+/* Other native schemas must supply a constant root count. Do not invent an
+ * architecture's runtime physical-address-width policy here. */
+static_assert(__builtin_constant_p(NR_SECTION_ROOTS));
+static const unsigned long RUST_MEMBLOCK_NR_SECTION_ROOTS = NR_SECTION_ROOTS;
+#endif
+#endif /* __BINDGEN__ */
+#ifdef CONFIG_X86_64
+bool rust_memblock_cpu_has_la57(void);
+#endif
+void rust_memblock_preempt_disable(void);
+void rust_memblock_preempt_enable(void);
+#ifdef CONFIG_DEBUG_LOCK_ALLOC
+void rust_memblock_rcu_lock_acquire(void);
+void rust_memblock_rcu_lock_release(void);
+#endif
+#ifdef CONFIG_PROVE_RCU
+void rust_memblock_rcu_lock_warn(void);
+void rust_memblock_rcu_unlock_warn(void);
+#endif
+#ifdef CONFIG_SPARSEMEM_VMEMMAP
+struct mem_section_usage *rust_memblock_read_usage(struct mem_section_usage * const *ptr);
+bool rust_memblock_test_subsection_bit(unsigned long nr, const unsigned long *addr);
+unsigned long rust_memblock_subsection_word(const unsigned long *addr);
+#endif
 #else
 bool rust_memblock_pfn_valid(unsigned long pfn);
 #endif
