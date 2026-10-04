@@ -34,3 +34,27 @@ mutations, all configuration alternatives and original C runtime tests are
 pending. Four const-generic unchecked-tail guards also require later negative
 compilation controls. No new full build or guest was started for this source
 checkpoint. The previously validated kernel remains a separate frozen artifact.
+
+Classic and multigeneration reclaim
+----------------------------------
+
+The combined ``mm/vmscan.c`` source candidate covers 204 original function
+definition occurrences, including mutually exclusive configuration branches.
+This is a source inventory, not 204 independent functions or test results.
+Classic reclaim and the multigeneration LRU share one configured native
+``scan_control`` and private-type authority. Anonymous native bitfields use
+generated accessors. Reclaim, aging, eviction, protection, demotion, direct
+reclaim and kswapd decisions are represented in Rust.
+
+Reciprocal source review covered the shared interface, retry and allocation
+unwinds, configured READ_ONCE/WRITE_ONCE widths, static-key addresses, PID and
+generation arithmetic, disabled-MGLRU calls and the original compile-time
+BUILD_BUG conditions. ``CONFIG_RUST_BUILD_ASSERT_ALLOW`` is not enabled to
+bypass a surviving compile-time failure. Native header algorithms and leaf
+boundaries remain explicitly outside a claim of complete Rust production.
+
+The original C and test files are unchanged. Formatting and source composition
+checks passed; this candidate has not undergone native compilation, generated
+ABI/signature validation, compiler-instrumentation and link ownership checks,
+configuration matrix coverage, boot or original C regression execution.
+These remain gates for the later combined build-fix and acceptance phases.

@@ -269,3 +269,5 @@ include $(srctree)/mm/mremap_native_rust.mk
 include $(srctree)/mm/mprotect_native_rust.mk
 
 include $(srctree)/mm/rmap_native_rust.mk
+
+include $(srctree)/mm/vmscan_native_rust.mk

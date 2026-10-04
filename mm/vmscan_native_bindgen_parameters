@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-prepend-enum-name
+--allowlist-type '^(scan_control|ctrl_pos|folio|page|zone|pglist_data|lruvec|list_head|reclaim_state|reclaim_stat|folio_batch|swap_io_ctx|swap_cluster_info|migration_target_control|address_space|task_struct|mem_cgroup|mem_cgroup_reclaim_cookie|mm_struct|mm_walk|mm_walk_ops|vma_iterator|vma_flags_t|vm_area_struct|page_vma_mapped_walk|lru_gen_mm_walk|lru_gen_mm_list|lru_gen_mm_state|lru_gen_folio|lru_gen_memcg|oom_control|kobject|kobj_attribute|attribute|attribute_group|seq_file|seq_operations|file|file_operations|inode|device|device_attribute|node|blk_plug|wait_queue_entry|wait_queue_head|wait_queue_head_t|mutex|spinlock_t|atomic_t|atomic_long_t|nodemask_t|zonelist|zoneref|gfp_t|pte_t|pmd_t|pud_t|p4d_t|pgd_t|substring_t|lru_list|zone_type|node_stat_item|zone_stat_item|vm_event_item|vmscan_throttle_state|kswapd_clear_hopeless_reason)$'
+--allowlist-function '^(rust_vs_.*|rust_mglru_.*)$'
+--allowlist-function '^(__filemap_remove_folio|__zone_watermark_ok|alloc_migration_target|filemap_release_folio|finish_wait|folio_add_lru|folio_clear_dirty_for_io|folio_mark_accessed|folio_mark_dirty|folio_referenced|free_unref_folios|inode_lru_list_add|int_sqrt|kthread_freezable_should_stop|kthread_should_stop|kthread_stop|lru_add_drain|lru_add_drain_all|match_int|memparse|migrate_pages|prepare_to_wait|schedule|schedule_timeout|shmem_writeout|shrink_slab|strlen|strsep|strstrip|unmap_poisoned_folio|wake_up_process|wakeup_flusher_threads|workingset_age_nonresident|workingset_eviction|get_gate_vma|kfree|kstrtouint|kvfree|memchr_inv|out_of_memory|seq_open|seq_printf|seq_putc|seq_puts|skip_spaces|strcmp|sysfs_emit|walk_page_range)$'
+--allowlist-var '^(RUST_VS_.*|MEMORY_RECLAIM_.*|defrag_mode|system_state|oom_lock)$'
+--with-attribute-custom-struct=folio='#[cfi_encoding="5folio"]'
+--with-attribute-custom-struct=page='#[cfi_encoding="4page"]'
+--with-attribute-custom-struct=zone='#[cfi_encoding="4zone"]'
+--with-attribute-custom-struct=pglist_data='#[cfi_encoding="11pglist_data"]'
+--with-attribute-custom-struct=scan_control='#[cfi_encoding="12scan_control"]'
+--with-attribute-custom-struct=mem_cgroup='#[cfi_encoding="10mem_cgroup"]'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=mm_walk='#[cfi_encoding="7mm_walk"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=inode='#[cfi_encoding="5inode"]'
+--with-attribute-custom-struct=device='#[cfi_encoding="6device"]'
+--with-attribute-custom-struct=device_attribute='#[cfi_encoding="16device_attribute"]'
+--with-attribute-custom-struct=kobject='#[cfi_encoding="7kobject"]'
+--with-attribute-custom-struct=kobj_attribute='#[cfi_encoding="14kobj_attribute"]'

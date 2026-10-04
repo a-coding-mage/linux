@@ -2,6 +2,20 @@
 
 menu "Memory Management options"
 
+config RUST_VMSCAN
+	bool "Rust classic and multigeneration reclaim"
+	depends on RUST
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build vmscan.o from Rust with configured native type and bitfield
+	  authority. Classic and multigeneration scanning, folio reclaim,
+	  demotion, memcg protection, direct reclaim and kswapd run in Rust.
+	  Native headers retain synchronization, architecture and metadata
+	  leaves. The retained original vmscan.c is not linked when selected.
+	  Native compiler instrumentation gates remain required. Integrated
+	  build and original C runtime acceptance remain pending.
+
 config RUST_RMAP
 	bool "Rust reverse mapping owner"
 	depends on RUST && MMU

@@ -35,3 +35,5 @@ mm/mremap                 strong -
 mm/mprotect               strong -
 
 mm/rmap                   strong -
+
+mm/vmscan                 strong -

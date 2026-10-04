@@ -260,3 +260,5 @@ tools/power/acpi/tools/ec/ec_access.rs 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
 usr/gen_init_cpio.rs 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
 
 mm/rmap.rs e1d84f501551943a11f4c5271e9f5c85d7e15168
+
+mm/vmscan.rs e1d84f501551943a11f4c5271e9f5c85d7e15168
