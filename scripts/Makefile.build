@@ -345,6 +345,10 @@ rust_crate_features = $(rust_allowed_features)$(if $(RUST_ALLOWED_FEATURES_$(tar
 # `--out-dir` is required to avoid temporaries being created by `rustc` in the
 # current working directory, which may be not accessible in the out-of-tree
 # modules case.
+# Owners emitting multiple LLVM outputs can opt into a distinct directory for
+# each requested target. Explicit final outputs and dep-info stay unchanged.
+rustc_out_dir = $(or $(RUSTC_OUT_DIR_$(target-stem).o),$(dir $@))
+
 rust_common_cmd = \
 	OBJTREE=$(abspath $(objtree)) \
 	RUST_MODFILE=$(modfile) $(RUSTC_OR_CLIPPY) $(rust_flags) \
@@ -355,7 +359,7 @@ rust_common_cmd = \
 	--extern zerocopy --extern zerocopy_derive \
 	--crate-type rlib -L $(objtree)/rust/ \
 	--sysroot=/dev/null \
-	--out-dir $(dir $@) --emit=dep-info=$(depfile)
+	--out-dir $(rustc_out_dir) --emit=dep-info=$(depfile)
 
 # `--emit=obj`, `--emit=asm` and `--emit=llvm-ir` imply a single codegen unit
 # will be used. We explicitly request `-Ccodegen-units=1` in any case, and

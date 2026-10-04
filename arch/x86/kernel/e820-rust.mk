@@ -23,6 +23,9 @@ x86-e820-rust-targets := $(addprefix $(obj)/,\
         .e820-rust-listing/$(owner).o))
 
 RUSTFLAGS_e820.o += -Zfunction-sections=n
+# rustc's intermediate CGU filenames depend on the crate, not the requested
+# output suffix. Concurrent .o/.s/.ll/listing builds must not share them.
+RUSTC_OUT_DIR_e820.o = $(dir $@).$(notdir $@).rustc/
 
 # Opt in this owner only. rustc's strong strategy does not encode the kernel
 # guard location. An empty native TU supplies compiler-generated module policy;
@@ -145,5 +148,6 @@ targets += $(foreach owner,$(x86-e820-rust-owners),\
     $(owner).s $(owner).ll $(owner).rsi $(owner).lst \
     .e820-rust-listing/$(owner).o .e820-rust-listing-elf/$(owner).o)
 clean-files += .e820-rust-listing/ .e820-rust-listing-elf/
+clean-files += $(foreach ext,o s ll rsi,.e820.$(ext).rustc/)
 clean-files += $(foreach ext,o s ll,$(addprefix e820.$(ext).,rust.bc rust.ll native.d native.ll linked.ll))
 endif

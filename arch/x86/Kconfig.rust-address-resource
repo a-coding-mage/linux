@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_X86_PHYSADDR
+	bool "Rust x86-64 physical-address validation owner"
+	depends on RUST && X86_64
+	default y
+	help
+	  Use Rust for physaddr.o, including native unsigned address arithmetic,
+	  physical-width checks, sparsemem section/subsection lookup and the
+	  RCU-sched lifetime. Native generated headers provide all types and
+	  constants. Only compiler/preemption/lockdep/bit-access macro leaves
+	  remain in the itemized companion; no pfn_valid C body is wrapped.
+	  Non-extreme sparsemem, architecture-specific pfn_valid, and unsupported
+	  instrumentation profiles fail explicitly in the owner rules.
+
+config RUST_X86_RESOURCE
+	bool "Rust x86-64 resource reservation owner"
+	depends on RUST && X86_64
+	default y
+	help
+	  Use Rust for resource.o, preserving BIOS/E820 clipping, unsigned
+	  wraparound, tie-breaking, configured PCI policy and diagnostic text.
+	  Native generated headers provide layouts, declarations and constants.
+	  There is no C algorithm companion for this owner. With the reviewed
+	  Clang x86-64 SMP strong stack-protector profile, an empty native
+	  translation unit supplies the compiler's exact module/guard metadata
+	  to strong Rust bitcode before native code generation.
+	  Other stack-protector profiles, inline helpers with stack protection,
+	  Clang LTO with stack protection, PRINTK_INDEX and unsupported
+	  instrumentation fail explicitly. No selected profile falls back to C.

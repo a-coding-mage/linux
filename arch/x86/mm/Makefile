@@ -30,6 +30,7 @@ obj-y				+= pat/
 
 # Make sure __phys_addr has no stackprotector
 CFLAGS_physaddr.o		:= -fno-stack-protector
+include $(srctree)/arch/x86/mm/physaddr-rust.mk
 
 obj-$(CONFIG_X86_32)		+= pgtable_32.o iomap_32.o
 

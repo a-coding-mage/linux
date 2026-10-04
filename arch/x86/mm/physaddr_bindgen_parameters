@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-prepend-enum-name
+--no-default '.*'
+--allowlist-type 'resource_size_t|phys_addr_t|mem_section|mem_section_usage|cpuinfo_x86'
+--allowlist-var 'RUST_PHYSADDR_.*|phys_base|page_offset_base|mem_section|boot_cpu_data'
+--allowlist-function 'rust_physaddr_.*'

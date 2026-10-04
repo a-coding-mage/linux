@@ -3162,6 +3162,8 @@ source "arch/x86/kernel/Kconfig.rust-setup"
 
 source "arch/x86/kernel/Kconfig.rust-e820"
 
+source "arch/x86/Kconfig.rust-address-resource"
+
 source "arch/x86/kernel/Kconfig.rust-early-platform"
 
 source "arch/x86/kernel/Kconfig.rust-platform-callbacks"

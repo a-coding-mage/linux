@@ -1022,5 +1022,7 @@ include $(srctree)/kernel/softirq_bindgen.mk
 include $(srctree)/kernel/panic_bindgen.mk
 include $(srctree)/arch/x86/kernel/setup-bindgen.mk
 include $(srctree)/arch/x86/kernel/e820-bindgen.mk
+include $(srctree)/arch/x86/mm/physaddr-bindgen.mk
+include $(srctree)/arch/x86/kernel/resource-bindgen.mk
 include $(srctree)/arch/x86/kernel/early-platform-bindgen.mk
 include $(srctree)/arch/x86/kernel/x86-platform-callbacks-bindgen.mk
