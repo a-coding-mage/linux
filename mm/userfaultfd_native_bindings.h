@@ -110,7 +110,6 @@ static const unsigned long RUST_UFFD_VM_NONE = VM_NONE;
 static const unsigned long RUST_UFFD_VM_PFNMAP = VM_PFNMAP;
 static const unsigned long RUST_UFFD_VM_SHADOW_STACK = VM_SHADOW_STACK;
 static const unsigned long RUST_UFFD_VM_SHARED = VM_SHARED;
-static const unsigned long RUST_UFFD_VM_SPECIAL = VM_SPECIAL;
 static const unsigned long RUST_UFFD_VM_UFFD_MINOR = VM_UFFD_MINOR;
 static const unsigned long RUST_UFFD_VM_UFFD_MISSING = VM_UFFD_MISSING;
 static const unsigned long RUST_UFFD_VM_UFFD_RWP = VM_UFFD_RWP;

@@ -5,7 +5,7 @@ unsafe fn vma_can_userfault(v: *mut vm_area_struct, mut f: vm_flags_t, wp_async:
     if vflags(v) & (RUST_UFFD_VM_DROPPABLE | RUST_UFFD_VM_SHADOW_STACK) != 0 {
         return false;
     }
-    if !is_vm_hugetlb_page(v) && vflags(v) & RUST_UFFD_VM_SPECIAL != 0 {
+    if !is_vm_hugetlb_page(v) && vflags(v) & vm_special_flags() != 0 {
         return false;
     }
     f &= RUST_UFFD___VM_UFFD_FLAGS;

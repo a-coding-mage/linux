@@ -235,6 +235,7 @@ use b::rust_uffd_userfaultfd_rwp as userfaultfd_rwp;
 use b::rust_uffd_userfaultfd_wp as userfaultfd_wp;
 use b::rust_uffd_vm_flags_reset as vm_flags_reset;
 use b::rust_uffd_vm_normal_folio as vm_normal_folio;
+use b::rust_uffd_vm_special_flags as vm_special_flags;
 use b::rust_uffd_vma_alloc_folio as vma_alloc_folio;
 use b::rust_uffd_vma_end_ptr as vma_end_ptr;
 #[cfg(CONFIG_PER_VMA_LOCK)]

@@ -16,6 +16,9 @@ UF_RET(unsigned long *, vma_start_ptr, (struct vm_area_struct *v), &v->vm_start)
 UF_RET(unsigned long *, vma_end_ptr, (struct vm_area_struct *v), &v->vm_end)
 UF_RET(const vm_flags_t *, vma_flags_ptr, (struct vm_area_struct *v), &v->vm_flags)
 UF_RET(vma_flags_t, vma_native_flags, (struct vm_area_struct *v), v->flags)
+/* VM_SPECIAL contains native VMA-mask function calls, so evaluate it at the
+ * original function-use boundary instead of in a static initializer. */
+UF_RET(vm_flags_t, vm_special_flags, (void), VM_SPECIAL)
 UF_RET(struct vm_area_struct *, vmf_vma, (struct vm_fault *f), f->vma)
 UF_RET(unsigned long, vmf_address, (struct vm_fault *f), f->address)
 UF_RET(unsigned long, vmf_real_address, (struct vm_fault *f), f->real_address)
