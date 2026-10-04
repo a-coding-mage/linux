@@ -779,9 +779,13 @@ unsafe impl Sync for PaSysctlTable {}
 type PaProcHandler =
     unsafe extern "C" fn(*const ctl_table, i32, *mut Void, *mut usize, *mut loff_t) -> i32;
 const unsafe fn pa_sysctl_value(index: u32) -> *const Void {
+    // The native int[] declaration becomes a zero-length bindgen array, not
+    // the size of the real sysctl_vals allocation. Preserve its provenance
+    // while forming a relocation using the native SYSCTL_* element index;
+    // no memory is accessed here and every index is in the real C array.
     core::ptr::addr_of!(sysctl_vals)
         .cast::<i32>()
-        .add(index as usize)
+        .wrapping_add(index as usize)
         .cast()
 }
 const unsafe fn pa_sysctl_entry(

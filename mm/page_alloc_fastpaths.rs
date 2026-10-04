@@ -1278,12 +1278,10 @@ unsafe fn get_page_from_freelist(
                     flags as u32,
                     gfp,
                 ) {
-                    if cond_accept_memory(z, order, flags)
+                    if !(cond_accept_memory(z, order, flags)
                         || (deferred_pages_enabled() && _deferred_grow_zone(z, order))
-                        || flags & RUST_PA_ALLOC_NO_WATERMARKS as i32 != 0
+                        || flags & RUST_PA_ALLOC_NO_WATERMARKS as i32 != 0)
                     {
-                        try_zone = true;
-                    } else {
                         if !rust_pa_node_reclaim_enabled() || !zone_allows_reclaim(preferred, z) {
                             continue;
                         }
