@@ -77,6 +77,17 @@ word-size promotion in util-est arithmetic, and correct cpufreq flags and the
 deadline-server callback type declaration. These have independent source
 review against pinned headers; emitted ABI/CFI behavior is still unqualified.
 
+A further bounded core review adds explicit scopes to 24 clock/wake/statistics
+and change-context bodies. Scope-only readback preserves their previous source;
+the separately reviewed prefetch fix computes a nullable hint address with
+native-derived offset_of and wrapping byte arithmetic, avoiding an in-bounds
+Rust field projection through a possibly null CFS current pointer.
+
+Further fair interface corrections match signed sched_clock_cpu arguments,
+signed server runtime and exec-max accounting, native thread-count/folio-size
+signatures, and word-width timestamp/balance-interval conversions. These are
+source repairs only, with no change to the inactive admission policy.
+
 Existing cpupri and cpudeadline Rust source receives bounded compatibility
 repairs: allocation-failure unwind bounds, raw-pointer indexing and shared
 field addresses, boolean mask checks, native IRQ flag types, allocation

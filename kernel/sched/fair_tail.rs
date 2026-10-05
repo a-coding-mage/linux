@@ -2292,21 +2292,21 @@ unsafe fn update_cfs_rq_h_load(mut cfs_rq: *mut b::cfs_rq) {
     unsafe {
         let mut se = b::rust_fair_cfs_rq_se(cfs_rq);
         let now = b::rust_fair_jiffies();
-        if (*cfs_rq).last_h_load_update == now {
+        if (*cfs_rq).last_h_load_update == now as u64 {
             return;
         }
         write_once!((*cfs_rq).h_load_next, null_mut());
         while !se.is_null() {
             cfs_rq = b::rust_fair_cfs_rq_of(se);
             write_once!((*cfs_rq).h_load_next, se);
-            if (*cfs_rq).last_h_load_update == now {
+            if (*cfs_rq).last_h_load_update == now as u64 {
                 break;
             }
             se = parent_entity(se);
         }
         if se.is_null() {
             (*cfs_rq).h_load = cfs_rq_load_avg(cfs_rq);
-            (*cfs_rq).last_h_load_update = now;
+            (*cfs_rq).last_h_load_update = now as u64;
         }
         loop {
             se = read_once!((*cfs_rq).h_load_next);
@@ -2320,7 +2320,7 @@ unsafe fn update_cfs_rq_h_load(mut cfs_rq: *mut b::cfs_rq) {
             );
             cfs_rq = b::rust_fair_group_cfs_rq(se);
             (*cfs_rq).h_load = load as c_ulong;
-            (*cfs_rq).last_h_load_update = now;
+            (*cfs_rq).last_h_load_update = now as u64;
         }
     }
 }
@@ -3804,7 +3804,7 @@ unsafe fn sched_balance_rq(
         };
         match finish {
             FairBalanceExit::Unbalanced => {
-                (*sd).balance_interval = (*sd).min_interval;
+                (*sd).balance_interval = (*sd).min_interval as c_uint;
             }
             finish => {
                 if matches!(finish, FairBalanceExit::Balanced)
@@ -3825,7 +3825,7 @@ unsafe fn sched_balance_rq(
                     && env.migration_type != b::migrate_misfit
                     && ((env.flags & (b::RUST_FAIR_LBF_ALL_PINNED as c_uint) != 0
                         && (*sd).balance_interval < b::RUST_FAIR_MAX_PINNED_INTERVAL as c_uint)
-                        || (*sd).balance_interval < (*sd).max_interval)
+                        || ((*sd).balance_interval as c_ulong) < (*sd).max_interval)
                 {
                     (*sd).balance_interval = (*sd).balance_interval.wrapping_mul(2);
                 }
@@ -4411,7 +4411,7 @@ unsafe fn sched_balance_newidle(this_rq: *mut b::rq, rf: *mut b::rq_flags) -> c_
                 update_next_balance(sd, &mut next_balance);
                 break 'balance;
             }
-            let mut t0 = b::sched_clock_cpu(this_cpu as c_uint);
+            let mut t0 = b::sched_clock_cpu(this_cpu);
             __sched_balance_update_blocked_averages(this_rq);
             b::rust_fair_rq_modified_begin(this_rq, addr_of!(b::fair_sched_class));
             b::rust_fair_raw_spin_rq_unlock(this_rq);
@@ -4440,7 +4440,7 @@ unsafe fn sched_balance_newidle(this_rq: *mut b::rq, rf: *mut b::rq_flags) -> c_
                         b::CPU_NEWLY_IDLE,
                         &mut continue_balancing,
                     );
-                    let t1 = b::sched_clock_cpu(this_cpu as c_uint);
+                    let t1 = b::sched_clock_cpu(this_cpu);
                     let domain_cost = t1.wrapping_sub(t0);
                     curr_cost = curr_cost.wrapping_add(domain_cost);
                     t0 = t1;

@@ -933,7 +933,7 @@ unsafe fn update_se(rq: *mut b::rq, se: *mut b::sched_entity) -> i64 {
         #[cfg(CONFIG_SCHEDSTATS)]
         if b::rust_fair_schedstat_enabled() {
             let stats = b::rust_fair_schedstats_from_se(se);
-            (*stats).exec_max = max(delta as u64, (*stats).exec_max);
+            (*stats).exec_max = max(delta, (*stats).exec_max);
         }
         delta
     }
@@ -968,7 +968,7 @@ unsafe fn update_curr(mut cfs: *mut b::cfs_rq) {
             .vruntime
             .wrapping_add(calc_delta_fair(delta as u64, curr));
         let resched = update_deadline(cfs, curr);
-        b::dl_server_update(addr_of_mut!((*rq).fair_server), delta as u64);
+        b::dl_server_update(addr_of_mut!((*rq).fair_server), delta);
         if (*cfs).h_nr_queued == 1 {
             return;
         }
@@ -3468,7 +3468,7 @@ unsafe fn migrate_se_pelt_lag(se: *mut b::sched_entity) {
             now = lut;
         } else {
             now = now.wrapping_add(
-                b::sched_clock_cpu(b::rust_fair_cpu_of(rq) as c_uint)
+                b::sched_clock_cpu(b::rust_fair_cpu_of(rq))
                     .wrapping_sub(b::rust_fair_load_clock_idle(rq)),
             );
         }
@@ -4367,7 +4367,7 @@ pub unsafe extern "C" fn should_numa_migrate_memory(
             return false;
         }
         if b::rust_fair_folio_use_access_time(folio) {
-            let nr = b::rust_fair_folio_nr_pages(folio);
+            let nr = b::rust_fair_folio_nr_pages(folio) as c_long;
             let pgdat = b::rust_fair_node_data(dst);
             if pgdat_free_space_enough(pgdat) {
                 (*pgdat).nbp_threshold = 0;
