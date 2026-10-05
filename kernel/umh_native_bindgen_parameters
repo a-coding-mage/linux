@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Inactive source-only proposal; do not generate under the current hold.
+# Use the configured target's native headers and kernel ffi type aliases.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--newtype-global-enum umh_disable_depth
+--allowlist-type 'subprocess_info|cred|task_struct|work_struct|work_func_t|completion|wait_queue_entry|wait_queue_head|ctl_table|kernel_cap_t|umh_disable_depth|gfp_t|pid_t|loff_t|size_t|umode_t|lupos_umh_init_fn|lupos_umh_cleanup_fn|lupos_umh_callbacks'
+--opaque-type 'subprocess_info|cred|task_struct|work_struct|wait_queue_head|ctl_table|lupos_umh_callbacks'
+--allowlist-function 'lupos_umh_.*|call_usermodehelper_setup|kfree|complete|flush_signal_handlers|set_user_nice|prepare_kernel_cred|abort_creds|commit_creds|kernel_execve|do_exit|user_mode_thread|kernel_wait|prepare_to_wait|prepare_to_wait_event|finish_wait|init_wait_entry|schedule|schedule_timeout|wait_for_completion_state|proc_doulongvec_minmax'
+--allowlist-var 'LUPOS_UMH_.*'
+--with-attribute-custom-struct=subprocess_info='#[cfi_encoding="15subprocess_info"]'
+--with-attribute-custom-struct=cred='#[cfi_encoding="4cred"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=work_struct='#[cfi_encoding="11work_struct"]'
+--with-attribute-custom-struct=completion='#[cfi_encoding="10completion"]'
+--with-attribute-custom-struct=wait_queue_entry='#[cfi_encoding="16wait_queue_entry"]'
+--with-attribute-custom-struct=wait_queue_head='#[cfi_encoding="15wait_queue_head"]'
+--with-attribute-custom-struct=ctl_table='#[cfi_encoding="9ctl_table"]'
+--with-attribute-custom-struct=kernel_cap_t='#[cfi_encoding="12kernel_cap_t"]'
+--with-attribute-custom-struct=lupos_umh_callbacks='#[cfi_encoding="19lupos_umh_callbacks"]'
+--with-attribute-custom-enum=umh_disable_depth='#[cfi_encoding="17umh_disable_depth"]'
+# Keep configured native sizes and alignment; no fabricated Rust layouts.
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib|spinlock'

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_UMH
+	bool "Rust usermode-helper source proposal (not admitted)"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing usermode-helper Rust owner.
+	  Native ABI/CFI, initialization, completion/wait lifetimes, configured
+	  policy and original-test qualification remain open. Keep disabled.

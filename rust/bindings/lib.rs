@@ -273,3 +273,8 @@ pub mod cred_native {
 pub mod groups_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/groups_native_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_UMH)]
+pub mod umh_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/umh_native_generated.rs"));
+}

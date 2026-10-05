@@ -109,6 +109,31 @@ CFI, uaccess, syscall metadata, references, allocation attribution and runtime
 still require qualification. All default-off/BROKEN and source/selection holds
 remain, with the MULTIUSER condition preserved and no object selection changes.
 
+Usermode-helper policy, callbacks and completion storage
+-------------------------------------------------------
+
+Independent review restores the literal configured static-helper path, including
+the original empty-string policy, and the exact two-row sized sysctl registration.
+The native early-init entry retains its original __init and initcall metadata
+around the existing Rust setup body. Work and thread callbacks retain C ABI;
+the public callback-bearing setup signature uses a native forwarding context.
+
+Rust retains the original permission, credential, wait/completion, locking,
+cleanup and error decisions. Native completion initialization preserves the
+CONFIG_LOCKDEP split and self-links to final storage, without moving initialized
+objects. All seventeen unsafe bodies have explicit scopes and caller contracts,
+without handwritten diagnostic exemptions.
+
+Integration moves the generated declarations from a local include into the
+existing bindings crate, retaining its established generated-code and CFI policy.
+No operational Rust body or native primitive changes in that registration step.
+Explicit source errors protect the Rust owner and all three native companions;
+the default-off BROKEN selector and selection errors choose no objects.
+
+Configured layout, ABI/CFI, init-body instrumentation and relocations, completion
+lifetime, source/callsite attribution and runtime/original tests remain open.
+No helper policy is enabled or changed in the selected original C build.
+
 Verification scope
 ------------------
 
