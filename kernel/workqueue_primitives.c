@@ -414,3 +414,463 @@ struct lock_class_key *lupos_wq_dead_softirq_work_key(void)
 {
 	return &dead_softirq_work_key;
 }
+
+/* Generic native primitives; all workqueue decisions remain in Rust. */
+void lupos_wq_local_irq_disable(void)
+{
+	local_irq_disable();
+}
+void lupos_wq_local_irq_enable(void)
+{
+	local_irq_enable();
+}
+void lupos_wq_local_irq_restore(unsigned long flags)
+{
+	local_irq_restore(flags);
+}
+void lupos_wq_preempt_disable(void)
+{
+	preempt_disable();
+}
+void lupos_wq_preempt_enable(void)
+{
+	preempt_enable();
+}
+void lupos_wq_cpu_relax(void)
+{
+	cpu_relax();
+}
+int lupos_wq_cond_resched(void)
+{
+	return cond_resched();
+}
+int lupos_wq_raw_smp_processor_id(void)
+{
+	return raw_smp_processor_id();
+}
+bool lupos_wq_in_atomic(void)
+{
+	return in_atomic();
+}
+bool lupos_wq_in_hardirq(void)
+{
+	return in_hardirq();
+}
+bool lupos_wq_in_interrupt(void)
+{
+	return in_interrupt();
+}
+void lupos_wq_rcu_barrier(void)
+{
+	rcu_barrier();
+}
+int lupos_wq_rcu_preempt_depth(void)
+{
+	return rcu_preempt_depth();
+}
+void lupos_wq_destroy_work_on_stack(struct work_struct *work)
+{
+	destroy_work_on_stack(work);
+}
+int lupos_wq_timer_delete_sync(struct timer_list *timer)
+{
+	return timer_delete_sync(timer);
+}
+void lupos_wq_wait_for_completion(struct completion *done)
+{
+	wait_for_completion(done);
+}
+bool lupos_wq_try_wait_for_completion(struct completion *done)
+{
+	return try_wait_for_completion(done);
+}
+void lupos_wq_list_splice_tail_init(struct list_head *list, struct list_head *head)
+{
+	list_splice_tail_init(list, head);
+}
+void lupos_wq_list_add_tail_rcu(struct list_head *entry, struct list_head *head)
+{
+	list_add_tail_rcu(entry, head);
+}
+void lupos_wq_list_del_rcu(struct list_head *entry)
+{
+	list_del_rcu(entry);
+}
+void lupos_wq_hlist_add_head(struct hlist_node *node, struct hlist_head *head)
+{
+	hlist_add_head(node, head);
+}
+void lupos_wq_hash_del(struct hlist_node *node)
+{
+	hash_del(node);
+}
+void lupos_wq_init_hlist_node(struct hlist_node *node)
+{
+	INIT_HLIST_NODE(node);
+}
+void lupos_wq_ida_init(struct ida *ida)
+{
+	ida_init(ida);
+}
+void * lupos_wq_err_ptr(long error)
+{
+	return ERR_PTR(error);
+}
+bool lupos_wq_test_bit(unsigned int bit, const unsigned long *word)
+{
+	return test_bit(bit, word);
+}
+bool lupos_wq_test_and_set_bit(long bit, unsigned long *word)
+{
+	return test_and_set_bit(bit, word);
+}
+void lupos_wq_kasan_record_aux_stack(struct work_struct *work)
+{
+	kasan_record_aux_stack(work);
+}
+unsigned long lupos_wq_bh_worker_jiffies(void)
+{
+	return BH_WORKER_JIFFIES;
+}
+bool lupos_wq_debug_force_rr_cpu(void)
+{
+	return wq_debug_force_rr_cpu;
+}
+unsigned long lupos_wq_cpu_intensive_thresh_us(void)
+{
+	return wq_cpu_intensive_thresh_us;
+}
+u64 lupos_wq_read_task_sum_exec_runtime(struct task_struct *task)
+{
+	return READ_ONCE(task->se.sum_exec_runtime);
+}
+int lupos_wq_pool_nr_idle_plain(struct worker_pool *pool)
+{
+	return pool->nr_idle;
+}
+int lupos_wq_pool_nr_running_plain(struct worker_pool *pool)
+{
+	return pool->nr_running;
+}
+int lupos_wq_this_cpu_rr_read(void)
+{
+	return __this_cpu_read(wq_rr_cpu_last);
+}
+void lupos_wq_this_cpu_rr_write(int cpu)
+{
+	__this_cpu_write(wq_rr_cpu_last, cpu);
+}
+struct delayed_work * lupos_wq_to_delayed_work(struct work_struct *work)
+{
+	return to_delayed_work(work);
+}
+struct delayed_work * lupos_wq_delayed_work_from_timer(struct timer_list *timer)
+{
+	return container_of(timer, struct delayed_work, timer);
+}
+struct rcu_work * lupos_wq_rcu_work_from_rcu(struct rcu_head *rcu)
+{
+	return container_of(rcu, struct rcu_work, rcu);
+}
+struct worker_pool * lupos_wq_pool_from_rcu(struct rcu_head *rcu)
+{
+	return container_of(rcu, struct worker_pool, rcu);
+}
+struct workqueue_struct * lupos_wq_wq_from_rcu(struct rcu_head *rcu)
+{
+	return container_of(rcu, struct workqueue_struct, rcu);
+}
+struct worker_pool * lupos_wq_pool_from_hash_node(struct hlist_node *node)
+{
+	return container_of(node, struct worker_pool, hash_node);
+}
+struct pool_workqueue * lupos_wq_pwq_from_release_work(struct kthread_work *work)
+{
+	return container_of(work, struct pool_workqueue, release_work);
+}
+struct wq_node_nr_active ** lupos_wq_node_nr_active_array(struct workqueue_struct *wq)
+{
+	return wq->node_nr_active;
+}
+struct wq_node_nr_active ** lupos_wq_node_nr_active_slot(struct workqueue_struct *wq, int node)
+{
+	return &wq->node_nr_active[node];
+}
+struct pool_workqueue ** lupos_wq_ctx_pwq_slot(struct apply_wqattrs_ctx *ctx, int cpu)
+{
+	return &ctx->pwq_tbl[cpu];
+}
+char * lupos_wq_wq_name(struct workqueue_struct *wq)
+{
+	return wq->name;
+}
+struct workqueue_attrs * lupos_wq_update_pwq_attrs_buf(void)
+{
+	return unbound_wq_update_pwq_attrs_buf;
+}
+struct workqueue_attrs * lupos_wq_std_unbound_attrs(int highpri)
+{
+	return unbound_std_wq_attrs[highpri];
+}
+struct workqueue_attrs * lupos_wq_ordered_attrs(int highpri)
+{
+	return ordered_wq_attrs[highpri];
+}
+const struct cpumask * lupos_wq_online_cpumask(void)
+{
+	return wq_online_cpumask;
+}
+struct wq_pod_type * lupos_wq_pod_type(int scope)
+{
+	return &wq_pod_types[scope];
+}
+enum wq_affn_scope lupos_wq_affn_dfl(void)
+{
+	return wq_affn_dfl;
+}
+const struct cpumask * lupos_wq_pod_cpus(const struct wq_pod_type *type, int pod)
+{
+	return type->pod_cpus[pod];
+}
+void lupos_wq_cpumask_copy(struct cpumask *to, const struct cpumask *from)
+{
+	cpumask_copy(to, from);
+}
+bool lupos_wq_cpumask_equal(const struct cpumask *a, const struct cpumask *b)
+{
+	return cpumask_equal(a, b);
+}
+bool lupos_wq_cpumask_and(struct cpumask *to, const struct cpumask *a, const struct cpumask *b)
+{
+	return cpumask_and(to, a, b);
+}
+bool lupos_wq_cpumask_empty(const struct cpumask *mask)
+{
+	return cpumask_empty(mask);
+}
+bool lupos_wq_cpumask_subset(const struct cpumask *a, const struct cpumask *b)
+{
+	return cpumask_subset(a, b);
+}
+const unsigned long * lupos_wq_cpumask_bits(const struct cpumask *mask)
+{
+	return cpumask_bits(mask);
+}
+u32 lupos_wq_cpumask_hash_bytes(void)
+{
+	return BITS_TO_LONGS(nr_cpumask_bits) * sizeof(long);
+}
+unsigned int lupos_wq_cpumask_any_and(const struct cpumask *a, const struct cpumask *b)
+{
+	return cpumask_any_and(a, b);
+}
+unsigned int lupos_wq_cpumask_next_and_wrap(int cpu, const struct cpumask *a, const struct cpumask *b)
+{
+	return cpumask_next_and_wrap(cpu, a, b);
+}
+const struct cpumask * lupos_wq_cpumask_of_node(int node)
+{
+	return cpumask_of_node(node);
+}
+int lupos_wq_cpu_to_node(int cpu)
+{
+	return cpu_to_node(cpu);
+}
+int lupos_wq_nr_node_ids(void)
+{
+	return nr_node_ids;
+}
+bool lupos_wq_node_online(int node)
+{
+	return node_online(node);
+}
+bool lupos_wq_cpu_online(int cpu)
+{
+	return cpu_online(cpu);
+}
+bool lupos_wq_housekeeping_enabled(enum hk_type type)
+{
+	return housekeeping_enabled(type);
+}
+bool lupos_wq_housekeeping_test_cpu(int cpu, enum hk_type type)
+{
+	return housekeeping_test_cpu(cpu, type);
+}
+int lupos_wq_housekeeping_any_cpu(enum hk_type type)
+{
+	return housekeeping_any_cpu(type);
+}
+void lupos_wq_init_pool_busy_hash(struct worker_pool *pool)
+{
+	hash_init(pool->busy_hash);
+}
+void lupos_wq_free_attrs_cpumask(struct workqueue_attrs *attrs)
+{
+	free_cpumask_var(attrs->cpumask);
+}
+void lupos_wq_free_attrs_pod_cpumask(struct workqueue_attrs *attrs)
+{
+	free_cpumask_var(attrs->__pod_cpumask);
+}
+void lupos_wq_cpus_read_lock(void)
+{
+	cpus_read_lock();
+}
+void lupos_wq_cpus_read_unlock(void)
+{
+	cpus_read_unlock();
+}
+void lupos_wq_prepare_to_rcuwait(struct rcuwait *wait)
+{
+	prepare_to_rcuwait(wait);
+}
+bool lupos_wq_signal_pending_state(unsigned int state, struct task_struct *task)
+{
+	return signal_pending_state(state, task);
+}
+struct wq_flusher * lupos_wq_read_first_flusher(struct workqueue_struct *wq)
+{
+	return READ_ONCE(wq->first_flusher);
+}
+void lupos_wq_write_first_flusher(struct workqueue_struct *wq, struct wq_flusher *flusher)
+{
+	WRITE_ONCE(wq->first_flusher, flusher);
+}
+struct pool_workqueue * lupos_wq_pwq_rcu_access(struct pool_workqueue __rcu *const *slot)
+{
+	return rcu_access_pointer(*slot);
+}
+void lupos_wq_pwq_rcu_assign(struct pool_workqueue __rcu **slot, struct pool_workqueue *pwq)
+{
+	rcu_assign_pointer(*slot, pwq);
+}
+struct pool_workqueue * lupos_wq_cpu_pwq_dereference(struct workqueue_struct *wq, int cpu)
+{
+	return rcu_dereference(*per_cpu_ptr(wq->cpu_pwq, cpu));
+}
+struct worker_pool * lupos_wq_cpu_pool(int cpu, int highpri)
+{
+	return &per_cpu(cpu_worker_pools, cpu)[highpri];
+}
+unsigned long lupos_wq_local_irq_save(void)
+{
+	unsigned long flags;
+	local_irq_save(flags);
+	return flags;
+}
+void lupos_wq_rcu_read_lock(void) { rcu_read_lock(); }
+void lupos_wq_rcu_read_unlock(void) { rcu_read_unlock(); }
+void lupos_wq_raw_spin_lock(raw_spinlock_t *lock) { raw_spin_lock(lock); }
+void lupos_wq_raw_spin_unlock(raw_spinlock_t *lock) { raw_spin_unlock(lock); }
+void lupos_wq_raw_spin_lock_irq(raw_spinlock_t *lock) { raw_spin_lock_irq(lock); }
+void lupos_wq_raw_spin_unlock_irq(raw_spinlock_t *lock) { raw_spin_unlock_irq(lock); }
+void lupos_wq_nna_lock_irq(struct wq_node_nr_active *nna) { raw_spin_lock_irq(&nna->lock); }
+void lupos_wq_nna_unlock_irq(struct wq_node_nr_active *nna) { raw_spin_unlock_irq(&nna->lock); }
+#ifdef CONFIG_PREEMPT_RT
+void lupos_wq_spin_lock(spinlock_t *lock) { spin_lock(lock); }
+void lupos_wq_spin_unlock(spinlock_t *lock) { spin_unlock(lock); }
+#endif
+/* State-site identities remain distinct; original emitted attribution is held. */
+void lupos_wq_set_current_state(unsigned int state) { set_current_state(state); }
+void lupos_wq_set_state_worker_thread_idle(void) { __set_current_state(TASK_IDLE); }
+void lupos_wq_set_state_rescuer_thread_idle(void) { set_current_state(TASK_IDLE); }
+void lupos_wq_set_state_rescuer_thread_running(void) { __set_current_state(TASK_RUNNING); }
+void lupos_wq_set_state_rescuer_thread_stopping(void) { __set_current_state(TASK_RUNNING); }
+void lupos_wq_pwq_cpu_time_add_data_race(struct pool_workqueue *pwq, u64 delta)
+{
+	/* Native advisory scalar update, intentionally not an atomic fetch-add. */
+	data_race(pwq->stats[PWQ_STAT_CPU_TIME] += delta);
+}
+struct work_struct __percpu *lupos_wq_alloc_percpu_work(void)
+{
+	return alloc_percpu(struct work_struct);
+}
+void lupos_wq_free_percpu_work(struct work_struct __percpu *works) { free_percpu(works); }
+struct work_struct *lupos_wq_percpu_work_at(struct work_struct __percpu *works, int cpu)
+{
+	return per_cpu_ptr(works, cpu);
+}
+void lupos_wq_free_cpu_pwq(struct workqueue_struct *wq) { free_percpu(wq->cpu_pwq); }
+bool lupos_wq_has_cpu_pwq(struct workqueue_struct *wq) { return wq->cpu_pwq != NULL; }
+void lupos_wq_clear_cpu_pwq(struct workqueue_struct *wq) { wq->cpu_pwq = NULL; }
+int lupos_wq_first_online_cpu(void)
+{
+#if NR_CPUS == 1
+	return 0;
+#else
+	unsigned int cpu = find_next_bit(cpumask_bits(cpu_online_mask),
+					small_cpumask_bits, 0);
+	return cpu < small_cpumask_bits ? (int)cpu : -1;
+#endif
+}
+int lupos_wq_next_online_cpu(int cpu)
+{
+#if NR_CPUS == 1
+	return -1;
+#else
+	unsigned int next = find_next_bit(cpumask_bits(cpu_online_mask),
+					 small_cpumask_bits, cpu + 1);
+	return next < small_cpumask_bits ? (int)next : -1;
+#endif
+}
+unsigned int lupos_wq_first_possible_cpu(void)
+{
+#if NR_CPUS == 1
+	return 0;
+#else
+	return find_next_bit(cpumask_bits(cpu_possible_mask),
+			     small_cpumask_bits, 0);
+#endif
+}
+unsigned int lupos_wq_next_possible_cpu(unsigned int cpu)
+{
+#if NR_CPUS == 1
+	return cpu + 1;
+#else
+	return find_next_bit(cpumask_bits(cpu_possible_mask),
+			     small_cpumask_bits, cpu + 1);
+#endif
+}
+int lupos_wq_first_possible_node(void)
+{
+#if MAX_NUMNODES > 1
+	return first_node(node_states[N_POSSIBLE]);
+#else
+	return 0;
+#endif
+}
+int lupos_wq_next_possible_node(int node)
+{
+#if MAX_NUMNODES > 1
+	return next_node(node, node_states[N_POSSIBLE]);
+#else
+	return 1;
+#endif
+}
+void lupos_wq_init_completion_c3871(struct completion *done)
+{
+	init_completion(done);
+}
+void lupos_wq_init_completion_wq_map(struct completion *done, struct workqueue_struct *wq)
+{
+	/* Pinned init_completion_map discards this macro operand on all configs. */
+	init_completion_map(done, &(*wq->lockdep_map));
+}
+bool lupos_wq_timer_func_eq(lupos_wq_timer_fn_t left, lupos_wq_timer_fn_t right)
+{
+	return left == right;
+}
+void lupos_wq_trace_workqueue_queue_work(int cpu, struct pool_workqueue *pwq,
+				        struct work_struct *work)
+{
+	trace_workqueue_queue_work(cpu, pwq, work);
+}
+void lupos_wq_trace_process_one_work_execute_start(struct work_struct *work)
+{
+	trace_workqueue_execute_start(work);
+}
+void lupos_wq_trace_process_one_work_execute_end(struct work_struct *work, work_func_t func)
+{
+	/* Exact recovered TP_fast_assign records only the address and func value. */
+	trace_workqueue_execute_end(work, func);
+}

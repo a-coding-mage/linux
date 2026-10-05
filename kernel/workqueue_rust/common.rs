@@ -5,6 +5,10 @@
 //! 126a30fae3bba11420ec2fcbde51a0a01bab1b5b. Generated declarations are a
 //! future native build input, not supplied or fabricated by this source pass.
 
+pub(super) use super::jhash::{
+    jhash as lupos_wq_jhash,
+    jhash_1word as lupos_wq_jhash_1word, //
+};
 pub(super) use kernel::bindings::workqueue_native::*;
 pub(super) use kernel::bindings::init_work_with_key;
 pub(super) use kernel::ffi::{

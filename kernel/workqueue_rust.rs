@@ -10,3 +10,8 @@ compile_error!("SOURCE ONLY HOLD: workqueue native owner is incomplete and not a
 
 #[path = "workqueue_rust/common.rs"]
 mod common;
+
+// Reuse the pinned existing Rust algorithm; do not retain a C hash fallback.
+// Its native-build lint/feature admission remains part of SOURCE ONLY HOLD.
+#[path = "../include/linux/jhash_header.rs"]
+mod jhash;

@@ -317,6 +317,20 @@ argument types. These two files are also saved unselected; public symbol/export
 composition, remaining native/diagnostic dependencies and the Rust/native race
 model remain open. A raw-pointer spelling alone proves none of those contracts.
 
+A further reviewed common extension supplies additional native task-state,
+IRQ/RCU, per-CPU, mask/node, list, completion and trace operations. RCU declarations
+retain shared context annotations. CPU traversal follows the native find-bit
+loop directly, without adding cpumask_next's diagnostic branch. Worker idle and
+rescuer idle retain their distinct plain-ONCE versus full-barrier state stores.
+Execute-end tracing takes the saved callback and address without dereferencing
+the potentially freed work object.
+
+Workqueue hashing reuses the existing pinned Rust Jenkins-hash implementation
+by module reference. The used mixing, tail and seed paths were source-compared;
+there is no copied replacement or C hash fallback. That historical helper's
+unsafe-operation/documentation/lint admission and emitted behavior still need
+qualification. Native types, callback identities and all earlier holds remain.
+
 Verification scope
 ------------------
 

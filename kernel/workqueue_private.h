@@ -415,4 +415,23 @@ struct wq_drain_dead_softirq_work {
 	struct completion	done;
 };
 
+/* Native C5449-5455, transaction-local configured flexible-array type. */
+struct apply_wqattrs_ctx {
+	struct workqueue_struct	*wq;		/* target workqueue */
+	struct workqueue_attrs	*attrs;		/* attrs to apply */
+	struct list_head	list;		/* queued for batching commit */
+	struct pool_workqueue	*dfl_pwq;
+	struct pool_workqueue	*pwq_tbl[];
+};
+
+/* Native C7028-7033 remains inside its original CONFIG_SMP family. */
+#ifdef CONFIG_SMP
+struct work_for_cpu {
+	struct work_struct work;
+	long (*fn)(void *);
+	void *arg;
+	long ret;
+};
+#endif
+
 #endif /* LUPOS_WORKQUEUE_PRIVATE_H */
