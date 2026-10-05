@@ -437,6 +437,28 @@ Core task-group RCU callback parameters now name the native callback_head
 instead of presuming a Rust type for the C-only rcu_head macro. Source readback
 preserves both callback bodies, registrations and their two grace periods.
 
+Scheduler topology source checkpoint
+-----------------------------------
+
+The existing topology implementation is continued in eight Rust families:
+flags/debug, energy scheduling, root-domain lifetime, cache scheduling, groups,
+domain initialization, NUMA and allocation/build/partition. Native headers own
+layouts, flag-table expansion, per-CPU storage and metadata. Source inventories
+cover 34 original public functions and 23 original public storage names;
+337 native interface definitions remain real, unqualified C runtime work.
+
+Independent family review corrects anonymous unions and callback type names,
+configured static-inline boundaries, native CPU/node iterator and integer
+semantics, constant-NULL RCU clearing and bitmap cleanup. Caller-specific
+unsafe contracts preserve ordinary diagnostics without allowances. Original
+partial-allocation and unchecked boot/fallback limitations remain explicit
+qualification risks rather than newly invented recovery behavior.
+
+Default-off BROKEN and root/native hard errors retain original utility
+ownership. Configured binding/layout/CFI, init/weak-alias/registration metadata,
+allocation/refcount/RCU/IRQ lifetime, protection/caller attribution, all-config
+emission and original-test/runtime behavior remain unqualified.
+
 Inactive gates and remaining work
 ---------------------------------
 

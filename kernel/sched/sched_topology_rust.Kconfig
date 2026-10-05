@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_TOPOLOGY
+	bool "Rust scheduler topology source owner proposal"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive continuation of scheduler-domain topology and lifetime source.
+	  Configured ABI/CFI, native allocation/RCU/locking, compiler protection,
+	  metadata and runtime qualification must precede owner replacement.

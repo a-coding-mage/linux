@@ -223,3 +223,8 @@ pub mod sched_core_cookie_native {
 pub mod sched_stop_task_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_stop_task_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_TOPOLOGY)]
+pub mod sched_topology_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_topology_generated.rs"));
+}
