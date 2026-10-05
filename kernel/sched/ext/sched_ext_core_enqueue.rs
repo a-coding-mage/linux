@@ -22,7 +22,7 @@ pub unsafe extern "C" fn lupos_scx_core_enq_priq_less_body(
     unsafe {
         let a = lupos_scx_core_enq_priq_task(node_a);
         let b = lupos_scx_core_enq_priq_task_const(node_b);
-        lupos_scx_core_enq_time_before64((*a).scx.dsq_vtime, (*b).scx.dsq_vtime)
+        lupos_scx_core_enq_time_before64(scx_shared_vtime_read(ptr::addr_of!((*a).scx)), scx_shared_vtime_read(ptr::addr_of!((*b).scx)))
     }
 }
 
@@ -42,9 +42,9 @@ pub(crate) unsafe fn dsq_inc_nr(dsq: *mut scx_dispatch_q, p: *mut task_struct, e
                 lupos_scx_core_enq_warn_immed_fallback(enq_flags);
                 return;
             }
-            (*p).scx.flags |= SCX_TASK_IMMED as u32;
+            scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_IMMED as u32);
         }
-        if (*p).scx.flags & SCX_TASK_IMMED as u32 != 0 {
+        if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_IMMED as u32 != 0 {
             let rq = lupos_scx_core_enq_local_dsq_rq(dsq);
             if lupos_scx_core_enq_warn_inc_nonlocal(dsq) {
                 return;
@@ -68,7 +68,7 @@ pub(crate) unsafe fn dsq_dec_nr(dsq: *mut scx_dispatch_q, p: *mut task_struct) {
     // path. Each WARN has distinct original once-only state.
     unsafe {
         lupos_scx_core_enq_nr_write_once(dsq, (*dsq).nr.wrapping_sub(1));
-        if (*p).scx.flags & SCX_TASK_IMMED as u32 != 0 {
+        if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_IMMED as u32 != 0 {
             let rq = lupos_scx_core_enq_local_dsq_rq(dsq);
             if lupos_scx_core_enq_warn_dec_nonlocal(dsq)
                 || lupos_scx_core_enq_warn_dec_no_immed(rq)
@@ -114,13 +114,13 @@ pub(crate) unsafe fn call_task_dequeue(
 ) {
     // SAFETY: Guard short-circuiting and clear-after-callback remain ordered.
     unsafe {
-        if (*p).scx.flags & SCX_TASK_IN_CUSTODY as u32 == 0 || task_scx_migrating(p) {
+        if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_IN_CUSTODY as u32 == 0 || task_scx_migrating(p) {
             return;
         }
         if lupos_scx_core_enq_has_dequeue(sch) {
             lupos_scx_core_enq_call_dequeue(sch, rq, p, deq_flags);
         }
-        (*p).scx.flags &= !(SCX_TASK_IN_CUSTODY as u32);
+        scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !(SCX_TASK_IN_CUSTODY as u32));
     }
 }
 
@@ -138,12 +138,12 @@ pub(crate) unsafe fn rq_owned_post_enq(
     unsafe {
         call_task_dequeue(sch, rq, p, 0);
         if lupos_scx_core_enq_unlikely_post_nonlocal(dsq) {
-            if (*dsq).id == SCX_DSQ_REJECT as u64 {
+            if scx_shared_dsq_id_read(dsq) == SCX_DSQ_REJECT as u64 {
                 super::schedule_deferred_locked(rq);
             }
             return;
         }
-        if lupos_scx_core_class_above((*p).sched_class, (*rq).next_class) {
+        if lupos_scx_core_class_above(scx_shared_class_read(p), (*rq).next_class) {
             lupos_scx_core_enq_wakeup_preempt(rq, p, 0);
         }
         if (*rq).scx.flags & SCX_RQ_IN_DISPATCH as u32 != 0 {
@@ -151,7 +151,7 @@ pub(crate) unsafe fn rq_owned_post_enq(
         }
         if enq_flags & SCX_ENQ_PREEMPT as u64 != 0
             && p != lupos_scx_core_rq_curr(rq)
-            && (*lupos_scx_core_rq_curr(rq)).sched_class == lupos_scx_core_ext_class()
+            && scx_shared_class_read(lupos_scx_core_rq_curr(rq)) == lupos_scx_core_ext_class()
         {
             if lupos_scx_core_enq_likely_set_preempt_slice(scx_set_task_slice(
                 lupos_scx_core_rq_curr(rq), 0,
@@ -182,7 +182,7 @@ pub(crate) unsafe fn scx_dispatch_enqueue(
     // including a subsequent capability resolution to REJECT or RESCUE.
     unsafe {
         let mut is_rq_owned = false;
-        if (*dsq).id == SCX_DSQ_LOCAL as u64 {
+        if scx_shared_dsq_id_read(dsq) == SCX_DSQ_LOCAL as u64 {
             dsq = lupos_scx_core_enq_resolve_local(sch, rq, p, &mut enq_flags);
             is_rq_owned = true;
         }
@@ -231,7 +231,7 @@ pub(crate) unsafe fn scx_dispatch_enqueue(
                 lupos_scx_core_enq_error_existing_priq(sch, dsq);
             }
             if enq_flags & (SCX_ENQ_HEAD as u64 | SCX_ENQ_PREEMPT as u64) != 0 {
-                if dsq_insert_head(dsq, p) && (*dsq).id & SCX_DSQ_FLAG_BUILTIN as u64 == 0 {
+                if dsq_insert_head(dsq, p) && scx_shared_dsq_id_read(dsq) & SCX_DSQ_FLAG_BUILTIN as u64 == 0 {
                     lupos_scx_core_enq_first_assign(dsq, p);
                 }
             } else {
@@ -240,7 +240,7 @@ pub(crate) unsafe fn scx_dispatch_enqueue(
                 );
                 // Deliberately plain first_task, not rcu_access_pointer.
                 if lupos_scx_core_enq_first_plain(dsq).is_null()
-                    && (*dsq).id & SCX_DSQ_FLAG_BUILTIN as u64 == 0
+                    && scx_shared_dsq_id_read(dsq) & SCX_DSQ_FLAG_BUILTIN as u64 == 0
                 {
                     lupos_scx_core_enq_first_assign(dsq, p);
                 }
@@ -253,10 +253,10 @@ pub(crate) unsafe fn scx_dispatch_enqueue(
         if is_rq_owned {
             rq_owned_post_enq(sch, rq, dsq, p, enq_flags);
         } else {
-            if (*dsq).id == SCX_DSQ_GLOBAL as u64 || (*dsq).id == SCX_DSQ_BYPASS as u64 {
+            if scx_shared_dsq_id_read(dsq) == SCX_DSQ_GLOBAL as u64 || scx_shared_dsq_id_read(dsq) == SCX_DSQ_BYPASS as u64 {
                 call_task_dequeue(sch, rq, p, 0);
             } else {
-                (*p).scx.flags |= SCX_TASK_IN_CUSTODY as u32;
+                scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_IN_CUSTODY as u32);
             }
             lupos_scx_core_enq_unlock(dsq);
         }
@@ -284,7 +284,7 @@ pub unsafe extern "C" fn scx_task_unlink_from_dsq(p: *mut task_struct, dsq: *mut
         }
         lupos_scx_core_slice_list_del_init(ptr::addr_of_mut!((*p).scx.dsq_list.node));
         dsq_dec_nr(dsq, p);
-        if (*dsq).id & SCX_DSQ_FLAG_BUILTIN as u64 == 0
+        if scx_shared_dsq_id_read(dsq) & SCX_DSQ_FLAG_BUILTIN as u64 == 0
             && lupos_scx_core_enq_first_access(dsq) == p
         {
             let first_task = nldsq_next_task(dsq, ptr::null_mut(), false);
@@ -435,7 +435,7 @@ pub(crate) unsafe fn direct_dispatch(sch: *mut scx_sched, p: *mut task_struct, e
         let rq = lupos_scx_core_task_rq(p);
         let dsq = find_dsq_for_dispatch(sch, rq, (*p).scx.ddsp_dsq_id, lupos_scx_core_enq_task_cpu(p));
         (*p).scx.ddsp_enq_flags |= enq_flags;
-        if (*dsq).id == SCX_DSQ_LOCAL as u64 && dsq != ptr::addr_of_mut!((*rq).scx.local_dsq) {
+        if scx_shared_dsq_id_read(dsq) == SCX_DSQ_LOCAL as u64 && dsq != ptr::addr_of_mut!((*rq).scx.local_dsq) {
             let opss = lupos_scx_core_enq_opss_read(p) & SCX_OPSS_STATE_MASK as c_ulong;
             match opss & SCX_OPSS_STATE_MASK as c_ulong {
                 state if state == SCX_OPSS_NONE as c_ulong => {},
@@ -498,7 +498,7 @@ pub unsafe extern "C" fn scx_do_enqueue_task(
             scx_dispatch_enqueue(sch, rq, ptr::addr_of_mut!((*rq).scx.local_dsq), p, 0, 0, enq_flags);
             return;
         }
-        (*p).scx.flags &= !(SCX_TASK_IMMED as u32);
+        scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !(SCX_TASK_IMMED as u32));
         if enq_flags & SCX_ENQ_REENQ as u64 != 0 {
             (*p).scx.reenq_cnt = (*p).scx.reenq_cnt.wrapping_add(1);
             if (*p).scx.reenq_cnt > 1 {
@@ -550,7 +550,7 @@ pub unsafe extern "C" fn scx_do_enqueue_task(
                 direct_dispatch(sch, p, enq_flags);
                 return;
             }
-            (*p).scx.flags |= SCX_TASK_IN_CUSTODY as u32;
+            scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_IN_CUSTODY as u32);
             lupos_scx_core_enq_opss_set_release(p, SCX_OPSS_QUEUED as c_ulong | qseq);
             return;
         };
@@ -581,9 +581,9 @@ pub(crate) unsafe fn set_task_runnable(rq: *mut rq, p: *mut task_struct) {
     // after list insertion. Reset timestamp uses original plain jiffies read.
     unsafe {
         lupos_scx_core_enq_assert_runnable_rq(rq);
-        if (*p).scx.flags & SCX_TASK_RESET_RUNNABLE_AT as u32 != 0 {
+        if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_RESET_RUNNABLE_AT as u32 != 0 {
             (*p).scx.runnable_at = lupos_scx_core_task_jiffies();
-            (*p).scx.flags &= !(SCX_TASK_RESET_RUNNABLE_AT as u32);
+            scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !(SCX_TASK_RESET_RUNNABLE_AT as u32));
         }
         lupos_scx_core_enq_list_add_tail(
             ptr::addr_of_mut!((*p).scx.runnable_node), ptr::addr_of_mut!((*rq).scx.runnable_list),
@@ -602,7 +602,7 @@ pub(crate) unsafe fn clr_task_runnable(p: *mut task_struct, reset_runnable_at: b
         lupos_scx_core_slice_list_del_init(ptr::addr_of_mut!((*p).scx.runnable_node));
         lupos_scx_core_enq_runnable_cpu_write_once(p, -1);
         if reset_runnable_at {
-            (*p).scx.flags |= SCX_TASK_RESET_RUNNABLE_AT as u32;
+            scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_RESET_RUNNABLE_AT as u32);
             (*p).scx.reenq_cnt = 0;
         }
     }
@@ -630,11 +630,11 @@ pub unsafe extern "C" fn enqueue_task_scx(rq: *mut rq, p: *mut task_struct, core
             sticky_cpu = lupos_scx_core_enq_cpu_of(rq);
             enq_flags |= SCX_ENQ_IGNORE_CAPS as u64;
         }
-        if (*p).scx.flags & SCX_TASK_QUEUED as u32 != 0 {
+        if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_QUEUED as u32 != 0 {
             lupos_scx_core_enq_warn_queued_not_runnable(p);
         } else {
             set_task_runnable(rq, p);
-            (*p).scx.flags |= SCX_TASK_QUEUED as u32;
+            scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_QUEUED as u32);
             (*rq).scx.nr_running = (*rq).scx.nr_running.wrapping_add(1);
             lupos_scx_core_enq_add_nr_running(rq);
             if lupos_scx_core_enq_has_runnable(sch) && !lupos_scx_core_enq_on_rq_migrating(p) {
@@ -710,7 +710,7 @@ pub unsafe extern "C" fn dequeue_task_scx(rq: *mut rq, p: *mut task_struct, core
         if deq_flags & DEQUEUE_SLEEP as u64 == 0 {
             deq_flags |= SCX_DEQ_SCHED_CHANGE as u64;
         }
-        if (*p).scx.flags & SCX_TASK_QUEUED as u32 == 0 {
+        if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_QUEUED as u32 == 0 {
             lupos_scx_core_enq_warn_unqueued_runnable(p);
             return true;
         }
@@ -728,11 +728,11 @@ pub unsafe extern "C" fn dequeue_task_scx(rq: *mut rq, p: *mut task_struct, core
             lupos_scx_core_enq_call_quiescent(sch, rq, p, deq_flags);
         }
         if deq_flags & SCX_DEQ_SLEEP as u64 != 0 {
-            (*p).scx.flags |= SCX_TASK_DEQD_FOR_SLEEP as u32;
+            scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_DEQD_FOR_SLEEP as u32);
         } else {
-            (*p).scx.flags &= !(SCX_TASK_DEQD_FOR_SLEEP as u32);
+            scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !(SCX_TASK_DEQD_FOR_SLEEP as u32));
         }
-        (*p).scx.flags &= !(SCX_TASK_QUEUED as u32);
+        scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !(SCX_TASK_QUEUED as u32));
         (*rq).scx.nr_running = (*rq).scx.nr_running.wrapping_sub(1);
         lupos_scx_core_enq_sub_nr_running(rq);
         scx_dispatch_dequeue(rq, p);
@@ -794,7 +794,7 @@ pub unsafe extern "C" fn wakeup_preempt_scx(rq: *mut rq, p: *mut task_struct, _w
     // SAFETY: SCX-to-SCX path is deliberately empty; native primitive preserves
     // the shared header's RCU/root/deferred-queue lifetime contract.
     unsafe {
-        if (*p).sched_class == lupos_scx_core_ext_class() {
+        if scx_shared_class_read(p) == lupos_scx_core_ext_class() {
             return;
         }
         if (*rq).scx.nr_immed != 0 {

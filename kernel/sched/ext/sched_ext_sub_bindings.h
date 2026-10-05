@@ -13,6 +13,7 @@
 #include "arena.h"
 #include "sub.h"
 #include "inlines.h"
+#include "sched_ext_shared_access.h"
 #define LUPOS_SCX_SUB_ENOMEM ENOMEM
 #define LUPOS_SCX_SUB_SHARD_MAX_CPUS SCX_CID_SHARD_MAX_CPUS
 #ifdef CONFIG_EXT_SUB_SCHED

@@ -27,8 +27,10 @@ pub unsafe extern "C" fn set_load_weight(p: *mut task_struct, update_load: bool)
     }
 }
 unsafe fn __sched_fork(clone_flags: u64, p: *mut task_struct) {
-    // SAFETY: The fork or boot-idle caller exclusively initializes a live
-    // task before publication, including its native queue, class and MM fields.
+    // SAFETY: The fork caller initializes an unpublished child. The separate
+    // sched_init boot call initializes current before concurrent SCX observers;
+    // that static init task is not an unpublished allocation. Neither case
+    // justifies reading a different, already-live source task by aggregate copy.
     unsafe {
         (*p).on_rq = 0;
         (*p).se.on_rq = 0;
@@ -230,12 +232,12 @@ pub unsafe extern "C" fn sched_set_stop_task(cpu: c_int, stop: *mut task_struct)
                 sched_priority: LUPOS_CORE_MAX_RT_PRIO - 1,
             };
             sched_setscheduler_nocheck(stop, LUPOS_CORE_SCHED_FIFO as c_int, addr_of_mut!(param));
-            (*stop).sched_class = addr_of!(stop_sched_class);
+            lupos_core_task_class_write(stop, addr_of!(stop_sched_class));
             lupos_core_lockdep_stop_pi_class(stop);
         }
         (*lupos_core_cpu_rq(cpu)).stop = stop;
         if !old_stop.is_null() {
-            (*old_stop).sched_class = addr_of!(rt_sched_class);
+            lupos_core_task_class_write(old_stop, addr_of!(rt_sched_class));
         }
     }
 }

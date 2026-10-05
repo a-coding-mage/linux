@@ -4,6 +4,10 @@
 LUPOS_CORE_VALUE(struct rq *, lupos_core_this_rq, (void), this_rq())
 LUPOS_CORE_VALUE(struct rq *, lupos_core_cpu_rq, (int cpu), cpu_rq(cpu))
 LUPOS_CORE_VALUE(struct rq *, lupos_core_task_rq, (const struct task_struct *p), task_rq(p))
+/* Plain live-task class stores, paired with the unlocked SCX iterator read.
+ * This native field boundary supplies no ordering or whole-program race proof.
+ * Fork-time unpublished initialization deliberately stays in its Rust owner. */
+LUPOS_CORE_VOID(lupos_core_task_class_write, (struct task_struct *p, const struct sched_class *class), p->sched_class = class)
 LUPOS_CORE_VALUE(struct task_struct *, lupos_core_current, (void), current)
 LUPOS_CORE_VALUE(struct task_struct *, lupos_core_cpu_curr, (int cpu), cpu_curr(cpu))
 LUPOS_CORE_VALUE(struct task_struct *, lupos_core_rq_curr, (struct rq *rq), rq->curr)

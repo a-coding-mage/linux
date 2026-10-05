@@ -441,7 +441,7 @@ pub unsafe extern "C" fn rt_mutex_setprio(p: *mut task_struct, pi_task: *mut tas
                     (*p).rt.timeout = 0;
                 }
             }
-            (*p).sched_class = next_class;
+            lupos_core_task_class_write(p, next_class);
             (*p).prio = prio;
             sched_change_end(ctx);
         })();

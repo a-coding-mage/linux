@@ -181,7 +181,7 @@ pub(crate) unsafe fn move_task_between_dsqs(
         lupos_scx_core_consume_bug_local_source(src_dsq);
         lupos_scx_core_consume_assert_move_dsq(src_dsq);
         lupos_scx_core_consume_assert_move_rq(src_rq);
-        if (*dst_dsq).id == SCX_DSQ_LOCAL as u64 {
+        if scx_shared_dsq_id_read(dst_dsq) == SCX_DSQ_LOCAL as u64 {
             dst_rq = lupos_scx_core_consume_local_rq(dst_dsq);
             if src_rq != dst_rq
                 && lupos_scx_core_consume_unlikely_move_disallowed(
@@ -195,7 +195,7 @@ pub(crate) unsafe fn move_task_between_dsqs(
         } else {
             dst_rq = src_rq;
         }
-        if (*dst_dsq).id == SCX_DSQ_LOCAL as u64 {
+        if scx_shared_dsq_id_read(dst_dsq) == SCX_DSQ_LOCAL as u64 {
             if src_rq == dst_rq {
                 scx_task_unlink_from_dsq(p, src_dsq);
                 scx_move_local_task_to_local_dsq(sch, p, enq_flags, src_dsq, dst_rq);
@@ -238,7 +238,7 @@ pub unsafe extern "C" fn scx_consume_dispatch_q(
             while !p.is_null() {
                 let task_rq = lupos_scx_core_task_rq(p);
                 if lupos_scx_core_consume_unlikely_aborting(sch)
-                    && (*dsq).id != SCX_DSQ_BYPASS as u64
+                    && scx_shared_dsq_id_read(dsq) != SCX_DSQ_BYPASS as u64
                 {
                     break;
                 }
@@ -332,7 +332,7 @@ pub(crate) unsafe fn dispatch_to_local_dsq(
                 locked_rq = dst_rq;
             }
             if !fallback && lupos_scx_core_class_above(
-                (*p).sched_class, (*lupos_scx_core_rq_curr(dst_rq)).sched_class,
+                scx_shared_class_read(p), scx_shared_class_read(lupos_scx_core_rq_curr(dst_rq)),
             ) {
                 resched_curr(dst_rq);
             }
@@ -385,7 +385,7 @@ pub(crate) unsafe fn finish_dispatch(
         }
         lupos_scx_core_consume_bug_not_queued(p);
         let dsq = find_dsq_for_dispatch(sch, rq, dsq_id, lupos_scx_core_consume_task_cpu(p));
-        if (*dsq).id == SCX_DSQ_LOCAL as u64 {
+        if scx_shared_dsq_id_read(dsq) == SCX_DSQ_LOCAL as u64 {
             dispatch_to_local_dsq(sch, rq, dsq, p, slice, vtime, enq_flags);
         } else {
             scx_dispatch_enqueue(sch, rq, dsq, p, slice, vtime,

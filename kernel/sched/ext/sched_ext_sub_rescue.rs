@@ -78,7 +78,7 @@ pub unsafe extern "C" fn scx_rescue_keep(rq: *mut rq, p: *mut task_struct) -> bo
     unsafe {
         let remaining = scx_rescue_slice_remaining(rq);
         lupos_scx_sub_assert_rescue_keep_rq(rq);
-        if remaining == 0 || (*p).scx.flags & SCX_TASK_QUEUED == 0
+        if remaining == 0 || scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_QUEUED == 0
             || lupos_scx_sub_bypassing(lupos_scx_sub_task_sched(p), lupos_scx_sub_cpu(rq))
         {
             return false;
@@ -234,7 +234,7 @@ pub unsafe extern "C" fn scx_rescue_timerfn(rq: *mut rq) {
             }
         } else if !(*p).scx.dsq.is_null() && (*rq).scx.rescue.budget > 2 * scx_rescue_quantum_ns {
             lupos_scx_sub_set_slice(p, scx_rescue_slice_remaining(rq) as u64);
-            (*p).scx.flags |= SCX_TASK_PROTECTED;
+            scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_PROTECTED);
             let dsq = ptr::addr_of_mut!((*rq).scx.local_dsq);
             scx_task_unlink_from_dsq(p, dsq);
             scx_move_local_task_to_local_dsq(lupos_scx_sub_task_sched(p), p,
@@ -380,7 +380,7 @@ pub unsafe extern "C" fn scx_resolve_local_dsq(sch: *mut scx_sched, rq: *mut rq,
         }
         *enq_flags &= !((SCX_ENQ_IMMED | SCX_ENQ_PREEMPT | SCX_ENQ_HEAD |
             SCX_ENQ_APPLY_SLICE | SCX_ENQ_SLICE_DFL) as u64);
-        (*p).scx.flags &= !SCX_TASK_IMMED;
+        scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !SCX_TASK_IMMED);
         if *enq_flags & SCX_ENQ_RESCUE as u64 != 0 && lupos_scx_sub_likely_rescue_enabled(scx_rescue_bw_1024 != 0) {
             lupos_scx_sub_event_rescue(sch);
             if scx_rescue_try_admit(rq, p) {
@@ -453,9 +453,9 @@ pub unsafe extern "C" fn scx_reenq_reject_list(rq: *mut rq, tasks: *mut list_hea
             if !lupos_scx_sub_warn_migration_pending(p) {
                 scx_dispatch_dequeue(rq, p);
                 if lupos_scx_sub_warn_reenq_flags(p) {
-                    (*p).scx.flags &= !SCX_TASK_REENQ_REASON_MASK;
+                    scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !SCX_TASK_REENQ_REASON_MASK);
                 }
-                (*p).scx.flags |= SCX_TASK_REENQ_CAP;
+                scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_REENQ_CAP);
                 lupos_scx_sub_task_list_add(p, tasks);
             }
             p = next;
@@ -465,7 +465,7 @@ pub unsafe extern "C" fn scx_reenq_reject_list(rq: *mut rq, tasks: *mut list_hea
             let next = lupos_scx_sub_task_list_next(tasks, p);
             lupos_scx_sub_task_list_del(p);
             scx_do_enqueue_task(rq, p, SCX_ENQ_REENQ as u64, -1);
-            (*p).scx.flags &= !SCX_TASK_REENQ_REASON_MASK;
+            scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !SCX_TASK_REENQ_REASON_MASK);
             p = next;
         }
     }

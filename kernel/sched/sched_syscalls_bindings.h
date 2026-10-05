@@ -180,4 +180,8 @@ bool lupos_syscalls_unlikely_uclamp_rt_min(bool rt_min);
 bool lupos_syscalls_likely_uclamp_no_flags(bool no_flags);
 #endif
 void lupos_syscalls_schedule(void);
+/* Plain native field store, not synchronization; paired with the original
+ * pre-rq SCX iterator read. Caller retains all task lifetime/rq obligations. */
+void lupos_syscalls_task_class_write(struct task_struct *p,
+                                    const struct sched_class *class);
 #endif /* LUPOS_SCHED_SYSCALLS_BINDINGS_H */

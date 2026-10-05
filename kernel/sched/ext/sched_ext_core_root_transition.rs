@@ -60,7 +60,7 @@ pub(crate) unsafe fn scx_root_disable(sch: *mut scx_sched) {
             let p = scx_task_iter_next_locked(sti);
             if p.is_null() { break; }
             let mut queue_flags = (DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK) as c_uint;
-            let old_class = (*p).sched_class;
+            let old_class = scx_shared_class_read(p);
             let new_class = scx_setscheduler_class(p);
             lupos_scx_root_update_rq_clock(lupos_scx_core_task_rq(p));
             if old_class != new_class { queue_flags |= DEQUEUE_CLASS as c_uint; }
@@ -389,7 +389,7 @@ pub unsafe extern "C" fn lupos_scx_root_enable_work_body(work: *mut kthread_work
                 let p = scx_task_iter_next_locked(sti);
                 if p.is_null() { break; }
                 let mut queue_flags = (DEQUEUE_SAVE | DEQUEUE_MOVE) as c_uint;
-                let old_class = (*p).sched_class;
+                let old_class = scx_shared_class_read(p);
                 let new_class = scx_setscheduler_class(p);
                 if scx_get_task_state(p) != SCX_TASK_READY { continue; }
                 if old_class != new_class { queue_flags |= DEQUEUE_CLASS as c_uint; }
@@ -481,7 +481,9 @@ pub unsafe extern "C" fn lupos_scx_root_enable_body(
 /// remains locked; new_class is the pre-guard original class-selection result.
 #[no_mangle]
 pub unsafe extern "C" fn lupos_scx_root_disable_change_body(p: *mut task_struct, new_class: *const sched_class) {
-    unsafe { (*p).sched_class = new_class; }
+    // SAFETY: Native scoped change/rq ownership pins p. F06's pre-rq read can
+    // overlap, so this paired native plain store carries no race-safety claim.
+    unsafe { scx_shared_class_write(p, new_class); }
 }
 
 /// Native sched_change continuation for READY -> ENABLED switching.
@@ -494,7 +496,7 @@ pub unsafe extern "C" fn lupos_scx_root_enable_change_body(
 ) {
     unsafe {
         scx_set_task_slice(p, lupos_scx_root_slice_read_once(sch));
-        (*p).sched_class = new_class;
+        scx_shared_class_write(p, new_class);
     }
 }
 

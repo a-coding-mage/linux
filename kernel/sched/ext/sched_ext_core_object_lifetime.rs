@@ -101,8 +101,10 @@ pub unsafe extern "C" fn lupos_scx_core_object_free_dsq_irq_body(_work: *mut irq
 /// sch is live and dsq_hash initialized. Caller may acquire RCU and the DSQ IRQ
 /// lock; it need not own the DSQ or already hold RCU. Caller retains sch lifetime.
 pub(crate) unsafe fn destroy_dsq(sch: *mut scx_sched, id: u64) {
-    // SAFETY: RCU pins the lookup through unlock; id is invalidated under the
-    // DSQ lock after successful hash removal and before free-list publication.
+    // SAFETY: RCU pins the lookup through unlock; it does not exclude F07's
+    // preempt/RCU-only id reader. Both runtime access sides use native plain
+    // field leaves, with native race qualification still held. Invalidation
+    // stays DSQ-locked, after hash removal and before free-list publication.
     unsafe {
         lupos_scx_core_object_rcu_read_lock();
         let dsq = find_user_dsq(sch, id);
@@ -112,7 +114,7 @@ pub(crate) unsafe fn destroy_dsq(sch: *mut scx_sched, id: u64) {
             if (*dsq).nr != 0 {
                 lupos_scx_core_object_error_dsq_busy(sch, dsq);
             } else if lupos_scx_core_object_remove_dsq(sch, dsq) == 0 {
-                (*dsq).id = LUPOS_SCX_CORE_OBJECT_DSQ_INVALID;
+                scx_shared_dsq_id_write(dsq, LUPOS_SCX_CORE_OBJECT_DSQ_INVALID);
                 if lupos_scx_core_object_add_free_dsq(dsq) {
                     lupos_scx_core_object_queue_free_dsq();
                 }
@@ -394,7 +396,7 @@ pub unsafe extern "C" fn lupos_scx_core_object_sched_free_body(work: *mut work_s
             let last = loop {
                 let dsq = lupos_scx_core_object_walk_next(iter.as_mut_ptr());
                 if lupos_scx_core_object_is_err_or_null(dsq.cast()) { break dsq; }
-                destroy_dsq(sch, (*dsq).id);
+                destroy_dsq(sch, scx_shared_dsq_id_read(dsq));
             };
             lupos_scx_core_object_walk_stop(iter.as_mut_ptr());
             if lupos_scx_core_object_ptr_err(last.cast()) != -(EAGAIN as kernel::ffi::c_long) { break; }

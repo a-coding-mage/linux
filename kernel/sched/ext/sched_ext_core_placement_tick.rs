@@ -201,7 +201,7 @@ pub unsafe extern "C" fn lupos_scx_core_pt_check_timeouts_locked_body(rq: *mut r
             if lupos_scx_core_pt_unlikely_task_timeout(sch, last_runnable) {
                 let dsq = lupos_scx_core_pt_task_dsq_read_once(p);
                 let dur_ms = lupos_scx_core_pt_duration_ms(last_runnable);
-                if !dsq.is_null() && !(*dsq).sched.is_null() && (*dsq).id != SCX_DSQ_LOCAL as u64 {
+                if !dsq.is_null() && !(*dsq).sched.is_null() && scx_shared_dsq_id_read(dsq) != SCX_DSQ_LOCAL as u64 {
                     sch = (*dsq).sched;
                 }
                 lupos_scx_core_pt_exit_task_stall(sch, rq, p, dur_ms);
@@ -292,7 +292,7 @@ pub unsafe extern "C" fn lupos_scx_core_pt_task_tick_body(
         } else if lupos_scx_core_pt_has_tick(sch) {
             lupos_scx_core_pt_call_tick(sch, rq, curr);
         }
-        if (*curr).scx.slice == 0 {
+        if scx_shared_slice_read(ptr::addr_of!((*curr).scx)) == 0 {
             lupos_scx_core_pt_resched_curr(rq);
         }
     }

@@ -609,7 +609,7 @@ unsafe fn scx_dump_task(sch: *mut scx_sched, s: *mut seq_buf, dctx: *mut scx_dum
             jiffies_delta_msecs((*p).scx.runnable_at, (*dctx).at_jiffies as c_ulong));
         lupos_scx_exit_emit_task_flags(s, p,
             scx_get_task_state(p) >> LUPOS_SCX_EXIT_TASK_STATE_SHIFT,
-            (*p).scx.flags & !(LUPOS_SCX_EXIT_TASK_STATE_MASK as u32),
+            scx_shared_flags_read(ptr::addr_of!((*p).scx)) & !(LUPOS_SCX_EXIT_TASK_STATE_MASK as u32),
             ops_state & LUPOS_SCX_EXIT_OPSS_STATE_MASK as c_ulong,
             ops_state >> LUPOS_SCX_EXIT_OPSS_QSEQ_SHIFT);
         lupos_scx_exit_emit_task_dsq(s, p, dsq_id.as_ptr());
@@ -649,7 +649,7 @@ unsafe fn scx_dump_cpu(sch: *mut scx_sched, s: *mut seq_buf, dctx: *mut scx_dump
         (|| {
             let head = ptr::addr_of_mut!((*rq).scx.runnable_list);
             let idle = lupos_scx_exit_list_empty(head)
-                && (*lupos_scx_core_rq_curr(rq)).sched_class == lupos_scx_exit_idle_class();
+                && scx_shared_class_read(lupos_scx_core_rq_curr(rq)) == lupos_scx_exit_idle_class();
             if idle && !lupos_scx_exit_has_dump_cpu(sch) { return; }
             let mut buf = ptr::null_mut();
             let avail = lupos_scx_exit_seq_get_buf(s, &mut buf);
@@ -691,7 +691,7 @@ unsafe fn scx_dump_cpu(sch: *mut scx_sched, s: *mut seq_buf, dctx: *mut scx_dump
                 lupos_scx_exit_seq_commit(s, lupos_scx_exit_seq_used(ns));
                 if lupos_scx_exit_seq_overflowed(ns) { lupos_scx_exit_seq_set_overflow(s); }
             }
-            if (*lupos_scx_core_rq_curr(rq)).sched_class == lupos_scx_core_ext_class()
+            if scx_shared_class_read(lupos_scx_core_rq_curr(rq)) == lupos_scx_core_ext_class()
                 && (dump_all_tasks || lupos_scx_exit_curr_on_sched(sch, lupos_scx_core_rq_curr(rq))) {
                 scx_dump_task(sch, s, dctx, rq, lupos_scx_core_rq_curr(rq), b'*' as c_char);
             }

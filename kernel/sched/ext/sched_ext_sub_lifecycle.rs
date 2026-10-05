@@ -415,7 +415,7 @@ unsafe fn scx_sub_enable_tasks(sch: *mut scx_sched, parent: *mut scx_sched) -> i
             if p.is_null() {
                 break;
             }
-            if (*p).scx.flags & LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32 != 0 {
+            if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32 != 0 {
                 continue;
             }
             lupos_scx_sub_lifecycle_get_task(p);
@@ -438,7 +438,7 @@ unsafe fn scx_sub_enable_tasks(sch: *mut scx_sched, parent: *mut scx_sched) -> i
                 lupos_scx_sub_lifecycle_put_task(p);
                 continue;
             }
-            (*p).scx.flags |= LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32;
+            scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32);
             lupos_scx_sub_lifecycle_task_unlock(rq, p, rf.as_mut_ptr());
             lupos_scx_sub_lifecycle_put_task(p);
         }
@@ -450,10 +450,10 @@ unsafe fn scx_sub_enable_tasks(sch: *mut scx_sched, parent: *mut scx_sched) -> i
                 if p.is_null() {
                     break;
                 }
-                if (*p).scx.flags & LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32 != 0 {
+                if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32 != 0 {
                     // No enable ran on sch: cancel init only, never disable.
                     scx_sub_init_cancel_task(sch, p);
-                    (*p).scx.flags &= !(LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32);
+                    scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !(LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32));
                 }
             }
             scx_task_iter_stop(sti.as_mut_ptr());
@@ -466,7 +466,7 @@ unsafe fn scx_sub_enable_tasks(sch: *mut scx_sched, parent: *mut scx_sched) -> i
             if p.is_null() {
                 break;
             }
-            if (*p).scx.flags & LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32 == 0 {
+            if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32 == 0 {
                 continue;
             }
             let change = lupos_scx_sub_lifecycle_change_begin(p);
@@ -476,7 +476,7 @@ unsafe fn scx_sub_enable_tasks(sch: *mut scx_sched, parent: *mut scx_sched) -> i
             if lupos_scx_sub_lifecycle_task_is_ext(p) {
                 scx_enable_task(sch, p);
             }
-            (*p).scx.flags &= !(LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32);
+            scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !(LUPOS_SCX_SUB_LIFECYCLE_TASK_SUB_INIT as u32));
             lupos_scx_sub_lifecycle_change_end(change);
         }
         scx_task_iter_stop(sti.as_mut_ptr());

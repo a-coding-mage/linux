@@ -13,15 +13,17 @@ use kernel::ffi::{c_int, c_ulong};
 ///
 /// # Safety
 /// p is live and readable under the original rq lock or exclusive lifecycle
-/// ownership; this plain load is not an independent synchronization primitive.
+/// ownership; the native plain load is not a synchronization primitive.
 /// The original sched_ext_dead pre-rq read after list removal is a separate
 /// supported case: an in-flight initializer can still complete under its own
-/// rq acquisition. Its Rust race treatment remains unqualified; the native
-/// call sequence is not permission to assume this Rust load is synchronized.
+/// rq acquisition. All composed core/sub flags accesses use the same native
+/// field boundary, including their writers. Native mixed-access race semantics
+/// remain unqualified; this is not a whole-program memory-model safety proof.
 #[no_mangle]
 pub unsafe extern "C" fn scx_get_task_state(p: *const task_struct) -> u32 {
-    // SAFETY: Caller pins the native entity and its flags for this plain load.
-    unsafe { (*p).scx.flags & SCX_TASK_STATE_MASK }
+    // SAFETY: Caller pins the native entity; Rust applies the mask to a value
+    // returned by the held native field boundary and does not load flags itself.
+    unsafe { scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_STATE_MASK }
 }
 
 /// Apply the original state-transition checks and task-state mask update.
@@ -32,15 +34,17 @@ pub unsafe extern "C" fn scx_get_task_state(p: *const task_struct) -> u32 {
 /// return; invalid transitions still warn and perform the original mutation.
 #[no_mangle]
 pub unsafe extern "C" fn scx_set_task_state(p: *mut task_struct, state: u32) {
-    // SAFETY: Only the caller-owned state word is written. Each warning retains
-    // its distinct native WARN_ONCE site, format and task identity.
+    // SAFETY: Native leaves retain each separate original flags compound
+    // assignment. Task-list readers can overlap these rq-owned writes; neither
+    // this boundary nor unsafe supplies the outstanding native race proof.
+    // Each warning keeps its distinct WARN_ONCE site, format and task identity.
     unsafe {
         let prev = scx_get_task_state(p);
         let warn = match state {
             SCX_TASK_NONE => prev == SCX_TASK_DEAD,
             SCX_TASK_INIT_BEGIN => prev != SCX_TASK_NONE,
             SCX_TASK_INIT => {
-                (*p).scx.flags |= SCX_TASK_RESET_RUNNABLE_AT;
+                scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), SCX_TASK_RESET_RUNNABLE_AT);
                 prev != SCX_TASK_INIT_BEGIN
             }
             SCX_TASK_READY => !(prev == SCX_TASK_INIT || prev == SCX_TASK_ENABLED),
@@ -52,8 +56,8 @@ pub unsafe extern "C" fn scx_set_task_state(p: *mut task_struct, state: u32) {
             }
         };
         lupos_scx_core_task_warn_transition(p, prev, state, warn);
-        (*p).scx.flags &= !SCX_TASK_STATE_MASK;
-        (*p).scx.flags |= state;
+        scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !SCX_TASK_STATE_MASK);
+        scx_shared_flags_or(ptr::addr_of_mut!((*p).scx), state);
     }
 }
 
@@ -83,7 +87,7 @@ pub unsafe extern "C" fn scx_task_iter_start(iter: *mut scx_task_iter, cgrp: *mu
         #[cfg(not(CONFIG_EXT_SUB_SCHED))]
         let _ = cgrp;
         lupos_scx_core_task_list_lock_irq();
-        (*iter).cursor.flags = SCX_TASK_CURSOR;
+        scx_shared_flags_write(ptr::addr_of_mut!((*iter).cursor), SCX_TASK_CURSOR);
         lupos_scx_core_task_list_add(
             ptr::addr_of_mut!((*iter).cursor.tasks_node), lupos_scx_core_tasks_head());
         (*iter).list_locked = true;
@@ -190,14 +194,14 @@ pub unsafe extern "C" fn scx_task_iter_stop(iter: *mut scx_task_iter) {
 /// and sleeping at batch boundaries and pins previously returned tasks itself
 /// if it needs them across this call. No overlapping iterator operation runs.
 /// The original global walk reads task flags without the task's rq lock while
-/// other bits may change under that lock. Its Rust memory-model treatment is
-/// unresolved; list protection and raw pointers do not prove race safety or
-/// authorize excluding this supported native case from later qualification.
+/// other bits may change under that lock. The whole flags word, including
+/// core/sub writers, now crosses the native field boundary. Its native race
+/// semantics remain held; no supported native case is excluded by this change.
 pub(crate) unsafe fn scx_task_iter_next(iter: *mut scx_task_iter) -> *mut task_struct {
     // SAFETY: All list traversal occurs under scx_tasks_lock and tests the real
     // sentinel before container conversion. Cursor entities never become tasks.
-    // The flags load below still needs the concurrent-reader qualification
-    // described above; this source-only body does not establish that safety.
+    // The native flags access still needs the concurrent-reader qualification
+    // described above; a native call alone does not establish that safety.
     unsafe {
         (*iter).cnt = (*iter).cnt.wrapping_add(1);
         if (*iter).cnt % SCX_TASK_ITER_BATCH == 0 {
@@ -229,7 +233,7 @@ pub(crate) unsafe fn scx_task_iter_next(iter: *mut scx_task_iter) -> *mut task_s
                 return ptr::null_mut();
             }
             let pos = lupos_scx_core_task_node_entity(node);
-            if (*pos).flags & SCX_TASK_CURSOR == 0 {
+            if scx_shared_flags_read(pos) & SCX_TASK_CURSOR == 0 {
                 lupos_scx_core_task_list_move(cursor, node);
                 return lupos_scx_core_task_entity_task(pos);
             }
@@ -247,14 +251,18 @@ pub(crate) unsafe fn scx_task_iter_next(iter: *mut scx_task_iter) -> *mut task_s
 /// unlock. Every returned rq lock must be released by an iterator operation.
 /// The native idle-class filter reads sched_class before rq acquisition; a
 /// concurrent class change is not excluded by task-list/cgroup protection.
-/// Like next's flags read, this raw Rust read remains an unresolved supported
-/// concurrency case, not a requirement for callers to add a new lock.
+/// The read now uses a native field leaf, paired with native plain-store
+/// amendments for live core/syscalls/F12 class writers. All of those amendments
+/// must compose together; native race qualification remains outstanding.
+/// Moving only this read is insufficient and no new caller lock is required.
 #[no_mangle]
 pub unsafe extern "C" fn scx_task_iter_next_locked(iter: *mut scx_task_iter) -> *mut task_struct {
     // SAFETY: The previous rq is balanced/unlocked first. Idle class is checked
     // by native identity (not PF_IDLE). DEAD is tested only after rq locking,
     // synchronizing with sched_ext_dead even during cgroup task iteration.
-    // That later lock does not qualify the earlier sched_class read's race.
+    // That later lock does not qualify the earlier native sched_class read's
+    // race. The cross-owner native-store amendments are mandatory, not optional
+    // justification for retaining an overlapping direct Rust class store.
     unsafe {
         __scx_task_iter_rq_unlock(iter);
         loop {
@@ -262,7 +270,7 @@ pub unsafe extern "C" fn scx_task_iter_next_locked(iter: *mut scx_task_iter) -> 
             if p.is_null() {
                 return ptr::null_mut();
             }
-            if (*p).sched_class == lupos_scx_core_task_idle_class() {
+            if scx_shared_class_read(p) == lupos_scx_core_task_idle_class() {
                 continue;
             }
             (*iter).rq = lupos_scx_core_task_rq_lock(p, ptr::addr_of_mut!((*iter).rf));
@@ -412,7 +420,7 @@ pub(crate) unsafe fn scx_disable_task(sch: *mut scx_sched, p: *mut task_struct) 
             lupos_scx_core_task_call_disable(sch, rq, p);
         }
         scx_set_task_state(p, SCX_TASK_READY);
-        (*p).scx.dsq_vtime = 0;
+        scx_shared_vtime_write(ptr::addr_of_mut!((*p).scx), 0);
         super::scx_task_slice_ended(rq, p);
         super::scx_set_task_slice(p, 0);
         (*p).scx.reenq_cnt = 0;
@@ -490,26 +498,29 @@ pub unsafe extern "C" fn scx_disable_and_exit_task(sch: *mut scx_sched, p: *mut 
     // callback, preserving the source's remaining cleanup.
     unsafe {
         __scx_disable_and_exit_task(sch, p);
-        if (*p).scx.flags & SCX_TASK_SUB_INIT != 0 {
+        if scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_SUB_INIT != 0 {
             if !lupos_scx_core_task_warn_no_sub() {
                 scx_sub_init_cancel_task(lupos_scx_core_enabling_sub_sched(), p);
             }
-            (*p).scx.flags &= !SCX_TASK_SUB_INIT;
+            scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !SCX_TASK_SUB_INIT);
         }
         lupos_scx_core_task_set_sched(p, ptr::null_mut());
         scx_set_task_state(p, SCX_TASK_NONE);
     }
 }
 
-/// Initialize an unpublished native sched_ext_entity using original defaults.
+/// Initialize a child or early-boot sched_ext_entity using original defaults.
 ///
 /// # Safety
-/// scx is exclusively writable, properly aligned native storage with no live
-/// list membership, rb linkage, scheduler association or outstanding observers.
+/// scx is properly aligned native storage in the original __sched_fork path:
+/// an unpublished child, or the boot init task before concurrent SCX observers.
+/// Its list/rb/scheduler membership is not live. This is not a live-task reset
+/// and does not justify copying a different, already-live source task in Rust.
 #[no_mangle]
 pub unsafe extern "C" fn init_scx_entity(scx: *mut sched_ext_entity) {
     // SAFETY: Native memset/list/rb operations use authoritative layout. All
-    // original nonzero/sentinel defaults are written before publication.
+    // original nonzero/sentinel defaults precede child publication or boot SCX
+    // observation; the boot init task is not an unpublished allocation.
     unsafe {
         lupos_scx_core_task_zero_entity(scx);
         lupos_scx_core_task_init_list(ptr::addr_of_mut!((*scx).dsq_list.node));
@@ -520,7 +531,7 @@ pub unsafe extern "C" fn init_scx_entity(scx: *mut sched_ext_entity) {
         lupos_scx_core_task_init_list(ptr::addr_of_mut!((*scx).runnable_node));
         (*scx).runnable_at = lupos_scx_core_task_jiffies();
         (*scx).ddsp_dsq_id = LUPOS_SCX_CORE_TASK_DSQ_INVALID as u64;
-        (*scx).slice = LUPOS_SCX_CORE_TASK_SLICE_DFL as u64;
+        scx_shared_slice_write(scx, LUPOS_SCX_CORE_TASK_SLICE_DFL as u64);
     }
 }
 
@@ -626,7 +637,7 @@ pub unsafe extern "C" fn scx_post_fork(p: *mut task_struct) {
     unsafe {
         if lupos_scx_core_init_task_enabled() {
             scx_set_task_state(p, SCX_TASK_READY);
-            if (*p).sched_class == lupos_scx_core_ext_class() {
+            if scx_shared_class_read(p) == lupos_scx_core_ext_class() {
                 let mut rf = MaybeUninit::<rq_flags>::uninit();
                 let rq = lupos_scx_core_task_rq_lock(p, rf.as_mut_ptr());
                 scx_enable_task(lupos_scx_core_task_sched(p), p);
@@ -896,7 +907,7 @@ pub unsafe extern "C" fn scx_allow_ttwu_queue(p: *const task_struct) -> bool {
         if lupos_scx_core_task_ops_flags(sch) & LUPOS_SCX_CORE_TASK_ALLOW_QUEUED_WAKEUP as u64 != 0 {
             return true;
         }
-        if lupos_scx_core_task_unlikely_non_ext((*p).sched_class != lupos_scx_core_ext_class()) {
+        if lupos_scx_core_task_unlikely_non_ext(scx_shared_class_read(p) != lupos_scx_core_ext_class()) {
             return true;
         }
         false

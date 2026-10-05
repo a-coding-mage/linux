@@ -406,11 +406,20 @@ pub unsafe extern "C" fn fork_init() {
 }
 #[no_mangle]
 #[linkage = "weak"]
+/// Copy the native task representation into an unpublished child.
+///
+/// # Safety
+/// dst is exclusive allocated child storage and src is the live original task
+/// under the original fork protocol. Exclusive dst does not imply exclusive
+/// src: concurrent scheduler/BPF field access remains a native-runtime
+/// qualification obligation. The weak architecture override is unchanged.
 pub unsafe extern "C" fn arch_dup_task_struct(
     dst: *mut task_struct,
     src: *mut task_struct,
 ) -> c_int {
-    copy_nonoverlapping(src, dst, 1);
+    // The native aggregate assignment preserves fork.c:903. Rust must not
+    // independently snapshot overlapping live scheduler fields here.
+    rust_fork_task_struct_copy(dst, src);
     0
 }
 #[no_mangle]

@@ -382,7 +382,7 @@ pub unsafe extern "C" fn __sched_setscheduler(p: *mut task_struct, attr: *const 
                 let scope = sched_change_begin(p, queue_flags as c_uint);
                 if (*attr).sched_flags & SCHED_FLAG_KEEP_PARAMS as u64 == 0 {
                     __setscheduler_params(p, attr);
-                    (*p).sched_class = next_class;
+                    lupos_syscalls_task_class_write(p, next_class);
                     (*p).prio = newprio;
                     #[cfg(CONFIG_RT_MUTEXES)]
                     __setscheduler_dl_pi(newprio, policy, p, scope);

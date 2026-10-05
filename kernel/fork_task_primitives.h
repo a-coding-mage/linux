@@ -62,6 +62,10 @@ int rust_fork_cpuhp_stack_cache(int (*teardown)(unsigned int))
 #endif
 #define RFV(name, args, op) void rust_fork_##name args; void rust_fork_##name args { op; }
 #define RFR(type, name, args, op) type rust_fork_##name args; type rust_fork_##name args { return (op); }
+/* Original fork.c:903 aggregate assignment only, not a fork algorithm fallback.
+ * dst is unpublished, but src is a live task: this native primitive supplies
+ * no atomic snapshot, exclusion, or C/Rust/BPF memory-model qualification. */
+RFV(task_struct_copy, (struct task_struct *dst, const struct task_struct *src), *dst = *src)
 RFR(struct task_struct *, current, (void), current)
 RFR(bool, is_err, (const void *p), IS_ERR(p))
 RFR(unsigned int, nr_cpu_ids, (void), nr_cpu_ids)

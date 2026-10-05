@@ -203,7 +203,7 @@ pub(crate) unsafe fn dsq_insert_head(dsq: *mut scx_dispatch_q, p: *mut task_stru
                 continue;
             }
             let q = lupos_scx_core_slice_lnode_task(node);
-            if (*q).scx.flags & SCX_TASK_PROTECTED == 0 {
+            if scx_shared_flags_read(ptr::addr_of!((*q).scx)) & SCX_TASK_PROTECTED == 0 {
                 break;
             }
             pos = entry;
@@ -224,10 +224,10 @@ pub(crate) unsafe fn set_task_slice_keep_oob(p: *mut task_struct, slice: u64) ->
     // Rejection leaves both slice and the OOB atomic unchanged.
     unsafe {
         lupos_scx_core_slice_assert_set_slice(p);
-        if lupos_scx_core_slice_unlikely_protected((*p).scx.flags & SCX_TASK_PROTECTED != 0) {
+        if lupos_scx_core_slice_unlikely_protected(scx_shared_flags_read(ptr::addr_of!((*p).scx)) & SCX_TASK_PROTECTED != 0) {
             return false;
         }
-        (*p).scx.slice = slice;
+        scx_shared_slice_write(ptr::addr_of_mut!((*p).scx), slice);
         true
     }
 }
@@ -244,7 +244,7 @@ pub unsafe extern "C" fn scx_task_slice_ended(rq: *mut rq, p: *mut task_struct) 
     // Rescue callbacks keep the native configured ABI and original rq context.
     unsafe {
         lupos_scx_core_slice_assert_ended_rq(rq);
-        (*p).scx.flags &= !SCX_TASK_PROTECTED;
+        scx_shared_flags_and(ptr::addr_of_mut!((*p).scx), !SCX_TASK_PROTECTED);
         if lupos_scx_core_slice_unlikely_ended_rescue(p == lupos_scx_core_slice_rescuee(rq)) {
             lupos_scx_core_slice_rescue_end(rq);
         }
@@ -307,7 +307,7 @@ pub(crate) unsafe fn apply_task_slice_oob(rq: *mut rq, p: *mut task_struct) {
         }
         let dur = oob & SCX_SLICE_OOB_DUR_MASK;
         let slice = if dur == SCX_SLICE_OOB_DUR_MASK { SCX_SLICE_INF } else { dur };
-        if slice > (*p).scx.slice
+        if slice > scx_shared_slice_read(ptr::addr_of!((*p).scx))
             && lupos_scx_core_slice_unlikely_missing_caps(
                 lupos_scx_core_slice_missing_base_caps(lupos_scx_core_slice_task_sched(p), rq) != 0,
             )
@@ -328,12 +328,10 @@ pub(crate) unsafe fn apply_task_slice_oob(rq: *mut rq, p: *mut task_struct) {
 /// Running, sleeping and rq-DSQ fields require p's rq lock. For a user-DSQ or
 /// BPF-owned task, the BPF scheduler is responsible for writer synchronization;
 /// the native source also permits a race with an rq-locked setter and specifies
-/// last-writer-wins behavior. That permitted case has no established Rust
-/// data-race-safe implementation here and remains an unresolved source
-/// dependency. Raw-pointer syntax does not supply synchronization or prove it.
-/// This hard-held candidate may only be reasoned about as executable Rust when
-/// all overlapping slice/vtime accesses are synchronized; that restriction is
-/// not an accepted replacement for the original supported concurrency contract.
+/// last-writer-wins behavior. All composed core slice/vtime accesses, including
+/// the rq-locked setter, now use native field leaves. The original native/BPF
+/// concurrency, possible partial-width BPF stores and configured alignment
+/// remain unqualified. No supported racing case is narrowed or declared safe.
 /// Caller must enforce the original protected-task insertion restrictions.
 pub(crate) unsafe fn apply_slice_vtime(
     p: *mut task_struct,
@@ -341,22 +339,23 @@ pub(crate) unsafe fn apply_slice_vtime(
     vtime: u64,
     enq_flags: u64,
 ) {
-    // SAFETY: For the synchronized cases described above, p's live native
-    // fields are readable/writable for this commit. The allowed native racing
-    // case is unresolved and cannot be justified by this unsafe block.
+    // SAFETY: p is live through every synchronous native field operation. Rust
+    // retains all decisions and their original load/store ordering, but does
+    // not access slice/vtime directly. Native races remain a hard-held runtime
+    // obligation; FFI does not make the whole program data-race-safe.
     // Calling the rq-locked setter here would change protection/refill/race
     // semantics; no extra protection check or request clearing is introduced.
     unsafe {
         if slice != 0 {
-            (*p).scx.slice = slice;
+            scx_shared_slice_write(ptr::addr_of_mut!((*p).scx), slice);
             if enq_flags & SCX_ENQ_SLICE_DFL == 0 {
                 clear_task_slice_oob(p);
             }
-        } else if (*p).scx.slice == 0 {
-            (*p).scx.slice = 1;
+        } else if scx_shared_slice_read(ptr::addr_of!((*p).scx)) == 0 {
+            scx_shared_slice_write(ptr::addr_of_mut!((*p).scx), 1);
         }
         if enq_flags & SCX_ENQ_DSQ_PRIQ != 0 {
-            (*p).scx.dsq_vtime = vtime;
+            scx_shared_vtime_write(ptr::addr_of_mut!((*p).scx), vtime);
         }
     }
 }
@@ -380,9 +379,9 @@ pub(crate) unsafe fn update_curr_scx(rq: *mut rq) {
         if lupos_scx_core_slice_unlikely_nonpositive_delta(delta_exec <= 0) {
             return;
         }
-        if (*curr).scx.slice != SCX_SLICE_INF {
-            let consumed = (*curr).scx.slice.min(delta_exec as u64);
-            (*curr).scx.slice -= consumed;
+        if scx_shared_slice_read(ptr::addr_of!((*curr).scx)) != SCX_SLICE_INF {
+            let consumed = scx_shared_slice_read(ptr::addr_of!((*curr).scx)).min(delta_exec as u64);
+            scx_shared_slice_sub(ptr::addr_of_mut!((*curr).scx), consumed);
         }
         if lupos_scx_core_slice_unlikely_current_rescue(curr == lupos_scx_core_slice_rescuee(rq)) {
             lupos_scx_core_slice_rescue_charge(rq, delta_exec);

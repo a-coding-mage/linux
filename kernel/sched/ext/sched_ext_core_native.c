@@ -615,3 +615,78 @@ void scx_shared_dump_cpu_write(struct scx_dump_data *dd, s32 cpu)
 {
 	dd->cpu = cpu;
 }
+
+/* Single definitions for sched_ext_shared_access.h. These plain native field
+ * operations are an explicit UNQUALIFIED runtime boundary. They preserve the
+ * original primitive, not an asserted C/Rust/BPF data-race contract. In
+ * particular, an rq lock does not exclude the F01 BPF/commit race, and the
+ * dump lock does not cover F11's off-context CPU read. No old-owner algorithm
+ * is dispatched from these leaves. Keep SOURCE ONLY HOLD above.
+ */
+u32 scx_shared_flags_read(const struct sched_ext_entity *scx)
+{
+	return scx->flags;
+}
+
+void scx_shared_flags_write(struct sched_ext_entity *scx, u32 value)
+{
+	scx->flags = value;
+}
+
+void scx_shared_flags_and(struct sched_ext_entity *scx, u32 mask)
+{
+	scx->flags &= mask;
+}
+
+void scx_shared_flags_or(struct sched_ext_entity *scx, u32 bits)
+{
+	scx->flags |= bits;
+}
+
+u64 scx_shared_slice_read(const struct sched_ext_entity *scx)
+{
+	return scx->slice;
+}
+
+void scx_shared_slice_write(struct sched_ext_entity *scx, u64 value)
+{
+	scx->slice = value;
+}
+
+void scx_shared_slice_sub(struct sched_ext_entity *scx, u64 value)
+{
+	scx->slice -= value;
+}
+
+u64 scx_shared_vtime_read(const struct sched_ext_entity *scx)
+{
+	return scx->dsq_vtime;
+}
+
+void scx_shared_vtime_write(struct sched_ext_entity *scx, u64 value)
+{
+	scx->dsq_vtime = value;
+}
+
+const struct sched_class *scx_shared_class_read(const struct task_struct *p)
+{
+	return p->sched_class;
+}
+
+void scx_shared_class_write(struct task_struct *p, const struct sched_class *class)
+{
+	p->sched_class = class;
+}
+
+/* F07's preempt/RCU-only plain reader can overlap F09 invalidation even though
+ * the writer holds dsq->lock. Preserve the separate original READ_ONCE leaf
+ * in the reenqueue consumer; these operations are the plain access sites. */
+u64 scx_shared_dsq_id_read(const struct scx_dispatch_q *dsq)
+{
+	return dsq->id;
+}
+
+void scx_shared_dsq_id_write(struct scx_dispatch_q *dsq, u64 id)
+{
+	dsq->id = id;
+}

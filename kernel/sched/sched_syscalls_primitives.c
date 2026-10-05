@@ -299,3 +299,11 @@ bool lupos_syscalls_likely_uclamp_no_flags(bool no_flags) { return likely(no_fla
 
 /* Native asmlinkage is architecture-specific; do not guess it in Rust. */
 void lupos_syscalls_schedule(void) { schedule(); }
+
+/* Preserve the plain store at syscalls.c:685. F06's pre-rq native read can
+ * overlap: moving both access sides to native does not prove race safety. */
+void lupos_syscalls_task_class_write(struct task_struct *p,
+                                    const struct sched_class *class)
+{
+	p->sched_class = class;
+}

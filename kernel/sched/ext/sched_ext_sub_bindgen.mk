@@ -10,6 +10,7 @@ $(obj)/bindings/sched_ext_sub_generated.rs: private bindgen_target_flags = \
     $(shell sed '/^[[:space:]]*\#/d; /^[[:space:]]*$$/d' $(srctree)/kernel/sched/ext/sched_ext_sub_bindgen_parameters)
 $(obj)/bindings/sched_ext_sub_generated.rs: private bindgen_target_cflags = -UMODULE
 $(obj)/bindings/sched_ext_sub_generated.rs: $(srctree)/kernel/sched/ext/sched_ext_sub_bindings.h \
+    $(srctree)/kernel/sched/ext/sched_ext_shared_access.h \
     $(srctree)/kernel/sched/ext/sched_ext_sub_rescue_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_sub_ecaps_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_sub_caps_bindings.h \

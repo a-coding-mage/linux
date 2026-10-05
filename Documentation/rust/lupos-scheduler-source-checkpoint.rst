@@ -677,6 +677,27 @@ This removes the conflicting direct Rust accesses in this narrow set; it does
 not prove native whole-program race safety or dump-buffer/context validity.
 Those obligations, native ABI/CFI and every source/selection hold remain open.
 
+Paired task and DSQ field-access repair
+--------------------------------------
+
+The wider independently reviewed repair pairs flags, slice/vtime, class and
+DSQ-ID readers with their live writers across core, sub-scheduler and syscall
+owners. It includes the newly published watchdog ID and post-tick slice reads.
+Original plain versus ONCE accesses, separate compound assignments, callbacks
+and source ordering remain distinct; no stronger synchronization is added.
+
+The weak Rust task-copy entry now calls a typed aggregate-assignment primitive
+in the existing translation-owned fork_task_primitives.h bridge. The live source
+task is not treated as exclusive merely because the child destination is private.
+Original fork.c, native layout headers and test oracles remain unchanged.
+
+Unpublished child and early-boot initialization are separately justified.
+Native/BPF partial stores, configured u64 alignment and 32-bit tearing, foreign
+memory, live aggregate snapshots/architecture overrides and stale dump-token
+buffer contexts remain explicitly unqualified. This is a paired source-ownership
+repair, not whole-kernel memory-model proof or full Rust ownership. All admission
+and source errors remain; the matched pick/deferred packages are composed later.
+
 Inactive gates and remaining work
 ---------------------------------
 

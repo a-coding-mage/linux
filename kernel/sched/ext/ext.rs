@@ -254,11 +254,13 @@ pub(crate) unsafe fn scx_tid_to_task_enabled() -> bool {
 /// Test whether a DSQ's lock domain is the containing rq.
 ///
 /// # Safety
-/// dsq points to a live initialized DSQ; the caller pins its lifetime and id.
+/// dsq points to a live initialized DSQ under the original caller lifetime
+/// protocol. Pinning its storage does not make its id immutable.
 pub(crate) unsafe fn dsq_is_rq_owned(dsq: *mut scx_dispatch_q) -> bool {
-    // SAFETY: The borrowed DSQ is native-layout storage with a stable id.
+    // SAFETY: The native plain load is paired with live invalidation's native
+    // store. Native race semantics remain held; no stable-id promise is added.
     unsafe {
-        let id = (*dsq).id;
+        let id = scx_shared_dsq_id_read(dsq);
         id == LUPOS_SCX_CORE_DSQ_LOCAL as u64
             || id == LUPOS_SCX_CORE_DSQ_REJECT as u64
             || id == LUPOS_SCX_CORE_DSQ_RESCUE as u64
@@ -336,7 +338,7 @@ pub(crate) unsafe fn scx_setscheduler_class(p: *mut task_struct) -> *const sched
     // SAFETY: The task's native fields and class symbols remain valid here.
     unsafe {
         let stop = lupos_scx_core_stop_class();
-        if (*p).sched_class == stop {
+        if scx_shared_class_read(p) == stop {
             stop
         } else {
             lupos_scx_core_setscheduler_class((*p).policy as c_int, (*p).prio)
@@ -393,9 +395,9 @@ pub(crate) unsafe fn rq_is_open(rq: *mut rq, enq_flags: u64) -> bool {
             // Native field access handles the configured curr/donor union.
             // Preserve the original plain rq->curr read, not READ_ONCE.
             let curr = lupos_scx_core_rq_curr(rq);
-            return (*curr).sched_class != ext
+            return scx_shared_class_read(curr) != ext
                 || lupos_scx_core_likely_not_protected(
-                    (*curr).scx.flags & LUPOS_SCX_CORE_TASK_PROTECTED as u32 == 0,
+                    scx_shared_flags_read(ptr::addr_of!((*curr).scx)) & LUPOS_SCX_CORE_TASK_PROTECTED as u32 == 0,
                 );
         }
         false
