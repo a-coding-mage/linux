@@ -101,6 +101,9 @@ RT_LEAF(struct sched_domain *, first_domain, (int cpu), { return rcu_dereference
 RT_LEAF(const struct cpumask *, sched_domain_span, (struct sched_domain *sd), { return sched_domain_span(sd); })
 RT_LEAF(struct task_struct *, read_rq_curr, (struct rq *rq), { return READ_ONCE(rq->curr); })
 RT_LEAF(struct task_struct *, read_rq_donor, (struct rq *rq), { return READ_ONCE(rq->donor); })
+/* Ordinary rq fields are not upgraded to READ_ONCE by the binding boundary. */
+RT_LEAF(struct task_struct *, rq_curr, (struct rq *rq), { return rq->curr; })
+RT_LEAF(struct task_struct *, rq_donor, (struct rq *rq), { return rq->donor; })
 RT_LEAF(unsigned int, read_task_state, (struct task_struct *p), { return READ_ONCE(p->__state); })
 RT_LEAF(bool, schedstat_enabled, (void), { return schedstat_enabled(); })
 RT_LEAF(void, check_schedstat_required, (void), { check_schedstat_required(); })

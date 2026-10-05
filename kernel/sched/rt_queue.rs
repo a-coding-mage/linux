@@ -197,7 +197,7 @@ unsafe fn update_curr_rt(rq: *mut b::rq) {
     // SAFETY: The caller must supply the native object lifetimes and
     // synchronization described in this function's safety contract.
     unsafe {
-        let donor = (*rq).donor;
+        let donor = b::rust_rt_rq_donor(rq);
         if (*donor).sched_class != addr_of!(b::rt_sched_class) { return; }
         let delta_exec = b::update_curr_common(rq);
         if delta_exec <= 0 { return; }
@@ -561,7 +561,7 @@ unsafe fn update_stats_dequeue_rt(rr: *mut b::rt_rq, rt_se: *mut b::sched_rt_ent
         if !b::rust_rt_schedstat_enabled() { return; }
         if rt_entity_is_task(rt_se) {
             p = rt_task_of(rt_se);
-            if p != (*rq).curr { update_stats_wait_end_rt(rr, rt_se); }
+            if p != b::rust_rt_rq_curr(rq) { update_stats_wait_end_rt(rr, rt_se); }
         }
         if flags & b::RUST_RT_DEQUEUE_SLEEP as c_int != 0 && !p.is_null() {
             let state = b::rust_rt_read_task_state(p);
@@ -786,7 +786,7 @@ pub unsafe extern "C" fn yield_task_rt(rq: *mut b::rq) {
     // SAFETY: The caller must supply the native object lifetimes and
     // synchronization described in this function's safety contract.
     unsafe {
-        requeue_task_rt(rq, (*rq).donor, 0);
+        requeue_task_rt(rq, b::rust_rt_rq_donor(rq), 0);
     }
 }
 #[no_mangle]
@@ -830,7 +830,7 @@ unsafe fn check_preempt_equal_prio(rq: *mut b::rq, p: *mut b::task_struct) {
     // SAFETY: The caller must supply the native object lifetimes and
     // synchronization described in this function's safety contract.
     unsafe {
-        if (*(*rq).curr).nr_cpus_allowed == 1 || b::cpupri_find(addr_of_mut!((*(*rq).rd).cpupri), (*rq).donor, null_mut()) == 0 { return; }
+        if (*b::rust_rt_rq_curr(rq)).nr_cpus_allowed == 1 || b::cpupri_find(addr_of_mut!((*(*rq).rd).cpupri), b::rust_rt_rq_donor(rq), null_mut()) == 0 { return; }
         if (*p).nr_cpus_allowed != 1 && b::cpupri_find(addr_of_mut!((*(*rq).rd).cpupri), p, null_mut()) != 0 { return; }
         requeue_task_rt(rq, p, 1);
         b::resched_curr(rq);
@@ -847,7 +847,7 @@ pub unsafe extern "C" fn balance_rt(rq: *mut b::rq, rf: *mut b::rq_flags) -> c_i
     // SAFETY: The caller must supply the native object lifetimes and
     // synchronization described in this function's safety contract.
     unsafe {
-        let p = (*rq).donor;
+        let p = b::rust_rt_rq_donor(rq);
         if !on_rt_rq(addr_of_mut!((*p).rt)) && need_pull_rt_task(rq, p) {
             b::rust_rt_rq_unpin_lock(rq, rf);
             pull_rt_task(rq);
@@ -869,10 +869,10 @@ pub unsafe extern "C" fn wakeup_preempt_rt(rq: *mut b::rq, p: *mut b::task_struc
     // SAFETY: The caller must supply the native object lifetimes and
     // synchronization described in this function's safety contract.
     unsafe {
-        let donor = (*rq).donor;
+        let donor = b::rust_rt_rq_donor(rq);
         if (*p).sched_class != addr_of!(b::rt_sched_class) || (*donor).sched_class != addr_of!(b::rt_sched_class) { return; }
         if (*p).prio < (*donor).prio { b::resched_curr(rq); return; }
-        if (*p).prio == (*donor).prio && !b::rust_rt_test_tsk_need_resched((*rq).curr) { check_preempt_equal_prio(rq, p); }
+        if (*p).prio == (*donor).prio && !b::rust_rt_test_tsk_need_resched(b::rust_rt_rq_curr(rq)) { check_preempt_equal_prio(rq, p); }
     }
 }
 #[no_mangle]
@@ -894,7 +894,7 @@ pub unsafe extern "C" fn set_next_task_rt(rq: *mut b::rq, p: *mut b::task_struct
         if on_rt_rq(addr_of_mut!((*p).rt)) { update_stats_wait_end_rt(rr, rt_se); }
         dequeue_pushable_task(rq, p);
         if !first { return; }
-        if (*(*rq).donor).sched_class != addr_of!(b::rt_sched_class) { b::rust_rt_update_rt_rq_load_avg(b::rust_rt_rq_clock_pelt(rq), rq, 0); }
+        if (*b::rust_rt_rq_donor(rq)).sched_class != addr_of!(b::rt_sched_class) { b::rust_rt_update_rt_rq_load_avg(b::rust_rt_rq_clock_pelt(rq), rq, 0); }
         rt_queue_push_tasks(rq);
     }
 }

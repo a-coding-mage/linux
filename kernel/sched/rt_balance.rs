@@ -151,11 +151,11 @@ unsafe fn push_rt_task(rq: *mut b::rq, pull: bool) -> c_int {
         let mut next_task = pick_next_pushable_task(rq);
         if next_task.is_null() { return 0; }
         loop {
-            if (*next_task).prio < (*(*rq).donor).prio { b::resched_curr(rq); return 0; }
+            if (*next_task).prio < (*b::rust_rt_rq_donor(rq)).prio { b::resched_curr(rq); return 0; }
             if b::rust_rt_is_migration_disabled(next_task) {
                 if !pull || b::rust_rt_rq_push_busy(rq) { return 0; }
-                if (*(*rq).donor).sched_class != addr_of!(b::rt_sched_class) { return 0; }
-                let cpu = find_lowest_rq((*rq).curr);
+                if (*b::rust_rt_rq_donor(rq)).sched_class != addr_of!(b::rt_sched_class) { return 0; }
+                let cpu = find_lowest_rq(b::rust_rt_rq_curr(rq));
                 if cpu == -1 || cpu == (*rq).cpu { return 0; }
                 let push_task = b::rust_rt_get_push_task(rq);
                 if !push_task.is_null() {
@@ -167,7 +167,7 @@ unsafe fn push_rt_task(rq: *mut b::rq, pull: bool) -> c_int {
                 }
                 return 0;
             }
-            if b::rust_rt_warn_2026(next_task == (*rq).curr) { return 0; }
+            if b::rust_rt_warn_2026(next_task == b::rust_rt_rq_curr(rq)) { return 0; }
             b::rust_rt_get_task_struct(next_task);
             let lowest_rq = find_lock_lowest_rq(next_task, rq);
             if lowest_rq.is_null() {
@@ -333,10 +333,10 @@ unsafe extern "C" fn pull_rt_task(this_rq: *mut b::rq) {
             b::rust_rt_double_lock_balance(this_rq, src_rq);
             let p = pick_highest_pushable_task(src_rq, this_cpu);
             if !p.is_null() && (*p).prio < (*this_rq).rt.highest_prio.curr {
-                b::rust_rt_warn_2326(p == (*src_rq).curr);
+                b::rust_rt_warn_2326(p == b::rust_rt_rq_curr(src_rq));
                 b::rust_rt_warn_2327(!b::rust_rt_task_on_rq_queued(p));
                 // C's skip label releases both locks even on the waking-task case.
-                if (*p).prio >= (*(*src_rq).donor).prio {
+                if (*p).prio >= (*b::rust_rt_rq_donor(src_rq)).prio {
                     if b::rust_rt_is_migration_disabled(p) { push_task = b::rust_rt_get_push_task(src_rq); }
                     else { b::rust_rt_move_queued_task_locked(src_rq, this_rq, p); resched = true; }
                 }
@@ -366,9 +366,9 @@ pub unsafe extern "C" fn task_woken_rt(rq: *mut b::rq, p: *mut b::task_struct) {
     // SAFETY: The caller must supply the native object lifetimes and
     // synchronization described in this function's safety contract.
     unsafe {
-        let need_to_push = !b::rust_rt_task_on_cpu(rq, p) && !b::rust_rt_test_tsk_need_resched((*rq).curr)
-            && (*p).nr_cpus_allowed > 1 && (b::rust_rt_dl_task((*rq).donor) || b::rust_rt_rt_task((*rq).donor))
-            && ((*(*rq).curr).nr_cpus_allowed < 2 || (*(*rq).donor).prio <= (*p).prio);
+        let need_to_push = !b::rust_rt_task_on_cpu(rq, p) && !b::rust_rt_test_tsk_need_resched(b::rust_rt_rq_curr(rq))
+            && (*p).nr_cpus_allowed > 1 && (b::rust_rt_dl_task(b::rust_rt_rq_donor(rq)) || b::rust_rt_rt_task(b::rust_rt_rq_donor(rq)))
+            && ((*b::rust_rt_rq_curr(rq)).nr_cpus_allowed < 2 || (*b::rust_rt_rq_donor(rq)).prio <= (*p).prio);
         if need_to_push { push_rt_tasks(rq); }
     }
 }
@@ -452,7 +452,7 @@ pub unsafe extern "C" fn switched_to_rt(rq: *mut b::rq, p: *mut b::task_struct) 
         if b::rust_rt_task_current(rq, p) { b::rust_rt_update_rt_rq_load_avg(b::rust_rt_rq_clock_pelt(rq), rq, 0); return; }
         if b::rust_rt_task_on_rq_queued(p) {
             if (*p).nr_cpus_allowed > 1 && (*rq).rt.overloaded { rt_queue_push_tasks(rq); }
-            if (*p).prio < (*(*rq).donor).prio && b::rust_rt_cpu_online(b::rust_rt_cpu_of(rq)) { b::resched_curr(rq); }
+            if (*p).prio < (*b::rust_rt_rq_donor(rq)).prio && b::rust_rt_cpu_online(b::rust_rt_cpu_of(rq)) { b::resched_curr(rq); }
         }
     }
 }
@@ -474,6 +474,6 @@ pub unsafe extern "C" fn prio_changed_rt(rq: *mut b::rq, p: *mut b::task_struct,
         if b::rust_rt_task_current_donor(rq, p) {
             if oldprio < (*p).prio as u64 { rt_queue_pull_task(rq); }
             if (*p).prio > (*rq).rt.highest_prio.curr { b::resched_curr(rq); }
-        } else if (*p).prio < (*(*rq).donor).prio { b::resched_curr(rq); }
+        } else if (*p).prio < (*b::rust_rt_rq_donor(rq)).prio { b::resched_curr(rq); }
     }
 }

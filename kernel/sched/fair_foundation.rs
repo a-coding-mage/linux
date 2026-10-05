@@ -920,7 +920,7 @@ unsafe fn update_se(rq: *mut b::rq, se: *mut b::sched_entity) -> i64 {
         (*se).exec_start = now;
         if b::rust_fair_entity_is_task(se) {
             let donor = b::rust_fair_task_of(se);
-            let running = (*rq).curr;
+            let running = b::rust_fair_rq_curr(rq);
             (*running).se.exec_start = now;
             (*running).se.sum_exec_runtime = (*running).se.sum_exec_runtime.wrapping_add(delta as u64);
             b::rust_fair_trace_sched_stat_runtime(running, delta as u64);
@@ -943,7 +943,7 @@ pub unsafe extern "C" fn update_curr_common(rq: *mut b::rq) -> i64 {
     // SAFETY: The unsafe caller supplies native object lifetimes and the
     // original C caller-side synchronization required by this operation.
     unsafe {
-        update_se(rq, addr_of_mut!((*(*rq).donor).se))
+        update_se(rq, addr_of_mut!((*b::rust_fair_rq_donor(rq)).se))
     }
 }
 unsafe fn update_curr(mut cfs: *mut b::cfs_rq) {
@@ -983,7 +983,7 @@ unsafe extern "C" fn update_curr_fair(rq: *mut b::rq) {
     // SAFETY: The unsafe caller supplies native object lifetimes and the
     // original C caller-side synchronization required by this operation.
     unsafe {
-        let mut se = addr_of_mut!((*(*rq).donor).se);
+        let mut se = addr_of_mut!((*b::rust_fair_rq_donor(rq)).se);
         while !se.is_null() {
             update_curr(b::rust_fair_cfs_rq_of(se));
             se = parent_entity(se);
@@ -2374,7 +2374,7 @@ unsafe fn hrtick_update(rq: *mut b::rq) {
     // SAFETY: The unsafe caller supplies native object lifetimes and the
     // original C caller-side synchronization required by this operation.
     unsafe {
-        let donor = (*rq).donor;
+        let donor = b::rust_fair_rq_donor(rq);
         if !b::rust_fair_hrtick_enabled_fair(rq)
             || (*donor).sched_class != addr_of!(fair_sched_class)
             || b::rust_fair_hrtick_active(rq)
@@ -2790,7 +2790,7 @@ unsafe fn throttle_cfs_rq(cfs: *mut b::cfs_rq) -> bool {
         b::rust_fair_cfs_set_throttled(cfs, true);
         b::rust_fair_warn_throttle_cfs_rq_1((*cfs).throttled_clock != 0);
         if !curr.is_null() && (*curr).on_rq != 0 {
-            task_throttle_setup_work((*rq).donor);
+            task_throttle_setup_work(b::rust_fair_rq_donor(rq));
         }
         true
     }
@@ -2836,7 +2836,7 @@ pub unsafe extern "C" fn unthrottle_cfs_rq(cfs: *mut b::cfs_rq) {
             }
         }
         assert_list_leaf_cfs_rq(rq);
-        if (*rq).curr == (*rq).idle && (*rq).cfs.h_nr_queued != 0 {
+        if b::rust_fair_rq_curr(rq) == (*rq).idle && (*rq).cfs.h_nr_queued != 0 {
             b::resched_curr(rq);
         }
     }
@@ -5121,7 +5121,7 @@ unsafe fn task_numa_group(
         let mut mine: *mut b::numa_group = null_mut();
         b::rust_fair_rcu_read_lock();
         'no_join: {
-            let task = read_once!((*b::rust_fair_cpu_rq(cpu)).curr);
+            let task = b::rust_fair_rq_curr_once(b::rust_fair_cpu_rq(cpu));
             if !b::rust_fair_cpupid_match_pid(task, cpupid) {
                 break 'no_join;
             }

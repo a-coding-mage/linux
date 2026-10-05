@@ -263,7 +263,7 @@ unsafe fn sched_rt_rq_enqueue(rt_rq: *mut b::rt_rq) {
     // synchronization described in this function's safety contract.
     unsafe {
         #[cfg(CONFIG_RT_GROUP_SCHED)] {
-            let donor = (*rq_of_rt_rq(rt_rq)).donor;
+            let donor = b::rust_rt_rq_donor(rq_of_rt_rq(rt_rq));
             let rq = rq_of_rt_rq(rt_rq);
             let cpu = b::rust_rt_cpu_of(rq);
             let rt_se = *(*(*rt_rq).tg).rt_se.add(cpu as usize);
@@ -531,7 +531,7 @@ unsafe fn do_sched_rt_period_timer(rt_b: *mut b::rt_bandwidth, overrun: c_int) -
                 if (*rr).rt_throttled != 0 && (*rr).rt_time < runtime {
                     (*rr).rt_throttled = 0;
                     enqueue = true;
-                    if (*rr).rt_nr_running != 0 && (*rq).curr == (*rq).idle { b::rust_rt_rq_clock_cancel_skipupdate(rq); }
+                    if (*rr).rt_nr_running != 0 && b::rust_rt_rq_curr(rq) == (*rq).idle { b::rust_rt_rq_clock_cancel_skipupdate(rq); }
                 }
                 if (*rr).rt_time != 0 || (*rr).rt_nr_running != 0 { idle = 0; }
                 b::rust_rt_raw_spin_unlock(addr_of_mut!((*rr).rt_runtime_lock));

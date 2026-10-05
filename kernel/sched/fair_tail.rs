@@ -1523,7 +1523,7 @@ unsafe extern "C" fn wakeup_preempt_fair(
     // original C caller-side synchronization required by this operation.
     unsafe {
         let mut action = b::PREEMPT_WAKEUP_PICK;
-        let donor = (*rq).donor;
+        let donor = b::rust_fair_rq_donor(rq);
         let se = addr_of_mut!((*donor).se);
         let pse = addr_of_mut!((*p).se);
         let cfs_rq = addr_of_mut!((*rq).cfs);
@@ -1535,7 +1535,7 @@ unsafe extern "C" fn wakeup_preempt_fair(
         if se == pse || task_is_throttled(p) {
             return;
         }
-        if !feat!(rust_fair_feat_PREEMPT_SHORT) && b::rust_fair_test_tsk_need_resched((*rq).curr) {
+        if !feat!(rust_fair_feat_PREEMPT_SHORT) && b::rust_fair_test_tsk_need_resched(b::rust_fair_rq_curr(rq)) {
             return;
         }
         if !feat!(rust_fair_feat_WAKEUP_PREEMPTION) {
@@ -1700,7 +1700,7 @@ unsafe extern "C" fn yield_task_fair(rq: *mut b::rq) {
     // SAFETY: The unsafe caller supplies native object lifetimes and the
     // original C caller-side synchronization required by this operation.
     unsafe {
-        let se = addr_of_mut!((*(*rq).donor).se);
+        let se = addr_of_mut!((*b::rust_fair_rq_donor(rq)).se);
         let cfs_rq = addr_of_mut!((*rq).cfs);
         if (*rq).nr_running == 1 {
             return;
@@ -2977,7 +2977,7 @@ unsafe fn idle_cpu_without(cpu: c_int, p: *mut b::task_struct) -> bool {
     // original C caller-side synchronization required by this operation.
     unsafe {
         let rq = b::rust_fair_cpu_rq(cpu);
-        ((*rq).curr == (*rq).idle || (*rq).curr == p) && !b::rust_fair_rq_ttwu_pending(rq)
+        (b::rust_fair_rq_curr(rq) == (*rq).idle || b::rust_fair_rq_curr(rq) == p) && !b::rust_fair_rq_ttwu_pending(rq)
     }
 }
 #[inline]
@@ -3780,12 +3780,12 @@ unsafe fn sched_balance_rq(
                 break 'redo FairBalanceExit::Unbalanced;
             }
             let irq_flags = b::rust_fair_raw_spin_rq_lock_irqsave(busiest);
-            if !b::rust_fair_cpumask_test_cpu(this_cpu, (*(*busiest).curr).cpus_ptr) {
+            if !b::rust_fair_cpumask_test_cpu(this_cpu, (*b::rust_fair_rq_curr(busiest)).cpus_ptr) {
                 b::rust_fair_raw_spin_rq_unlock_irqrestore(busiest, irq_flags);
                 break 'redo FairBalanceExit::OnePinned;
             }
             env.flags &= !(b::RUST_FAIR_LBF_ALL_PINNED as c_uint);
-            if (*busiest).active_balance != 0 || (*(*busiest).curr).on_rq == 0 {
+            if (*busiest).active_balance != 0 || (*b::rust_fair_rq_curr(busiest)).on_rq == 0 {
                 b::rust_fair_raw_spin_rq_unlock_irqrestore(busiest, irq_flags);
                 break 'redo FairBalanceExit::Unbalanced;
             }

@@ -302,7 +302,7 @@ non-PROXY_EXEC anonymous donor union access through a native plain field leaf.
 Source inventory covers 24 native primitive leaves, not generated ABI evidence.
 
 Default-off BROKEN and hard-error hooks keep the original policy owner active.
-Trace declarations, generated field/layout/CFI, configured HW/IRQ alternatives,
+Configured trace ABI, generated field/layout/CFI, HW/IRQ alternatives,
 compiler/instrumentation policy, numerical differential and concurrent runtime
 qualification remain open. No native accounting acceptance is claimed.
 
@@ -368,6 +368,17 @@ unproved and blocks admission. Boot static-key and partial-init allocation
 caveats are likewise retained, without runtime or security-impact claims.
 Default-off BROKEN and source errors remain, and native enum ABI/CFI, caller
 metadata, RCU/lock lifetime, instrumentation and runtime qualification stay open.
+
+Conditional runqueue task-field source repair
+--------------------------------------------
+
+FAIR and RT no longer assume that rq.curr and rq.donor are direct generated
+Rust fields when SCHED_PROXY_EXEC is disabled. Five native field primitives
+preserve 37 ordinary reads and one FAIR READ_ONCE site. Independent review
+checks all 29 diff hunks, repeated evaluations and short-circuit placement.
+Existing RCU and RT READ_ONCE sites and distinct cfs_rq.curr fields are intact.
+This source correction does not qualify configured ABI/CFI, emitted load or
+instrumentation behavior, concurrency, performance or native owner admission.
 
 Inactive gates and remaining work
 ---------------------------------
