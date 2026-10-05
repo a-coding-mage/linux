@@ -249,7 +249,7 @@ unsafe extern "C" fn anon_vma_ctor(data: *mut c_void) {
 #[cfg_attr(RUST_RMAP_INIT_COLD, cold)]
 pub unsafe extern "C" fn anon_vma_init() {
     ANON_VMA_CACHEP = rust_rmap_kmem_cache_create(
-        c"anon_vma".as_ptr(),
+        kernel::str::as_char_ptr_in_const_context(c"anon_vma"),
         size_of::<anon_vma>() as c_uint,
         0,
         (RUST_RMAP_SLAB_TYPESAFE_BY_RCU | RUST_RMAP_SLAB_PANIC | RUST_RMAP_SLAB_ACCOUNT)

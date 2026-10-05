@@ -285,15 +285,17 @@ pub unsafe extern "C" fn __kmem_cache_create_args(
     if err != 0 {
         if flags & RSC_SLAB_PANIC != 0 {
             panic(
-                c"%s: Failed to create slab '%s'. Error %d\n".as_ptr(),
-                c"__kmem_cache_create_args".as_ptr(),
+                kernel::str::as_char_ptr_in_const_context(
+                    c"%s: Failed to create slab '%s'. Error %d\n",
+                ),
+                kernel::str::as_char_ptr_in_const_context(c"__kmem_cache_create_args"),
                 name,
                 err,
             );
         } else {
             sc_log!(
                 "\x014%s(%s) failed with error %d\n",
-                c"__kmem_cache_create_args".as_ptr(),
+                kernel::str::as_char_ptr_in_const_context(c"__kmem_cache_create_args"),
                 name,
                 err
             );
@@ -358,7 +360,12 @@ pub unsafe extern "C" fn kmem_buckets_create(
         };
         let aligned_idx = rust_slab_common_kmalloc_index(size as usize) as usize;
         if (*b)[aligned_idx].is_null() {
-            let cache_name = kasprintf(RSC_GFP_KERNEL, c"%s-%s".as_ptr(), name, short_size.add(1));
+            let cache_name = kasprintf(
+                RSC_GFP_KERNEL,
+                kernel::str::as_char_ptr_in_const_context(c"%s-%s"),
+                name,
+                short_size.add(1),
+            );
             if rust_slab_common_warn_cache_name(cache_name.is_null()) {
                 break;
             }
@@ -478,9 +485,9 @@ pub unsafe extern "C" fn kmem_dump_obj(object: *mut Void) -> bool {
     let mut kp: bindings::kmem_obj_info = zeroed();
     kmem_obj_info(addr_of_mut!(kp), object, slab);
     let cp = if cfg!(CONFIG_MMU) {
-        c"".as_ptr()
+        kernel::str::as_char_ptr_in_const_context(c"")
     } else {
-        c"/vmalloc".as_ptr()
+        kernel::str::as_char_ptr_in_const_context(c"/vmalloc")
     };
     if !kp.kp_slab_cache.is_null() {
         sc_log!("\x01c slab%s %s", cp, (*kp.kp_slab_cache).name);

@@ -70,9 +70,18 @@ unsafe extern "C" fn sysctl_vm_numa_stat_handler(
 unsafe fn frag_show_print(m: *mut seq_file, p: *mut pglist_data, z: *mut zone) {
     // SAFETY: this body preserves the native caller's pointer, locking and CPU-context contract.
     unsafe {
-        seq_printf(m, c"Node %d, zone %8s ".as_ptr(), (*p).node_id, (*z).name);
+        seq_printf(
+            m,
+            kernel::str::as_char_ptr_in_const_context(c"Node %d, zone %8s "),
+            (*p).node_id,
+            (*z).name,
+        );
         for order in 0..RUST_VMSTAT_NR_PAGE_ORDERS {
-            seq_printf(m, c"%6lu ".as_ptr(), rust_vmstat_free_blocks(z, order));
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"%6lu "),
+                rust_vmstat_free_blocks(z, order),
+            );
         }
         seq_putc(m, b'\n' as c_char);
     }
@@ -90,7 +99,7 @@ unsafe fn pagetypeinfo_showfree_print(m: *mut seq_file, p: *mut pglist_data, z: 
         for mtype in 0..MIGRATE_TYPES as usize {
             seq_printf(
                 m,
-                c"Node %4d, zone %8s, type %12s ".as_ptr(),
+                kernel::str::as_char_ptr_in_const_context(c"Node %4d, zone %8s, type %12s "),
                 (*p).node_id,
                 (*z).name,
                 migratetype_names[mtype],
@@ -110,11 +119,11 @@ unsafe fn pagetypeinfo_showfree_print(m: *mut seq_file, p: *mut pglist_data, z: 
                 }
                 seq_printf(
                     m,
-                    c"%s%6lu ".as_ptr(),
+                    kernel::str::as_char_ptr_in_const_context(c"%s%6lu "),
                     if overflow {
-                        c">".as_ptr()
+                        kernel::str::as_char_ptr_in_const_context(c">")
                     } else {
-                        c"".as_ptr()
+                        kernel::str::as_char_ptr_in_const_context(c"")
                     },
                     freecount,
                 );
@@ -131,11 +140,17 @@ unsafe fn pagetypeinfo_showfree(m: *mut seq_file, p: *mut pglist_data) {
     unsafe {
         seq_printf(
             m,
-            c"%-43s ".as_ptr(),
-            c"Free pages count per migrate type at order".as_ptr(),
+            kernel::str::as_char_ptr_in_const_context(c"%-43s "),
+            kernel::str::as_char_ptr_in_const_context(
+                c"Free pages count per migrate type at order",
+            ),
         );
         for order in 0..RUST_VMSTAT_NR_PAGE_ORDERS {
-            seq_printf(m, c"%6d ".as_ptr(), order as c_int);
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"%6d "),
+                order as c_int,
+            );
         }
         seq_putc(m, b'\n' as c_char);
         walk_zones_in_node(m, p, true, false, pagetypeinfo_showfree_print);
@@ -157,9 +172,18 @@ unsafe fn pagetypeinfo_showblockcount_print(m: *mut seq_file, p: *mut pglist_dat
             }
             pfn = pfn.wrapping_add(rust_vmstat_pageblock_nr_pages());
         }
-        seq_printf(m, c"Node %d, zone %8s ".as_ptr(), (*p).node_id, (*z).name);
+        seq_printf(
+            m,
+            kernel::str::as_char_ptr_in_const_context(c"Node %d, zone %8s "),
+            (*p).node_id,
+            (*z).name,
+        );
         for mtype in 0..MIGRATE_TYPES as usize {
-            seq_printf(m, c"%12lu ".as_ptr(), counts[mtype]);
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"%12lu "),
+                counts[mtype],
+            );
         }
         seq_putc(m, b'\n' as c_char);
     }
@@ -167,9 +191,17 @@ unsafe fn pagetypeinfo_showblockcount_print(m: *mut seq_file, p: *mut pglist_dat
 unsafe fn pagetypeinfo_showblockcount(m: *mut seq_file, p: *mut pglist_data) {
     // SAFETY: this body preserves the native caller's pointer, locking and CPU-context contract.
     unsafe {
-        seq_printf(m, c"\n%-23s".as_ptr(), c"Number of blocks type ".as_ptr());
+        seq_printf(
+            m,
+            kernel::str::as_char_ptr_in_const_context(c"\n%-23s"),
+            kernel::str::as_char_ptr_in_const_context(c"Number of blocks type "),
+        );
         for mtype in 0..MIGRATE_TYPES as usize {
-            seq_printf(m, c"%12s ".as_ptr(), migratetype_names[mtype]);
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"%12s "),
+                migratetype_names[mtype],
+            );
         }
         seq_putc(m, b'\n' as c_char);
         walk_zones_in_node(m, p, true, false, pagetypeinfo_showblockcount_print);
@@ -192,9 +224,17 @@ unsafe fn pagetypeinfo_showmixedcount(m: *mut seq_file, p: *mut pglist_data) {
                 return;
             }
             drain_all_pages(null_mut());
-            seq_printf(m, c"\n%-23s".as_ptr(), c"Number of mixed blocks ".as_ptr());
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"\n%-23s"),
+                kernel::str::as_char_ptr_in_const_context(c"Number of mixed blocks "),
+            );
             for mtype in 0..MIGRATE_TYPES as usize {
-                seq_printf(m, c"%12s ".as_ptr(), migratetype_names[mtype]);
+                seq_printf(
+                    m,
+                    kernel::str::as_char_ptr_in_const_context(c"%12s "),
+                    migratetype_names[mtype],
+                );
             }
             seq_putc(m, b'\n' as c_char);
             walk_zones_in_node(m, p, true, true, showmixed_print);
@@ -210,12 +250,12 @@ unsafe extern "C" fn pagetypeinfo_show(m: *mut seq_file, arg: *mut c_void) -> c_
         }
         seq_printf(
             m,
-            c"Page block order: %d\n".as_ptr(),
+            kernel::str::as_char_ptr_in_const_context(c"Page block order: %d\n"),
             rust_vmstat_pageblock_order() as c_int,
         );
         seq_printf(
             m,
-            c"Pages per block:  %lu\n".as_ptr(),
+            kernel::str::as_char_ptr_in_const_context(c"Pages per block:  %lu\n"),
             rust_vmstat_pageblock_nr_pages(),
         );
         seq_putc(m, b'\n' as c_char);
@@ -253,26 +293,43 @@ unsafe fn is_zone_first_populated(p: *mut pglist_data, z: *mut zone) -> bool {
 unsafe fn zoneinfo_show_print(m: *mut seq_file, p: *mut pglist_data, z: *mut zone) {
     // SAFETY: this body preserves the native caller's pointer, locking and CPU-context contract.
     unsafe {
-        seq_printf(m, c"Node %d, zone %8s".as_ptr(), (*p).node_id, (*z).name);
+        seq_printf(
+            m,
+            kernel::str::as_char_ptr_in_const_context(c"Node %d, zone %8s"),
+            (*p).node_id,
+            (*z).name,
+        );
         if is_zone_first_populated(p, z) {
-            seq_printf(m, c"\n  per-node stats".as_ptr());
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"\n  per-node stats"),
+            );
             for i in 0..NR_VM_NODE_STAT_ITEMS as usize {
                 let mut pages = node_state_pages(p, i);
                 if rust_vmstat_item_print_in_thp(i as _) {
                     pages /= RUST_VMSTAT_HPAGE_PMD_NR;
                 }
-                seq_printf(m, c"\n      %-12s %lu".as_ptr(), node_stat_name(i), pages);
+                seq_printf(
+                    m,
+                    kernel::str::as_char_ptr_in_const_context(c"\n      %-12s %lu"),
+                    node_stat_name(i),
+                    pages,
+                );
             }
         }
-        seq_printf(m, c"\n  pages free     %lu\n        boost    %lu\n        min      %lu\n        low      %lu\n        high     %lu\n        promo    %lu\n        spanned  %lu\n        present  %lu\n        managed  %lu\n        cma      %lu".as_ptr(),
+        seq_printf(m, kernel::str::as_char_ptr_in_const_context(c"\n  pages free     %lu\n        boost    %lu\n        min      %lu\n        low      %lu\n        high     %lu\n        promo    %lu\n        spanned  %lu\n        present  %lu\n        managed  %lu\n        cma      %lu"),
         zone_state(z, NR_FREE_PAGES as usize), (*z).watermark_boost, rust_vmstat_min_wmark(z), rust_vmstat_low_wmark(z), rust_vmstat_high_wmark(z), rust_vmstat_promo_wmark(z), (*z).spanned_pages, (*z).present_pages, rust_vmstat_managed_pages(z), rust_vmstat_cma_pages(z));
         seq_printf(
             m,
-            c"\n        protection: (%ld".as_ptr(),
+            kernel::str::as_char_ptr_in_const_context(c"\n        protection: (%ld"),
             (*z).lowmem_reserve[0] as c_long,
         );
         for i in 1..(*z).lowmem_reserve.len() {
-            seq_printf(m, c", %ld".as_ptr(), (*z).lowmem_reserve[i] as c_long);
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c", %ld"),
+                (*z).lowmem_reserve[i] as c_long,
+            );
         }
         seq_putc(m, b')' as c_char);
         if !populated(z) {
@@ -282,7 +339,7 @@ unsafe fn zoneinfo_show_print(m: *mut seq_file, p: *mut pglist_data, z: *mut zon
         for i in 0..NR_VM_ZONE_STAT_ITEMS as usize {
             seq_printf(
                 m,
-                c"\n      %-12s %lu".as_ptr(),
+                kernel::str::as_char_ptr_in_const_context(c"\n      %-12s %lu"),
                 zone_stat_name(i),
                 zone_state(z, i),
             );
@@ -293,27 +350,30 @@ unsafe fn zoneinfo_show_print(m: *mut seq_file, p: *mut pglist_data, z: *mut zon
             for i in 0..NR_VM_NUMA_EVENT_ITEMS as usize {
                 seq_printf(
                     m,
-                    c"\n      %-12s %lu".as_ptr(),
+                    kernel::str::as_char_ptr_in_const_context(c"\n      %-12s %lu"),
                     numa_stat_name(i),
                     rust_vmstat_atomic_read(addr_of!((*z).vm_numa_event[i])) as c_ulong,
                 );
             }
         }
-        seq_printf(m, c"\n  pagesets".as_ptr());
+        seq_printf(
+            m,
+            kernel::str::as_char_ptr_in_const_context(c"\n  pagesets"),
+        );
         online_cpus!(cpu, {
             let pcp = rust_vmstat_pages_cpu((*z).per_cpu_pageset, cpu);
-            seq_printf(m, c"\n    cpu: %i\n              count:    %i\n              high:     %i\n              batch:    %i\n              high_min: %i\n              high_max: %i".as_ptr(), cpu, (*pcp).count, (*pcp).high, (*pcp).batch, (*pcp).high_min, (*pcp).high_max);
+            seq_printf(m, kernel::str::as_char_ptr_in_const_context(c"\n    cpu: %i\n              count:    %i\n              high:     %i\n              batch:    %i\n              high_min: %i\n              high_max: %i"), cpu, (*pcp).count, (*pcp).high, (*pcp).batch, (*pcp).high_min, (*pcp).high_max);
             #[cfg(CONFIG_SMP)]
             {
                 let pz = rust_vmstat_zone_cpu((*z).per_cpu_zonestats, cpu);
                 seq_printf(
                     m,
-                    c"\n  vm stats threshold: %d".as_ptr(),
+                    kernel::str::as_char_ptr_in_const_context(c"\n  vm stats threshold: %d"),
                     (*pz).stat_threshold as c_int,
                 );
             }
         });
-        seq_printf(m, c"\n  node_unreclaimable:  %u\n  start_pfn:           %lu\n  reserved_highatomic: %lu\n  free_highatomic:     %lu".as_ptr(), kswapd_test_hopeless(p) as c_uint, (*z).zone_start_pfn, (*z).nr_reserved_highatomic, (*z).nr_free_highatomic);
+        seq_printf(m, kernel::str::as_char_ptr_in_const_context(c"\n  node_unreclaimable:  %u\n  start_pfn:           %lu\n  reserved_highatomic: %lu\n  free_highatomic:     %lu"), kswapd_test_hopeless(p) as c_uint, (*z).zone_start_pfn, (*z).nr_reserved_highatomic, (*z).nr_free_highatomic);
         seq_putc(m, b'\n' as c_char);
     }
 }
@@ -405,10 +465,17 @@ unsafe extern "C" fn vmstat_show(m: *mut seq_file, arg: *mut c_void) -> c_int {
         let l = arg.cast::<c_ulong>();
         let off = l.offset_from((*m).private.cast::<c_ulong>()) as usize;
         __seq_puts(m, VMSTAT_TEXT.0[off]);
-        seq_put_decimal_ull(m, c" ".as_ptr(), *l as u64);
+        seq_put_decimal_ull(
+            m,
+            kernel::str::as_char_ptr_in_const_context(c" "),
+            *l as u64,
+        );
         seq_putc(m, b'\n' as c_char);
         if off == NR_VMSTAT_ITEMS - 1 {
-            __seq_puts(m, c"nr_unstable 0\n".as_ptr());
+            __seq_puts(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"nr_unstable 0\n"),
+            );
         }
         0
     }

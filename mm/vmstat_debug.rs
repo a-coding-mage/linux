@@ -14,10 +14,20 @@ unsafe fn unusable_free_index(order: c_uint, info: &ContigPageInfo) -> c_int {
 unsafe fn unusable_show_print(m: *mut seq_file, p: *mut pglist_data, z: *mut zone) {
     // SAFETY: this body preserves the native caller's pointer, locking and CPU-context contract.
     unsafe {
-        seq_printf(m, c"Node %d, zone %8s ".as_ptr(), (*p).node_id, (*z).name);
+        seq_printf(
+            m,
+            kernel::str::as_char_ptr_in_const_context(c"Node %d, zone %8s "),
+            (*p).node_id,
+            (*z).name,
+        );
         for order in 0..RUST_VMSTAT_NR_PAGE_ORDERS {
             let index = unusable_free_index(order, &fill_contig_page_info(z, order));
-            seq_printf(m, c"%d.%03d ".as_ptr(), index / 1000, index % 1000);
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"%d.%03d "),
+                index / 1000,
+                index % 1000,
+            );
         }
         seq_putc(m, b'\n' as c_char);
     }
@@ -42,10 +52,20 @@ static UNUSABLE_SOPS: seq_operations = seq_operations {
 unsafe fn extfrag_show_print(m: *mut seq_file, p: *mut pglist_data, z: *mut zone) {
     // SAFETY: this body preserves the native caller's pointer, locking and CPU-context contract.
     unsafe {
-        seq_printf(m, c"Node %d, zone %8s ".as_ptr(), (*p).node_id, (*z).name);
+        seq_printf(
+            m,
+            kernel::str::as_char_ptr_in_const_context(c"Node %d, zone %8s "),
+            (*p).node_id,
+            (*z).name,
+        );
         for order in 0..RUST_VMSTAT_NR_PAGE_ORDERS {
             let index = __fragmentation_index(order, &fill_contig_page_info(z, order));
-            seq_printf(m, c"%2d.%03d ".as_ptr(), index / 1000, index % 1000);
+            seq_printf(
+                m,
+                kernel::str::as_char_ptr_in_const_context(c"%2d.%03d "),
+                index / 1000,
+                index % 1000,
+            );
         }
         seq_putc(m, b'\n' as c_char);
     }
@@ -115,16 +135,19 @@ static EXTFRAG_FOPS: VmstatFileOps = VmstatFileOps({
 unsafe extern "C" fn rust_vmstat_extfrag_debug_init() -> c_int {
     // SAFETY: this body preserves the native caller's pointer, locking and CPU-context contract.
     unsafe {
-        let root = debugfs_create_dir(c"extfrag".as_ptr(), null_mut());
+        let root = debugfs_create_dir(
+            kernel::str::as_char_ptr_in_const_context(c"extfrag"),
+            null_mut(),
+        );
         rust_vmstat_debugfs_create_file(
-            c"unusable_index".as_ptr(),
+            kernel::str::as_char_ptr_in_const_context(c"unusable_index"),
             0o444,
             root,
             null_mut(),
             addr_of!(UNUSABLE_FOPS.0),
         );
         rust_vmstat_debugfs_create_file(
-            c"extfrag_index".as_ptr(),
+            kernel::str::as_char_ptr_in_const_context(c"extfrag_index"),
             0o444,
             root,
             null_mut(),

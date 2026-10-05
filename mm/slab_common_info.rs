@@ -2,19 +2,27 @@
 // Original mm/slab_common.c:1157-1306: diagnostics, sensitive free, BPF query.
 #[cfg(CONFIG_SLUB_DEBUG)]
 unsafe fn print_slabinfo_header(m: *mut seq_file) {
-    rust_slab_common_seq_puts(m, c"slabinfo - version: 2.1\n".as_ptr());
     rust_slab_common_seq_puts(
         m,
-        c"# name            <active_objs> <num_objs> <objsize> <objperslab> <pagesperslab>"
-            .as_ptr(),
+        kernel::str::as_char_ptr_in_const_context(c"slabinfo - version: 2.1\n"),
     );
     rust_slab_common_seq_puts(
         m,
-        c" : tunables <limit> <batchcount> <sharedfactor>".as_ptr(),
+        kernel::str::as_char_ptr_in_const_context(
+            c"# name            <active_objs> <num_objs> <objsize> <objperslab> <pagesperslab>",
+        ),
     );
     rust_slab_common_seq_puts(
         m,
-        c" : slabdata <active_slabs> <num_slabs> <sharedavail>".as_ptr(),
+        kernel::str::as_char_ptr_in_const_context(
+            c" : tunables <limit> <batchcount> <sharedfactor>",
+        ),
+    );
+    rust_slab_common_seq_puts(
+        m,
+        kernel::str::as_char_ptr_in_const_context(
+            c" : slabdata <active_slabs> <num_slabs> <sharedavail>",
+        ),
     );
     seq_putc(m, b'\n' as CChar);
 }
@@ -40,7 +48,7 @@ unsafe fn cache_show(s: *mut bindings::kmem_cache, m: *mut seq_file) {
     get_slabinfo(s, addr_of_mut!(sinfo));
     seq_printf(
         m,
-        c"%-17s %6lu %6lu %6u %4u %4d".as_ptr(),
+        kernel::str::as_char_ptr_in_const_context(c"%-17s %6lu %6lu %6u %4u %4d"),
         (*s).name,
         sinfo.active_objs,
         sinfo.num_objs,
@@ -50,14 +58,14 @@ unsafe fn cache_show(s: *mut bindings::kmem_cache, m: *mut seq_file) {
     );
     seq_printf(
         m,
-        c" : tunables %4u %4u %4u".as_ptr(),
+        kernel::str::as_char_ptr_in_const_context(c" : tunables %4u %4u %4u"),
         sinfo.limit,
         sinfo.batchcount,
         sinfo.shared,
     );
     seq_printf(
         m,
-        c" : slabdata %6lu %6lu %6lu".as_ptr(),
+        kernel::str::as_char_ptr_in_const_context(c" : slabdata %6lu %6lu %6lu"),
         sinfo.active_slabs,
         sinfo.num_slabs,
         sinfo.shared_avail,
@@ -117,7 +125,7 @@ pub unsafe extern "C" fn slabinfo_open(_inode: *mut inode, file: *mut bindings::
 #[cfg_attr(RSC_INIT_COLD, cold)]
 pub unsafe extern "C" fn slab_proc_init() -> Int {
     rust_slab_common_proc_create(
-        c"slabinfo".as_ptr(),
+        kernel::str::as_char_ptr_in_const_context(c"slabinfo"),
         0o400,
         null_mut(),
         addr_of!(slabinfo_proc_ops),

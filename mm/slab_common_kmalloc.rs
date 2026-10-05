@@ -26,7 +26,9 @@ pub unsafe extern "C" fn create_boot_cache(
     let err = do_kmem_cache_create(s, name, size, addr_of_mut!(args), flags);
     if err != 0 {
         panic(
-            c"Creation of kmalloc slab %s size=%u failed. Reason %d\n".as_ptr(),
+            kernel::str::as_char_ptr_in_const_context(
+                c"Creation of kmalloc slab %s size=%u failed. Reason %d\n",
+            ),
             name,
             size,
             err,
@@ -44,7 +46,10 @@ unsafe fn create_kmalloc_cache(
     let s = rust_slab_common_boot_cache_zalloc(kmem_cache, RSC_GFP_NOWAIT)
         .cast::<bindings::kmem_cache>();
     if s.is_null() {
-        panic(c"Out of memory when creating slab %s\n".as_ptr(), name);
+        panic(
+            kernel::str::as_char_ptr_in_const_context(c"Out of memory when creating slab %s\n"),
+            name,
+        );
     }
     create_boot_cache(s, name, size, flags | RSC_SLAB_KMALLOC, 0, size);
     rust_slab_common_list_add(addr_of_mut!((*s).list), addr_of_mut!(slab_caches));
@@ -272,7 +277,7 @@ pub unsafe extern "C" fn create_kmalloc_caches() {
     if cfg!(CONFIG_SLAB_BUCKETS) {
         let mut args: kmem_cache_args = zeroed();
         kmem_buckets_cache = __kmem_cache_create_args(
-            c"kmalloc_buckets".as_ptr(),
+            kernel::str::as_char_ptr_in_const_context(c"kmalloc_buckets"),
             size_of::<kmem_buckets>() as UInt,
             addr_of_mut!(args),
             RSC_SLAB_NO_MERGE,
