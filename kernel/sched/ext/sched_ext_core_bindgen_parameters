@@ -3,6 +3,11 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+# F17 notifier/init values come only from the configured native headers.
+--allowlist-function 'lupos_scx_ri_.*'
+--allowlist-var 'NOTIFY_OK|PM_HIBERNATION_PREPARE|PM_POST_HIBERNATION|PM_POST_RESTORE|PM_POST_SUSPEND|PM_RESTORE_PREPARE|PM_SUSPEND_PREPARE'
+--allowlist-type 'notifier_block'
+--with-attribute-custom-struct=notifier_block='#[cfi_encoding="14notifier_block"]'
 # F14's exact private argument layout and native dispatch-buffer entry.
 --allowlist-type 'scx_bpf_dsq_insert_vtime_args|scx_dsp_buf_ent'
 --with-attribute-custom-struct=scx_bpf_dsq_insert_vtime_args='#[cfi_encoding="29scx_bpf_dsq_insert_vtime_args"]'

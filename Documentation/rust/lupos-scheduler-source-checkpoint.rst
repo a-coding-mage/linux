@@ -781,6 +781,28 @@ separate sub_ecaps_updated callback may also originate dispatch. That latter
 path retains its own qualification requirement and gains no inferred stack
 guarantee. All source and selection holds remain.
 
+Registration and initialization source
+--------------------------------------
+
+The final mapped ext-core family now supplies independently reviewed class,
+SysRq and PM metadata plus early and late initialization. The exact class
+callback signatures, forty-nine CPU/CID offset pairs and CID-tail assertion
+are retained. Registration short-circuit order, ignored original returns and
+failure paths remain distinct, including the final negative-only sysfs error
+test and absence of added rollback.
+
+The class-table update-current adapter forwards to the single existing Rust
+slice/accounting owner. The kset assignment uses the original plain native
+slot; no extra publication or lifetime semantics are introduced. Reviewed
+unsafe contracts retain the required boot, RCU, lock, callback and stack-object
+contexts without implying they have been established by source inspection.
+
+All mapped ext-core families now have composed source candidates. That is not
+configured coverage or proof of compatibility. The canonical binding universe,
+single native translation-unit/diagnostic scopes, init sections, ABI/CFI/BTF,
+memory-model, recursive stack and original-test qualification remain open.
+Every source and selection hold is preserved.
+
 Inactive gates and remaining work
 ---------------------------------
 

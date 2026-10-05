@@ -139,6 +139,8 @@ bool lupos_scx_core_cgroup_enabled(void);
 const struct rhashtable_params *lupos_scx_core_dsq_hash_params(void);
 struct llist_head *lupos_scx_core_dsqs_to_free(void);
 struct kset *lupos_scx_core_kset(void);
+/* F17 boot owner retains the original plain native pointer assignment. */
+void lupos_scx_core_kset_set(struct kset *value);
 long lupos_scx_core_rejected_read(void);
 long lupos_scx_core_hotplug_seq_read(void);
 long lupos_scx_core_enable_seq_read(void);
@@ -217,6 +219,9 @@ struct scx_kick_syncs __rcu *lupos_scx_core_this_kick_syncs_snapshot(void);
 /* F14/F15 retain exact native kfunc signatures in the same type universe. */
 #include "sched_ext_core_kfunc_dispatch_bindings.h"
 #include "sched_ext_core_kfunc_dsq_bindings.h"
+
+/* F17 metadata and typed continuations use the same canonical native types. */
+#include "sched_ext_core_registration_init_bindings.h"
 
 /* F14 preserves __this_cpu_read, distinct from the F02/F05 plain slot access. */
 struct task_struct *lupos_scx_core_direct_dispatch_task_read(void);

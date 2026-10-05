@@ -487,6 +487,11 @@ struct kset *lupos_scx_core_kset(void)
 	return scx_kset;
 }
 
+void lupos_scx_core_kset_set(struct kset *value)
+{
+	scx_kset = value;
+}
+
 long lupos_scx_core_rejected_read(void)
 {
 	return atomic_long_read(&scx_nr_rejected);

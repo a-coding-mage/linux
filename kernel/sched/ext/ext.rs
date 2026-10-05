@@ -26,7 +26,7 @@ pub const SCX_SLICE_OOB_PENDING: u64 =
 
 mod sched_ext_core_slice_cursor;
 // Select the Rust-owned body over internal.h's native declaration glob.
-pub(crate) use sched_ext_core_slice_cursor::scx_task_slice_ended;
+pub(crate) use sched_ext_core_slice_cursor::{scx_task_slice_ended, update_curr_scx};
 
 mod sched_ext_core_task_lifetime;
 // Explicit owned identities take precedence over matching native declarations.
@@ -170,6 +170,8 @@ pub(crate) use sched_ext_core_deferred_kick::{
 
 mod sched_ext_core_kfunc_dispatch;
 mod sched_ext_core_kfunc_dsq;
+
+mod sched_ext_core_registration_init;
 
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
