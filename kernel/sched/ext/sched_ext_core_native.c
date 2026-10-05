@@ -548,3 +548,13 @@ struct scx_dump_data *lupos_scx_core_dump_data(void)
 {
 	return &scx_dump_data;
 }
+
+struct task_struct **lupos_scx_core_this_direct_dispatch_task(void)
+{
+	return this_cpu_ptr(&direct_dispatch_task);
+}
+
+void lupos_scx_core_spoil_direct_dispatch_task(void)
+{
+	__this_cpu_write(direct_dispatch_task, ERR_PTR(-ESRCH));
+}

@@ -93,6 +93,25 @@ pub(crate) use sched_ext_core_exit_dump::{
     scx_rcu_cpu_stall, scx_softlockup,
 };
 
+mod sched_ext_core_enqueue;
+pub(crate) use sched_ext_core_enqueue::{
+    call_task_dequeue, clear_direct_dispatch, clr_task_runnable, dequeue_task_scx,
+    direct_dispatch, dispatch_dequeue_locked, dsq_dec_nr, dsq_inc_nr,
+    enqueue_task_scx, find_dsq_for_dispatch, lupos_scx_core_enq_priq_less_body,
+    mark_direct_dispatch, ops_dequeue, refill_task_slice_dfl, rq_owned_post_enq,
+    scx_dispatch_dequeue, scx_dispatch_enqueue, scx_do_enqueue_task, scx_rq_online,
+    scx_task_unlink_from_dsq, set_task_runnable, task_runnable, task_scx_migrating,
+    wakeup_preempt_scx, yield_task_scx, yield_to_task_scx,
+};
+
+mod sched_ext_core_consume;
+pub(crate) use sched_ext_core_consume::{
+    dispatch_to_local_dsq, finish_dispatch, maybe_queue_balance_callback,
+    move_task_between_dsqs, scx_consume_dispatch_q, scx_consume_global_dsq,
+    scx_flush_dispatch_buf, scx_move_local_task_to_local_dsq,
+    task_can_run_on_remote_rq, unlink_dsq_and_switch_rq_lock,
+};
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }

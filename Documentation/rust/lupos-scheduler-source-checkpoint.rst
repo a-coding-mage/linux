@@ -532,8 +532,8 @@ repairs CPU validation and protected task-slice behavior. It supplies common
 state/parameter boundaries, cursor traversal, slice-OOB accounting and current
 task accounting. Native storage and private layouts retain their original
 definitions. Independent review covers these two bounded source families.
-The task-lifetime, cgroup, object-lifetime and exit/dump families below are
-separate increments; twelve other core families remain outside these checkpoints.
+The subsequent task, cgroup, object, exit/dump and enqueue/consume increments
+are separately reviewed; ten other core families remain outside these checkpoints.
 
 Two current-task reads now use an exact plain native accessor for configured
 rq union access. The native source permits competing slice/vtime writers in
@@ -609,6 +609,23 @@ path, emitted-record result or protection equivalence is claimed.
 Root teardown/event aggregation, off-context dump-state concurrent reads,
 native varargs/CFI/NMI/stack behavior, source attribution and runtime semantics
 remain unqualified. All default-off BROKEN and source/selection holds remain.
+
+Sched_ext enqueue/consume source checkpoint
+------------------------------------------
+
+The enqueue and consume increments supply twenty-six and twelve original
+function bodies, respectively. Reviews cover DSQ/state transitions, direct
+dispatch, rq transfer and custody rechecks, migration and dispatch-buffer
+ordering. The task-lifetime clear_direct_dispatch dependency is now supplied
+by its actual Rust owner; deferred-work callbacks remain pending.
+
+Review restores original warning expressions and native operand evaluation,
+and routes set_task_cpu through its configured SMP/UP native declaration.
+The original build_policy branch-profile-disable policy is retained; no repair
+of suppressed profile records is claimed, and unnecessary branch-only callback
+layers were removed. Native ABI/CFI, memory ordering, concurrency, allocation
+lifetime, optimizer hints and source/protection attribution remain unqualified.
+All source/selection errors and default-off BROKEN gating remain.
 
 Inactive gates and remaining work
 ---------------------------------

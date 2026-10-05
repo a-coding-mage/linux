@@ -158,4 +158,8 @@ const struct rhashtable_params *lupos_scx_core_sched_hash_params(void);
 #include "sched_ext_core_exit_dump_bindings.h"
 raw_spinlock_t *lupos_scx_core_dump_lock(void);
 struct scx_dump_data *lupos_scx_core_dump_data(void);
+#include "sched_ext_core_enqueue_bindings.h"
+struct task_struct **lupos_scx_core_this_direct_dispatch_task(void);
+void lupos_scx_core_spoil_direct_dispatch_task(void);
+#include "sched_ext_core_consume_bindings.h"
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */

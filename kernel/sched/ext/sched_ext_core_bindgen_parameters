@@ -3,6 +3,10 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+--allowlist-type 'rb_node'
+--with-attribute-custom-struct=rb_node='#[cfi_encoding="7rb_node"]'
+--allowlist-function 'resched_curr|dl_server_start|activate_task|deactivate_task'
+--allowlist-var 'DEQUEUE_SAVE|DEQUEUE_SLEEP|ENQUEUE_WAKEUP'
 --allowlist-type 'scx_dump_ctx|scx_exit_dump_va_args|seq_buf|bpf_bprintf_data|bpf_prog_aux|kthread_work'
 --allowlist-function 'lupos_scx_exit_.*|bpf_bprintf_cleanup|bpf_bprintf_prepare|bstr_printf|copy_from_kernel_nofault|irq_work_queue|irq_work_sync|kthread_flush_work|kthread_queue_work'
 --allowlist-var 'LUPOS_SCX_EXIT_.*'
