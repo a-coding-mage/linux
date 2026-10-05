@@ -168,3 +168,8 @@ pub mod sched_waiting_native {
 pub mod sched_syscalls_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_syscalls_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_LOADAVG)]
+pub mod sched_loadavg_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_loadavg_generated.rs"));
+}

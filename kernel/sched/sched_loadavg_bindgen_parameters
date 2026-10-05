@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source-only proposal; binding generation is prohibited during this hold.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'rq'
+--allowlist-function 'lupos_loadavg_.*'
+--allowlist-var 'LUPOS_LOADAVG_.*'
+--opaque-type 'rq'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'

@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_LOADAVG
+	bool "Rust scheduler load-average source (not admitted)"
+	depends on RUST
+	depends on BROKEN
+	default n
+	help
+	  Source-only continuation of the existing scheduler load-average Rust
+	  implementation. Native ABI, compiler policy, generated bindings and
+	  behavioral verification remain unadmitted. Do not enable this owner.

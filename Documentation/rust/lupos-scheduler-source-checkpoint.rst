@@ -263,6 +263,21 @@ syscall attributes, hardened usercopy/object-size provenance, instrumentation,
 concurrency, caller attribution and runtime behavior remain unqualified. No
 source review claim establishes a running-kernel vulnerability or acceptance.
 
+Global load-average source checkpoint
+------------------------------------
+
+The existing load-average Rust implementation now uses native header-derived
+types and constants, actual native atomic storage, and explicit primitives for
+the original plain, READ_ONCE, WRITE_ONCE and barrier operations. Source review
+preserves all eight entry points, fixed-point decay and rounding at native word
+width, normal tick folding, NO_HZ double-buffer accounting and catch-up order.
+Independent review corrects the kernel-specific C integer aliases.
+
+The original build_utility.c owner remains selected. Default-off BROKEN and
+selected-owner hard errors keep this proposal inactive. Native layout/ABI/CFI,
+compiler and instrumentation policy, emitted barriers, 32-/64-bit arithmetic,
+NO_HZ concurrency and original-test/runtime qualification remain open.
+
 Inactive gates and remaining work
 ---------------------------------
 
