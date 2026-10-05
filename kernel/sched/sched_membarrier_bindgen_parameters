@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Source-only input proposal. Do not run binding generation during this hold.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-function 'lupos_membarrier_.*'
+--allowlist-type 'lupos_membarrier_cpumask|mm_struct|task_struct|rq|mutex|smp_call_func_t'
+--allowlist-var 'MEMBARRIER_.*|EINVAL|ENOMEM|EPERM'
+--opaque-type 'mm_struct|task_struct|rq|mutex'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=mutex='#[cfi_encoding="5mutex"]'
+--with-attribute-custom-struct=lupos_membarrier_cpumask='#[cfi_encoding="24lupos_membarrier_cpumask"]'

@@ -306,6 +306,21 @@ Trace declarations, generated field/layout/CFI, configured HW/IRQ alternatives,
 compiler/instrumentation policy, numerical differential and concurrent runtime
 qualification remain open. No native accounting acceptance is claimed.
 
+Membarrier source checkpoint
+----------------------------
+
+The existing membarrier Rust algorithms retain command and registration-state
+decisions while restoring native syscall width, mask cleanup, CPU-online checks
+under the hotplug lock, configured callback selection and init registration.
+Address-stable native mask storage remains borrowed until synchronous IPI
+completion. Independent source review checks intent/READY publication, MM/RCU
+lifetime, barriers and exact exit ordering, without native execution evidence.
+
+Default-off BROKEN and hard-error hooks preserve the original utility owner.
+Configured mask layout, nullable callback and enclosing-function CFI, native
+compiler/instrumentation and init policy, allocation attribution, emitted
+barriers, hotplug/MM lifetime and original-test behavior remain unqualified.
+
 Inactive gates and remaining work
 ---------------------------------
 

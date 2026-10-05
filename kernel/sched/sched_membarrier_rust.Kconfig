@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+config RUST_SCHED_MEMBARRIER
+	bool "Rust scheduler membarrier source (not admitted)"
+	depends on RUST && MEMBARRIER
+	depends on BROKEN
+	default n
+	help
+	  Source-only continuation of the existing scheduler membarrier Rust.
+	  Native ABI, configuration coverage, compiler/instrumentation policy,
+	  ownership and runtime ordering evidence remain unadmitted. Keep off.
