@@ -131,4 +131,26 @@ struct percpu_rw_semaphore *lupos_scx_core_fork_rwsem(void);
 #include "sched_ext_core_cgroup_bindings.h"
 bool lupos_scx_core_cgroup_enabled(void);
 
+/* Additive F09 interfaces, outside the independently reviewed foundation.
+ * F00 owns the referenced storage; F09 owns the algorithms using it.
+ * Borrowed addresses do not acquire locks or extend object lifetimes.
+ */
+const struct rhashtable_params *lupos_scx_core_dsq_hash_params(void);
+struct llist_head *lupos_scx_core_dsqs_to_free(void);
+struct kset *lupos_scx_core_kset(void);
+long lupos_scx_core_rejected_read(void);
+long lupos_scx_core_hotplug_seq_read(void);
+long lupos_scx_core_enable_seq_read(void);
+const char *lupos_scx_core_enable_state_name(enum scx_enable_state state);
+u64 lupos_scx_core_sched_id_inc(void);
+raw_spinlock_t *lupos_scx_core_bypass_lock(void);
+raw_spinlock_t *lupos_scx_core_sched_lock(void);
+struct list_head *lupos_scx_core_sched_all(void);
+#ifdef CONFIG_EXT_SUB_SCHED
+struct rhashtable *lupos_scx_core_sched_hash(void);
+const struct rhashtable_params *lupos_scx_core_sched_hash_params(void);
+#endif
+
+
+#include "sched_ext_core_object_lifetime_bindings.h"
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */

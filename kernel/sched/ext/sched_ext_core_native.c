@@ -471,3 +471,70 @@ bool lupos_scx_core_cgroup_enabled(void)
 {
 	return scx_cgroup_enabled;
 }
+/* Additive F09 primitive interfaces; algorithms remain object-lifetime-owned. */
+const struct rhashtable_params *lupos_scx_core_dsq_hash_params(void)
+{
+	return &dsq_hash_params;
+}
+
+struct llist_head *lupos_scx_core_dsqs_to_free(void)
+{
+	return &dsqs_to_free;
+}
+
+struct kset *lupos_scx_core_kset(void)
+{
+	return scx_kset;
+}
+
+long lupos_scx_core_rejected_read(void)
+{
+	return atomic_long_read(&scx_nr_rejected);
+}
+
+long lupos_scx_core_hotplug_seq_read(void)
+{
+	return atomic_long_read(&scx_hotplug_seq);
+}
+
+long lupos_scx_core_enable_seq_read(void)
+{
+	return atomic_long_read(&scx_enable_seq);
+}
+
+const char *lupos_scx_core_enable_state_name(enum scx_enable_state state)
+{
+	return scx_enable_state_str[state];
+}
+
+u64 lupos_scx_core_sched_id_inc(void)
+{
+	return atomic64_inc_return(&scx_sched_id_cursor);
+}
+
+raw_spinlock_t *lupos_scx_core_bypass_lock(void)
+{
+	return &scx_bypass_lock;
+}
+
+raw_spinlock_t *lupos_scx_core_sched_lock(void)
+{
+	return &scx_sched_lock;
+}
+
+struct list_head *lupos_scx_core_sched_all(void)
+{
+	return &scx_sched_all;
+}
+
+#ifdef CONFIG_EXT_SUB_SCHED
+struct rhashtable *lupos_scx_core_sched_hash(void)
+{
+	return &scx_sched_hash;
+}
+
+const struct rhashtable_params *lupos_scx_core_sched_hash_params(void)
+{
+	return &scx_sched_hash_params;
+}
+#endif

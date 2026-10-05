@@ -532,8 +532,8 @@ repairs CPU validation and protected task-slice behavior. It supplies common
 state/parameter boundaries, cursor traversal, slice-OOB accounting and current
 task accounting. Native storage and private layouts retain their original
 definitions. Independent review covers these two bounded source families.
-The task-lifetime and cgroup families below are separate increments; the other
-fourteen core families are not supplied by these bounded checkpoints.
+The task-lifetime, cgroup and object-lifetime families below are separate
+increments; thirteen other core families remain outside these checkpoints.
 
 Two current-task reads now use an exact plain native accessor for configured
 rq union access. The native source permits competing slice/vtime writers in
@@ -573,6 +573,23 @@ adapter reaches the single Rust task-group helper at the original callback
 argument point. Cross-frame context, canonical native types, ABI/CFI/BTF,
 diagnostic attribution and runtime behavior remain unqualified. Default-off
 BROKEN and all selection/source hard errors remain.
+
+Sched_ext object-lifetime source checkpoint
+------------------------------------------
+
+The reviewed object-lifetime increment covers DSQ creation/destruction, arena
+scratch, sysfs, exit-info allocation, hierarchy publication and complete
+scheduler allocation/unwind and RCU-work teardown. Native storage and callback
+metadata remain single-owned, with explicit cross-family dependencies.
+
+Review corrects lockdep initializer spelling, exact possible-CPU iteration,
+cleanup predicates and native context annotations. Event output retains the
+original native formatting expansion and integer accumulator, without the
+candidate's synthetic BUG fallback; that formatting remains native runtime
+work. Exit/dump callback declarations, bypass/watchdog callbacks and event
+aggregation remain pending owner dependencies at this checkpoint. Native ABI,
+CFI/BTF, allocation attribution, lifetime/RCU and protection qualification are
+still open, with all default-off BROKEN and hard source/selection holds intact.
 
 Inactive gates and remaining work
 ---------------------------------

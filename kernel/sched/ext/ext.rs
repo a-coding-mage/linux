@@ -61,6 +61,25 @@ pub(crate) use sched_ext_core_cgroup::{
     scx_tg_offline, scx_tg_online, scx_tg_sched,
 };
 
+mod sched_ext_core_object_lifetime;
+pub(crate) use sched_ext_core_object_lifetime::{
+    alloc_exit_info, alloc_pnode, destroy_dsq, exit_dsq, free_exit_info, free_pnode,
+    lupos_scx_core_object_enable_seq_body, lupos_scx_core_object_events_body,
+    lupos_scx_core_object_free_dsq_irq_body, lupos_scx_core_object_free_dsq_rcu_body,
+    lupos_scx_core_object_hotplug_seq_body, lupos_scx_core_object_link_locked_body,
+    lupos_scx_core_object_nr_rejected_body, lupos_scx_core_object_ops_body,
+    lupos_scx_core_object_release_body, lupos_scx_core_object_sched_free_body,
+    lupos_scx_core_object_state_body, lupos_scx_core_object_switch_all_body,
+    lupos_scx_core_object_uevent_body, lupos_scx_core_object_unlink_locked_body,
+    scx_alloc_and_add_sched, scx_exit_reason, scx_init_dsq, scx_link_sched,
+    scx_sched_sysfs_add, scx_set_cmask_scratch_alloc, scx_set_cmask_scratch_free,
+    scx_unlink_sched,
+};
+#[cfg(CONFIG_EXT_SUB_SCHED)]
+pub(crate) use sched_ext_core_object_lifetime::{
+    lupos_scx_core_object_caps_body, lupos_scx_core_object_caps_one_body,
+};
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }
