@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
+//! CPU-deadline heap algorithms backed by configured native bindings.
 /*
  *  kernel/sched/cpudeadline.c
  *
@@ -7,117 +8,144 @@
  *  Author: Juri Lelli <j.lelli@sssup.it>
  */
 
-use core::ptr::{
-    addr_of,
-    addr_of_mut, //
+use kernel::bindings::sched_support_native as b;
+
+use b::{
+    cpudl, cpumask, kfree, task_struct,
+    lupos_support_dl_asym_active as sched_asym_cpucap_active,
+    lupos_support_dl_cpu_capacity as arch_scale_cpu_capacity,
+    lupos_support_dl_fits_capacity as dl_task_fits_capacity,
+    lupos_support_dl_mask_and as cpumask_and,
+    lupos_support_dl_mask_clear as cpumask_clear_cpu,
+    lupos_support_dl_mask_clear_private as __cpumask_clear_cpu,
+    lupos_support_dl_mask_empty as cpumask_empty,
+    lupos_support_dl_mask_set as cpumask_set_cpu,
+    lupos_support_dl_mask_set_private as __cpumask_set_cpu,
+    lupos_support_dl_mask_test as cpumask_test_cpu,
+    lupos_support_dl_task_cpu as task_cpu,
+    lupos_support_dl_time_before as dl_time_before,
+    LUPOS_SUPPORT_ENOMEM as ENOMEM,
+    LUPOS_SUPPORT_IDX_INVALID as IDX_INVALID,
 };
-use kernel::ffi::{
-    c_ulong,
-    c_void, //
-};
+use core::ptr::addr_of;
+use kernel::ffi::{c_int, c_uint, c_ulong, c_void};
 
 #[inline]
-unsafe fn parent(i: i32) -> i32 {
+fn parent(i: c_int) -> c_int {
     (i - 1) >> 1
 }
 
 #[inline]
-unsafe fn left_child(i: i32) -> i32 {
+fn left_child(i: c_int) -> c_int {
     (i << 1) + 1
 }
 
 #[inline]
-unsafe fn right_child(i: i32) -> i32 {
+fn right_child(i: c_int) -> c_int {
     (i << 1) + 2
 }
 
-unsafe fn cpudl_heapify_down(cp: *mut cpudl, mut idx: i32) {
-    let mut l: i32;
-    let mut r: i32;
-    let mut largest: i32;
+unsafe fn cpudl_heapify_down(cp: *mut cpudl, mut idx: c_int) {
+    // SAFETY: The caller holds cp->lock and supplies the native heap's valid
+    // allocation, indices, and CPU-to-index map, including its removal case.
+    unsafe {
+        let mut l: c_int;
+        let mut r: c_int;
+        let mut largest: c_int;
 
-    let orig_cpu = (*(*cp).elements.add(idx as usize)).cpu;
-    let orig_dl = (*(*cp).elements.add(idx as usize)).dl;
+        let orig_cpu = (*(*cp).elements.add(idx as usize)).cpu;
+        let orig_dl = (*(*cp).elements.add(idx as usize)).dl;
 
-    if left_child(idx) >= (*cp).size {
-        return;
+        if left_child(idx) >= (*cp).size {
+            return;
+        }
+
+        /* adapted from lib/prio_heap.c */
+        loop {
+            let mut largest_dl: u64;
+
+            l = left_child(idx);
+            r = right_child(idx);
+            largest = idx;
+            largest_dl = orig_dl;
+
+            if l < (*cp).size && dl_time_before(orig_dl, (*(*cp).elements.add(l as usize)).dl) {
+                largest = l;
+                largest_dl = (*(*cp).elements.add(l as usize)).dl;
+            }
+            if r < (*cp).size && dl_time_before(largest_dl, (*(*cp).elements.add(r as usize)).dl) {
+                largest = r;
+            }
+
+            if largest == idx {
+                break;
+            }
+
+            /* pull largest child onto idx */
+            (*(*cp).elements.add(idx as usize)).cpu = (*(*cp).elements.add(largest as usize)).cpu;
+            (*(*cp).elements.add(idx as usize)).dl = (*(*cp).elements.add(largest as usize)).dl;
+            let cpu = (*(*cp).elements.add(idx as usize)).cpu;
+            (*(*cp).elements.add(cpu as usize)).idx = idx;
+            idx = largest;
+        }
+        /* actual push down of saved original values orig_* */
+        (*(*cp).elements.add(idx as usize)).cpu = orig_cpu;
+        (*(*cp).elements.add(idx as usize)).dl = orig_dl;
+        (*(*cp).elements.add(orig_cpu as usize)).idx = idx;
     }
-
-    /* adapted from lib/prio_heap.c */
-    loop {
-        let mut largest_dl: u64;
-
-        l = left_child(idx);
-        r = right_child(idx);
-        largest = idx;
-        largest_dl = orig_dl;
-
-        if l < (*cp).size && dl_time_before(orig_dl, (*(*cp).elements.add(l as usize)).dl) {
-            largest = l;
-            largest_dl = (*(*cp).elements.add(l as usize)).dl;
-        }
-        if r < (*cp).size && dl_time_before(largest_dl, (*(*cp).elements.add(r as usize)).dl) {
-            largest = r;
-        }
-
-        if largest == idx {
-            break;
-        }
-
-        /* pull largest child onto idx */
-        (*(*cp).elements.add(idx as usize)).cpu = (*(*cp).elements.add(largest as usize)).cpu;
-        (*(*cp).elements.add(idx as usize)).dl = (*(*cp).elements.add(largest as usize)).dl;
-        let cpu = (*(*cp).elements.add(idx as usize)).cpu;
-        (*(*cp).elements.add(cpu as usize)).idx = idx;
-        idx = largest;
-    }
-    /* actual push down of saved original values orig_* */
-    (*(*cp).elements.add(idx as usize)).cpu = orig_cpu;
-    (*(*cp).elements.add(idx as usize)).dl = orig_dl;
-    (*(*cp).elements.add(orig_cpu as usize)).idx = idx;
 }
 
-unsafe fn cpudl_heapify_up(cp: *mut cpudl, mut idx: i32) {
-    let mut p: i32;
-    let orig_cpu = (*(*cp).elements.add(idx as usize)).cpu;
-    let orig_dl = (*(*cp).elements.add(idx as usize)).dl;
+unsafe fn cpudl_heapify_up(cp: *mut cpudl, mut idx: c_int) {
+    // SAFETY: The caller holds cp->lock and provides a valid heap entry and
+    // native CPU-to-index map. Parent indices remain within the allocation.
+    unsafe {
+        let mut p: c_int;
+        let orig_cpu = (*(*cp).elements.add(idx as usize)).cpu;
+        let orig_dl = (*(*cp).elements.add(idx as usize)).dl;
 
-    if idx == 0 {
-        return;
-    }
-
-    loop {
-        p = parent(idx);
-        if dl_time_before(orig_dl, (*(*cp).elements.add(p as usize)).dl) {
-            break;
-        }
-        /* pull parent onto idx */
-        (*(*cp).elements.add(idx as usize)).cpu = (*(*cp).elements.add(p as usize)).cpu;
-        (*(*cp).elements.add(idx as usize)).dl = (*(*cp).elements.add(p as usize)).dl;
-        let cpu = (*(*cp).elements.add(idx as usize)).cpu;
-        (*(*cp).elements.add(cpu as usize)).idx = idx;
-        idx = p;
         if idx == 0 {
-            break;
+            return;
         }
+
+        loop {
+            p = parent(idx);
+            if dl_time_before(orig_dl, (*(*cp).elements.add(p as usize)).dl) {
+                break;
+            }
+            /* pull parent onto idx */
+            (*(*cp).elements.add(idx as usize)).cpu = (*(*cp).elements.add(p as usize)).cpu;
+            (*(*cp).elements.add(idx as usize)).dl = (*(*cp).elements.add(p as usize)).dl;
+            let cpu = (*(*cp).elements.add(idx as usize)).cpu;
+            (*(*cp).elements.add(cpu as usize)).idx = idx;
+            idx = p;
+            if idx == 0 {
+                break;
+            }
+        }
+        /* actual push up of saved original values orig_* */
+        (*(*cp).elements.add(idx as usize)).cpu = orig_cpu;
+        (*(*cp).elements.add(idx as usize)).dl = orig_dl;
+        (*(*cp).elements.add(orig_cpu as usize)).idx = idx;
     }
-    /* actual push up of saved original values orig_* */
-    (*(*cp).elements.add(idx as usize)).cpu = orig_cpu;
-    (*(*cp).elements.add(idx as usize)).dl = orig_dl;
-    (*(*cp).elements.add(orig_cpu as usize)).idx = idx;
 }
 
-unsafe fn cpudl_heapify(cp: *mut cpudl, idx: i32) {
-    if idx > 0 && dl_time_before((*(*cp).elements.add(parent(idx) as usize)).dl, (*(*cp).elements.add(idx as usize)).dl) {
-        cpudl_heapify_up(cp, idx);
-    } else {
-        cpudl_heapify_down(cp, idx);
+unsafe fn cpudl_heapify(cp: *mut cpudl, idx: c_int) {
+    // SAFETY: The caller supplies the locked native heap and the same valid
+    // allocation/index preconditions needed by either heapify direction.
+    unsafe {
+        if idx > 0 && dl_time_before((*(*cp).elements.add(parent(idx) as usize)).dl, (*(*cp).elements.add(idx as usize)).dl) {
+            cpudl_heapify_up(cp, idx);
+        } else {
+            cpudl_heapify_down(cp, idx);
+        }
     }
 }
 
 #[inline]
-unsafe fn cpudl_maximum(cp: *mut cpudl) -> i32 {
-    (*(*cp).elements).cpu
+unsafe fn cpudl_maximum(cp: *mut cpudl) -> c_int {
+    // SAFETY: The caller maintains the live native heap allocation and the
+    // scheduler synchronization required for its root access.
+    unsafe { (*(*cp).elements).cpu }
 }
 
 /*
@@ -128,32 +156,53 @@ unsafe fn cpudl_maximum(cp: *mut cpudl) -> i32 {
  *
  * Returns: int - CPUs were found
  */
+/// Finds eligible CPUs whose deadlines are later than the task's deadline.
+///
+/// # Safety
+///
+/// `cp` and `p` must be live native scheduler objects with valid heap storage.
+/// `later_mask` must be null or writable for the configured mask size. The
+/// caller must maintain the native search's lifetime and synchronization
+/// requirements, including its heap-root and capacity-fallback preconditions.
 #[no_mangle]
-pub unsafe extern "C" fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_mask: *mut cpumask) -> i32 {
-    let dl_se = addr_of!((*p).dl);
-    if !later_mask.is_null() && cpumask_and(later_mask, (*cp).free_cpus, addr_of!((*p).cpus_mask)) {
-        let mut max_cap: c_ulong = 0;
-        let mut max_cpu: i32 = -1;
-        if !sched_asym_cpucap_active() { return 1; }
-        for_each_cpu!(cpu, later_mask, {
-            if !dl_task_fits_capacity(p, cpu) {
-                cpumask_clear_cpu(cpu, later_mask);
-                let cap = arch_scale_cpu_capacity(cpu);
-                if cap > max_cap || (cpu == task_cpu(p) && cap == max_cap) {
-                    max_cap = cap;
-                    max_cpu = cpu;
+pub unsafe extern "C" fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_mask: *mut cpumask) -> c_int {
+    // SAFETY: The caller supplies live scheduler objects and any destination
+    // mask under the native search contract. The original filtering, fallback,
+    // and heap-root access order are retained without Rust reference borrows.
+    unsafe {
+        let dl_se = addr_of!((*p).dl);
+        if !later_mask.is_null()
+            && cpumask_and(
+                later_mask,
+                b::lupos_support_dl_free_cpus(cp),
+                addr_of!((*p).cpus_mask),
+            )
+        {
+            let mut max_cap: c_ulong = 0;
+            let mut max_cpu: c_int = -1;
+            if !sched_asym_cpucap_active() { return 1; }
+            let mut cpu = b::lupos_support_dl_mask_first(later_mask);
+            while cpu < b::lupos_support_dl_mask_limit() {
+                if !dl_task_fits_capacity(p, cpu) {
+                    cpumask_clear_cpu(cpu, later_mask);
+                    let cap = arch_scale_cpu_capacity(cpu);
+                    if cap > max_cap || (cpu as c_uint == task_cpu(p) && cap == max_cap) {
+                        max_cap = cap;
+                        max_cpu = cpu;
+                    }
                 }
+                cpu = b::lupos_support_dl_mask_next(cpu, later_mask);
             }
-        });
-        if cpumask_empty(later_mask) { cpumask_set_cpu(max_cpu, later_mask); }
-        1
-    } else {
-        let best_cpu = cpudl_maximum(cp);
-        WARN_ON(best_cpu != -1 && !cpu_present(best_cpu));
-        if cpumask_test_cpu(best_cpu, addr_of!((*p).cpus_mask)) && dl_time_before((*dl_se).deadline, (*(*cp).elements).dl) {
-            if !later_mask.is_null() { cpumask_set_cpu(best_cpu, later_mask); }
+            if cpumask_empty(later_mask) { cpumask_set_cpu(max_cpu, later_mask); }
             1
-        } else { 0 }
+        } else {
+            let best_cpu = cpudl_maximum(cp);
+            b::lupos_support_dl_warn_find_cpu(best_cpu);
+            if cpumask_test_cpu(best_cpu, addr_of!((*p).cpus_mask)) && dl_time_before((*dl_se).deadline, (*(*cp).elements).dl) {
+                if !later_mask.is_null() { cpumask_set_cpu(best_cpu, later_mask); }
+                1
+            } else { 0 }
+        }
     }
 }
 
@@ -167,67 +216,115 @@ pub unsafe extern "C" fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_m
  *
  * Returns: (void)
  */
+/// Removes a CPU from the deadline heap and updates its free-CPU bit.
+///
+/// # Safety
+///
+/// `cp` must be initialized and live and `cpu` must be a valid CPU index in
+/// its allocated native map. The caller must hold `cpu_rq(cpu)->lock` and
+/// satisfy the native heap invariants, including last-element removal.
 #[no_mangle]
-pub unsafe extern "C" fn cpudl_clear(cp: *mut cpudl, cpu: i32, online: bool) {
-    let mut flags: c_ulong = 0;
-    WARN_ON(!cpu_present(cpu));
-    raw_spin_lock_irqsave(addr_of_mut!((*cp).lock), &mut flags);
-    let old_idx = (*(*cp).elements.add(cpu as usize)).idx;
-    if old_idx != IDX_INVALID {
-        let new_cpu = (*(*cp).elements.add(((*cp).size - 1) as usize)).cpu;
-        (*(*cp).elements.add(old_idx as usize)).dl = (*(*cp).elements.add(((*cp).size - 1) as usize)).dl;
-        (*(*cp).elements.add(old_idx as usize)).cpu = new_cpu;
-        (*cp).size -= 1;
-        (*(*cp).elements.add(new_cpu as usize)).idx = old_idx;
-        (*(*cp).elements.add(cpu as usize)).idx = IDX_INVALID;
-        cpudl_heapify(cp, old_idx);
+pub unsafe extern "C" fn cpudl_clear(cp: *mut cpudl, cpu: c_int, online: bool) {
+    // SAFETY: The caller maintains the initialized heap, valid CPU and
+    // runqueue lock. The native heap lock encloses the update and mask change.
+    unsafe {
+        b::lupos_support_dl_warn_clear_cpu(cpu);
+        let flags = b::lupos_support_dl_clear_lock(cp);
+        let old_idx = (*(*cp).elements.add(cpu as usize)).idx;
+        if old_idx != IDX_INVALID {
+            let new_cpu = (*(*cp).elements.add(((*cp).size - 1) as usize)).cpu;
+            (*(*cp).elements.add(old_idx as usize)).dl = (*(*cp).elements.add(((*cp).size - 1) as usize)).dl;
+            (*(*cp).elements.add(old_idx as usize)).cpu = new_cpu;
+            (*cp).size -= 1;
+            (*(*cp).elements.add(new_cpu as usize)).idx = old_idx;
+            (*(*cp).elements.add(cpu as usize)).idx = IDX_INVALID;
+            cpudl_heapify(cp, old_idx);
+        }
+        if b::lupos_support_dl_likely_online(online) {
+            __cpumask_set_cpu(cpu, b::lupos_support_dl_free_cpus(cp));
+        } else {
+            __cpumask_clear_cpu(cpu, b::lupos_support_dl_free_cpus(cp));
+        }
+        b::lupos_support_dl_clear_unlock(cp, flags);
     }
-    if likely(online) { __cpumask_set_cpu(cpu, (*cp).free_cpus); } else { __cpumask_clear_cpu(cpu, (*cp).free_cpus); }
-    raw_spin_unlock_irqrestore(addr_of_mut!((*cp).lock), flags);
 }
 
 /* cpudl_set - update the cpudl max-heap */
+/// Inserts or updates a CPU's earliest deadline in the heap.
+///
+/// # Safety
+///
+/// `cp` must be initialized and live, `cpu` must index its native CPU map, and
+/// the heap must have room for a previously absent CPU. The caller must hold
+/// `cpu_rq(cpu)->lock` and preserve the native heap and deadline invariants.
 #[no_mangle]
-pub unsafe extern "C" fn cpudl_set(cp: *mut cpudl, cpu: i32, dl: u64) {
-    let mut flags: c_ulong = 0;
-    WARN_ON(!cpu_present(cpu));
-    raw_spin_lock_irqsave(addr_of_mut!((*cp).lock), &mut flags);
-    let old_idx = (*(*cp).elements.add(cpu as usize)).idx;
-    if old_idx == IDX_INVALID {
-        let new_idx = (*cp).size;
-        (*cp).size += 1;
-        (*(*cp).elements.add(new_idx as usize)).dl = dl;
-        (*(*cp).elements.add(new_idx as usize)).cpu = cpu;
-        (*(*cp).elements.add(cpu as usize)).idx = new_idx;
-        cpudl_heapify_up(cp, new_idx);
-        __cpumask_clear_cpu(cpu, (*cp).free_cpus);
-    } else {
-        (*(*cp).elements.add(old_idx as usize)).dl = dl;
-        cpudl_heapify(cp, old_idx);
+pub unsafe extern "C" fn cpudl_set(cp: *mut cpudl, cpu: c_int, dl: u64) {
+    // SAFETY: The caller maintains the initialized heap, capacity, indices,
+    // and runqueue lock. The native heap lock encloses each update path.
+    unsafe {
+        b::lupos_support_dl_warn_set_cpu(cpu);
+        let flags = b::lupos_support_dl_set_lock(cp);
+        let old_idx = (*(*cp).elements.add(cpu as usize)).idx;
+        if old_idx == IDX_INVALID {
+            let new_idx = (*cp).size;
+            (*cp).size += 1;
+            (*(*cp).elements.add(new_idx as usize)).dl = dl;
+            (*(*cp).elements.add(new_idx as usize)).cpu = cpu;
+            (*(*cp).elements.add(cpu as usize)).idx = new_idx;
+            cpudl_heapify_up(cp, new_idx);
+            __cpumask_clear_cpu(cpu, b::lupos_support_dl_free_cpus(cp));
+        } else {
+            (*(*cp).elements.add(old_idx as usize)).dl = dl;
+            cpudl_heapify(cp, old_idx);
+        }
+        b::lupos_support_dl_set_unlock(cp, flags);
     }
-    raw_spin_unlock_irqrestore(addr_of_mut!((*cp).lock), flags);
 }
 
 /* cpudl_init - initialize the cpudl structure */
+/// Initializes deadline-heap storage, unwinding allocations on failure.
+///
+/// # Safety
+///
+/// `cp` must point to writable native storage that is not concurrently used
+/// or already initialized. The caller must permit GFP_KERNEL allocation.
 #[no_mangle]
-pub unsafe extern "C" fn cpudl_init(cp: *mut cpudl) -> i32 {
-    raw_spin_lock_init(addr_of_mut!((*cp).lock));
-    (*cp).size = 0;
-    (*cp).elements = kzalloc_objs::<cpudl_item>(nr_cpu_ids);
-    if (*cp).elements.is_null() { return -ENOMEM; }
-    if !zalloc_cpumask_var(addr_of_mut!((*cp).free_cpus), GFP_KERNEL) {
-        kfree((*cp).elements.cast::<c_void>());
-        return -ENOMEM;
+pub unsafe extern "C" fn cpudl_init(cp: *mut cpudl) -> c_int {
+    // SAFETY: The caller supplies unused writable storage and allocation
+    // context. Failure releases the allocation obtained by this initializer.
+    unsafe {
+        b::lupos_support_dl_lock_init(cp);
+        (*cp).size = 0;
+        (*cp).elements = b::lupos_support_dl_alloc_elements();
+        if (*cp).elements.is_null() { return -ENOMEM; }
+        if !b::lupos_support_dl_alloc_mask(cp) {
+            kfree((*cp).elements.cast::<c_void>());
+            return -ENOMEM;
+        }
+        let mut cpu = b::lupos_support_dl_possible_first();
+        while cpu < b::lupos_support_dl_possible_limit() {
+            (*(*cp).elements.add(cpu as usize)).idx = IDX_INVALID;
+            cpu = b::lupos_support_dl_possible_next(cpu);
+        }
+        0
     }
-    for_each_possible_cpu!(i, { (*(*cp).elements.add(i as usize)).idx = IDX_INVALID; });
-    0
 }
 
 /* cpudl_cleanup - clean up the cpudl structure */
+/// Releases successfully initialized deadline-heap storage.
+///
+/// # Safety
+///
+/// `cp` must have completed [`cpudl_init`] successfully, must not have been
+/// cleaned up already, and must no longer be accessible to concurrent users.
 #[no_mangle]
 pub unsafe extern "C" fn cpudl_cleanup(cp: *mut cpudl) {
-    free_cpumask_var((*cp).free_cpus);
-    kfree((*cp).elements.cast::<c_void>());
+    // SAFETY: The caller has ended all uses and transfers the initialized
+    // allocations for their matching native release operations.
+    unsafe {
+        b::lupos_support_dl_free_mask(cp);
+        kfree((*cp).elements.cast::<c_void>());
+    }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1040,6 +1040,7 @@ include $(srctree)/kernel/sched/sched_idle_clock_bindgen.mk
 include $(srctree)/kernel/sched/sched_core_bindgen.mk
 include $(srctree)/kernel/sched/fair_bindgen.mk
 include $(srctree)/kernel/sched/rt_bindgen.mk
+include $(srctree)/kernel/sched/sched_support_bindgen.mk
 
 include $(srctree)/mm/memory_native_bindgen.mk
 include $(srctree)/mm/userfaultfd_native_bindgen.mk

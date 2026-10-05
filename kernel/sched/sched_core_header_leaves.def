@@ -137,6 +137,10 @@ LUPOS_CORE_VALUE(int, lupos_core_header_scx_tg_online, (struct task_group *tg), 
 LUPOS_CORE_VOID(lupos_core_header_scx_tick, (struct rq *rq), scx_tick(rq))
 /* /workspace/shared/lupos-recovery-20261003/linux/include/linux/seq_file.h:122 */
 LUPOS_CORE_VOID(lupos_core_header_seq_puts, (struct seq_file *m, const char *s), seq_puts(m, s))
+/* include/linux/sched.h:2295; never forward the SMP core.c algorithm. */
+#ifndef CONFIG_SMP
+LUPOS_CORE_VOID(lupos_core_header_set_task_cpu, (struct task_struct *p, unsigned int cpu), set_task_cpu(p, cpu))
+#endif
 /* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:2375 */
 LUPOS_CORE_VOID(lupos_core_header_set_task_rq, (struct task_struct *p, unsigned int cpu), set_task_rq(p, cpu))
 /* /workspace/shared/lupos-recovery-20261003/linux/include/linux/stop_machine.h:53 */

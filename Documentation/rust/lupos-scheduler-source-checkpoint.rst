@@ -93,8 +93,24 @@ repairs: allocation-failure unwind bounds, raw-pointer indexing and shared
 field addresses, boolean mask checks, native IRQ flag types, allocation
 pointer casts, callback extraction, and ten public C ABI symbol definitions.
 The original heap, fallback and barrier algorithms are retained. These
-support fragments still require configured native binding/macro and
-single-owner integration.
+support sources now have a shared configured binding input and sixty distinct
+native primitive boundaries. Both CPUMASK_OFFSTACK representations retain their
+native field allocation/free/decay, and CPU iteration preserves configured
+limits and the original one-CPU alternative. Independent source comparison
+preserves all nineteen Rust function bodies' statement text across explicit
+unsafe scopes. Both roots import the existing bindings crate; no new generated
+or handwritten diagnostic allowance is added.
+
+Support admission remains blocked by BROKEN and hard errors in source make
+fragments. No aggregate C inclusion or replacement-object selection changes.
+Single ownership, native policy, nullable callback KCFI and cross-language
+shared-memory/lifetime semantics still need later qualification.
+
+The core affinity/TTWU increment captures the pending-refcount address before
+its final release, preserves the original native !SMP set_task_cpu alternative,
+and makes 51 reviewed unsafe scopes explicit. Exact de-scoping preserves prior
+bodies; two existing cfg alternatives remain unchanged when disabled. These
+repairs do not admit the owner or establish callback/native policy equivalence.
 
 RT source checkpoint
 --------------------

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source proposal only. Do not generate bindings in the source-only phase.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'cpupri|cpupri_vec|cpudl|cpudl_item|task_struct|cpumask|cpumask_var_t|atomic_t|raw_spinlock_t'
+--allowlist-function 'lupos_support_.*|kfree'
+--allowlist-var 'LUPOS_SUPPORT_.*'
+--with-attribute-custom-struct=cpupri='#[cfi_encoding="6cpupri"]'
+--with-attribute-custom-struct=cpupri_vec='#[cfi_encoding="10cpupri_vec"]'
+--with-attribute-custom-struct=cpudl='#[cfi_encoding="5cpudl"]'
+--with-attribute-custom-struct=cpudl_item='#[cfi_encoding="10cpudl_item"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=cpumask='#[cfi_encoding="7cpumask"]'
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_SUPPORT
+	bool "Rust CPU-priority and deadline support source owners"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Reserve the configured Rust support owners and native header boundaries.
+	  This source checkpoint is not admitted: ABI, aggregate ownership,
+	  callback CFI, concurrency and native compiler policy need qualification.
