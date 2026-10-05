@@ -3,6 +3,7 @@
 #error "SOURCE ONLY HOLD: sched_ext sub caps native admission is pending"
 #include "sched_ext_sub_bindings.h"
 #ifdef CONFIG_EXT_SUB_SCHED
+#include "sched_ext_core_pick_bindings.h"
 void lupos_scx_sub_rcu_lock(void) { rcu_read_lock(); }
 void lupos_scx_sub_rcu_unlock(void) { rcu_read_unlock(); }
 struct scx_sched *lupos_scx_sub_prog_sched(const struct bpf_prog_aux *aux) { return scx_prog_sched(aux); }
@@ -10,7 +11,13 @@ void lupos_scx_sub_error_recursion(struct scx_sched *sch, const char *op) { scx_
 const char *lupos_scx_sub_dispatch_name(void) { return "dispatch"; }
 const char *lupos_scx_sub_caps_name(void) { return "sub_caps_updated"; }
 struct rq *lupos_scx_sub_locked_rq(void) { return scx_locked_rq(); }
-enum scx_dsp_verdict lupos_scx_sub_dispatch_sched(struct scx_sched *sch, struct rq *rq, struct task_struct *prev, bool nested) { return scx_dispatch_sched(sch, rq, prev, nested); }
+enum scx_dsp_verdict
+lupos_scx_sub_dispatch_sched(struct scx_sched *sch, struct rq *rq,
+			    struct task_struct *prev, bool nested)
+{
+	/* Typed forwarding only; recursive FFI stack/CFI remains unqualified. */
+	return lupos_scx_core_pick_dispatch_sched_body(sch, rq, prev, nested);
+}
 void lupos_scx_sub_error_dispatch(struct scx_sched *sch, u64 id)
 {
 	scx_error(sch, "trying to dispatch a distant sub-sched on cgroup %llu", id);

@@ -764,6 +764,23 @@ creation and cursor teardown retain their original cleanup order. Native
 single-TU, ABI/CFI/BTF, memory-model/lifetime and runtime remain unqualified.
 All source/selection gates remain intact.
 
+Nested dispatch source ownership
+--------------------------------
+
+The independently reviewed sub-scheduler adapter now forwards through a guarded,
+typed Rust export to the sole retained Rust inline-dispatch helper. Its native
+enum, pointer and bool signatures match; the helper body and operational order
+are unchanged. The ordinary root path continues to call the helper directly.
+The original native header remains type authority, without serving as a
+candidate algorithm fallback on this edge.
+
+Recursive C/Rust frames, cross-language always-inline behavior, configured
+ABI/CFI/BTF and BPF fault/non-local cleanup remain unqualified. Original private
+stack and recursion setup names dispatch and sub_caps_updated, whereas the
+separate sub_ecaps_updated callback may also originate dispatch. That latter
+path retains its own qualification requirement and gains no inferred stack
+guarantee. All source and selection holds remain.
+
 Inactive gates and remaining work
 ---------------------------------
 

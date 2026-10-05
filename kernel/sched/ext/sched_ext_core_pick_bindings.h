@@ -8,6 +8,12 @@
 #include "inlines.h"
 
 /* Native callback adapters call these uniquely named Rust owner entries. */
+#ifdef CONFIG_EXT_SUB_SCHED
+/* Native enum and pointer identities; recursive FFI stack/CFI remains held. */
+enum scx_dsp_verdict
+lupos_scx_core_pick_dispatch_sched_body(struct scx_sched *sch, struct rq *rq,
+				      struct task_struct *prev, bool nested);
+#endif
 void lupos_scx_core_pick_set_next_body(struct rq *rq, struct task_struct *p, bool first);
 void lupos_scx_core_pick_put_prev_body(struct rq *rq, struct task_struct *p,
                                       struct task_struct *next);

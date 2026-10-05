@@ -150,4 +150,25 @@ pub unsafe fn scx_dispatch_sched(
     }
 }
 
+/// Typed native entry to the sole retained dispatch algorithm above.
+///
+/// # Safety
+/// The native caller must provide the same live scheduler, locked rq, pinned
+/// CPU and previous task context required by scx_dispatch_sched. Nested calls
+/// must retain the outer sub_dispatch_prev and callback/RCU protection. Flush
+/// may drop/reacquire rq; this bridge acquires no protection or Rust reference.
+/// Recursive FFI stack cost, CFI and cross-language inlining remain unqualified.
+#[cfg(CONFIG_EXT_SUB_SCHED)]
+#[export_name = "lupos_scx_core_pick_dispatch_sched_body"]
+pub unsafe extern "C" fn scx_dispatch_sched_native(
+    sch: *mut scx_sched,
+    rq: *mut rq,
+    prev: *mut task_struct,
+    nested: bool,
+) -> scx_dsp_verdict {
+    // SAFETY: Forward the native pointers, nesting flag and verdict unchanged.
+    // The helper's inline attribute does not eliminate this C/Rust boundary.
+    unsafe { scx_dispatch_sched(sch, rq, prev, nested) }
+}
+
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

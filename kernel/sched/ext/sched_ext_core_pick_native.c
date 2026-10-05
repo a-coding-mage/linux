@@ -332,9 +332,10 @@ bool lupos_scx_core_pick_inline_unlikely_last_loop(int *nr_loops)
 	return unlikely(!--*nr_loops);
 }
 
-/* No native scx_dispatch_sched bridge is installed here. Existing native/sub
- * references still reach the unchanged header and remain unmigrated ext-owned
- * dependencies. A future integrator must resolve callsite/inline/stack policy
- * explicitly; this file neither clones that algorithm nor calls it as fallback.
+/* The sub native adapter targets lupos_scx_core_pick_dispatch_sched_body in
+ * inlines_header.rs, which forwards to its sole retained inline Rust helper.
+ * The unchanged inlines.h is native enum authority, not a candidate fallback.
+ * Recursive FFI stack, CFI, inlining and BPF fault/context qualification remain
+ * held; this redirect does not establish C always-inline call-frame behavior.
  * Preserve original CFLAGS_build_policy.o += -DDISABLE_BRANCH_PROFILING. */
 // Assisted-by: LLM
