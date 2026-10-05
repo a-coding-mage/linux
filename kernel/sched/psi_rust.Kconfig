@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_PSI
+	bool "Rust PSI source owner proposal"
+	depends on RUST && PSI && BROKEN
+	default n
+	help
+	  Inactive pressure-stall-information source owner. Configured ABI,
+	  callback CFI, concurrency, instrumentation and object ownership
+	  must be qualified before this source can be selected.

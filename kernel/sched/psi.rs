@@ -1,117 +1,120 @@
 // SPDX-License-Identifier: GPL-2.0
-// Faithful low-level Rust transcription of sched/psi.c.  Kernel-provided
-// types, helpers, macros, and synchronization primitives are intentionally
-// referenced but not reimplemented here.
+// Pressure stall information for CPU, memory and IO.
+// Original C owner: Copyright (c) 2018 Facebook, Inc.
+// Author: Johannes Weiner <hannes@cmpxchg.org>
+// Polling support: Suren Baghdasaryan <surenb@google.com>
+// Copyright (c) 2018 Google, Inc.
+// Existing psi.rs owner completed against psi.c at
+// 126a30fae3bba11420ec2fcbde51a0a01bab1b5b. SOURCE ONLY, unqualified.
+//! Pressure stall information using native configured types and primitives.
+//! Native layouts, synchronization, instrumentation and callback ABI still need
+//! qualification. All PSI state decisions and accounting are owned by Rust.
+#![no_std]
+compile_error!("Lupos PSI source proposal is not build-admitted; qualification is incomplete");
 
-#![allow(non_camel_case_types, non_snake_case, dead_code, unused_variables)]
+use core::cmp::{max, min};
+use core::mem::MaybeUninit;
+use core::ptr::{addr_of, addr_of_mut, null_mut};
+use kernel::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
+use kernel::bindings::sched_psi_native as b;
 
-use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
+const STATES: usize = b::RUST_PSI_NR_STATES as usize;
+const COUNTS: usize = b::RUST_PSI_NR_TASK_COUNTS as usize;
+const AVGS: usize = b::RUST_PSI_AVGS as usize;
+const POLL: usize = b::RUST_PSI_POLL as usize;
+const NONIDLE: usize = b::RUST_PSI_NONIDLE as usize;
+const ONCPU: u32 = b::RUST_PSI_ONCPU as u32;
+const TSK_ONCPU: c_uint = b::RUST_PSI_TSK_ONCPU as c_uint;
+const FREQ: c_ulong = b::RUST_PSI_FREQ as c_ulong;
+const UPDATES_PER_WINDOW: u32 = b::RUST_PSI_UPDATES_PER_WINDOW as u32;
 
-/* Kernel constants and configuration conditionals supplied by the build. */
-pub const PSI_FREQ: u64 = 2 * HZ as u64 + 1;
-pub const EXP_10s: u32 = 1677;
-pub const EXP_60s: u32 = 1981;
-pub const EXP_300s: u32 = 2034;
-pub const WINDOW_MAX_US: u32 = 10_000_000;
-pub const UPDATES_PER_WINDOW: u64 = 10;
-
-extern "C" {
-    static mut psi_bug: c_int;
-    static mut psi_period: u64;
-    static mut psi_system: psi_group;
-    static mut psi_enable: bool;
-    static HZ: c_uint;
+macro_rules! container_of {
+    ($ptr:expr, $ty:ty, $field:ident) => {
+        ($ptr as *mut u8).sub(core::mem::offset_of!($ty, $field)) as *mut $ty
+    };
 }
 
-#[repr(C)] pub struct psi_group { _private: [u8; 0] }
-#[repr(C)] pub struct psi_group_cpu { _private: [u8; 0] }
-#[repr(C)] pub struct psi_window { pub start_time: u64, pub start_value: u64, pub prev_growth: u64, pub size: u64 }
-#[repr(C)] pub struct psi_trigger { _private: [u8; 0] }
-#[repr(C)] pub struct work_struct { _private: [u8; 0] }
-#[repr(C)] pub struct delayed_work { _private: [u8; 0] }
-#[repr(C)] pub struct timer_list { _private: [u8; 0] }
-#[repr(C)] pub struct task_struct { _private: [u8; 0] }
-#[repr(C)] pub struct rq { _private: [u8; 0] }
-#[repr(C)] pub struct rq_flags { _private: [u8; 0] }
-#[repr(C)] pub struct cgroup { _private: [u8; 0] }
-#[repr(C)] pub struct css_set { _private: [u8; 0] }
-#[repr(C)] pub struct seq_file { _private: [u8; 0] }
-#[repr(C)] pub struct file { _private: [u8; 0] }
-#[repr(C)] pub struct inode { _private: [u8; 0] }
-#[repr(C)] pub struct poll_table { _private: [u8; 0] }
-
-pub type enum_psi_aggregators = c_uint;
-pub type enum_psi_res = c_uint;
-pub type __poll_t = c_uint;
-
-/* Direct translations of the file-local state helpers. */
-#[inline] unsafe fn psi_write_begin(_cpu: c_int) {}
-#[inline] unsafe fn psi_write_end(_cpu: c_int) {}
-#[inline] unsafe fn psi_read_begin(_cpu: c_int) -> u32 { 0 }
-#[inline] unsafe fn psi_read_retry(_cpu: c_int, _seq: u32) -> bool { false }
-
-unsafe fn setup_psi(_str: *mut c_char) -> c_int { 0 }
-
-unsafe fn group_init(_group: *mut psi_group) {
-    // enabled=true; clock, averages, trigger lists, waitqueue and timer are
-    // initialized here exactly as in the C implementation.
-}
-
+/// # Safety
+/// Called only by the native boot parser with its writable NUL-terminated value.
 #[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn rust_psi_setup(value: *mut c_char) -> c_int {
+    unsafe { (b::rust_psi_kstrtobool(value, addr_of_mut!(b::rust_psi_enable)) == 0) as c_int }
+}
+
+/// # Safety
+/// Group storage is zero-initialized and unpublished, with valid native pcpu.
+unsafe fn group_init(group: *mut b::psi_group) {
+    unsafe {
+        (*group).enabled = true;
+        (*group).avg_last_update = b::rust_psi_sched_clock();
+        (*group).avg_next_update = (*group).avg_last_update.wrapping_add(b::rust_psi_period);
+        b::rust_psi_mutex_init_avgs(group);
+        b::rust_psi_init_list(addr_of_mut!((*group).avg_triggers));
+        for s in 0..STATES - 1 { (*group).avg_nr_triggers[s] = 0; }
+        b::rust_psi_init_avgs_work(group);
+        b::rust_psi_atomic_set(addr_of_mut!((*group).rtpoll_scheduled), 0);
+        b::rust_psi_mutex_init_rtpoll(group);
+        b::rust_psi_init_list(addr_of_mut!((*group).rtpoll_triggers));
+        (*group).rtpoll_min_period = b::RUST_PSI_U32_MAX as u64;
+        (*group).rtpoll_next_update = b::RUST_PSI_U64_MAX as u64;
+        b::rust_psi_init_rtpoll_wait(group);
+        b::rust_psi_init_timer(group);
+        b::rust_psi_assign_rtpoll_task(group, null_mut());
+    }
+}
+
+/// # Safety
+/// Boot-only initialization before PSI accounting starts.
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
 pub unsafe extern "C" fn psi_init() {
-    if !psi_enable { return; }
-    psi_period = 2 * HZ as u64 + 1;
-    group_init(&raw mut psi_system);
+    unsafe {
+        if !b::rust_psi_enable {
+            b::rust_psi_disable();
+            b::rust_psi_disable_cgroups();
+            return;
+        }
+        if !b::rust_psi_cgroup_psi_enabled() { b::rust_psi_disable_cgroups(); }
+        b::rust_psi_period = b::rust_psi_jiffies_to_nsecs(FREQ);
+        group_init(addr_of_mut!(b::psi_system));
+    }
 }
 
-unsafe fn test_states(_tasks: *mut c_uint, state_mask: u32) -> u32 { state_mask }
-unsafe fn get_recent_times(_group: *mut psi_group, _cpu: c_int, _aggregator: enum_psi_aggregators, _times: *mut u32, _changed: *mut u32) {}
-unsafe fn calc_avgs(_avg: *mut c_ulong, _missed: c_int, _time: u64, _period: u64) {}
-unsafe fn collect_percpu_times(_group: *mut psi_group, _aggregator: enum_psi_aggregators, _changed: *mut u32) {}
-
-unsafe fn window_reset(win: *mut psi_window, now: u64, value: u64, prev_growth: u64) {
-    (*win).start_time = now; (*win).start_value = value; (*win).prev_growth = prev_growth;
-}
-unsafe fn window_update(win: *mut psi_window, now: u64, value: u64) -> u64 {
-    let elapsed = now.wrapping_sub((*win).start_time);
-    let mut growth = value.wrapping_sub((*win).start_value);
-    if elapsed > (*win).size { window_reset(win, now, value, growth); }
-    else { growth = growth.wrapping_add((*win).prev_growth.wrapping_mul((*win).size - elapsed) / (*win).size); }
-    growth
-}
-
-unsafe fn update_triggers(_group: *mut psi_group, _now: u64, _aggregator: enum_psi_aggregators) {}
-unsafe fn update_averages(_group: *mut psi_group, _now: u64) -> u64 { 0 }
-unsafe fn psi_avgs_work(_work: *mut work_struct) {}
-unsafe fn init_rtpoll_triggers(_group: *mut psi_group, _now: u64) {}
-unsafe fn psi_schedule_rtpoll_work(_group: *mut psi_group, _delay: c_ulong, _force: bool) {}
-unsafe fn psi_rtpoll_work(_group: *mut psi_group) {}
-unsafe fn psi_rtpoll_worker(_data: *mut c_void) -> c_int { 0 }
-unsafe fn poll_timer_fn(_timer: *mut timer_list) {}
-unsafe fn record_times(_groupc: *mut psi_group_cpu, _now: u64) {}
-unsafe fn psi_group_change(_group: *mut psi_group, _cpu: c_int, _clear: c_uint, _set: c_uint, _now: u64, _wake_clock: bool) {}
-unsafe fn task_psi_group(_task: *mut task_struct) -> *mut psi_group { raw mut psi_system }
-unsafe fn psi_flags_change(_task: *mut task_struct, _clear: c_int, _set: c_int) {}
-
-#[no_mangle] pub unsafe extern "C" fn psi_task_change(_task: *mut task_struct, _clear: c_int, _set: c_int) {}
-#[no_mangle] pub unsafe extern "C" fn psi_task_switch(_prev: *mut task_struct, _next: *mut task_struct, _sleep: bool) {}
-#[no_mangle] pub unsafe extern "C" fn psi_memstall_enter(_flags: *mut c_ulong) {}
-#[no_mangle] pub unsafe extern "C" fn psi_memstall_leave(_flags: *mut c_ulong) {}
-
-#[no_mangle] pub unsafe extern "C" fn psi_show(_m: *mut seq_file, _group: *mut psi_group, _res: enum_psi_res) -> c_int { 0 }
-#[no_mangle] pub unsafe extern "C" fn psi_trigger_create_rtpoll_worker(_group: *mut psi_group) -> c_int { 0 }
-#[no_mangle] pub unsafe extern "C" fn psi_trigger_create(_group: *mut psi_group, _buf: *mut c_char, _res: enum_psi_res, _file: *mut file, _of: *mut c_void, _need: *mut bool) -> *mut psi_trigger { core::ptr::null_mut() }
-#[no_mangle] pub unsafe extern "C" fn psi_trigger_destroy(_trigger: *mut psi_trigger) {}
-#[no_mangle] pub unsafe extern "C" fn psi_trigger_poll(_trigger: *mut *mut psi_trigger, _file: *mut file, _wait: *mut poll_table) -> __poll_t { 0 }
-
-// The remaining procfs and cgroup entry points are declarations backed by the
-// kernel configuration; their C-only registration tables are intentionally
-// represented by the corresponding external interfaces.
-extern "C" {
-    fn psi_cgroup_alloc(cgroup: *mut cgroup) -> c_int;
-    fn psi_cgroup_free(cgroup: *mut cgroup);
-    fn psi_cgroup_restart(group: *mut psi_group);
-    fn cgroup_move_task(task: *mut task_struct, to: *mut css_set);
+/// # Safety
+/// Mask storage and the callback's objects stay live for the whole iteration.
+unsafe fn each_possible_cpu(mut visit: impl FnMut(c_int)) {
+    unsafe {
+        // include/linux/cpumask.h: NR_CPUS == 1 intentionally ignores the mask.
+        if b::RUST_PSI_NR_CPUS == 1 {
+            visit(0);
+            return;
+        }
+        let mut cpu = b::rust_psi_first_possible_cpu();
+        while cpu < b::rust_psi_nr_cpu_ids() {
+            visit(cpu as c_int);
+            cpu = b::rust_psi_next_possible_cpu(cpu);
+        }
+    }
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+/// # Safety
+/// The caller holds the aggregator mutex that stabilizes the complete list.
+unsafe fn each_trigger(head: *mut b::list_head, mut visit: impl FnMut(*mut b::psi_trigger)) {
+    unsafe {
+        let mut node = (*head).next;
+        while node != head {
+            let trigger = container_of!(node, b::psi_trigger, node);
+            visit(trigger);
+            node = (*node).next;
+        }
+    }
+}
+
+include!("psi_aggregation.rs");
+include!("psi_tasks.rs");
+include!("psi_triggers.rs");
+#[cfg(CONFIG_PROC_FS)]
+include!("psi_proc.rs");

@@ -1042,6 +1042,7 @@ include $(srctree)/kernel/sched/fair_bindgen.mk
 include $(srctree)/kernel/sched/rt_bindgen.mk
 include $(srctree)/kernel/sched/sched_support_bindgen.mk
 include $(srctree)/kernel/sched/deadline_bindgen.mk
+include $(srctree)/kernel/sched/psi_bindgen.mk
 
 include $(srctree)/mm/memory_native_bindgen.mk
 include $(srctree)/mm/userfaultfd_native_bindgen.mk

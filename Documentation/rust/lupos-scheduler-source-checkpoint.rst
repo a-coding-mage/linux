@@ -166,6 +166,35 @@ and separates six existing cfg alternatives. Exact de-scoping and cfg-body
 reconstruction preserve prior body text; context-switch ABI remains an open
 native gate.
 
+Pressure-stall source checkpoint
+--------------------------------
+
+The existing PSI skeleton's missing aggregation, task-state, IRQ, cgroup,
+trigger and procfs behavior is now supplied in Rust. Invented zero-sized
+layouts are removed in favor of native-header declarations. The previous
+ticks-versus-nanoseconds initialization mismatch is corrected. Native storage,
+header primitives, formatting and registration remain explicit runtime
+boundaries; no original psi.c body is included or forwarded.
+
+Source review covers seqcount snapshots, weighted aggregation and delayed
+averages, trigger thresholds and file-credential capability checks, worker
+publication, RCU teardown, poll events, nested memstall, cgroup migration and
+task/common-ancestor accounting. Corrections preserve the native one-CPU
+iteration alternative, ordinary scalar loads inside unchanged seqcount
+barriers, and unsigned-long wrap before widening in missed-period arithmetic.
+The native init cold hints are retained with their init-text sections.
+
+PSI's Rust and native C files retain unconditional hard errors. Default-off
+BROKEN wiring, binding-input registration and callback declaration metadata
+are source proposals only, with no object selection. Configured binding and
+enum/callback ABI/CFI, Rust/C concurrency and aliasing, instrumentation,
+source/caller attribution, and build/runtime behavior remain unqualified.
+
+A further core foundation pass adds 78 reviewed explicit scopes and preserves
+ten existing cfg alternatives. Native unsigned-int NUMA timestamp assignment
+is corrected without widening. Scope/cfg reconstruction retains prior body
+text; none of these source checks qualifies the native owner.
+
 Inactive gates and remaining work
 ---------------------------------
 

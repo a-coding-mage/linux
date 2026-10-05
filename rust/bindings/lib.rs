@@ -148,3 +148,8 @@ pub mod sched_support_native {
 pub mod sched_deadline {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_deadline_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_PSI)]
+pub mod sched_psi_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_psi_generated.rs"));
+}
