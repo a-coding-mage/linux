@@ -1,12 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0-only
-unsafe fn update_rq_clock_task(rq: *mut rq, mut delta: i64) {
+unsafe fn update_rq_clock_task(rq: *mut rq, delta: i64) {
     // SAFETY: The caller holds the live rq's scheduling lock; native IRQ and
     // steal-time accessors supply the accounting values for this runqueue.
     unsafe {
+        #[cfg(any(CONFIG_IRQ_TIME_ACCOUNTING, CONFIG_PARAVIRT_TIME_ACCOUNTING))]
+        let mut delta = delta;
+        #[cfg(all(CONFIG_HAVE_SCHED_AVG_IRQ, CONFIG_PARAVIRT_TIME_ACCOUNTING))]
         let mut steal: i64 = 0;
+        #[cfg(all(CONFIG_HAVE_SCHED_AVG_IRQ, not(CONFIG_PARAVIRT_TIME_ACCOUNTING)))]
+        let steal: i64 = 0;
+        #[cfg(all(CONFIG_HAVE_SCHED_AVG_IRQ, CONFIG_IRQ_TIME_ACCOUNTING))]
         let mut irq_delta: i64 = 0;
+        #[cfg(all(CONFIG_HAVE_SCHED_AVG_IRQ, not(CONFIG_IRQ_TIME_ACCOUNTING)))]
+        let irq_delta: i64 = 0;
         #[cfg(CONFIG_IRQ_TIME_ACCOUNTING)]
         if lupos_core_irqtime_enabled() {
+            #[cfg(not(CONFIG_HAVE_SCHED_AVG_IRQ))]
+            let mut irq_delta: i64;
             irq_delta = lupos_core_irq_time_read(lupos_core_cpu_of(rq))
                 .wrapping_sub((*rq).prev_irq_time) as i64;
             if irq_delta > delta {
@@ -18,6 +28,8 @@ unsafe fn update_rq_clock_task(rq: *mut rq, mut delta: i64) {
         }
         #[cfg(CONFIG_PARAVIRT_TIME_ACCOUNTING)]
         if lupos_core_paravirt_steal_enabled() {
+            #[cfg(not(CONFIG_HAVE_SCHED_AVG_IRQ))]
+            let mut steal: i64;
             let prev_steal = lupos_core_paravirt_steal_clock(lupos_core_cpu_of(rq));
             steal = prev_steal.wrapping_sub((*rq).prev_steal_time_rq) as i64;
             if steal > delta {

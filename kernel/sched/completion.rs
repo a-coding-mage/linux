@@ -13,184 +13,235 @@
  * Waiting for completion is a typically sync point, but not an exclusion point.
  */
 
-// Kernel declarations supplied by the surrounding translation unit.
-extern "C" {
-    fn swake_up_locked(wait: *mut SwaitQueueHead, wake_flags: i32);
-    fn swake_up_all_locked(wait: *mut SwaitQueueHead);
-    fn signal_pending_state(state: i32, task: *mut TaskStruct) -> bool;
-    fn __prepare_to_swait(wait: *mut SwaitQueueHead, waiter: *mut SwaitQueue);
-    fn __set_current_state(state: i32);
-    fn raw_spin_unlock_irq(lock: *mut RawSpinlock);
-    fn raw_spin_lock_irq(lock: *mut RawSpinlock);
-    fn raw_spin_lock_irqsave(lock: *mut RawSpinlock, flags: *mut c_ulong);
-    fn raw_spin_unlock_irqrestore(lock: *mut RawSpinlock, flags: c_ulong);
-    fn schedule_timeout(timeout: c_long) -> c_long;
-    fn io_schedule_timeout(timeout: c_long) -> c_long;
-    fn might_sleep();
-    fn complete_acquire(x: *mut Completion);
-    fn complete_release(x: *mut Completion);
-    fn __finish_swait(wait: *mut SwaitQueueHead, waiter: *mut SwaitQueue);
-}
-
-type c_long = i64;
-type c_ulong = u64;
-
-#[repr(C)]
-pub struct RawSpinlock { _private: [u8; 0] }
-#[repr(C)]
-pub struct SwaitQueue { _private: [u8; 0] }
-#[repr(C)]
-pub struct TaskStruct { _private: [u8; 0] }
-#[repr(C)]
-pub struct SwaitQueueHead { pub lock: RawSpinlock, _private: [u8; 0] }
-#[repr(C)]
-pub struct Completion { pub wait: SwaitQueueHead, pub done: u32 }
-
-const UINT_MAX: u32 = u32::MAX;
-const WF_CURRENT_CPU: i32 = 1;
-const ERESTARTSYS: c_long = 512;
-const MAX_SCHEDULE_TIMEOUT: c_long = c_long::MAX;
-const TASK_UNINTERRUPTIBLE: i32 = 2;
-const TASK_INTERRUPTIBLE: i32 = 1;
-const TASK_KILLABLE: i32 = 4;
-
-extern "C" {
-    static mut current: *mut TaskStruct;
-}
+use kernel::ffi::{c_long, c_ulong};
+use kernel::bindings::sched_waiting_native::*;
+use kernel::bindings::sched_waiting_native::{
+    completion as Completion, swait_queue as SwaitQueue,
+};
+use super::swait::{
+    __finish_swait, __prepare_to_swait, swake_up_all_locked, swake_up_locked,
+};
 
 unsafe fn complete_with_flags(x: *mut Completion, wake_flags: i32) {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
     let mut flags: c_ulong = 0;
-    raw_spin_lock_irqsave(&mut (*x).wait.lock, &mut flags);
+    lupos_waiting_raw_spin_lock_irqsave(&raw mut (*x).wait.lock, &mut flags);
 
-    if (*x).done != UINT_MAX {
-        (*x).done = (*x).done.wrapping_add(1);
+    if lupos_waiting_completion_done_locked(x) != LUPOS_WAITING_UINT_MAX {
+        lupos_waiting_set_completion_done_locked(x, lupos_waiting_completion_done_locked(x).wrapping_add(1));
     }
-    swake_up_locked(&mut (*x).wait, wake_flags);
-    raw_spin_unlock_irqrestore(&mut (*x).wait.lock, flags);
+    swake_up_locked(&raw mut (*x).wait, wake_flags);
+    lupos_waiting_raw_spin_unlock_irqrestore(&raw mut (*x).wait.lock, flags);
+    }
 }
 
-pub unsafe fn complete_on_current_cpu(x: *mut Completion) {
-    complete_with_flags(x, WF_CURRENT_CPU);
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn complete_on_current_cpu(x: *mut Completion) {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    complete_with_flags(x, LUPOS_WAITING_WF_CURRENT_CPU);
+    }
 }
 
-pub unsafe fn complete(x: *mut Completion) {
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn complete(x: *mut Completion) {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
     complete_with_flags(x, 0);
+    }
 }
 
-pub unsafe fn complete_all(x: *mut Completion) {
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn complete_all(x: *mut Completion) {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    lupos_waiting_assert_rt_threaded();
     let mut flags: c_ulong = 0;
-    raw_spin_lock_irqsave(&mut (*x).wait.lock, &mut flags);
-    (*x).done = UINT_MAX;
-    swake_up_all_locked(&mut (*x).wait);
-    raw_spin_unlock_irqrestore(&mut (*x).wait.lock, flags);
+    lupos_waiting_raw_spin_lock_irqsave(&raw mut (*x).wait.lock, &mut flags);
+    lupos_waiting_set_completion_done_locked(x, LUPOS_WAITING_UINT_MAX);
+    swake_up_all_locked(&raw mut (*x).wait);
+    lupos_waiting_raw_spin_unlock_irqrestore(&raw mut (*x).wait.lock, flags);
+    }
 }
 
+#[unsafe(link_section = ".sched.text")]
 unsafe fn do_wait_for_common(
     x: *mut Completion,
     action: unsafe extern "C" fn(c_long) -> c_long,
     mut timeout: c_long,
     state: i32,
 ) -> c_long {
-    if (*x).done == 0 {
-        let mut wait: SwaitQueue = core::mem::zeroed();
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    if lupos_waiting_completion_done_locked(x) == 0 {
+        let mut wait = core::mem::MaybeUninit::<SwaitQueue>::uninit();
+        let wait = wait.as_mut_ptr();
+        lupos_waiting_init_swait_entry(wait);
         loop {
-            if signal_pending_state(state, current) {
-                timeout = -ERESTARTSYS;
+            if lupos_waiting_signal_pending_state(state, lupos_waiting_current()) {
+                timeout = -LUPOS_WAITING_ERESTARTSYS;
                 break;
             }
-            __prepare_to_swait(&mut (*x).wait, &mut wait);
-            __set_current_state(state);
-            raw_spin_unlock_irq(&mut (*x).wait.lock);
+            __prepare_to_swait(&raw mut (*x).wait, wait);
+            lupos_waiting_completion_wait_state(state);
+            lupos_waiting_raw_spin_unlock_irq(&raw mut (*x).wait.lock);
             timeout = action(timeout);
-            raw_spin_lock_irq(&mut (*x).wait.lock);
-            if (*x).done != 0 || timeout == 0 { break; }
+            lupos_waiting_raw_spin_lock_irq(&raw mut (*x).wait.lock);
+            if lupos_waiting_completion_done_locked(x) != 0 || timeout == 0 { break; }
         }
-        __finish_swait(&mut (*x).wait, &mut wait);
-        if (*x).done == 0 { return timeout; }
+        __finish_swait(&raw mut (*x).wait, wait);
+        if lupos_waiting_completion_done_locked(x) == 0 { return timeout; }
     }
-    if (*x).done != UINT_MAX { (*x).done = (*x).done.wrapping_sub(1); }
+    if lupos_waiting_completion_done_locked(x) != LUPOS_WAITING_UINT_MAX { lupos_waiting_set_completion_done_locked(x, lupos_waiting_completion_done_locked(x).wrapping_sub(1)); }
     if timeout != 0 { timeout } else { 1 }
+    }
 }
 
+#[unsafe(link_section = ".sched.text")]
 unsafe fn __wait_for_common(
     x: *mut Completion,
     action: unsafe extern "C" fn(c_long) -> c_long,
     timeout: c_long,
     state: i32,
 ) -> c_long {
-    might_sleep();
-    complete_acquire(x);
-    raw_spin_lock_irq(&mut (*x).wait.lock);
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    lupos_waiting_might_sleep();
+    lupos_waiting_complete_acquire(x);
+    lupos_waiting_raw_spin_lock_irq(&raw mut (*x).wait.lock);
     let timeout = do_wait_for_common(x, action, timeout, state);
-    raw_spin_unlock_irq(&mut (*x).wait.lock);
-    complete_release(x);
+    lupos_waiting_raw_spin_unlock_irq(&raw mut (*x).wait.lock);
+    lupos_waiting_complete_release(x);
     timeout
+    }
 }
 
+#[unsafe(link_section = ".sched.text")]
 unsafe fn wait_for_common(x: *mut Completion, timeout: c_long, state: i32) -> c_long {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
     __wait_for_common(x, schedule_timeout, timeout, state)
+    }
 }
 
+#[unsafe(link_section = ".sched.text")]
 unsafe fn wait_for_common_io(x: *mut Completion, timeout: c_long, state: i32) -> c_long {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
     __wait_for_common(x, io_schedule_timeout, timeout, state)
+    }
 }
 
-pub unsafe fn wait_for_completion(x: *mut Completion) {
-    wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_UNINTERRUPTIBLE);
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion(x: *mut Completion) {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    wait_for_common(x, LUPOS_WAITING_MAX_SCHEDULE_TIMEOUT, LUPOS_WAITING_TASK_UNINTERRUPTIBLE);
+    }
 }
 
-pub unsafe fn wait_for_completion_timeout(x: *mut Completion, timeout: c_ulong) -> c_ulong {
-    wait_for_common(x, timeout as c_long, TASK_UNINTERRUPTIBLE) as c_ulong
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion_timeout(x: *mut Completion, timeout: c_ulong) -> c_ulong {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    wait_for_common(x, timeout as c_long, LUPOS_WAITING_TASK_UNINTERRUPTIBLE) as c_ulong
+    }
 }
 
-pub unsafe fn wait_for_completion_io(x: *mut Completion) {
-    wait_for_common_io(x, MAX_SCHEDULE_TIMEOUT, TASK_UNINTERRUPTIBLE);
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion_io(x: *mut Completion) {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    wait_for_common_io(x, LUPOS_WAITING_MAX_SCHEDULE_TIMEOUT, LUPOS_WAITING_TASK_UNINTERRUPTIBLE);
+    }
 }
 
-pub unsafe fn wait_for_completion_io_timeout(x: *mut Completion, timeout: c_ulong) -> c_ulong {
-    wait_for_common_io(x, timeout as c_long, TASK_UNINTERRUPTIBLE) as c_ulong
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion_io_timeout(x: *mut Completion, timeout: c_ulong) -> c_ulong {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    wait_for_common_io(x, timeout as c_long, LUPOS_WAITING_TASK_UNINTERRUPTIBLE) as c_ulong
+    }
 }
 
-pub unsafe fn wait_for_completion_interruptible(x: *mut Completion) -> i32 {
-    let t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_INTERRUPTIBLE);
-    if t == -ERESTARTSYS { t as i32 } else { 0 }
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion_interruptible(x: *mut Completion) -> i32 {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    let t = wait_for_common(x, LUPOS_WAITING_MAX_SCHEDULE_TIMEOUT, LUPOS_WAITING_TASK_INTERRUPTIBLE);
+    if t == -LUPOS_WAITING_ERESTARTSYS { t as i32 } else { 0 }
+    }
 }
 
-pub unsafe fn wait_for_completion_interruptible_timeout(x: *mut Completion, timeout: c_ulong) -> c_long {
-    wait_for_common(x, timeout as c_long, TASK_INTERRUPTIBLE)
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion_interruptible_timeout(x: *mut Completion, timeout: c_ulong) -> c_long {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    wait_for_common(x, timeout as c_long, LUPOS_WAITING_TASK_INTERRUPTIBLE)
+    }
 }
 
-pub unsafe fn wait_for_completion_killable(x: *mut Completion) -> i32 {
-    let t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, TASK_KILLABLE);
-    if t == -ERESTARTSYS { t as i32 } else { 0 }
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion_killable(x: *mut Completion) -> i32 {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    let t = wait_for_common(x, LUPOS_WAITING_MAX_SCHEDULE_TIMEOUT, LUPOS_WAITING_TASK_KILLABLE);
+    if t == -LUPOS_WAITING_ERESTARTSYS { t as i32 } else { 0 }
+    }
 }
 
-pub unsafe fn wait_for_completion_state(x: *mut Completion, state: u32) -> i32 {
-    let t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, state as i32);
-    if t == -ERESTARTSYS { t as i32 } else { 0 }
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion_state(x: *mut Completion, state: u32) -> i32 {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    let t = wait_for_common(x, LUPOS_WAITING_MAX_SCHEDULE_TIMEOUT, state as i32);
+    if t == -LUPOS_WAITING_ERESTARTSYS { t as i32 } else { 0 }
+    }
 }
 
-pub unsafe fn wait_for_completion_killable_timeout(x: *mut Completion, timeout: c_ulong) -> c_long {
-    wait_for_common(x, timeout as c_long, TASK_KILLABLE)
+#[unsafe(no_mangle)]
+#[unsafe(link_section = ".sched.text")]
+pub unsafe extern "C" fn wait_for_completion_killable_timeout(x: *mut Completion, timeout: c_ulong) -> c_long {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
+    wait_for_common(x, timeout as c_long, LUPOS_WAITING_TASK_KILLABLE)
+    }
 }
 
-pub unsafe fn try_wait_for_completion(x: *mut Completion) -> bool {
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn try_wait_for_completion(x: *mut Completion) -> bool {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
     let mut flags: c_ulong = 0;
     let mut ret = true;
-    if core::ptr::read_volatile(&(*x).done) == 0 { return false; }
-    raw_spin_lock_irqsave(&mut (*x).wait.lock, &mut flags);
-    if (*x).done == 0 { ret = false; }
-    else if (*x).done != UINT_MAX { (*x).done = (*x).done.wrapping_sub(1); }
-    raw_spin_unlock_irqrestore(&mut (*x).wait.lock, flags);
+    if lupos_waiting_read_completion_done(x) == 0 { return false; }
+    lupos_waiting_raw_spin_lock_irqsave(&raw mut (*x).wait.lock, &mut flags);
+    if lupos_waiting_completion_done_locked(x) == 0 { ret = false; }
+    else if lupos_waiting_completion_done_locked(x) != LUPOS_WAITING_UINT_MAX { lupos_waiting_set_completion_done_locked(x, lupos_waiting_completion_done_locked(x).wrapping_sub(1)); }
+    lupos_waiting_raw_spin_unlock_irqrestore(&raw mut (*x).wait.lock, flags);
     ret
+    }
 }
 
-pub unsafe fn completion_done(x: *mut Completion) -> bool {
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn completion_done(x: *mut Completion) -> bool {
+    // SAFETY: The caller upholds the native wait API pointer and locking contract.
+    unsafe {
     let mut flags: c_ulong = 0;
-    if core::ptr::read_volatile(&(*x).done) == 0 { return false; }
-    raw_spin_lock_irqsave(&mut (*x).wait.lock, &mut flags);
-    raw_spin_unlock_irqrestore(&mut (*x).wait.lock, flags);
+    if lupos_waiting_read_completion_done(x) == 0 { return false; }
+    lupos_waiting_raw_spin_lock_irqsave(&raw mut (*x).wait.lock, &mut flags);
+    lupos_waiting_raw_spin_unlock_irqrestore(&raw mut (*x).wait.lock, flags);
     true
+    }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

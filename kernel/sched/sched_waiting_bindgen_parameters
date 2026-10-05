@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source proposal only. Generated module name: kernel::bindings::sched_waiting_native.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+# This owner only transports task pointers; do not regenerate task internals.
+--opaque-type 'task_struct'
+--allowlist-type 'completion|swait_queue|swait_queue_head|raw_spinlock_t|lock_class_key|list_head|task_struct'
+--allowlist-function 'lupos_waiting_.*|try_to_wake_up|wake_up_state|schedule_timeout|io_schedule_timeout'
+--allowlist-var 'LUPOS_WAITING_.*'
+--allowlist-type 'spinlock_t|wait_queue_head|wait_queue_head_t|wait_queue_entry|wait_bit_key|wait_bit_queue_entry|wait_bit_action_f'
+--allowlist-function 'schedule|io_schedule|default_wake_function|kthread_should_stop_or_park'

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_WAITING
+	bool "Rust waiting and completion source owner proposal"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive completion, simple-wait and regular/bit-wait source owners.
+	  Configured ABI/CFI, callback nullability, concurrency, attribution
+	  and native compiler policy require qualification before admission.

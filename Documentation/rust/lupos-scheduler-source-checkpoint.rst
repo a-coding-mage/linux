@@ -217,6 +217,31 @@ cpuhp_tasks_frozen/in_lock_functions boundaries. Scheduling/preemption/hotplug,
 init/proxy/MM-CID bodies receive explicit reviewed unsafe scopes with exact
 source readback, without admitting the native owner or altering its policies.
 
+Waiting and completion source checkpoint
+---------------------------------------
+
+The four existing completion/swait/wait/wait_bit Rust owners now use actual
+native header types/constants and preserve their 74 function names and 58
+native export records. Source repairs replace invented layouts and member
+offsets, restore list initialization and traversal, native state/lock checks,
+waiter lifetime, callback handling and kernel-specific FFI integer types.
+Thirteen original task-state macro sites have separate native expansions;
+this preserves distinct site state without qualifying caller/IP attribution.
+
+Independent review corrects raw self-linked temporary-list provenance, signed
+count wrapping, the declared nullable bit-action domain, and plain-versus-
+READ_ONCE scalar boundaries for shared completion/flags. Rust retains all
+decisions and lock order. Generated nullable representation, outer callback
+KCFI, cross-language memory model, source/caller attribution and native
+instrumentation remain unqualified. Rust/C unconditional hard errors and
+default-off BROKEN hooks remain; original objects are not replaced.
+
+The final bounded core groups/bandwidth/debug review corrects an unsigned
+cgroup parser argument and makes existing unsafe operations explicit. The
+clock updater uses cfg-local declarations for all eight IRQ/paravirt/averaging
+combinations, with exact prior-source reconstruction and unchanged accounting
+operations. These are source checks, not native or configured acceptance.
+
 Inactive gates and remaining work
 ---------------------------------
 
