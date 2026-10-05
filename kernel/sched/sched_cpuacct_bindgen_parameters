@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source-only proposal. Binding generation remains prohibited during the hold.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'cpuacct|cpuacct_stat_index|cpu_usage_stat|cgroup_subsys_state|cftype|task_struct|seq_file|task_cputime|prev_cputime'
+--opaque-type 'cpuacct|cgroup_subsys_state|cftype|task_struct|seq_file|prev_cputime'
+--allowlist-function 'lupos_cpuacct_.*|cputime_adjust'
+--allowlist-var 'LUPOS_CPUACCT_.*|CPUACCT_STAT_.*|CPUTIME_.*'
+--newtype-global-enum 'cpuacct_stat_index|cpu_usage_stat'
+--with-attribute-custom-enum=cpuacct_stat_index='#[cfi_encoding="18cpuacct_stat_index"]'
+--with-attribute-custom-enum=cpu_usage_stat='#[cfi_encoding="14cpu_usage_stat"]'
+--with-attribute-custom-struct=cpuacct='#[cfi_encoding="7cpuacct"]'
+--with-attribute-custom-struct=cgroup_subsys_state='#[cfi_encoding="19cgroup_subsys_state"]'
+--with-attribute-custom-struct=cftype='#[cfi_encoding="6cftype"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
+--with-attribute-custom-struct=task_cputime='#[cfi_encoding="12task_cputime"]'
+--with-attribute-custom-struct=prev_cputime='#[cfi_encoding="12prev_cputime"]'

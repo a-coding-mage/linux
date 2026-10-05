@@ -338,6 +338,20 @@ Default-off BROKEN and unconditional source errors retain the hold. Configured
 ABI/CFI, variadic widths, exact instrumentation/protection and caller metadata,
 locks/RCU, debugfs/VFS lifetime and runtime behavior also remain unqualified.
 
+Cgroup CPU accounting source checkpoint
+--------------------------------------
+
+The 20 existing cpuacct Rust functions retain their accounting decisions with
+native per-CPU root storage, 32-bit runqueue/IRQ lock pairs, allocation unwind,
+eleven C-ABI callbacks and original cgroup descriptor metadata. Independent
+source review checks user/system totals, reset fields, root/ancestor behavior,
+wrapping arithmetic, native enum and formatting boundaries.
+
+Default-off BROKEN and hard-error hooks retain the original utility owner.
+Generated callback/enum ABI and CFI, native context/protection metadata,
+cross-language shared-counter access, per-CPU concurrency, performance and
+original-test behavior remain unqualified. The separate cputime owner is intact.
+
 Inactive gates and remaining work
 ---------------------------------
 

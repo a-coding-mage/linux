@@ -193,3 +193,8 @@ pub mod sched_membarrier_native {
 pub mod sched_debug_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_debug_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_CPUACCT)]
+pub mod sched_cpuacct_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_cpuacct_generated.rs"));
+}

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_CPUACCT
+	bool "Rust scheduler CPU accounting source owner proposal"
+	depends on RUST && CGROUP_CPUACCT && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing cgroup CPU accounting source.
+	  Native ABI/CFI, per-CPU and lock behavior, compiler policy and
+	  runtime qualification must precede replacement of its C owner.
