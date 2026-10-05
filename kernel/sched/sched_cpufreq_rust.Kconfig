@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_CPUFREQ
+	bool "Rust scheduler CPUFreq hook source owner proposal"
+	depends on RUST && CPU_FREQ && BROKEN
+	default n
+	help
+	  Inactive source continuation. Native ABI/CFI, per-CPU and RCU,
+	  compiler protection and runtime qualification remain outstanding.
+
+config RUST_SCHED_CPUFREQ_SCHEDUTIL
+	bool "Rust scheduler schedutil source owner proposal"
+	depends on RUST_SCHED_CPUFREQ && CPU_FREQ_GOV_SCHEDUTIL && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing Rust schedutil governor.
+	  Native metadata, workers, shared tunables, policy lifecycle,
+	  concurrency and runtime boundaries remain unqualified.

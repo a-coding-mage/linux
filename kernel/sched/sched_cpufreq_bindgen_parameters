@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source-only inputs; configured generation is prohibited in this hold.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'sugov_.*|cpufreq_policy|cpufreq_governor|update_util_data|gov_attr_set|kobject|kthread_work|irq_work|task_struct|size_t|ssize_t'
+--allowlist-function 'lupos_sched_cpufreq_.*|lupos_sugov_.*|cpufreq_remove_update_util_hook|cpufreq_this_cpu_can_update|cpufreq_driver_test_flags|cpufreq_driver_resolve_freq|cpufreq_driver_fast_switch|cpufreq_driver_adjust_perf|cpufreq_driver_has_adjust_perf|__cpufreq_driver_target|cpu_util_cfs_boost|effective_cpu_util|kstrtouint|kthread_stop|wake_up_process|have_governor_per_policy|cpufreq_enable_fast_switch|cpufreq_disable_fast_switch|cpufreq_policy_transition_delay_us|synchronize_rcu'
+--allowlist-var 'LUPOS_SUGOV_.*'
+--opaque-type 'cpufreq_policy|cpufreq_governor|update_util_data|gov_attr_set|kobject|kthread_work|kthread_worker|irq_work|task_struct|raw_spinlock|mutex|list_head'
+--with-attribute-custom-struct=sugov_cpu='#[cfi_encoding="9sugov_cpu"]'
+--with-attribute-custom-struct=sugov_policy='#[cfi_encoding="12sugov_policy"]'
+--with-attribute-custom-struct=sugov_tunables='#[cfi_encoding="14sugov_tunables"]'
+--with-attribute-custom-struct=cpufreq_policy='#[cfi_encoding="14cpufreq_policy"]'
+--with-attribute-custom-struct=cpufreq_governor='#[cfi_encoding="16cpufreq_governor"]'
+--with-attribute-custom-struct=update_util_data='#[cfi_encoding="16update_util_data"]'
+--with-attribute-custom-struct=gov_attr_set='#[cfi_encoding="12gov_attr_set"]'
+--with-attribute-custom-struct=kobject='#[cfi_encoding="7kobject"]'
+--with-attribute-custom-struct=kthread_work='#[cfi_encoding="12kthread_work"]'
+--with-attribute-custom-struct=irq_work='#[cfi_encoding="8irq_work"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'

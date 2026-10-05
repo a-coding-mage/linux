@@ -59,3 +59,4 @@ include $(srctree)/kernel/sched/sched_debug_rust.mk
 include $(srctree)/kernel/sched/sched_cpuacct_rust.mk
 include $(srctree)/kernel/sched/sched_isolation_rust.mk
 include $(srctree)/kernel/sched/sched_stats_rust.mk
+include $(srctree)/kernel/sched/sched_cpufreq_rust.mk

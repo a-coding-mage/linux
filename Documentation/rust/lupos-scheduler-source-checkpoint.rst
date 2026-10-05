@@ -394,6 +394,21 @@ Default-off BROKEN and selected-owner hard errors remain. Generated ABI/CFI,
 native context and protection metadata, cross-language locking, configured
 emission and original-test/runtime behavior remain unqualified.
 
+Scheduler CPUFreq and schedutil source checkpoint
+------------------------------------------------
+
+The existing hook and governor owners now test the stored per-CPU hook,
+preserve nullable callback validation through a native ABI adapter, restore
+worker scheduling attributes/affinity, tunable references and failure unwind,
+select all three update hooks, and retain cancellation and slow-limit ordering.
+Native header types replace invented policy/storage layouts. Independent review
+corrects CPU iteration to the original find_next_bit/small_cpumask_bits contract.
+
+Two default-off BROKEN selectors and hard errors preserve original utility
+ownership. Generated layout/callback CFI, worker/kobject/RCU lifetime, native
+allocation/caller and protection metadata, configured emission, concurrency
+and runtime qualification remain open. Generic CPUFreq drivers are unchanged.
+
 Inactive gates and remaining work
 ---------------------------------
 
