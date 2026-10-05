@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source-only projection proposal; configured generation remains unqualified.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'scx_sched|gen_pool|gen_pool_chunk'
+--opaque-type 'scx_sched|gen_pool|gen_pool_chunk'
+--allowlist-function 'lupos_scx_arena_.*'
+--allowlist-var 'LUPOS_SCX_ARENA_.*'
+--with-attribute-custom-struct=scx_sched='#[cfi_encoding="9scx_sched"]'
+--with-attribute-custom-struct=gen_pool='#[cfi_encoding="8gen_pool"]'
+--with-attribute-custom-struct=gen_pool_chunk='#[cfi_encoding="14gen_pool_chunk"]'

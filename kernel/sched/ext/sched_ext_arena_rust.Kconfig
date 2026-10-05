@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_EXT_ARENA
+	bool "Rust sched_ext arena source owner proposal"
+	depends on RUST && SCHED_CLASS_EXT && BROKEN
+	default n
+	help
+	  Inactive continuation of the scheduler's BPF-arena suballocator.
+	  Native ABI/CFI, genalloc and BPF fault/lifetime, compiler protection
+	  and runtime qualification must precede owner replacement.

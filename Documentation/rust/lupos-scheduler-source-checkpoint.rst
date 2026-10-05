@@ -476,6 +476,21 @@ standalone native object is selected. Shared ext algorithms/storage, configured
 binding/CFI, BPF arena rebasing/fault recovery, metadata/protection, allocation
 and RCU lifetime, concurrency and original-test behavior remain unqualified.
 
+Sched_ext arena source checkpoint
+---------------------------------
+
+The six existing arena bodies now use native gen_pool/chunk layouts and the
+actual inline flexible bitmap, exact bit-range iteration, native page geometry,
+callback ABI and kernel-address rebasing. Independent source review preserves
+growth, registration-failure rollback and pool teardown ordering.
+
+Caller quiescence remains essential: native pool destruction supplies no RCU
+grace period. BPF rollback can defer cleanup or retain pages until map teardown,
+and scratch-fault recovery needs an applicable BPF program on the stack. Pool
+bookkeeping does not grant Rust reference validity for shared arena payload.
+Default-off BROKEN and hard errors remain; shared translation-unit ownership,
+ABI/CFI, native protection, lifetime and original-test behavior are unqualified.
+
 Inactive gates and remaining work
 ---------------------------------
 
