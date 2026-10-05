@@ -137,6 +137,35 @@ selected, and no original RT scheduling algorithm is used as a new C fallback.
 Generated ABI, shared-memory/locking/RCU semantics, callback CFI and native
 protection/caller/registration policy remain unqualified.
 
+Deadline source checkpoint
+--------------------------
+
+The existing deadline Rust skeleton has been repaired and its missing owner
+bodies filled incrementally. All 151 distinct original names now have Rust
+bodies: eight retained baseline helpers and 143 newly supplied missing bodies.
+The 23 class callbacks, per-CPU storage, native primitives and registration
+declarations are present. A source inventory matches 234 native reference names
+with declaration records; it is not generated ABI or link evidence.
+
+Separate source audits cover the bandwidth/entity/lifecycle and EDF/runqueue/
+migration paths against the pinned original C. They found a missing init cold
+attribute and a contract comment that omitted the supported null console
+destination; both are corrected. No additional concrete control-flow mismatch
+was identified within those reviewed paths, which does not prove equivalence.
+Retained-body scope edits have independent token/literal-preservation evidence.
+
+Generated declarations remain in the existing bindings crate. The default-off
+BROKEN selector and explicit make errors block activation. Original aggregate
+C inclusions remain unchanged. Generated bitfield accessors still require
+alias/lifetime qualification around embedded concurrently managed hrtimers;
+callback CFI, memory ordering, lock context, instrumentation, warning/caller
+attribution, single ownership and runtime behavior remain unqualified.
+
+The additional core queue/fork/switch increment adds 55 reviewed unsafe scopes
+and separates six existing cfg alternatives. Exact de-scoping and cfg-body
+reconstruction preserve prior body text; context-switch ABI remains an open
+native gate.
+
 Inactive gates and remaining work
 ---------------------------------
 
@@ -155,7 +184,7 @@ Before admission, complete independent body review and configured native
 type/layout/field/link checks. Caller return-PC capture, architecture context
 switching, per-function tracing/instrumentation/stack/CFI/unwind policy,
 allocation/diagnostic attribution and native field access all remain open.
-Support fragments and missing RT/deadline source remain active work.
+Support interfaces and unqualified scheduler source remain active work.
 
 Verification scope
 ------------------

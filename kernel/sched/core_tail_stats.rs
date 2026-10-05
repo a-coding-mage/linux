@@ -220,7 +220,7 @@ pub unsafe extern "C" fn sched_tick() {
             wq_worker_tick(donor);
         }
         if !lupos_core_header_scx_switched_all() {
-            (*rq).idle_balance = idle_cpu(cpu);
+        (*rq).idle_balance = idle_cpu(cpu) as u8;
             sched_balance_trigger(rq);
         }
     }

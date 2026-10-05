@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: GPL-2.0
+# Proposal only; bindgen has not been run and is prohibited in SOURCE phase.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=sched_dl_entity='#[cfi_encoding="15sched_dl_entity"]'
+--with-attribute-custom-struct=dl_rq='#[cfi_encoding="5dl_rq"]'
+--with-attribute-custom-struct=dl_bw='#[cfi_encoding="5dl_bw"]'
+--with-attribute-custom-struct=root_domain='#[cfi_encoding="11root_domain"]'
+--with-attribute-custom-struct=cpumask='#[cfi_encoding="7cpumask"]'
+--with-attribute-custom-struct=sched_attr='#[cfi_encoding="10sched_attr"]'
+--with-attribute-custom-struct=hrtimer='#[cfi_encoding="7hrtimer"]'
+--newtype-global-enum 'hrtimer_restart'
+--with-attribute-custom-enum=hrtimer_restart='#[cfi_encoding="15hrtimer_restart"]'
+--allowlist-type '.*'
+--allowlist-var '.*'
+--allowlist-function '.*'
+--with-attribute-custom-struct=rb_node='#[cfi_encoding="7rb_node"]'
+--with-attribute-custom-struct=affinity_context='#[cfi_encoding="16affinity_context"]'

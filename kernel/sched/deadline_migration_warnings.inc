@@ -1,0 +1,12 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+DL_WARN_ONCE(push_enqueue)
+DL_WARN_ONCE(offline_no_cpu)
+DL_WARN_ONCE(push_wrong_cpu)
+DL_WARN_ONCE(push_current)
+DL_WARN_ONCE(push_affinity)
+DL_WARN_ONCE(push_not_queued)
+DL_WARN_ONCE(push_not_dl)
+DL_WARN(push_self)
+DL_WARN(pull_current)
+DL_WARN(pull_not_queued)
+DL_WARN_ONCE(affinity_not_dl)

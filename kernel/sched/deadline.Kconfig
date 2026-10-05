@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_DEADLINE
+	bool "Rust deadline scheduler source proposal"
+	depends on RUST && X86_64 && BROKEN
+	default n
+	help
+	  Not admitted: configured generated ABI, typed callback CFI, locking,
+	  instrumentation and compiler policy require integrated qualification.
+	  This option never grants permission to disable existing protections.

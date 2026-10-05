@@ -1,0 +1,15 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* One dedicated native warning site for each original warning in this slice. */
+DL_WARN_ONCE(add_running_overflow)
+DL_WARN_ONCE(add_running_total)
+DL_WARN_ONCE(sub_running_underflow)
+DL_WARN_ONCE(add_rq_overflow)
+DL_WARN_ONCE(sub_rq_underflow)
+DL_WARN_ONCE(sub_rq_running)
+DL_WARN_ONCE(change_sugov)
+DL_WARN(non_contending)
+DL_WARN(setup_boosted)
+DL_WARN(setup_future)
+DL_WARN(revised_past)
+DL_WARN_ONCE(timer_not_throttled)
+DL_WARN_ONCE(replenish_zero)
