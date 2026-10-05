@@ -263,3 +263,8 @@ pub mod task_work_native {
 pub mod nsproxy_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/nsproxy_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_CRED)]
+pub mod cred_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/cred_native_generated.rs"));
+}

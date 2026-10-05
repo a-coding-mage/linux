@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+config RUST_CRED
+	bool "Rust credential source proposal (not admitted)"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing credential Rust implementation.
+	  Configured ABI/CFI, init and diagnostic metadata, native lifetimes and
+	  original-test qualification remain open. Keep this disabled.

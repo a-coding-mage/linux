@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Inactive source proposal; never run generation during the source-only hold.
+# cred/task/group/ns/ucount objects remain native opaque pointer targets.
+# kuid_t, kgid_t, kernel_cap_t and rlimit_type cross by value and MUST retain
+# their complete configured-header definitions; they must not be made opaque.
+# The RCU callback stays wholly native. No generated Option<fn> crosses a
+# callable signature, and no context-dependent callback CFI string is guessed.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--newtype-enum rlimit_type
+--allowlist-type 'cred|task_struct|group_info|user_namespace|user_struct|ucounts|inode|kmem_cache|callback_head|key|kuid_t|kgid_t|kernel_cap_t|rlimit_type|gfp_t'
+--opaque-type 'cred|task_struct|group_info|user_namespace|user_struct|ucounts|inode|kmem_cache|callback_head|key'
+--allowlist-function 'lupos_cred_.*|alloc_ucounts|put_ucounts|inc_rlimit_ucounts|dec_rlimit_ucounts|get_cred_namespaces|switch_cred_namespaces|key_put|install_thread_keyring_to_cred'
+--allowlist-var 'LUPOS_CRED_.*'
+--with-attribute-custom-struct=cred='#[cfi_encoding="4cred"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=group_info='#[cfi_encoding="10group_info"]'
+--with-attribute-custom-struct=user_namespace='#[cfi_encoding="14user_namespace"]'
+--with-attribute-custom-struct=user_struct='#[cfi_encoding="11user_struct"]'
+--with-attribute-custom-struct=ucounts='#[cfi_encoding="7ucounts"]'
+--with-attribute-custom-struct=inode='#[cfi_encoding="5inode"]'
+--with-attribute-custom-struct=kmem_cache='#[cfi_encoding="10kmem_cache"]'
+--with-attribute-custom-struct=callback_head='#[cfi_encoding="13callback_head"]'
+--with-attribute-custom-struct=key='#[cfi_encoding="3key"]'
+--with-attribute-custom-struct=kuid_t='#[cfi_encoding="6kuid_t"]'
+--with-attribute-custom-struct=kgid_t='#[cfi_encoding="6kgid_t"]'
+--with-attribute-custom-struct=kernel_cap_t='#[cfi_encoding="12kernel_cap_t"]'
+--with-attribute-custom-enum=rlimit_type='#[cfi_encoding="11rlimit_type"]'

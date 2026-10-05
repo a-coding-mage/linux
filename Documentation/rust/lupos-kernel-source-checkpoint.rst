@@ -63,6 +63,31 @@ diagnostic/instrumentation identity, non-local cleanup and runtime remain open.
 The default-off BROKEN selector, selection errors and source holds remain;
 no new objects are selected and the original C owner stays unchanged.
 
+Credential transitions and native contracts
+------------------------------------------
+
+All seventeen existing credential Rust bodies survive independent review.
+Exec now assigns effective IDs to both saved and filesystem IDs. Thread clones
+share credentials only under the original configured keyring condition; other
+paths retain allocation, namespace/security hooks, references and error order.
+
+Native pointer-return, atomic, integer union, const and flexible-array contracts
+replace incompatible source projections. CONFIG_KEYS-disabled arguments remain
+unevaluated as in the original macros. The RCU callback has an exact native
+signature trampoline into the retained Rust destructor, and the initializer has
+the original native __init entry around the unchanged Rust cache setup body.
+
+Seven separate BUG_ON sites preserve their original operands and native reads;
+the daemon warning again expands WARN_ON_ONCE(!daemon) on the native pointer.
+Handwritten warning-policy exemptions are absent. Added unsafe scopes were
+independently normalized and compared separately from actual source repairs.
+
+These source repairs do not establish native memory-model, generated ABI/CFI,
+full init-body attributes, optimizer/LTO, original file/line/PC attribution or
+allocation instrumentation parity. All such obligations remain open. The
+selector is default-off and BROKEN, with source and selection errors intact.
+Original credential C, native layout headers and tests remain unchanged.
+
 Verification scope
 ------------------
 
