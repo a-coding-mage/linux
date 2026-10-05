@@ -874,3 +874,151 @@ void lupos_wq_trace_process_one_work_execute_end(struct work_struct *work, work_
 	/* Exact recovered TP_fast_assign records only the address and func value. */
 	trace_workqueue_execute_end(work, func);
 }
+
+/* One common native storage authority for the optional reporting family. */
+#ifdef CONFIG_WQ_CPU_INTENSIVE_REPORT
+static struct wci_ent wci_ents[WCI_MAX_ENTS];
+static int wci_nr_ents;
+static DEFINE_RAW_SPINLOCK(wci_lock);
+static DEFINE_HASHTABLE(wci_hash, ilog2(WCI_MAX_ENTS));
+#endif
+#ifdef CONFIG_WQ_WATCHDOG
+static unsigned long wq_watchdog_thresh = 30;
+static struct timer_list wq_watchdog_timer;
+
+static unsigned long wq_watchdog_touched = INITIAL_JIFFIES;
+static DEFINE_PER_CPU(unsigned long, wq_watchdog_touched_cpu) = INITIAL_JIFFIES;
+
+static unsigned int wq_panic_on_stall = CONFIG_BOOTPARAM_WQ_STALL_PANIC;
+module_param_named(panic_on_stall, wq_panic_on_stall, uint, 0644);
+
+static unsigned int wq_panic_on_stall_time;
+module_param_named(panic_on_stall_time, wq_panic_on_stall_time, uint, 0644);
+MODULE_PARM_DESC(panic_on_stall_time, "Panic if stall exceeds this many seconds (0=disabled)");
+/* Original C7904 function-static zero-initialized state, single stable owner. */
+static unsigned int wq_stall;
+#endif
+
+unsigned int lupos_wq_small_cpumask_bits(void) { return small_cpumask_bits; }
+int lupos_wq_max_numnodes(void) { return MAX_NUMNODES; }
+unsigned int lupos_wq_first_cpu_in_mask(const struct cpumask *mask)
+{
+	return find_next_bit(cpumask_bits(mask), small_cpumask_bits, 0);
+}
+unsigned int lupos_wq_next_cpu_in_mask(unsigned int cpu, const struct cpumask *mask)
+{
+	return find_next_bit(cpumask_bits(mask), small_cpumask_bits, cpu + 1);
+}
+unsigned int lupos_wq_cpumask_first(const struct cpumask *mask)
+{
+	/* Used only where the authority explicitly calls cpumask_first. */
+	return cpumask_first(mask);
+}
+#ifdef CONFIG_WQ_WATCHDOG
+void lupos_wq_pool_lock_irq_disable_c7979(struct worker_pool *pool)
+{
+	/* Native scoped_guard(raw_spinlock_irqsave) uses refcounted IRQ masking. */
+	raw_spin_lock_irq_disable(&pool->lock);
+}
+void lupos_wq_pool_unlock_irq_enable_c7979(struct worker_pool *pool)
+{
+	raw_spin_unlock_irq_enable(&pool->lock);
+}
+#endif
+unsigned long lupos_wq_work_data_bits_plain_read(struct work_struct *work)
+{
+	return *work_data_bits(work);
+}
+unsigned int lupos_wq_pool_flags_read(const struct worker_pool *pool) { return pool->flags; }
+unsigned int lupos_wq_wq_flags_read(const struct workqueue_struct *wq) { return wq->flags; }
+unsigned int lupos_wq_task_flags_read(struct task_struct *task) { return task->flags; }
+char lupos_wq_worker_desc_first_read(struct worker *worker) { return worker->desc[0]; }
+void *lupos_wq_work_func_hint(work_func_t func) { return func; }
+struct hlist_head *lupos_wq_busy_hash_bucket(struct worker_pool *pool, size_t bucket)
+{
+	return &pool->busy_hash[bucket];
+}
+struct workqueue_struct *lupos_wq_workqueues_first_rcu(void)
+{
+	struct workqueue_struct *wq;
+	__list_check_rcu(dummy, 0);
+	wq = list_entry_rcu(workqueues.next, struct workqueue_struct, list);
+	return &wq->list == &workqueues ? NULL : wq;
+}
+struct workqueue_struct *lupos_wq_workqueues_next_rcu(struct workqueue_struct *wq)
+{
+	wq = list_entry_rcu(wq->list.next, struct workqueue_struct, list);
+	return &wq->list == &workqueues ? NULL : wq;
+}
+const struct cpumask *lupos_wq_requested_unbound_cpumask(void) { return wq_requested_unbound_cpumask; }
+struct cpumask *lupos_wq_isolated_cpumask(void) { return wq_isolated_cpumask; }
+unsigned long lupos_wq_read_once_ulong(const unsigned long *value) { return READ_ONCE(*value); }
+void lupos_wq_write_once_ulong(unsigned long *value, unsigned long new_value) { WRITE_ONCE(*value, new_value); }
+unsigned long lupos_wq_read_ulong(const unsigned long *value) { return *value; }
+void lupos_wq_write_ulong(unsigned long *value, unsigned long new_value) { *value = new_value; }
+bool lupos_wq_time_after(unsigned long left, unsigned long right) { return time_after(left, right); }
+unsigned int lupos_wq_jiffies_to_msecs(unsigned long delta) { return jiffies_to_msecs(delta); }
+void lupos_wq_printk_deferred_enter(void) { printk_deferred_enter(); }
+void lupos_wq_printk_deferred_exit(void) { printk_deferred_exit(); }
+void lupos_wq_touch_nmi_watchdog(void) { touch_nmi_watchdog(); }
+int lupos_wq_task_pid_nr(struct task_struct *task) { return task_pid_nr(task); }
+#ifdef CONFIG_DEBUG_OBJECTS_WORK
+bool lupos_wq_work_static_test_bit(struct work_struct *work)
+{
+	return test_bit(WORK_STRUCT_STATIC_BIT, work_data_bits(work));
+}
+#endif
+#ifdef CONFIG_WQ_CPU_INTENSIVE_REPORT
+struct wci_ent *lupos_wq_wci_ents(void) { return wci_ents; }
+raw_spinlock_t *lupos_wq_wci_lock(void) { return &wci_lock; }
+int lupos_wq_wci_nr_ents_read(void) { return wci_nr_ents; }
+void lupos_wq_wci_nr_ents_write(int nr) { wci_nr_ents = nr; }
+struct hlist_node *lupos_wq_wci_hash_first_rcu(work_func_t func)
+{
+	__list_check_rcu(dummy, 0);
+	return rcu_dereference_raw(hlist_first_rcu(
+		&wci_hash[hash_min((unsigned long)func, HASH_BITS(wci_hash))]));
+}
+struct hlist_node *lupos_wq_hlist_next_rcu(struct hlist_node *node)
+{
+	return rcu_dereference_raw(hlist_next_rcu(node));
+}
+struct wci_ent *lupos_wq_wci_from_hash_node(struct hlist_node *node)
+{
+	return container_of(node, struct wci_ent, hash_node);
+}
+void lupos_wq_wci_hash_add_rcu(struct hlist_node *node, work_func_t func)
+{
+	hash_add_rcu(wci_hash, node, (unsigned long)func);
+}
+s64 lupos_wq_atomic64_inc_return_relaxed(atomic64_t *counter)
+{
+	return atomic64_inc_return_relaxed(counter);
+}
+s64 lupos_wq_atomic64_read(const atomic64_t *counter) { return atomic64_read(counter); }
+void lupos_wq_atomic64_set(atomic64_t *counter, s64 value) { atomic64_set(counter, value); }
+unsigned int lupos_wq_cpu_intensive_warning_thresh(void) { return wq_cpu_intensive_warning_thresh; }
+#endif
+#ifdef CONFIG_SYSFS
+struct device *lupos_wq_kobj_to_dev(struct kobject *object) { return kobj_to_dev(object); }
+int lupos_wq_saved_max_active_read(const struct workqueue_struct *wq) { return wq->saved_max_active; }
+bool lupos_wq_affn_strict_read(const struct workqueue_struct *wq) { return wq->attrs->affn_strict; }
+const char *lupos_wq_affn_name(int scope) { return wq_affn_names[scope]; }
+int lupos_wq_cpumask_parse(const char *text, struct cpumask *mask) { return cpumask_parse(text, mask); }
+struct cpumask *lupos_wq_cpumask_var_ptr(cpumask_var_t *storage) { return *storage; }
+void lupos_wq_free_cpumask_var_storage(cpumask_var_t *storage) { free_cpumask_var(*storage); }
+void lupos_wq_dev_set_uevent_suppress(struct device *dev, bool suppress) { dev_set_uevent_suppress(dev, suppress); }
+#endif
+#ifdef CONFIG_WQ_WATCHDOG
+unsigned long *lupos_wq_watchdog_thresh(void) { return &wq_watchdog_thresh; }
+unsigned long *lupos_wq_watchdog_touched(void) { return &wq_watchdog_touched; }
+unsigned long *lupos_wq_watchdog_touched_cpu(int cpu) { return &per_cpu(wq_watchdog_touched_cpu, cpu); }
+struct timer_list *lupos_wq_watchdog_timer(void) { return &wq_watchdog_timer; }
+unsigned int lupos_wq_panic_on_stall(void) { return wq_panic_on_stall; }
+unsigned int lupos_wq_panic_on_stall_time(void) { return wq_panic_on_stall_time; }
+unsigned int *lupos_wq_stall_count(void) { return &wq_stall; }
+bool lupos_wq_task_is_running(struct task_struct *task) { return task_is_running(task); }
+void lupos_wq_trigger_single_cpu_backtrace(int cpu) { trigger_single_cpu_backtrace(cpu); }
+bool lupos_wq_kvm_check_and_clear_guest_paused(void) { return kvm_check_and_clear_guest_paused(); }
+int lupos_wq_kstrtoul(const char *text, unsigned int base, unsigned long *result) { return kstrtoul(text, base, result); }
+#endif

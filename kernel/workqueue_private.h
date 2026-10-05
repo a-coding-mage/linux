@@ -434,4 +434,22 @@ struct work_for_cpu {
 };
 #endif
 
+/* Exact native C1362-1368 and C7330-7333 configured private types. */
+#ifdef CONFIG_WQ_CPU_INTENSIVE_REPORT
+#define WCI_MAX_ENTS 128
+
+struct wci_ent {
+	work_func_t		func;
+	atomic64_t		cnt;
+	struct hlist_node	hash_node;
+};
+#endif
+
+#ifdef CONFIG_SYSFS
+struct wq_device {
+	struct workqueue_struct		*wq;
+	struct device			dev;
+};
+#endif
+
 #endif /* LUPOS_WORKQUEUE_PRIVATE_H */

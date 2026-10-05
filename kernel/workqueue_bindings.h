@@ -246,4 +246,78 @@ void lupos_wq_trace_workqueue_queue_work(int cpu, struct pool_workqueue *pwq,
 void lupos_wq_trace_process_one_work_execute_start(struct work_struct *work);
 void lupos_wq_trace_process_one_work_execute_end(struct work_struct *work, work_func_t func);
 
+/* Native macro traversal, guard and diagnostic-observation contracts. */
+unsigned int lupos_wq_small_cpumask_bits(void);
+int lupos_wq_max_numnodes(void);
+unsigned int lupos_wq_first_cpu_in_mask(const struct cpumask *mask);
+unsigned int lupos_wq_next_cpu_in_mask(unsigned int cpu, const struct cpumask *mask);
+unsigned int lupos_wq_cpumask_first(const struct cpumask *mask);
+#ifdef CONFIG_WQ_WATCHDOG
+void lupos_wq_pool_lock_irq_disable_c7979(struct worker_pool *pool)
+	__acquires(&pool->lock);
+void lupos_wq_pool_unlock_irq_enable_c7979(struct worker_pool *pool)
+	__releases(&pool->lock);
+#endif
+unsigned long lupos_wq_work_data_bits_plain_read(struct work_struct *work);
+unsigned int lupos_wq_pool_flags_read(const struct worker_pool *pool);
+unsigned int lupos_wq_wq_flags_read(const struct workqueue_struct *wq);
+unsigned int lupos_wq_task_flags_read(struct task_struct *task);
+char lupos_wq_worker_desc_first_read(struct worker *worker);
+void *lupos_wq_work_func_hint(work_func_t func);
+struct hlist_head *lupos_wq_busy_hash_bucket(struct worker_pool *pool, size_t bucket);
+struct workqueue_struct *lupos_wq_workqueues_first_rcu(void);
+struct workqueue_struct *lupos_wq_workqueues_next_rcu(struct workqueue_struct *wq);
+const struct cpumask *lupos_wq_requested_unbound_cpumask(void);
+struct cpumask *lupos_wq_isolated_cpumask(void);
+unsigned long lupos_wq_read_once_ulong(const unsigned long *value);
+void lupos_wq_write_once_ulong(unsigned long *value, unsigned long new_value);
+unsigned long lupos_wq_read_ulong(const unsigned long *value);
+void lupos_wq_write_ulong(unsigned long *value, unsigned long new_value);
+bool lupos_wq_time_after(unsigned long left, unsigned long right);
+unsigned int lupos_wq_jiffies_to_msecs(unsigned long delta);
+void lupos_wq_printk_deferred_enter(void);
+void lupos_wq_printk_deferred_exit(void);
+void lupos_wq_touch_nmi_watchdog(void);
+int lupos_wq_task_pid_nr(struct task_struct *task);
+#ifdef CONFIG_DEBUG_OBJECTS_WORK
+bool lupos_wq_work_static_test_bit(struct work_struct *work);
+#endif
+#ifdef CONFIG_WQ_CPU_INTENSIVE_REPORT
+struct wci_ent *lupos_wq_wci_ents(void);
+raw_spinlock_t *lupos_wq_wci_lock(void);
+int lupos_wq_wci_nr_ents_read(void);
+void lupos_wq_wci_nr_ents_write(int nr);
+struct hlist_node *lupos_wq_wci_hash_first_rcu(work_func_t func);
+struct hlist_node *lupos_wq_hlist_next_rcu(struct hlist_node *node);
+struct wci_ent *lupos_wq_wci_from_hash_node(struct hlist_node *node);
+void lupos_wq_wci_hash_add_rcu(struct hlist_node *node, work_func_t func);
+s64 lupos_wq_atomic64_inc_return_relaxed(atomic64_t *counter);
+s64 lupos_wq_atomic64_read(const atomic64_t *counter);
+void lupos_wq_atomic64_set(atomic64_t *counter, s64 value);
+unsigned int lupos_wq_cpu_intensive_warning_thresh(void);
+#endif
+#ifdef CONFIG_SYSFS
+struct device *lupos_wq_kobj_to_dev(struct kobject *object);
+int lupos_wq_saved_max_active_read(const struct workqueue_struct *wq);
+bool lupos_wq_affn_strict_read(const struct workqueue_struct *wq);
+const char *lupos_wq_affn_name(int scope);
+int lupos_wq_cpumask_parse(const char *text, struct cpumask *mask);
+struct cpumask *lupos_wq_cpumask_var_ptr(cpumask_var_t *storage);
+void lupos_wq_free_cpumask_var_storage(cpumask_var_t *storage);
+void lupos_wq_dev_set_uevent_suppress(struct device *dev, bool suppress);
+#endif
+#ifdef CONFIG_WQ_WATCHDOG
+unsigned long *lupos_wq_watchdog_thresh(void);
+unsigned long *lupos_wq_watchdog_touched(void);
+unsigned long *lupos_wq_watchdog_touched_cpu(int cpu);
+struct timer_list *lupos_wq_watchdog_timer(void);
+unsigned int lupos_wq_panic_on_stall(void);
+unsigned int lupos_wq_panic_on_stall_time(void);
+unsigned int *lupos_wq_stall_count(void);
+bool lupos_wq_task_is_running(struct task_struct *task);
+void lupos_wq_trigger_single_cpu_backtrace(int cpu);
+bool lupos_wq_kvm_check_and_clear_guest_paused(void);
+int lupos_wq_kstrtoul(const char *text, unsigned int base, unsigned long *result);
+#endif
+
 #endif /* LUPOS_WORKQUEUE_BINDINGS_H */

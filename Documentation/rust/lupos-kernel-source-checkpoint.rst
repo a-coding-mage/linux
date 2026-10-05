@@ -342,6 +342,20 @@ their requests are not implemented-adapter coverage. Configured primitive and
 metadata closure also remains incomplete. The resource body is saved unselected
 and does not imply an executable allocator or completed workqueue owner.
 
+The independently reviewed diagnostics source retains debug-object fixups,
+CPU-intensive reports, queries/dumps, sysfs decisions and watchdog behavior,
+including the final warning's configured stack-dump branch. It is saved
+unselected. Optional native type/storage and observation helpers are separately
+reviewed; callbacks, descriptor/sysfs/parameter tables and full metadata closure
+are still missing. The watchdog scoped guard preserves this tree's refcounted
+interrupt protocol, distinct from ordinary explicit IRQ-save operations.
+
+Shared native iterator helpers currently merge some original macro diagnostic
+sites and their warning-once state. This is a known unfinished source repair,
+not just unperformed emitted-code validation. Per-original-site checks and owner
+calls must be reconciled before admission. Generic helper reuse does not waive
+native diagnostic identity or establish complete workqueue source equivalence.
+
 Freezer native storage and task-state protocol
 ---------------------------------------------
 
