@@ -153,3 +153,31 @@ independent source review and patch checks passed. Generated types/signatures,
 compiler instrumentation, dependency/selection/inspection targets, link,
 configuration and original C runtime tests are still pending. No per-owner
 build or guest was run.
+
+Page and folio migration
+-----------------------
+
+The migration candidate provides Rust bodies for all 57 ordinary functions in
+the original ``mm/migrate.c``, plus the syscall body dispatched through native
+``SYSCALL_DEFINE6`` metadata. Independent source review covered all 57 bodies:
+six PTE/wait functions, sixteen move/batch functions, seven movable-owner
+functions, thirteen mapping/flags/buffer/fallback functions, eleven syscall
+functions and four NUMA functions. The syscall metadata thunk was also
+compared. These counts are original source functions, not tests or independent
+runtime scenarios.
+
+Review covered reference freezing and unlocking, swapcluster/xarray/IRQ order,
+anonymous-VMA and page-table ownership, hugeTLB and buffer callbacks, UFFD/RWP
+PTE bits, EAGAIN reinsertion and error rollback, paired batch lists, split and
+retry accounting, compat/native user access, status arrays, ptrace/LSM/task/mm
+lifetimes, node/cpuset validation and NUMA migration policy. Native integer
+promotions preserve the actual header definition of HPAGE_PMD_NR.
+
+The 339 declared native dependencies remain explicit: header algorithms,
+architecture/uaccess/atomic/locking primitives, diagnostics/trace metadata and
+external owner APIs. The native syscall entry dispatches to Rust; no ordinary
+migrate.c body is forwarded to the retained original C implementation.
+Configured signature/layout/CFI, compiler protection, callback/data identity,
+link ownership and original C runtime tests remain unverified. Formatting,
+inventories, source review and patch checks do not establish those gates.
+No compiler, bindgen, configuration, probe, full build or guest was run.

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(rust_migrate_.*|folio|page|mm_struct|vm_area_struct|address_space|movable_operations|migration_target_control|migrate_mode|migrate_reason|pagetype|isolate_mode_t|new_folio_t|free_folio_t|gfp_t|pgoff_t|vm_flags_t|rmap_t|pid_t|nodemask_t|compat_uptr_t|pgprot_t|pte_t|pteval_t|pmd_t|softleaf_t|spinlock_t|list_head|rmap_walk_control|page_vma_mapped_walk|folio_walk|anon_vma|zone|pglist_data|mem_cgroup|lruvec|swap_cluster_info|xa_state|hugepage_subpool|hstate|buffer_head|atomic_t|task_struct|rw_semaphore|ttu_flags|node_stat_item|zone_stat_item|zone_type|node_states|vm_event_item|mthp_stat_item)$'
+--allowlist-function '^rust_migrate_.*'
+--allowlist-var '^(RUST_MIGRATE_.*|E[A-Z0-9_]+|PGTY_.*|MIGRATE_.*|MR_.*|TTU_.*|PVMW_.*|NR_ISOLATED_ANON|NR_FILE_PAGES|NR_SHMEM|NR_SHMEM_THPS|NR_SWAPCACHE|NR_FILE_DIRTY|NR_ZONE_WRITE_PENDING|MTHP_STAT_NR_ANON|ZONE_MOVABLE|PGMIGRATE_.*|THP_MIGRATION_.*|N_MEMORY|FW_ZEROPAGE|NUMA_PAGE_MIGRATE|PGPROMOTE_SUCCESS)$'
+# Bindgen derives native sizes/alignment. Randomized/anonymous ABI objects are
+# accessed through typed native fields; these are not hand-guessed opaque types.
+--opaque-type '^(mm_struct|task_struct|signal_struct|sighand_struct|files_struct|fs_struct|dentry|super_block|page|folio|ptdesc|mem_cgroup|lruvec|kmem_cache|shrinker|device|mem_section|zone|pglist_data|net|socket|cred|buffer_head)$'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=folio='#[cfi_encoding="5folio"]'
+--with-attribute-custom-struct=page='#[cfi_encoding="4page"]'
+--with-attribute-custom-struct=mm_struct='#[cfi_encoding="9mm_struct"]'
+--with-attribute-custom-struct=address_space='#[cfi_encoding="13address_space"]'

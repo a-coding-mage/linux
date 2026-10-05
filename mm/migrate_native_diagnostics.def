@@ -1,0 +1,33 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* One leaf per original diagnostic site preserves independent ONCE storage. */
+RM_RET(bool, warn_missing_movable_ops, (bool bad), WARN_ON_ONCE(bad))
+RM_VOID(bug_migrate_writeback, (bool bad), BUG_ON(bad))
+RM_VOID(warn_missing_migrate_folio, (struct address_space *m), WARN_ONCE(m->a_ops->writepages, "%ps does not implement migrate_folio\n", m->a_ops))
+#ifdef CONFIG_NUMA_BALANCING
+RM_VOID(bug_misplaced_list, (bool bad), BUG_ON(bad))
+#endif
+#ifdef CONFIG_DEBUG_VM
+RM_VOID(warn_movable_type, (bool bad, struct page *p), VM_WARN_ON_ONCE_PAGE(bad,p))
+RM_VOID(warn_isolate_type, (bool bad, struct page *p), VM_WARN_ON_ONCE_PAGE(bad,p))
+RM_VOID(warn_isolate_driver, (bool bad, struct page *p), VM_WARN_ON_ONCE_PAGE(bad,p))
+RM_VOID(warn_putback_type, (bool bad, struct page *p), VM_WARN_ON_ONCE_PAGE(bad,p))
+RM_VOID(warn_putback_isolated, (bool bad, struct page *p), VM_WARN_ON_ONCE_PAGE(bad,p))
+RM_VOID(warn_move_type, (bool bad, struct page *p), VM_WARN_ON_ONCE_PAGE(bad,p))
+RM_VOID(warn_move_isolated, (bool bad, struct page *p), VM_WARN_ON_ONCE_PAGE(bad,p))
+RM_VOID(bug_zero_anon, (bool bad, struct page *p), VM_BUG_ON_PAGE(bad,p))
+RM_VOID(bug_zero_locked, (bool bad, struct page *p), VM_BUG_ON_PAGE(bad,p))
+RM_VOID(bug_zero_present, (bool bad, struct page *p), VM_BUG_ON_PAGE(bad,p))
+RM_VOID(warn_zero_device, (bool bad, struct folio *f), VM_WARN_ON_ONCE_FOLIO(bad,f))
+#ifdef CONFIG_ARCH_HAS_PMD_SOFTLEAVES
+RM_VOID(bug_migration_pmd, (bool bad, struct folio *f), VM_BUG_ON_FOLIO(bad,f))
+#endif
+RM_VOID(bug_shared_zero_destination, (bool bad, struct folio *f), VM_BUG_ON_FOLIO(bad,f))
+RM_VOID(bug_active_unevictable, (bool bad, struct folio *f), VM_BUG_ON_FOLIO(bad,f))
+#ifdef CONFIG_BUFFER_HEAD
+RM_VOID(warn_buffer_migrating, (bool bad), VM_WARN_ON_ONCE(bad))
+#endif
+RM_VOID(bug_move_source_lock, (bool bad, struct folio *f), VM_BUG_ON_FOLIO(bad,f))
+RM_VOID(bug_move_destination_lock, (bool bad, struct folio *f), VM_BUG_ON_FOLIO(bad,f))
+RM_VOID(bug_unmap_anon_vma, (bool bad, struct folio *f), VM_BUG_ON_FOLIO(bad,f))
+RM_VOID(warn_sync_batch, (bool bad), VM_WARN_ON_ONCE(bad))
+#endif

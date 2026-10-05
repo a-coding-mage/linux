@@ -1668,3 +1668,5 @@ source "mm/damon/Kconfig"
 endmenu
 
 source "mm/Kconfig.rust-userfaultfd"
+
+source "mm/Kconfig.rust-migrate"

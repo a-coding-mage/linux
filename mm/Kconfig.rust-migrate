@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_MIGRATE
+	bool "Rust page and folio migration owner"
+	depends on RUST && MIGRATION
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build migrate.o from the Rust page/folio migration owner. Native
+	  configured types, header/architecture operations, diagnostics and
+	  syscall metadata remain supplied by migrate_native_helpers.o.
+	  The combined object instrumentation and ABI must pass the coordinated
+	  general build-fix review before this owner is admitted to a build.

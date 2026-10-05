@@ -276,3 +276,5 @@ include $(srctree)/mm/vmscan_native_rust.mk
 include $(srctree)/mm/slab_common-rust.mk
 
 include $(srctree)/mm/compaction_native_rust.mk
+
+include $(srctree)/mm/migrate_native_rust.mk
