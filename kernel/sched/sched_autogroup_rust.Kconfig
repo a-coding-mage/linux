@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_AUTOGROUP
+	bool "Rust scheduler autogroup source owner proposal"
+	depends on RUST && SCHED_AUTOGROUP && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing autogroup implementation.
+	  Native ABI/CFI, compiler policy, reference/RCU and runtime
+	  qualification must precede replacement of the original owner.

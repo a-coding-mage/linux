@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source-only input proposal. Configured generation is not authorized.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'rq|cfs_rq|sched_entity|sched_avg|sched_class|task_struct'
+--allowlist-function 'lupos_pelt_.*'
+--allowlist-var 'LUPOS_PELT_.*|rt_sched_class|dl_sched_class'
+# Original native C tag spellings; emitted ABI/CFI equivalence is still unproven.
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=cfs_rq='#[cfi_encoding="6cfs_rq"]'
+--with-attribute-custom-struct=sched_entity='#[cfi_encoding="12sched_entity"]'
+--with-attribute-custom-struct=sched_avg='#[cfi_encoding="9sched_avg"]'
+--with-attribute-custom-struct=sched_class='#[cfi_encoding="11sched_class"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'

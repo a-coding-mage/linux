@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source-only proposal. Binding generation is prohibited during this hold.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'autogroup|task_group|task_struct|signal_struct|seq_file'
+--opaque-type 'autogroup|task_group|task_struct|signal_struct|seq_file'
+--allowlist-function 'lupos_autogroup_.*|sched_create_group|sched_online_group|sched_destroy_group|sched_release_group|sched_move_task|sched_group_set_shares|free_rt_sched_group|can_nice'
+--allowlist-var 'LUPOS_AUTOGROUP_.*'
+--with-attribute-custom-struct=autogroup='#[cfi_encoding="9autogroup"]'
+--with-attribute-custom-struct=task_group='#[cfi_encoding="10task_group"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=signal_struct='#[cfi_encoding="13signal_struct"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'

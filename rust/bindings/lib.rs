@@ -173,3 +173,13 @@ pub mod sched_syscalls_native {
 pub mod sched_loadavg_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_loadavg_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_AUTOGROUP)]
+pub mod sched_autogroup_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_autogroup_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_SCHED_PELT)]
+pub mod sched_pelt_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_pelt_generated.rs"));
+}

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_PELT
+	bool "Rust scheduler PELT source owner proposal"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing PELT implementation.
+	  Configured ABI/CFI, arithmetic, compiler policy and runtime
+	  qualification must precede replacement of the original owner.

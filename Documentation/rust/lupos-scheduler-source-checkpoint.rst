@@ -278,6 +278,34 @@ selected-owner hard errors keep this proposal inactive. Native layout/ABI/CFI,
 compiler and instrumentation policy, emitted barriers, 32-/64-bit arithmetic,
 NO_HZ concurrency and original-test/runtime qualification remain open.
 
+Autogroup source checkpoint
+---------------------------
+
+The existing autogroup Rust owner now uses native opaque objects, storage,
+reference and lock primitives. Its source preserves allocation-failure warning
+paths, RT-group redirection, signal-group migration, fork/exit references,
+permission/rate checks and proc output. Independent review corrects the
+PRINTK-disabled rate-limit declaration and checks native init adapters.
+
+Default-off BROKEN and hard-error hooks keep original utility ownership.
+Generated opaque ABI/CFI, init/instrumentation policy, allocation and diagnostic
+attribution, reference/RCU ordering, configuration and runtime qualification
+remain open. Native boundary leaves are still real runtime C work.
+
+PELT source checkpoint
+----------------------
+
+The 13 existing PELT routines retain their source algorithms with corrected
+native-width products, period/field types, eager signal updates and native
+WRITE_ONCE boundaries. Independent review corrects kernel FFI aliases and the
+non-PROXY_EXEC anonymous donor union access through a native plain field leaf.
+Source inventory covers 24 native primitive leaves, not generated ABI evidence.
+
+Default-off BROKEN and hard-error hooks keep the original policy owner active.
+Trace declarations, generated field/layout/CFI, configured HW/IRQ alternatives,
+compiler/instrumentation policy, numerical differential and concurrent runtime
+qualification remain open. No native accounting acceptance is claimed.
+
 Inactive gates and remaining work
 ---------------------------------
 

@@ -1047,6 +1047,8 @@ include $(srctree)/kernel/sched/cputime_bindgen.mk
 include $(srctree)/kernel/sched/sched_waiting_bindgen.mk
 include $(srctree)/kernel/sched/sched_syscalls_bindgen.mk
 include $(srctree)/kernel/sched/sched_loadavg_bindgen.mk
+include $(srctree)/kernel/sched/sched_autogroup_bindgen.mk
+include $(srctree)/kernel/sched/sched_pelt_bindgen.mk
 
 include $(srctree)/mm/memory_native_bindgen.mk
 include $(srctree)/mm/userfaultfd_native_bindgen.mk
