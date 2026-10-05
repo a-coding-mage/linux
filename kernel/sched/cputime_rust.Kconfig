@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_CPUTIME
+	bool "Rust CPU-accounting source owner proposal"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Source-only CPU accounting implementation. Native configuration,
+	  ABI/CFI, instrumentation, concurrency and build_policy ownership
+	  must be qualified before any replacement object is admitted.

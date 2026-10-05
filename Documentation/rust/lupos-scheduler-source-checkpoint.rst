@@ -195,6 +195,28 @@ ten existing cfg alternatives. Native unsigned-int NUMA timestamp assignment
 is corrected without widening. Scope/cfg reconstruction retains prior body
 text; none of these source checks qualifies the native owner.
 
+CPU-accounting source checkpoint
+--------------------------------
+
+The existing cputime Rust implementation now uses native per-CPU storage and
+header-derived interfaces. Missing IRQ tick, generic/native vtime, NO_HZ,
+thread-group iteration and remote cpustat-reader behavior is supplied. Source
+repairs preserve threshold flush/reset, seqcount-validated state, lockless then
+IRQ-save retry, locked 32-bit runtime reads and output-alias update order.
+
+Independent review removes an architecture-idle dependency absent on the
+original s390 path and restores the native PROVE_RCU_LIST traversal diagnostic.
+Thirty-five public C function spellings have Rust definitions and 76 helper
+names have native declarations/definitions; these are text inventories only.
+Configured types, enum/callback CFI, memory ordering, instrumentation and
+build_policy ownership remain unqualified. Default-off BROKEN hooks and
+source-stage errors retain the admission hold and original C selection.
+
+Additional core source review corrects signed SCX-policy and configured
+cpuhp_tasks_frozen/in_lock_functions boundaries. Scheduling/preemption/hotplug,
+init/proxy/MM-CID bodies receive explicit reviewed unsafe scopes with exact
+source readback, without admitting the native owner or altering its policies.
+
 Inactive gates and remaining work
 ---------------------------------
 

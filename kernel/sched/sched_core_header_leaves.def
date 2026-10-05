@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /* Header-inline/config-alternative entry leaves. Body authority is the exact
  * included native header; no original core.c algorithm body is forwarded. */
+/* include/linux/cpu.h:116..128: bool on SMP, native zero macro otherwise. */
+LUPOS_CORE_VALUE(bool, lupos_core_header_cpuhp_tasks_frozen, (void), cpuhp_tasks_frozen)
+/* spinlock.h selects spinlock_api_smp.h or the original UP non-debug macro. */
+LUPOS_CORE_VALUE(int, lupos_core_header_in_lock_functions, (unsigned long addr), in_lock_functions(addr))
 /* /workspace/shared/lupos-recovery-20261003/linux/include/linux/hrtimer_rearm.h:80 */
 LUPOS_CORE_VOID(lupos_core_header___hrtimer_rearm_deferred, (void), __hrtimer_rearm_deferred())
 /* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:1919 */

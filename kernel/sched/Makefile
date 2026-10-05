@@ -48,3 +48,4 @@ include $(srctree)/kernel/sched/rt_rust.mk
 include $(srctree)/kernel/sched/sched_support_rust.mk
 include $(srctree)/kernel/sched/deadline_rust.mk
 include $(srctree)/kernel/sched/psi_rust.mk
+include $(srctree)/kernel/sched/cputime_rust.mk

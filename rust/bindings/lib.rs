@@ -153,3 +153,8 @@ pub mod sched_deadline {
 pub mod sched_psi_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_psi_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_CPUTIME)]
+pub mod cputime_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/cputime_generated.rs"));
+}

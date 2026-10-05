@@ -106,7 +106,7 @@ pub unsafe extern "C" fn sched_fork(clone_flags: u64, p: *mut task_struct) -> c_
         } else {
             #[cfg(CONFIG_SCHED_CLASS_EXT)]
             {
-                (*p).sched_class = if lupos_core_task_should_scx((*p).policy) {
+                (*p).sched_class = if lupos_core_task_should_scx((*p).policy as c_int) {
                     addr_of!(ext_sched_class)
                 } else {
                     addr_of!(fair_sched_class)

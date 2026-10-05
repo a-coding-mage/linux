@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source-only proposal. No binding generation is authorized in this phase.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'task_struct|task_cputime|prev_cputime|signal_struct|rq|rq_flags|irqtime|vtime|kernel_cpustat|cpu_usage_stat|vtime_state|seqcount_t|u64_stats_sync|atomic_t'
+--allowlist-function 'lupos_cputime_.*|task_sched_runtime'
+--allowlist-var 'LUPOS_CPUTIME_.*|CPUTIME_.*|VTIME_.*'
+--newtype-global-enum 'cpu_usage_stat|vtime_state'
+--with-attribute-custom-enum=cpu_usage_stat='#[cfi_encoding="14cpu_usage_stat"]'
+--with-attribute-custom-enum=vtime_state='#[cfi_encoding="11vtime_state"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=task_cputime='#[cfi_encoding="12task_cputime"]'
+--with-attribute-custom-struct=prev_cputime='#[cfi_encoding="12prev_cputime"]'
+--with-attribute-custom-struct=signal_struct='#[cfi_encoding="13signal_struct"]'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=irqtime='#[cfi_encoding="7irqtime"]'
+--with-attribute-custom-struct=vtime='#[cfi_encoding="5vtime"]'
+--with-attribute-custom-struct=kernel_cpustat='#[cfi_encoding="14kernel_cpustat"]'
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'

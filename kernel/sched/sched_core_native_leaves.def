@@ -204,7 +204,7 @@ LUPOS_CORE_VALUE(int, lupos_core_scx_fork, (struct task_struct *p, struct kernel
 LUPOS_CORE_VOID(lupos_core_scx_cancel_fork, (struct task_struct *p), scx_cancel_fork(p))
 LUPOS_CORE_VOID(lupos_core_scx_post_fork, (struct task_struct *p), scx_post_fork(p))
 #ifdef CONFIG_SCHED_CLASS_EXT
-LUPOS_CORE_VALUE(bool, lupos_core_task_should_scx, (unsigned int policy), task_should_scx(policy))
+LUPOS_CORE_VALUE(bool, lupos_core_task_should_scx, (int policy), task_should_scx(policy))
 #endif
 #ifdef CONFIG_CGROUP_SCHED
 LUPOS_CORE_VALUE(struct task_group *, lupos_core_autogroup_task_group, (struct task_struct *p, struct task_group *tg), autogroup_task_group(p,tg))
