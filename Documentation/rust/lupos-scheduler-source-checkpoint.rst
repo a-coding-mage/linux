@@ -532,8 +532,8 @@ repairs CPU validation and protected task-slice behavior. It supplies common
 state/parameter boundaries, cursor traversal, slice-OOB accounting and current
 task accounting. Native storage and private layouts retain their original
 definitions. Independent review covers these two bounded source families.
-The task-lifetime family below is a separate increment; the other fifteen core
-families are not supplied by these bounded checkpoints.
+The task-lifetime and cgroup families below are separate increments; the other
+fourteen core families are not supplied by these bounded checkpoints.
 
 Two current-task reads now use an exact plain native accessor for configured
 rq union access. The native source permits competing slice/vtime writers in
@@ -558,6 +558,21 @@ envelopes. Three supported raw concurrent-read cases remain explicit Rust
 memory-model blockers; ABI/CFI, stack/context analysis, native diagnostics and
 all runtime qualification remain open. The held enqueue-family dependency is
 not supplied by a C fallback. All selection/source errors remain.
+
+Sched_ext cgroup source checkpoint
+---------------------------------
+
+All seventeen cgroup identities now have independently reviewed source bodies,
+including their native configuration alternatives, migration preparation and
+rollback, parent-directed controls and root group initialization/exit.
+Native rwsem and shared flag storage retain one owner each.
+
+Review restores callback field/helper evaluation inside all original native
+macro sites, including repeated task_rq evaluation during task movement. A typed
+adapter reaches the single Rust task-group helper at the original callback
+argument point. Cross-frame context, canonical native types, ABI/CFI/BTF,
+diagnostic attribution and runtime behavior remain unqualified. Default-off
+BROKEN and all selection/source hard errors remain.
 
 Inactive gates and remaining work
 ---------------------------------

@@ -49,6 +49,18 @@ pub(crate) use sched_ext_core_task_lifetime::{
 pub(crate) use sched_ext_core_task_lifetime::tg_cgrp;
 pub(crate) use sched_ext_core_slice_cursor::*;
 
+mod sched_ext_core_cgroup;
+pub(crate) use sched_ext_core_cgroup::{
+    root_cgroup, scx_cgroup_exit, scx_cgroup_init, scx_cgroup_lock, scx_cgroup_unlock,
+};
+#[cfg(CONFIG_EXT_GROUP_SCHED)]
+pub(crate) use sched_ext_core_cgroup::{
+    lupos_scx_core_cgroup_tg_cgrp, scx_cgroup_can_attach, scx_cgroup_cancel_attach,
+    scx_cgroup_move_task, scx_cgroup_task_sched, scx_group_set_bandwidth,
+    scx_group_set_idle, scx_group_set_weight, scx_tg_init, scx_tg_knob_sched,
+    scx_tg_offline, scx_tg_online, scx_tg_sched,
+};
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }

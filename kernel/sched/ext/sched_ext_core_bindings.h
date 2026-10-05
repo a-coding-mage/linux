@@ -127,4 +127,8 @@ struct percpu_rw_semaphore *lupos_scx_core_fork_rwsem(void);
 /* Independently reviewed F06 interfaces; no duplicate shared native state. */
 #include "sched_ext_core_task_lifetime_bindings.h"
 
+/* Independently reviewed F08 interfaces and original shared plain flag read. */
+#include "sched_ext_core_cgroup_bindings.h"
+bool lupos_scx_core_cgroup_enabled(void);
+
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */

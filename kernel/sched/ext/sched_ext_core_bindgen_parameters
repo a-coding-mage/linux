@@ -3,6 +3,9 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+--allowlist-type 'cgroup_taskset|scx_cgroup_init_args'
+--with-attribute-custom-struct=cgroup_taskset='#[cfi_encoding="14cgroup_taskset"]'
+--with-attribute-custom-struct=scx_cgroup_init_args='#[cfi_encoding="20scx_cgroup_init_args"]'
 --allowlist-type 'scx_task_iter|sched_ext_entity|scx_exit_task_args|scx_init_task_args|rq_flags|task_group|cgroup|kernel_clone_args|load_weight|css_task_iter'
 --with-attribute-custom-struct=scx_task_iter='#[cfi_encoding="13scx_task_iter"]'
 --with-attribute-custom-struct=sched_ext_entity='#[cfi_encoding="16sched_ext_entity"]'

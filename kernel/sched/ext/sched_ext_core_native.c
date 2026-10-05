@@ -466,3 +466,8 @@ struct percpu_rw_semaphore *lupos_scx_core_fork_rwsem(void)
 {
 	return &scx_fork_rwsem;
 }
+
+bool lupos_scx_core_cgroup_enabled(void)
+{
+	return scx_cgroup_enabled;
+}
