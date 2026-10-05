@@ -7,6 +7,15 @@
  *  Author: Juri Lelli <j.lelli@sssup.it>
  */
 
+use core::ptr::{
+    addr_of,
+    addr_of_mut, //
+};
+use kernel::ffi::{
+    c_ulong,
+    c_void, //
+};
+
 #[inline]
 unsafe fn parent(i: i32) -> i32 {
     (i - 1) >> 1
@@ -119,9 +128,10 @@ unsafe fn cpudl_maximum(cp: *mut cpudl) -> i32 {
  *
  * Returns: int - CPUs were found
  */
-pub unsafe fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_mask: *mut cpumask) -> i32 {
-    let dl_se = &(*p).dl;
-    if !later_mask.is_null() && cpumask_and(later_mask, (*cp).free_cpus, &(*p).cpus_mask) {
+#[no_mangle]
+pub unsafe extern "C" fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_mask: *mut cpumask) -> i32 {
+    let dl_se = addr_of!((*p).dl);
+    if !later_mask.is_null() && cpumask_and(later_mask, (*cp).free_cpus, addr_of!((*p).cpus_mask)) {
         let mut max_cap: c_ulong = 0;
         let mut max_cpu: i32 = -1;
         if !sched_asym_cpucap_active() { return 1; }
@@ -140,7 +150,7 @@ pub unsafe fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_mask: *mut c
     } else {
         let best_cpu = cpudl_maximum(cp);
         WARN_ON(best_cpu != -1 && !cpu_present(best_cpu));
-        if cpumask_test_cpu(best_cpu, &(*p).cpus_mask) && dl_time_before(dl_se.deadline, (*(*cp).elements).dl) {
+        if cpumask_test_cpu(best_cpu, addr_of!((*p).cpus_mask)) && dl_time_before((*dl_se).deadline, (*(*cp).elements).dl) {
             if !later_mask.is_null() { cpumask_set_cpu(best_cpu, later_mask); }
             1
         } else { 0 }
@@ -157,10 +167,11 @@ pub unsafe fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_mask: *mut c
  *
  * Returns: (void)
  */
-pub unsafe fn cpudl_clear(cp: *mut cpudl, cpu: i32, online: bool) {
-    let mut flags: ulong = 0;
+#[no_mangle]
+pub unsafe extern "C" fn cpudl_clear(cp: *mut cpudl, cpu: i32, online: bool) {
+    let mut flags: c_ulong = 0;
     WARN_ON(!cpu_present(cpu));
-    raw_spin_lock_irqsave(&mut (*cp).lock, &mut flags);
+    raw_spin_lock_irqsave(addr_of_mut!((*cp).lock), &mut flags);
     let old_idx = (*(*cp).elements.add(cpu as usize)).idx;
     if old_idx != IDX_INVALID {
         let new_cpu = (*(*cp).elements.add(((*cp).size - 1) as usize)).cpu;
@@ -172,14 +183,15 @@ pub unsafe fn cpudl_clear(cp: *mut cpudl, cpu: i32, online: bool) {
         cpudl_heapify(cp, old_idx);
     }
     if likely(online) { __cpumask_set_cpu(cpu, (*cp).free_cpus); } else { __cpumask_clear_cpu(cpu, (*cp).free_cpus); }
-    raw_spin_unlock_irqrestore(&mut (*cp).lock, flags);
+    raw_spin_unlock_irqrestore(addr_of_mut!((*cp).lock), flags);
 }
 
 /* cpudl_set - update the cpudl max-heap */
-pub unsafe fn cpudl_set(cp: *mut cpudl, cpu: i32, dl: u64) {
-    let mut flags: ulong = 0;
+#[no_mangle]
+pub unsafe extern "C" fn cpudl_set(cp: *mut cpudl, cpu: i32, dl: u64) {
+    let mut flags: c_ulong = 0;
     WARN_ON(!cpu_present(cpu));
-    raw_spin_lock_irqsave(&mut (*cp).lock, &mut flags);
+    raw_spin_lock_irqsave(addr_of_mut!((*cp).lock), &mut flags);
     let old_idx = (*(*cp).elements.add(cpu as usize)).idx;
     if old_idx == IDX_INVALID {
         let new_idx = (*cp).size;
@@ -193,17 +205,18 @@ pub unsafe fn cpudl_set(cp: *mut cpudl, cpu: i32, dl: u64) {
         (*(*cp).elements.add(old_idx as usize)).dl = dl;
         cpudl_heapify(cp, old_idx);
     }
-    raw_spin_unlock_irqrestore(&mut (*cp).lock, flags);
+    raw_spin_unlock_irqrestore(addr_of_mut!((*cp).lock), flags);
 }
 
 /* cpudl_init - initialize the cpudl structure */
-pub unsafe fn cpudl_init(cp: *mut cpudl) -> i32 {
-    raw_spin_lock_init(&mut (*cp).lock);
+#[no_mangle]
+pub unsafe extern "C" fn cpudl_init(cp: *mut cpudl) -> i32 {
+    raw_spin_lock_init(addr_of_mut!((*cp).lock));
     (*cp).size = 0;
     (*cp).elements = kzalloc_objs::<cpudl_item>(nr_cpu_ids);
     if (*cp).elements.is_null() { return -ENOMEM; }
-    if !zalloc_cpumask_var(&mut (*cp).free_cpus, GFP_KERNEL) {
-        kfree((*cp).elements);
+    if !zalloc_cpumask_var(addr_of_mut!((*cp).free_cpus), GFP_KERNEL) {
+        kfree((*cp).elements.cast::<c_void>());
         return -ENOMEM;
     }
     for_each_possible_cpu!(i, { (*(*cp).elements.add(i as usize)).idx = IDX_INVALID; });
@@ -211,9 +224,10 @@ pub unsafe fn cpudl_init(cp: *mut cpudl) -> i32 {
 }
 
 /* cpudl_cleanup - clean up the cpudl structure */
-pub unsafe fn cpudl_cleanup(cp: *mut cpudl) {
+#[no_mangle]
+pub unsafe extern "C" fn cpudl_cleanup(cp: *mut cpudl) {
     free_cpumask_var((*cp).free_cpus);
-    kfree((*cp).elements);
+    kfree((*cp).elements.cast::<c_void>());
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

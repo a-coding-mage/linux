@@ -19,6 +19,12 @@
  *  in that class).
  */
 
+use core::ptr::{
+    addr_of,
+    addr_of_mut, //
+};
+use kernel::ffi::c_void;
+
 unsafe fn convert_prio(prio: i32) -> i32 {
     let cpupri: i32;
     match prio {
@@ -37,34 +43,37 @@ unsafe fn __cpupri_find(
     lowest_mask: *mut cpumask,
     idx: i32,
 ) -> i32 {
-    let vec = &mut (*cp).pri_to_cpu[idx as usize];
+    // The vector is shared with lockless readers and concurrent updaters.
+    let vec = addr_of_mut!((*cp).pri_to_cpu[idx as usize]);
     let mut skip = 0;
 
-    if atomic_read(&vec.count) == 0 {
+    if atomic_read(addr_of!((*vec).count)) == 0 {
         skip = 1;
     }
     smp_rmb();
     if skip != 0 {
         return 0;
     }
-    if cpumask_any_and(&(*p).cpus_mask, vec.mask) >= nr_cpu_ids {
+    if cpumask_any_and(addr_of!((*p).cpus_mask), (*vec).mask) >= nr_cpu_ids {
         return 0;
     }
     if !lowest_mask.is_null() {
-        cpumask_and(lowest_mask, &(*p).cpus_mask, vec.mask);
+        cpumask_and(lowest_mask, addr_of!((*p).cpus_mask), (*vec).mask);
         cpumask_and(lowest_mask, lowest_mask, cpu_active_mask);
-        if cpumask_empty(lowest_mask) != 0 {
+        if cpumask_empty(lowest_mask) {
             return 0;
         }
     }
     1
 }
 
-pub unsafe fn cpupri_find(cp: *mut cpupri, p: *mut task_struct, lowest_mask: *mut cpumask) -> i32 {
+#[no_mangle]
+pub unsafe extern "C" fn cpupri_find(cp: *mut cpupri, p: *mut task_struct, lowest_mask: *mut cpumask) -> i32 {
     cpupri_find_fitness(cp, p, lowest_mask, None)
 }
 
-pub unsafe fn cpupri_find_fitness(
+#[no_mangle]
+pub unsafe extern "C" fn cpupri_find_fitness(
     cp: *mut cpupri,
     p: *mut task_struct,
     lowest_mask: *mut cpumask,
@@ -72,22 +81,26 @@ pub unsafe fn cpupri_find_fitness(
 ) -> i32 {
     let task_pri = convert_prio((*p).prio);
     let mut idx = 0;
-    WARN_ON_ONCE(task_pri >= CPUPRI_NR_PRIORITIES);
+    WARN_ON_ONCE(task_pri >= CPUPRI_NR_PRIORITIES as i32);
 
     while idx < task_pri {
         if __cpupri_find(cp, p, lowest_mask, idx) == 0 {
             idx += 1;
             continue;
         }
-        if lowest_mask.is_null() || fitness_fn.is_none() {
+        if lowest_mask.is_null() {
             return 1;
         }
+        let fitness = match fitness_fn {
+            Some(fitness) => fitness,
+            None => return 1,
+        };
         for_each_cpu!(cpu, lowest_mask, {
-            if !fitness_fn.unwrap()(p, cpu) {
+            if !fitness(p, cpu) {
                 cpumask_clear_cpu(cpu, lowest_mask);
             }
         });
-        if cpumask_empty(lowest_mask) != 0 {
+        if cpumask_empty(lowest_mask) {
             idx += 1;
             continue;
         }
@@ -99,39 +112,42 @@ pub unsafe fn cpupri_find_fitness(
     0
 }
 
-pub unsafe fn cpupri_set(cp: *mut cpupri, cpu: i32, mut newpri: i32) {
-    let currpri = &mut (*cp).cpu_to_pri[cpu as usize];
+#[no_mangle]
+pub unsafe extern "C" fn cpupri_set(cp: *mut cpupri, cpu: i32, mut newpri: i32) {
+    let currpri = (*cp).cpu_to_pri.add(cpu as usize);
     let oldpri = *currpri;
     let mut do_mb = 0;
     newpri = convert_prio(newpri);
-    BUG_ON(newpri >= CPUPRI_NR_PRIORITIES);
+    BUG_ON(newpri >= CPUPRI_NR_PRIORITIES as i32);
     if newpri == oldpri { return; }
     if newpri != CPUPRI_INVALID {
-        let vec = &mut (*cp).pri_to_cpu[newpri as usize];
-        cpumask_set_cpu(cpu, vec.mask);
+        let vec = addr_of_mut!((*cp).pri_to_cpu[newpri as usize]);
+        cpumask_set_cpu(cpu, (*vec).mask);
         smp_mb__before_atomic();
-        atomic_inc(&vec.count);
+        atomic_inc(addr_of_mut!((*vec).count));
         do_mb = 1;
     }
     if oldpri != CPUPRI_INVALID {
-        let vec = &mut (*cp).pri_to_cpu[oldpri as usize];
+        let vec = addr_of_mut!((*cp).pri_to_cpu[oldpri as usize]);
         if do_mb != 0 { smp_mb__after_atomic(); }
-        atomic_dec(&vec.count);
+        atomic_dec(addr_of_mut!((*vec).count));
         smp_mb__after_atomic();
-        cpumask_clear_cpu(cpu, vec.mask);
+        cpumask_clear_cpu(cpu, (*vec).mask);
     }
     *currpri = newpri;
 }
 
-pub unsafe fn cpupri_init(cp: *mut cpupri) -> i32 {
-    let mut i = 0;
-    while i < CPUPRI_NR_PRIORITIES {
-        let vec = &mut (*cp).pri_to_cpu[i as usize];
-        atomic_set(&mut vec.count, 0);
-        if !zalloc_cpumask_var(&mut vec.mask, GFP_KERNEL) {
-            while i >= 0 {
-                free_cpumask_var((*cp).pri_to_cpu[i as usize].mask);
+#[no_mangle]
+pub unsafe extern "C" fn cpupri_init(cp: *mut cpupri) -> i32 {
+    let mut i: usize = 0;
+    while i < CPUPRI_NR_PRIORITIES as usize {
+        let vec = addr_of_mut!((*cp).pri_to_cpu[i]);
+        atomic_set(addr_of_mut!((*vec).count), 0);
+        if !zalloc_cpumask_var(addr_of_mut!((*vec).mask), GFP_KERNEL) {
+            // Only entries before i completed allocation, as in C's i--.
+            while i != 0 {
                 i -= 1;
+                free_cpumask_var((*cp).pri_to_cpu[i].mask);
             }
             return -ENOMEM;
         }
@@ -139,21 +155,22 @@ pub unsafe fn cpupri_init(cp: *mut cpupri) -> i32 {
     }
     (*cp).cpu_to_pri = kzalloc_objs::<i32>(nr_cpu_ids);
     if (*cp).cpu_to_pri.is_null() {
-        while i >= 0 {
-            free_cpumask_var((*cp).pri_to_cpu[i as usize].mask);
+        while i != 0 {
             i -= 1;
+            free_cpumask_var((*cp).pri_to_cpu[i].mask);
         }
         return -ENOMEM;
     }
-    for_each_possible_cpu!(i, { (*cp).cpu_to_pri[i as usize] = CPUPRI_INVALID; });
+    for_each_possible_cpu!(i, { *(*cp).cpu_to_pri.add(i as usize) = CPUPRI_INVALID; });
     0
 }
 
-pub unsafe fn cpupri_cleanup(cp: *mut cpupri) {
-    kfree((*cp).cpu_to_pri);
-    let mut i = 0;
-    while i < CPUPRI_NR_PRIORITIES {
-        free_cpumask_var((*cp).pri_to_cpu[i as usize].mask);
+#[no_mangle]
+pub unsafe extern "C" fn cpupri_cleanup(cp: *mut cpupri) {
+    kfree((*cp).cpu_to_pri.cast::<c_void>());
+    let mut i: usize = 0;
+    while i < CPUPRI_NR_PRIORITIES as usize {
+        free_cpumask_var((*cp).pri_to_cpu[i].mask);
         i += 1;
     }
 }
