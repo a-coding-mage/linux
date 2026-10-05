@@ -146,6 +146,28 @@ pub(crate) use sched_ext_core_query_events::{__scx_bpf_now, scx_read_events};
 
 mod sched_ext_core_structops_btf;
 
+mod inlines_header;
+pub(crate) use inlines_header::scx_dispatch_sched;
+
+mod sched_ext_core_pick;
+pub(crate) use sched_ext_core_pick::{
+    ext_server_init, ext_server_pick_task, kick_sync_wait_bal_cb, pick_task_scx,
+    put_prev_task_scx, set_next_task_scx,
+};
+#[cfg(CONFIG_SCHED_CORE)]
+pub(crate) use sched_ext_core_pick::scx_prio_less;
+
+mod sched_ext_core_deferred_kick;
+pub(crate) use sched_ext_core_deferred_kick::{
+    alloc_kick_syncs, free_kick_syncs, reenq_local, run_deferred,
+    schedule_deferred_locked, schedule_dsq_reenq, scx_kick_cpu,
+    lupos_scx_core_deferred_bal_body, lupos_scx_core_deferred_irq_body,
+    lupos_scx_core_deferred_kick_irq_body,
+    lupos_scx_core_deferred_add_local_body, lupos_scx_core_deferred_add_user_body,
+    lupos_scx_core_deferred_pop_local_body, lupos_scx_core_deferred_pop_user_body,
+    lupos_scx_core_deferred_reenq_local_body, lupos_scx_core_deferred_reenq_user_body,
+};
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }

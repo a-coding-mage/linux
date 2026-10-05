@@ -8,22 +8,24 @@
  * Copyright (c) 2026 Tejun Heo <tj@kernel.org>
  */
 
-// Dependencies supplied by internal.h and cid.h are intentionally external.
-
-/* what dispatch concluded, consumed by the pick that follows */
-#[repr(C)]
-pub enum scx_dsp_verdict {
-    SCX_DSP_NONE,
-    SCX_DSP_LOCAL,
-    SCX_DSP_PREV,
-    SCX_DSP_RETRY,
-}
+// Existing body continued against pinned inlines.h, commit
+// 126a30fae3bba11420ec2fcbde51a0a01bab1b5b. The historical marker below remains.
+// inlines.h alone supplies scx_dsp_verdict and its four values through the
+// canonical native bindings; the old locally invented Rust enum is removed.
+compile_error!("SOURCE ONLY HOLD: retained inline dispatch recursion, native callers and stack qualification incomplete");
+use super::*;
 
 /*
  * One user of this function is scx_bpf_sub_dispatch() which can be called
  * recursively as sub-sched dispatches nest. Always inline to reduce stack usage
  * from the call frame.
  */
+/// # Safety
+/// sch, rq and prev remain live under the original dispatch context, with rq
+/// locked and the current CPU pinned. The native callback may recursively
+/// dispatch sub-schedulers and flush can drop/reacquire rq; no Rust reference
+/// may survive either boundary. The original always-inline/recursive stack
+/// contract is retained as a requirement, not qualified by this attribute.
 #[inline(always)]
 pub unsafe fn scx_dispatch_sched(
     sch: *mut scx_sched,
@@ -31,23 +33,27 @@ pub unsafe fn scx_dispatch_sched(
     prev: *mut task_struct,
     nested: bool,
 ) -> scx_dsp_verdict {
-    let dspc: *mut scx_dsp_ctx = &mut (*this_cpu_ptr((*sch).pcpu)).dsp_ctx;
-    let mut nr_loops: i32 = SCX_DSP_MAX_LOOPS;
-    let cpu: i32 = cpu_of(rq);
-    let prev_on_sch: bool = ((*prev).sched_class == &ext_sched_class)
-        && scx_task_on_sched(sch, prev);
+    // SAFETY: Native accessors retain per-CPU/header authority. Re-read mutable
+    // prev/queue state after callbacks and rq unlock windows, as the old body did.
+    // Shared task-field leaves remain plain native accesses, not synchronization.
+    unsafe {
+    let dspc: *mut scx_dsp_ctx = lupos_scx_core_pick_inline_dsp_ctx(sch);
+    let mut nr_loops: c_int = SCX_DSP_MAX_LOOPS as c_int;
+    let cpu: i32 = lupos_scx_core_pick_cpu_of(rq);
+    let prev_on_sch: bool = (scx_shared_class_read(prev) == lupos_scx_core_ext_class())
+        && lupos_scx_core_pick_inline_task_on_sched(sch, prev);
 
     if scx_consume_global_dsq(sch, rq) {
-        return scx_dsp_verdict::SCX_DSP_LOCAL;
+        return SCX_DSP_LOCAL;
     }
 
-    if scx_bypass_dsp_enabled(sch) {
+    if lupos_scx_core_pick_inline_bypass_enabled(sch) {
         /* if @sch is bypassing, only the bypass DSQs are active */
-        if scx_bypassing(sch, cpu) {
-            if scx_consume_dispatch_q(sch, rq, scx_bypass_dsq(sch, cpu), 0) {
-                return scx_dsp_verdict::SCX_DSP_LOCAL;
+        if lupos_scx_core_bypassing(sch, cpu) {
+            if scx_consume_dispatch_q(sch, rq, lupos_scx_core_bypass_dsq(sch, cpu), 0) {
+                return SCX_DSP_LOCAL;
             }
-            return scx_dsp_verdict::SCX_DSP_NONE;
+            return SCX_DSP_NONE;
         }
 
         // CONFIG_EXT_SUB_SCHED: host-side automatic bypass DSQ consumption.
@@ -65,20 +71,20 @@ pub unsafe fn scx_dispatch_sched(
              * so that the BPF scheduler can fully control scheduling of
              * bypassed tasks.
              */
-            let pcpu: *mut scx_sched_pcpu = per_cpu_ptr((*sch).pcpu, cpu);
+            let pcpu: *mut scx_sched_pcpu = lupos_scx_core_pick_inline_pcpu(sch, cpu);
             let seq = (*pcpu).bypass_host_seq;
             (*pcpu).bypass_host_seq = seq.wrapping_add(1);
-            if seq % SCX_BYPASS_HOST_NTH == 0
-                && scx_consume_dispatch_q(sch, rq, scx_bypass_dsq(sch, cpu), 0)
+            if seq % SCX_BYPASS_HOST_NTH as u32 == 0
+                && scx_consume_dispatch_q(sch, rq, lupos_scx_core_bypass_dsq(sch, cpu), 0)
             {
-                __scx_add_event(sch, SCX_EV_SUB_BYPASS_DISPATCH, 1);
-                return scx_dsp_verdict::SCX_DSP_LOCAL;
+                lupos_scx_core_pick_inline_event_sub_bypass(sch);
+                return SCX_DSP_LOCAL;
             }
         }
     }
 
-    if (!SCX_HAS_OP(sch, dispatch)) || !scx_rq_online(rq) {
-        return scx_dsp_verdict::SCX_DSP_NONE;
+    if lupos_scx_core_pick_inline_unlikely_no_dispatch(sch) || !scx_rq_online(rq) {
+        return SCX_DSP_NONE;
     }
 
     (*dspc).rq = rq;
@@ -98,8 +104,7 @@ pub unsafe fn scx_dispatch_sched(
             (*rq).scx.sub_dispatch_prev = prev;
         }
 
-        SCX_CALL_OP(sch, dispatch, rq, scx_cpu_arg(cpu),
-                    if prev_on_sch { prev } else { core::ptr::null_mut() });
+        lupos_scx_core_pick_inline_call_dispatch(sch, rq, cpu, prev, prev_on_sch);
 
         #[cfg(CONFIG_EXT_SUB_SCHED)]
         if !nested {
@@ -108,20 +113,20 @@ pub unsafe fn scx_dispatch_sched(
 
         scx_flush_dispatch_buf(sch, rq);
 
-        if ((*prev).scx.flags & SCX_TASK_QUEUED) != 0 && (*prev).scx.slice != 0 {
-            return scx_dsp_verdict::SCX_DSP_PREV;
+        if (scx_shared_flags_read(core::ptr::addr_of!((*prev).scx)) & SCX_TASK_QUEUED as u32) != 0
+            && scx_shared_slice_read(core::ptr::addr_of!((*prev).scx)) != 0 {
+            return SCX_DSP_PREV;
         }
         if (*rq).scx.local_dsq.nr != 0 {
-            return scx_dsp_verdict::SCX_DSP_LOCAL;
+            return SCX_DSP_LOCAL;
         }
         if scx_consume_global_dsq(sch, rq) {
-            return scx_dsp_verdict::SCX_DSP_LOCAL;
+            return SCX_DSP_LOCAL;
         }
 
-        if {
-            nr_loops -= 1;
-            nr_loops == 0
-        } {
+        // Original predecrement and unlikely marker stay in a native primitive;
+        // kick remains before the nr_tasks termination test and stays deferred.
+        if lupos_scx_core_pick_inline_unlikely_last_loop(&mut nr_loops) {
             scx_kick_cpu(sch, cpu, 0);
             break;
         }
@@ -135,13 +140,14 @@ pub unsafe fn scx_dispatch_sched(
      * queued. Without this fallback, bypassed tasks could stall if the host
      * scheduler's ops.dispatch() doesn't yield any tasks.
      */
-    if scx_bypass_dsp_enabled(sch)
-        && scx_consume_dispatch_q(sch, rq, scx_bypass_dsq(sch, cpu), 0)
+    if lupos_scx_core_pick_inline_bypass_enabled(sch)
+        && scx_consume_dispatch_q(sch, rq, lupos_scx_core_bypass_dsq(sch, cpu), 0)
     {
-        return scx_dsp_verdict::SCX_DSP_LOCAL;
+        return SCX_DSP_LOCAL;
     }
 
-    scx_dsp_verdict::SCX_DSP_NONE
+    SCX_DSP_NONE
+    }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

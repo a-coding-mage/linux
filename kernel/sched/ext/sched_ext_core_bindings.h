@@ -203,4 +203,14 @@ struct sched_ext_entity *lupos_scx_core_tid_lookup(u64 tid);
 
 /* F13 native metadata and typed Rust continuations share these native types. */
 #include "sched_ext_core_structops_btf_bindings.h"
+
+/* F04/F07 consume the one canonical native type and shared-field universe. */
+#include "sched_ext_core_pick_bindings.h"
+#include "sched_ext_core_deferred_kick_bindings.h"
+
+/* F04 pins CPU/RCU context before taking this sched-dereferenced snapshot. */
+unsigned long *lupos_scx_core_this_kick_syncs(void);
+/* F07 preserves its distinct raw snapshot, NULL test and later BH dereference. */
+struct scx_kick_syncs __rcu **lupos_scx_core_kick_syncs_slot(int cpu);
+struct scx_kick_syncs __rcu *lupos_scx_core_this_kick_syncs_snapshot(void);
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */

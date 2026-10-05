@@ -3,6 +3,12 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+# F04/F07 keep native enum authority and one definition of shared owner types.
+--allowlist-type 'scx_dsp_verdict|scx_cpu_preempt_reason|scx_dsp_ctx|sched_dl_entity|scx_deferred_reenq_local|scx_deferred_reenq_user'
+--with-attribute-custom-struct=scx_dsp_ctx='#[cfi_encoding="11scx_dsp_ctx"]'
+--with-attribute-custom-struct=sched_dl_entity='#[cfi_encoding="15sched_dl_entity"]'
+--with-attribute-custom-struct=scx_deferred_reenq_local='#[cfi_encoding="24scx_deferred_reenq_local"]'
+--with-attribute-custom-struct=scx_deferred_reenq_user='#[cfi_encoding="23scx_deferred_reenq_user"]'
 # F13/F16 source declarations only; generated native identities remain held.
 --allowlist-function 'lupos_scx_st_.*'
 --allowlist-var 'LUPOS_SCX_ST_.*|BPF_READ|SCALAR_VALUE|BPF_PROG_TYPE_SYSCALL|BPF_PROG_TYPE_STRUCT_OPS|INT_MAX|EACCES|E2BIG|EOPNOTSUPP'

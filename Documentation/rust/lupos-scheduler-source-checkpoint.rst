@@ -726,6 +726,27 @@ registration, whole-envelope kfunc diagnostics, generated native type identity,
 ABI/CFI/BTF, verifier/trampoline, optimizer, lifetime and runtime qualification
 remain open. Every source and selection hold is preserved.
 
+Paired pick, deferred work and kick synchronization
+-------------------------------------------------
+
+The reviewed pick and deferred families supply fifteen and twenty source
+bodies, respectively, and continue the existing Rust inline-dispatch helper.
+The helper's local enum replica is replaced by the original native enum
+authority. Selection, callbacks, queue decisions, reenqueue ordering and
+kick-sync allocation/free now have composed source owners.
+
+Kick polling retains its distinct acquire and READ_ONCE comparisons, paired
+with the original plain snapshot assignment. The scheduler-RCU and later-BH
+snapshots remain separate, including the original NULL check. Flags, class,
+slice and producer DSQ-ID reads use their reviewed matched access boundary;
+the consumer's distinct READ_ONCE operation is not collapsed into it.
+
+The separate sub-scheduler native adapter still reaches the original native
+inline algorithm at this checkpoint. Its reviewed redirection to the one Rust
+helper is a later increment. Recursive stack/inlining, configured type/ABI/CFI,
+native memory-model behavior, context/lifetime and runtime remain unqualified.
+No admission gate or original source oracle is changed.
+
 Inactive gates and remaining work
 ---------------------------------
 

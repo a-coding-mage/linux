@@ -695,3 +695,21 @@ void scx_shared_dsq_id_write(struct scx_dispatch_q *dsq, u64 id)
 {
 	dsq->id = id;
 }
+
+unsigned long *lupos_scx_core_this_kick_syncs(void)
+{
+	struct scx_kick_syncs __rcu *ks;
+
+	ks = __this_cpu_read(scx_kick_syncs);
+	return rcu_dereference_sched(ks)->syncs;
+}
+
+struct scx_kick_syncs __rcu **lupos_scx_core_kick_syncs_slot(int cpu)
+{
+	return per_cpu_ptr(&scx_kick_syncs, cpu);
+}
+
+struct scx_kick_syncs __rcu *lupos_scx_core_this_kick_syncs_snapshot(void)
+{
+	return __this_cpu_read(scx_kick_syncs);
+}
