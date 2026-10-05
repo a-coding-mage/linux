@@ -3,6 +3,15 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+--allowlist-type 'scx_dump_ctx|scx_exit_dump_va_args|seq_buf|bpf_bprintf_data|bpf_prog_aux|kthread_work'
+--allowlist-function 'lupos_scx_exit_.*|bpf_bprintf_cleanup|bpf_bprintf_prepare|bstr_printf|copy_from_kernel_nofault|irq_work_queue|irq_work_sync|kthread_flush_work|kthread_queue_work'
+--allowlist-var 'LUPOS_SCX_EXIT_.*'
+--with-attribute-custom-struct=scx_dump_ctx='#[cfi_encoding="12scx_dump_ctx"]'
+--with-attribute-custom-struct=scx_exit_dump_va_args='#[cfi_encoding="21scx_exit_dump_va_args"]'
+--with-attribute-custom-struct=seq_buf='#[cfi_encoding="7seq_buf"]'
+--with-attribute-custom-struct=bpf_bprintf_data='#[cfi_encoding="16bpf_bprintf_data"]'
+--with-attribute-custom-struct=bpf_prog_aux='#[cfi_encoding="12bpf_prog_aux"]'
+--with-attribute-custom-struct=kthread_work='#[cfi_encoding="12kthread_work"]'
 --allowlist-type 'kobject|kobj_attribute|kobj_uevent_env|irq_work|work_struct|scx_enable_cmd|scx_exit_info|scx_sched_pcpu|scx_sched_pnode|rhashtable_iter|scx_event_stats|kset|llist_head|scx_exit_kind'
 --with-attribute-custom-struct=kobject='#[cfi_encoding="7kobject"]'
 --with-attribute-custom-struct=kobj_attribute='#[cfi_encoding="14kobj_attribute"]'

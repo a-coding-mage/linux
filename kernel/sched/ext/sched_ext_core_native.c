@@ -538,3 +538,13 @@ const struct rhashtable_params *lupos_scx_core_sched_hash_params(void)
 	return &scx_sched_hash_params;
 }
 #endif
+
+raw_spinlock_t *lupos_scx_core_dump_lock(void)
+{
+	return &scx_dump_lock;
+}
+
+struct scx_dump_data *lupos_scx_core_dump_data(void)
+{
+	return &scx_dump_data;
+}

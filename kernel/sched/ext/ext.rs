@@ -80,6 +80,19 @@ pub(crate) use sched_ext_core_object_lifetime::{
     lupos_scx_core_object_caps_body, lupos_scx_core_object_caps_one_body,
 };
 
+mod sched_ext_core_exit_dump;
+pub(crate) use sched_ext_core_exit_dump::{
+    lupos_scx_exit_bpf_dump_bstr, lupos_scx_exit_bpf_error_bstr,
+    lupos_scx_exit_bpf_exit_bstr, lupos_scx_exit_bstr_format_body,
+    lupos_scx_exit_disable_dump_locked, lupos_scx_exit_disable_irq_workfn,
+    lupos_scx_exit_disable_workfn, lupos_scx_exit_dump_line,
+    lupos_scx_exit_dump_state_locked, lupos_scx_exit_handle_lockup,
+    lupos_scx_exit_propagate_irq_workfn, lupos_scx_exit_vexit, print_scx_info,
+    scx_claim_exit, scx_disable, scx_dump_state, scx_exit_bstr, scx_finish_exit,
+    scx_flush_disable_work, scx_hardlockup, scx_log_sched_disable,
+    scx_rcu_cpu_stall, scx_softlockup,
+};
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }

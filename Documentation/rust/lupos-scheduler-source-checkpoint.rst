@@ -532,8 +532,8 @@ repairs CPU validation and protected task-slice behavior. It supplies common
 state/parameter boundaries, cursor traversal, slice-OOB accounting and current
 task accounting. Native storage and private layouts retain their original
 definitions. Independent review covers these two bounded source families.
-The task-lifetime, cgroup and object-lifetime families below are separate
-increments; thirteen other core families remain outside these checkpoints.
+The task-lifetime, cgroup, object-lifetime and exit/dump families below are
+separate increments; twelve other core families remain outside these checkpoints.
 
 Two current-task reads now use an exact plain native accessor for configured
 rq union access. The native source permits competing slice/vtime writers in
@@ -586,10 +586,29 @@ Review corrects lockdep initializer spelling, exact possible-CPU iteration,
 cleanup predicates and native context annotations. Event output retains the
 original native formatting expansion and integer accumulator, without the
 candidate's synthetic BUG fallback; that formatting remains native runtime
-work. Exit/dump callback declarations, bypass/watchdog callbacks and event
-aggregation remain pending owner dependencies at this checkpoint. Native ABI,
+work. The subsequent exit/dump increment supplies its callback declarations;
+bypass/watchdog callbacks and event aggregation remain pending. Native ABI,
 CFI/BTF, allocation attribution, lifetime/RCU and protection qualification are
 still open, with all default-off BROKEN and hard source/selection holds intact.
+
+Sched_ext exit/dump source checkpoint
+------------------------------------
+
+All twenty-nine mapped exit/dump functions and event-format expansion have
+independently reviewed source continuations. Claim-before-format, independent
+native argument lists, propagation/disable ordering, CPU/task dumps and packed
+BPF formatting retain their original owner boundaries and error paths.
+
+Review repairs warning expressions, private format annotations, native guard
+scope, single-CPU iteration and separate checked-CPU sites. Seven printk index
+records now retain original source-site keys with native metadata types and
+runtime formatting targets. The true build-dependent original __FILE__ value
+is still required behind an additional PRINTK_INDEX hard error; no guessed
+path, emitted-record result or protection equivalence is claimed.
+
+Root teardown/event aggregation, off-context dump-state concurrent reads,
+native varargs/CFI/NMI/stack behavior, source attribution and runtime semantics
+remain unqualified. All default-off BROKEN and source/selection holds remain.
 
 Inactive gates and remaining work
 ---------------------------------

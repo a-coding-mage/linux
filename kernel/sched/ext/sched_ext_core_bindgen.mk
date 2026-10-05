@@ -14,6 +14,7 @@ $(obj)/bindings/sched_ext_core_generated.rs: $(srctree)/kernel/sched/ext/sched_e
     $(srctree)/kernel/sched/ext/sched_ext_core_task_lifetime_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_core_cgroup_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_core_object_lifetime_bindings.h \
+    $(srctree)/kernel/sched/ext/sched_ext_core_exit_dump_bindings.h \
     $(srctree)/kernel/sched/ext/internal.h $(srctree)/kernel/sched/ext/cid.h \
     $(srctree)/kernel/sched/ext/arena.h $(srctree)/kernel/sched/ext/idle.h \
     $(srctree)/kernel/sched/ext/sub.h $(srctree)/kernel/sched/ext/inlines.h \
