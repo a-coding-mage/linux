@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source-only projection proposal; no configured generation or BTF admission.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'scx_cid_tables|scx_cid_topo|scx_cid_shard|scx_cmask|scx_cmask_ref|scx_sched|cpumask|callback_head|bpf_prog_aux'
+--opaque-type 'scx_sched|cpumask|bpf_prog_aux'
+--allowlist-function 'lupos_scx_.*'
+--allowlist-var 'LUPOS_SCX_CID_.*'
+--with-attribute-custom-struct=scx_cid_tables='#[cfi_encoding="14scx_cid_tables"]'
+--with-attribute-custom-struct=scx_cid_topo='#[cfi_encoding="12scx_cid_topo"]'
+--with-attribute-custom-struct=scx_cid_shard='#[cfi_encoding="13scx_cid_shard"]'
+--with-attribute-custom-struct=scx_cmask='#[cfi_encoding="9scx_cmask"]'
+--with-attribute-custom-struct=scx_cmask_ref='#[cfi_encoding="13scx_cmask_ref"]'
+--with-attribute-custom-struct=scx_sched='#[cfi_encoding="9scx_sched"]'
+--with-attribute-custom-struct=cpumask='#[cfi_encoding="7cpumask"]'
+--with-attribute-custom-struct=callback_head='#[cfi_encoding="13callback_head"]'
+--with-attribute-custom-struct=bpf_prog_aux='#[cfi_encoding="12bpf_prog_aux"]'

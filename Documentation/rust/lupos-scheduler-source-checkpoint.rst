@@ -459,6 +459,23 @@ ownership. Configured binding/layout/CFI, init/weak-alias/registration metadata,
 allocation/refcount/RCU/IRQ lifetime, protection/caller attribution, all-config
 emission and original-test/runtime behavior remain unqualified.
 
+Sched_ext CID source checkpoint
+-------------------------------
+
+The existing CID owner is continued with topology construction, sparse CPU
+slots, shard ranges, allocation/unwind and embedded-node RCU reclamation. Arena
+override validation uses immutable snapshots before mutation; mask/reference
+operations and four native BPF adapters retain their source contracts.
+Independent review corrects callback_head naming, exact generic/possible-CPU
+iteration and original unsigned DIV_ROUND_UP arithmetic. Source inventory
+contains all 23 original public entry points, without runtime acceptance.
+
+Default-off BROKEN and unconditional source errors preserve original ownership.
+CID BTF ID sets depend on the shared ext/build_policy translation unit; no
+standalone native object is selected. Shared ext algorithms/storage, configured
+binding/CFI, BPF arena rebasing/fault recovery, metadata/protection, allocation
+and RCU lifetime, concurrency and original-test behavior remain unqualified.
+
 Inactive gates and remaining work
 ---------------------------------
 

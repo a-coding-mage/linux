@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_EXT_CID
+	bool "Rust sched_ext CID source owner proposal"
+	depends on RUST && SCHED_CLASS_EXT && BROKEN
+	default n
+	help
+	  Inactive continuation of CID topology, arena override and mask source.
+	  Native ABI/CFI, BPF arena recovery and same-translation-unit BTF
+	  linkage, protection and runtime qualification remain outstanding.

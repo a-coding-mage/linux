@@ -1058,6 +1058,7 @@ include $(srctree)/kernel/sched/sched_cpufreq_bindgen.mk
 include $(srctree)/kernel/sched/sched_core_cookie_bindgen.mk
 include $(srctree)/kernel/sched/sched_stop_task_bindgen.mk
 include $(srctree)/kernel/sched/sched_topology_bindgen.mk
+include $(srctree)/kernel/sched/ext/sched_ext_cid_bindgen.mk
 
 include $(srctree)/mm/memory_native_bindgen.mk
 include $(srctree)/mm/userfaultfd_native_bindgen.mk

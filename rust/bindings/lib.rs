@@ -228,3 +228,8 @@ pub mod sched_stop_task_native {
 pub mod sched_topology_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_topology_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_EXT_CID)]
+pub mod sched_ext_cid_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_cid_generated.rs"));
+}
