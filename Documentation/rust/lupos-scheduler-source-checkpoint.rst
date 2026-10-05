@@ -803,6 +803,27 @@ single native translation-unit/diagnostic scopes, init sections, ABI/CFI/BTF,
 memory-model, recursive stack and original-test qualification remain open.
 Every source and selection hold is preserved.
 
+One sched-ext native declaration owner
+-------------------------------------
+
+The independently reviewed binding proposal now has one root header, parameter
+input, generated-file recipe and Rust module for core, CID, arena, idle and sub.
+The five existing import paths reexport that module itself; they do not generate
+separate lookalike native types. Header prerequisites and configured native
+authority remain intact, and the old per-owner parameter inputs are retired.
+
+The union preserves all existing allowlist entries and ninety-four distinct
+CFI attribute strings. Conflicting opaque treatment of scx_sched, cpumask and
+bpf_prog_aux is removed because active owners require their real native fields.
+Arena allocator and architecture-private opacity remains. No owner algorithm,
+original layout header or global bindgen policy is changed.
+
+This resolves declarative ownership only. No bindings have been generated, and
+the actual configured namespace, layout, callback ABI/CFI, native translation-unit
+effects, BTF and runtime remain unqualified. Other kernel binding universes are
+outside this five-owner change. All five binding admission errors and the
+existing source/default-off/BROKEN gates are preserved.
+
 Inactive gates and remaining work
 ---------------------------------
 

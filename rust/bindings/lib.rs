@@ -229,27 +229,27 @@ pub mod sched_topology_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_topology_generated.rs"));
 }
 
+// A single generated declaration owns every sched_ext native type identity.
+// Owner paths below reexport this module itself, never another generated copy.
+// This source contract does not qualify configured layout, CFI or native BTF.
+#[cfg(any(
+    CONFIG_RUST_SCHED_EXT_CORE,
+    CONFIG_RUST_SCHED_EXT_CID,
+    CONFIG_RUST_SCHED_EXT_ARENA,
+    CONFIG_RUST_SCHED_EXT_IDLE,
+    CONFIG_RUST_SCHED_EXT_SUB
+))]
+pub mod sched_ext_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_native_generated.rs"));
+}
+
 #[cfg(CONFIG_RUST_SCHED_EXT_CID)]
-pub mod sched_ext_cid_native {
-    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_cid_generated.rs"));
-}
-
+pub use self::sched_ext_native as sched_ext_cid_native;
 #[cfg(CONFIG_RUST_SCHED_EXT_ARENA)]
-pub mod sched_ext_arena_native {
-    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_arena_generated.rs"));
-}
-
+pub use self::sched_ext_native as sched_ext_arena_native;
 #[cfg(CONFIG_RUST_SCHED_EXT_IDLE)]
-pub mod sched_ext_idle_native {
-    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_idle_generated.rs"));
-}
-
+pub use self::sched_ext_native as sched_ext_idle_native;
 #[cfg(CONFIG_RUST_SCHED_EXT_SUB)]
-pub mod sched_ext_sub_native {
-    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_sub_generated.rs"));
-}
-
+pub use self::sched_ext_native as sched_ext_sub_native;
 #[cfg(CONFIG_RUST_SCHED_EXT_CORE)]
-pub mod sched_ext_core_native {
-    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_core_generated.rs"));
-}
+pub use self::sched_ext_native as sched_ext_core_native;
