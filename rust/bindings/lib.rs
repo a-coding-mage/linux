@@ -248,3 +248,8 @@ pub mod sched_ext_idle_native {
 pub mod sched_ext_sub_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_sub_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_EXT_CORE)]
+pub mod sched_ext_core_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_ext_core_generated.rs"));
+}

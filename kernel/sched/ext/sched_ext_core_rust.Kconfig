@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_EXT_CORE
+	bool "Rust sched_ext core source owner proposal"
+	depends on RUST && SCHED_CLASS_EXT && BROKEN
+	default n
+	help
+	  Inactive, partial continuation of the existing ext.rs owner.
+	  Remaining owner bodies, shared native type/BTF composition, ABI/CFI,
+	  memory-model, protection and runtime qualification remain outstanding.

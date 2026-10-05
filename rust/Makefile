@@ -1062,6 +1062,7 @@ include $(srctree)/kernel/sched/ext/sched_ext_cid_bindgen.mk
 include $(srctree)/kernel/sched/ext/sched_ext_arena_bindgen.mk
 include $(srctree)/kernel/sched/ext/sched_ext_idle_bindgen.mk
 include $(srctree)/kernel/sched/ext/sched_ext_sub_bindgen.mk
+include $(srctree)/kernel/sched/ext/sched_ext_core_bindgen.mk
 
 include $(srctree)/mm/memory_native_bindgen.mk
 include $(srctree)/mm/userfaultfd_native_bindgen.mk

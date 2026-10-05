@@ -524,6 +524,24 @@ Native leaves remain explicit runtime C boundaries, and ext-owned dispatch
 helpers remain ext dependencies. No original owner is replaced by these
 default-off BROKEN proposals; unconditional source and selection errors remain.
 
+Sched_ext core foundation source checkpoint
+------------------------------------------
+
+This partial continuation preserves the existing unsigned-order helper and
+repairs CPU validation and protected task-slice behavior. It supplies common
+state/parameter boundaries, cursor traversal, slice-OOB accounting and current
+task accounting. Native storage and private layouts retain their original
+definitions. Independent review covers these two bounded source families;
+the other sixteen core families are not supplied by this checkpoint.
+
+Two current-task reads now use an exact plain native accessor for configured
+rq union access. The native source permits competing slice/vtime writers in
+some cases; that contract remains an unresolved Rust memory-model obligation,
+not an assumption of exclusive access. Native varargs formatting, remaining
+owner algorithms, canonical cross-family types, shared BTF/CFI/initialization,
+source attribution, compiler protections and runtime behavior remain open.
+Default-off BROKEN and unconditional selection/source holds remain unchanged.
+
 Inactive gates and remaining work
 ---------------------------------
 
