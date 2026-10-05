@@ -162,4 +162,7 @@ struct scx_dump_data *lupos_scx_core_dump_data(void);
 struct task_struct **lupos_scx_core_this_direct_dispatch_task(void);
 void lupos_scx_core_spoil_direct_dispatch_task(void);
 #include "sched_ext_core_consume_bindings.h"
+#include "sched_ext_core_bypass_bindings.h"
+unsigned int lupos_scx_core_bypass_lb_intv_us_read_once(void);
+unsigned int lupos_scx_core_slice_bypass_us_read_once(void);
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */

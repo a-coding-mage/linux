@@ -15,7 +15,7 @@ use core::ptr;
 /// dsq is a live non-local DSQ with its lock held. position is its sentinel or
 /// a live node currently on its list. The DSQ lock pins all traversed links and
 /// task embeddings until this function returns. rev selects dispatch direction.
-unsafe fn nldsq_next_task_after_node(
+pub(crate) unsafe fn nldsq_next_task_after_node(
     dsq: *mut scx_dispatch_q,
     mut position: *mut list_head,
     rev: bool,

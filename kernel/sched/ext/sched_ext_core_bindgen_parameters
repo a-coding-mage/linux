@@ -3,6 +3,9 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+--allowlist-type 'timer_list'
+--with-attribute-custom-struct=timer_list='#[cfi_encoding="10timer_list"]'
+--allowlist-var 'NSEC_PER_USEC'
 --allowlist-type 'rb_node'
 --with-attribute-custom-struct=rb_node='#[cfi_encoding="7rb_node"]'
 --allowlist-function 'resched_curr|dl_server_start|activate_task|deactivate_task'

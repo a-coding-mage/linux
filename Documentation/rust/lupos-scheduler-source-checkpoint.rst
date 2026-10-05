@@ -532,8 +532,8 @@ repairs CPU validation and protected task-slice behavior. It supplies common
 state/parameter boundaries, cursor traversal, slice-OOB accounting and current
 task accounting. Native storage and private layouts retain their original
 definitions. Independent review covers these two bounded source families.
-The subsequent task, cgroup, object, exit/dump and enqueue/consume increments
-are separately reviewed; ten other core families remain outside these checkpoints.
+The subsequent task, cgroup, object, exit/dump, enqueue/consume and bypass
+increments are separately reviewed; nine core families remain outside these checkpoints.
 
 Two current-task reads now use an exact plain native accessor for configured
 rq union access. The native source permits competing slice/vtime writers in
@@ -587,7 +587,8 @@ cleanup predicates and native context annotations. Event output retains the
 original native formatting expansion and integer accumulator, without the
 candidate's synthetic BUG fallback; that formatting remains native runtime
 work. The subsequent exit/dump increment supplies its callback declarations;
-bypass/watchdog callbacks and event aggregation remain pending. Native ABI,
+the subsequent bypass increment supplies its timer callback. Watchdog callbacks
+and event aggregation remain pending. Native ABI,
 CFI/BTF, allocation attribution, lifetime/RCU and protection qualification are
 still open, with all default-off BROKEN and hard source/selection holds intact.
 
@@ -626,6 +627,23 @@ of suppressed profile records is claimed, and unnecessary branch-only callback
 layers were removed. Native ABI/CFI, memory ordering, concurrency, allocation
 lifetime, optimizer hints and source/protection attribution remain unqualified.
 All source/selection errors and default-off BROKEN gating remain.
+
+Sched_ext bypass source checkpoint
+---------------------------------
+
+All nine bypass owners now have independently reviewed source bodies, including
+load balancing, timer work and nested scheduler bypass/unbypass transitions.
+The native cursor frame stays address-stable across rq lock drops, and the
+original IRQ APIs, empty sched_change scope and repeated knob/time expression
+evaluation remain explicit.
+
+Review repairs native-word slice arithmetic and reverse-list predecessor fetch
+ordering. The recovered pinned trace header confirms parameter order and native
+argument evaluation, closing a source-availability gap without claiming emitted
+trace equivalence. The object-lifetime timer callback dependency is now supplied
+by its actual owner. All native ABI/CFI, concurrency/lifetime, stack/context,
+instrumentation and runtime gates remain open, with unchanged source/selection
+errors and default-off BROKEN admission.
 
 Inactive gates and remaining work
 ---------------------------------

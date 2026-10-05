@@ -558,3 +558,13 @@ void lupos_scx_core_spoil_direct_dispatch_task(void)
 {
 	__this_cpu_write(direct_dispatch_task, ERR_PTR(-ESRCH));
 }
+
+unsigned int lupos_scx_core_bypass_lb_intv_us_read_once(void)
+{
+	return READ_ONCE(scx_bypass_lb_intv_us);
+}
+
+unsigned int lupos_scx_core_slice_bypass_us_read_once(void)
+{
+	return READ_ONCE(scx_slice_bypass_us);
+}

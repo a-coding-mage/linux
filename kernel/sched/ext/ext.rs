@@ -112,6 +112,13 @@ pub(crate) use sched_ext_core_consume::{
     task_can_run_on_remote_rq, unlink_dsq_and_switch_rq_lock,
 };
 
+mod sched_ext_core_bypass;
+pub(crate) use sched_ext_core_bypass::{
+    bypass_lb_cpu, bypass_lb_node, dec_bypass_depth, enable_bypass_dsp,
+    inc_bypass_depth, lupos_scx_core_bypass_cpu_cursor_body, scx_bypass,
+    scx_bypass_lb_timerfn, scx_disable_bypass_dsp, unbypass_renotify_idle,
+};
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }
