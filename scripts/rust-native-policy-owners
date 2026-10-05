@@ -47,3 +47,7 @@ mm/compaction             strong -
 mm/migrate                strong -
 
 mm/vmstat                 strong -
+
+mm/filemap                  strong -
+
+mm/shmem                  strong -

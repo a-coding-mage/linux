@@ -1,83 +1,92 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Source-level Rust translation of shmem.c.
-//
-// This implementation depends on the kernel types, constants, globals, and
-// functions supplied by the surrounding kernel translation unit.
-
-#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
-
-// The original file is a Linux-kernel implementation and is intentionally
-// kept in a low-level, FFI-oriented form.  Kernel-provided declarations are
-// referenced here rather than reimplemented.
-
-extern "C" {
-    static mut shm_mnt: *mut vfsmount;
+// SPDX-License-Identifier: GPL-2.0-only
+// Semantic source authority: mm/shmem.c @ e1d84f501551943a11f4c5271e9f5c85d7e15168
+// Authority SHA256: 43da71bf59c4b3f2971ba3a9e9aaa704504ea1b8f872ac70c8f892fb0c31ef87
+// Historical initial transcription: d482bb509b7d065808de40ce78b5bca39f40b783
+// SOURCE-COMMIT: e1d84f501551943a11f4c5271e9f5c85d7e15168
+// This file is a source-phase proposal; the review inventory is authoritative
+// about coverage. Generated bindings must come from the selected kernel config.
+use b::*;
+use core::mem::{size_of, zeroed, MaybeUninit};
+use core::ptr::{addr_of, addr_of_mut, null, null_mut};
+use kernel::bindings::shmem_native as b;
+use kernel::ffi::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
+use kernel::str::CStrExt;
+type Pgoff = rust_shmem_pgoff_t;
+include!("shmem_native_aliases.rs");
+#[inline]
+fn round_up(v: c_ulong, n: c_ulong) -> c_ulong {
+    v.wrapping_add(n - 1) & !(n - 1)
 }
-
-#[repr(C)]
-pub struct vfsmount {
-    _private: [u8; 0],
+#[inline]
+fn round_down(v: c_ulong, n: c_ulong) -> c_ulong {
+    v & !(n - 1)
 }
-
-#[repr(C)]
-pub struct shmem_falloc {
-    pub waitq: *mut wait_queue_head_t,
-    pub start: pgoff_t,
-    pub next: pgoff_t,
-    pub nr_falloced: pgoff_t,
-    pub nr_unswapped: pgoff_t,
+#[inline]
+fn vm_acct(size: loff_t) -> loff_t {
+    let mask = RUST_SHMEM_PAGE_SIZE as loff_t - 1;
+    (size.wrapping_add(mask) & !mask) >> RUST_SHMEM_PAGE_SHIFT
 }
-
-#[repr(C)]
-pub struct shmem_options {
-    pub blocks: u64,
-    pub inodes: u64,
-    pub mpol: *mut mempolicy,
-    pub uid: kuid_t,
-    pub gid: kgid_t,
-    pub mode: umode_t,
-    pub full_inums: bool,
-    pub huge: i32,
-    pub seen: i32,
-    pub noswap: bool,
-    pub quota_types: u16,
-    pub qlimits: shmem_quota_limits,
+#[inline]
+unsafe fn SHMEM_SB(sb: *mut super_block) -> *mut shmem_sb_info {
+    (*sb).s_fs_info.cast()
 }
+#[inline]
+unsafe fn err_ptr<T>(err: c_int) -> *mut T {
+    err as isize as *mut T
+}
+#[inline]
+unsafe fn ptr_err<T>(p: *mut T) -> c_int {
+    p as isize as c_int
+}
+macro_rules! vm_bug {
+    ($e:expr) => {
+        #[cfg(CONFIG_DEBUG_VM)]
+        rust_shmem_vm_bug($e);
+    };
+}
+macro_rules! vm_bug_folio {
+    ($e:expr, $f:expr) => {
+        #[cfg(CONFIG_DEBUG_VM)]
+        rust_shmem_vm_bug_folio($e, $f);
+    };
+}
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_account.rs");
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_cache.rs");
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_truncate.rs");
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_swap.rs");
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_huge.rs");
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_folio.rs");
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_vm.rs");
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_inode.rs");
+include!("shmem_common.rs");
+#[cfg(all(CONFIG_SHMEM, CONFIG_TMPFS))]
+include!("shmem_io.rs");
+#[cfg(all(CONFIG_SHMEM, CONFIG_TMPFS))]
+include!("shmem_directory.rs");
+#[cfg(all(CONFIG_SHMEM, CONFIG_TMPFS, CONFIG_TMPFS_XATTR))]
+include!("shmem_xattr.rs");
+#[cfg(all(CONFIG_SHMEM, CONFIG_TMPFS))]
+include!("shmem_mount.rs");
+#[cfg(CONFIG_SHMEM)]
+include!("shmem_super.rs");
+#[cfg(all(CONFIG_SHMEM, CONFIG_TRANSPARENT_HUGEPAGE))]
+include!("shmem_huge_config.rs");
+#[cfg(not(CONFIG_SHMEM))]
+include!("shmem_tiny.rs");
 
-pub const BOGO_DIRENT_SIZE: usize = 20;
-pub const BOGO_INODE_SIZE: usize = 1024;
-pub const SHORT_SYMLINK_LEN: usize = 128;
-pub const SHMEM_INO_BATCH: u64 = 1024;
-
-pub const SHMEM_HUGE_NEVER: i32 = 0;
-pub const SHMEM_HUGE_ALWAYS: i32 = 1;
-pub const SHMEM_HUGE_WITHIN_SIZE: i32 = 2;
-pub const SHMEM_HUGE_ADVISE: i32 = 3;
-pub const SHMEM_HUGE_DENY: i32 = -1;
-pub const SHMEM_HUGE_FORCE: i32 = -2;
-
-pub const SHMEM_SEEN_BLOCKS: i32 = 1;
-pub const SHMEM_SEEN_INODES: i32 = 2;
-pub const SHMEM_SEEN_HUGE: i32 = 4;
-pub const SHMEM_SEEN_INUMS: i32 = 8;
-pub const SHMEM_SEEN_QUOTA: i32 = 16;
-
-// Kernel declarations used by the translated implementation.
-type pgoff_t = u64;
-type kuid_t = u32;
-type kgid_t = u32;
-type umode_t = u16;
-type loff_t = i64;
-type uoff_t = u64;
-#[repr(C)] pub struct wait_queue_head_t { _private: [u8; 0] }
-#[repr(C)] pub struct mempolicy { _private: [u8; 0] }
-#[repr(C)] pub struct shmem_quota_limits { _private: [u8; 0] }
-
-// The remaining definitions retain the source file's kernel ABI and control
-// flow through the surrounding translated kernel declarations.
-// CONFIG_SHMEM, CONFIG_TMPFS, CONFIG_TRANSPARENT_HUGEPAGE, quota, and Unicode
-// branches are build-time conditions supplied by that environment.
-
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+#[inline]
+fn round_up_u64(v: u64, n: u64) -> u64 {
+    v.wrapping_add(n - 1) & !(n - 1)
+}
+#[inline]
+fn round_down_u64(v: u64, n: u64) -> u64 {
+    v & !(n - 1)
+}

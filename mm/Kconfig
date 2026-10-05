@@ -2,6 +2,31 @@
 
 menu "Memory Management options"
 
+config RUST_FILEMAP
+	bool "Rust page-cache and file mapping source owner"
+	depends on RUST
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default n
+	help
+	  Select Rust bodies for the page cache, buffered/direct file access,
+	  folio waits and MMU/NOMMU mapping paths. Original C is retained as
+	  reference and is not linked as this owner when selected. Configured
+	  native primitives remain explicit runtime boundaries. Native ABI,
+	  compiler protection, object ownership and original C test acceptance
+	  remain pending the general integration phase.
+
+config RUST_SHMEM
+	bool "Rust shared-memory and tmpfs source owner"
+	depends on RUST
+	default n
+	help
+	  Select Rust bodies for shmem/tmpfs and its original tiny !SHMEM
+	  path, preserving THP, NUMA, quota, xattr and userfaultfd branches.
+	  Configured header/architecture leaves and native storage remain
+	  explicit runtime boundaries. Generated ABI, instrumentation and
+	  original C regression acceptance remain required before support is
+	  claimed; unsupported policy combinations fail closed in the recipe.
+
 config RUST_VMSTAT
 	bool "Rust virtual-memory statistics and diagnostics"
 	depends on RUST

@@ -214,3 +214,39 @@ Formatting and source composition checks passed. No compiler, bindgen,
 configuration, probe, kernel build, guest or original C tests ran. Native
 layout/signature/CFI, compiler protection, data/callback/symbol identity,
 dependency/inspection and runtime acceptance remain open.
+
+Page cache and shared memory
+----------------------------
+
+The filemap candidate maps all 123 ordinary original definitions and the
+cachestat syscall body. Independent source review covered the complete body
+inventory. Repairs preserve C's LP64/ILP32 usual arithmetic conversions for
+the zero-count direct-write last index and the three separate lexical folio
+allocation tags. All original C and regression sources remain unchanged.
+
+The shmem candidate maps 177 configured definition occurrences (158 distinct
+names), independently reviewed in two source scopes. A separate recheck covers
+the repair delta: primitive MAX names, 32-bit splice/statfs arithmetic, native
+test_bit instrumentation, THP enum/huge-page config exposure, the exact !THP
+fallback, kernel C-string pointers and six original allocation-tag sites.
+
+Native storage/registration objects, header algorithms, architecture and macro
+leaves, and shmem's generated static-inline wrappers are executable native
+boundaries, not Rust completion or metadata-only objects. No original filemap.c
+or shmem.c implementation is forwarded as a runtime fallback. Emitted tag and
+allocation-partition identity, diagnostics, full ABI/layout/CFI, symbol and
+section identity, security policy and all configuration/runtime gates remain
+unverified. The shmem boot-string helper retains its sole caller's init lifetime
+and the native initdata buffer; the later linked section audit remains required.
+
+Generated declarations for filemap, shmem and reclaim reside in the existing
+bindings crate under its unchanged generated-code policy. New owner-wide lint
+allowances are removed from reclaim and shmem; handwritten diagnostics remain
+visible for the general build-fix phase. Generation is an explicit bindings.o
+prerequisite. Three additional filemap string boundaries use the kernel's
+existing const-safe char-pointer conversion with unchanged literal bytes.
+
+This is a reviewed source checkpoint. No compiler, bindgen, preprocessing,
+configuration, probe, kernel build, guest or original C test was executed for
+these new owners. Drivers remain deferred; this source checkpoint does not
+release another per-owner build cycle.

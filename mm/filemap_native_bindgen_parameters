@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(rust_filemap_.*|folio|page|address_space|address_space_operations|file|file_ra_state|inode|super_block|gfp_t|fgf_t|pgoff_t|loff_t|xa_state|xarray|xa_mark_t|writeback_control|writeback_sync_modes|folio_batch|spinlock_t|wait_queue_entry|wait_queue_entry_t|wait_queue_head_t|wait_page_queue|wait_page_key|ctl_table|readahead_control|kiocb|iov_iter|vm_fault|vm_fault_t|vm_area_struct|vm_area_desc|vm_operations_struct|vm_flags_t|vma_flags_t|pte_t|pmd_t|softleaf_t|swp_entry_t|wb_lock_cookie|cachestat|cachestat_range|fd|pipe_inode_info|pipe_buffer|node_stat_item|wb_stat_item|vm_event_item)$'
+--allowlist-function '^(rust_filemap_.*|proc_dointvec_minmax|__folio_end_writeback|__wake_up_locked_key|copy_folio_from_iter_atomic|direct_write_fallback|do_set_pmd|do_writepages|down_write|errseq_check|errseq_check_and_advance|errseq_set|fault_in_iov_iter_readable|file_path|file_permission|file_remove_privs|file_update_time|finish_wait|folio_account_cleaned|folio_add_lru|folio_alloc_mpol_noprof|folio_mark_accessed|folio_mark_dirty|folio_rotate_reclaimable|folio_unmap_invalidate|folio_wait_stable|fput|generic_write_checks|inode_lru_list_add|invalidate_inode_pages2_range|io_schedule|iov_iter_revert|page_cache_async_ra|page_cache_ra_order|page_cache_sync_ra|page_writeback_init|set_pte_range|swap_cache_get_shadow|unmap_mapping_pages|up_write|wake_up_state|workingset_refault|workingset_test_recent|xas_find|xas_find_conflict|xas_find_marked|xas_get_mark|xas_init_marks|xas_load|xas_nomem|xas_pause|xas_store)$'
+--allowlist-var '^(RUST_FILEMAP_.*|E[A-Z0-9_]+|AS_.*|NR_FILE_PAGES|NR_FILE_THPS|NR_SHMEM|NR_SHMEM_THPS|NR_KERNEL_FILE_PAGES|WB_SYNC_.*|WB_DONTCACHE_DIRTY|PG_locked|PG_waiters|PG_uptodate|PG_private_2|PG_writeback|PGMAJFAULT|page_cache_pipe_buf_ops)$'
+--opaque-type '^(ctl_table|address_space|file|folio|page|inode|super_block|mm_struct|task_struct|mem_cgroup|pglist_data|bdi_writeback|mempolicy|signal_struct|sighand_struct|files_struct|fs_struct|cred|dentry|device|net|socket|zone|mem_section)$'
+--with-attribute-custom-struct=folio='#[cfi_encoding="5folio"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=vm_fault='#[cfi_encoding="8vm_fault"]'
+--with-attribute-custom-struct=vm_area_struct='#[cfi_encoding="14vm_area_struct"]'
+--with-attribute-custom-struct=vm_area_desc='#[cfi_encoding="12vm_area_desc"]'
+--with-attribute-custom-struct=wait_queue_entry='#[cfi_encoding="16wait_queue_entry"]'

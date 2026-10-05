@@ -101,3 +101,23 @@ pub const compat_ptr_ioctl: Option<
 pub mod vmstat_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/vmstat_native_generated.rs"));
 }
+
+// Generated native declarations inherit this crate's existing policy only.
+// Handwritten owners retain the kernel's ordinary diagnostics.
+#[cfg(CONFIG_RUST_VMSCAN)]
+pub mod vmscan_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/vmscan_native_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_SHMEM)]
+pub mod shmem_native {
+    type __kernel_size_t = usize;
+    type __kernel_ssize_t = isize;
+    type __kernel_ptrdiff_t = isize;
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/shmem_native_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_FILEMAP)]
+pub mod filemap_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/filemap_native_generated.rs"));
+}

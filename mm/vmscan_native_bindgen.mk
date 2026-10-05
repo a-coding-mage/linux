@@ -9,3 +9,9 @@ $(obj)/bindings/vmscan_native_generated.rs: $(addprefix $(srctree)/mm/,\
     vmscan_native_bindings.h vmscan_native_types.h vmscan_native_constants.h \
     vmscan_native_helpers.h vmscan_mglru_native.h vmscan_native_bindgen_parameters) FORCE
 	$(call if_changed_dep,bindgen)
+
+ifeq ($(CONFIG_RUST_VMSCAN),y)
+# Generate this native module before compiling the existing bindings crate.
+$(obj)/bindings.o: $(obj)/bindings/vmscan_native_generated.rs
+rusttestlib-bindings: $(obj)/bindings/vmscan_native_generated.rs
+endif

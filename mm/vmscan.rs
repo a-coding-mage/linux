@@ -1,32 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-only
 //! Reclaim policy and mechanics, transcribed from native mm/vmscan.c.
 //! Native headers remain the authority for layouts, bitfields and constants.
-#![allow(
-    non_camel_case_types,
-    non_snake_case,
-    non_upper_case_globals,
-    dead_code,
-    unused_imports,
-    unused_variables,
-    unused_mut,
-    missing_docs,
-    unreachable_pub,
-    improper_ctypes,
-    unsafe_op_in_unsafe_fn
-)]
-#[allow(clippy::all)]
-mod bindings {
-    use kernel::ffi;
-    include!(concat!(
-        env!("OBJTREE"),
-        "/rust/bindings/vmscan_native_generated.rs"
-    ));
-}
 use bindings as b;
 use bindings::*;
 use core::cmp::{max, min};
 use core::mem::{align_of, offset_of, size_of, zeroed};
 use core::ptr::{addr_of, addr_of_mut, null, null_mut};
+use kernel::bindings::vmscan_native as bindings;
 use kernel::ffi::{c_char as CChar, c_long as Long, c_ulong as ULong, c_void as Void};
 include!("vmscan_primitive_aliases.rs");
 include!("vmscan_constants.rs");
