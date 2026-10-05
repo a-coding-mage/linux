@@ -168,6 +168,9 @@ pub(crate) use sched_ext_core_deferred_kick::{
     lupos_scx_core_deferred_reenq_local_body, lupos_scx_core_deferred_reenq_user_body,
 };
 
+mod sched_ext_core_kfunc_dispatch;
+mod sched_ext_core_kfunc_dsq;
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }

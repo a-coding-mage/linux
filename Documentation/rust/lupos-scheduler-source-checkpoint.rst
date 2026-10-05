@@ -747,6 +747,23 @@ helper is a later increment. Recursive stack/inlining, configured type/ABI/CFI,
 native memory-model behavior, context/lifetime and runtime remain unqualified.
 No admission gate or original source oracle is changed.
 
+Dispatch and DSQ kfunc source
+----------------------------
+
+The independently reviewed dispatch and DSQ kfunc families now compose with
+the existing slice/cursor, enqueue, deferred and object-lifetime owners.
+Seventeen dispatch bodies and fourteen DSQ bodies retain their typed native
+kfunc shells, exact guard placement, compatibility-to-v2 calls, native iterator
+size/alignment checks and original return/error behavior. Metadata continues
+to have one owner in the separate struct-ops family.
+
+Shared slice/vtime access remains paired. Direct-dispatch task sampling keeps
+its original __this_cpu_read operation, separate from other plain slot reads.
+Borrowed iterator and peek results gain no invented task references; failed
+creation and cursor teardown retain their original cleanup order. Native
+single-TU, ABI/CFI/BTF, memory-model/lifetime and runtime remain unqualified.
+All source/selection gates remain intact.
+
 Inactive gates and remaining work
 ---------------------------------
 

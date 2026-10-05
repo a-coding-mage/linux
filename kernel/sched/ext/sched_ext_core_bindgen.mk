@@ -25,6 +25,8 @@ $(obj)/bindings/sched_ext_core_generated.rs: $(srctree)/kernel/sched/ext/sched_e
     $(srctree)/kernel/sched/ext/sched_ext_core_query_events_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_core_pick_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_core_deferred_kick_bindings.h \
+    $(srctree)/kernel/sched/ext/sched_ext_core_kfunc_dispatch_bindings.h \
+    $(srctree)/kernel/sched/ext/sched_ext_core_kfunc_dsq_bindings.h \
     $(srctree)/kernel/sched/ext/internal.h $(srctree)/kernel/sched/ext/cid.h \
     $(srctree)/kernel/sched/ext/arena.h $(srctree)/kernel/sched/ext/idle.h \
     $(srctree)/kernel/sched/ext/sub.h $(srctree)/kernel/sched/ext/inlines.h \

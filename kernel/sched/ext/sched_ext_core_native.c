@@ -713,3 +713,8 @@ struct scx_kick_syncs __rcu *lupos_scx_core_this_kick_syncs_snapshot(void)
 {
 	return __this_cpu_read(scx_kick_syncs);
 }
+
+struct task_struct *lupos_scx_core_direct_dispatch_task_read(void)
+{
+	return __this_cpu_read(direct_dispatch_task);
+}

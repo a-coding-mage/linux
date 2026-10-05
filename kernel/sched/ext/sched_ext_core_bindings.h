@@ -213,4 +213,11 @@ unsigned long *lupos_scx_core_this_kick_syncs(void);
 /* F07 preserves its distinct raw snapshot, NULL test and later BH dereference. */
 struct scx_kick_syncs __rcu **lupos_scx_core_kick_syncs_slot(int cpu);
 struct scx_kick_syncs __rcu *lupos_scx_core_this_kick_syncs_snapshot(void);
+
+/* F14/F15 retain exact native kfunc signatures in the same type universe. */
+#include "sched_ext_core_kfunc_dispatch_bindings.h"
+#include "sched_ext_core_kfunc_dsq_bindings.h"
+
+/* F14 preserves __this_cpu_read, distinct from the F02/F05 plain slot access. */
+struct task_struct *lupos_scx_core_direct_dispatch_task_read(void);
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */

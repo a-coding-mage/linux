@@ -3,6 +3,10 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+# F14's exact private argument layout and native dispatch-buffer entry.
+--allowlist-type 'scx_bpf_dsq_insert_vtime_args|scx_dsp_buf_ent'
+--with-attribute-custom-struct=scx_bpf_dsq_insert_vtime_args='#[cfi_encoding="29scx_bpf_dsq_insert_vtime_args"]'
+--with-attribute-custom-struct=scx_dsp_buf_ent='#[cfi_encoding="15scx_dsp_buf_ent"]'
 # F04/F07 keep native enum authority and one definition of shared owner types.
 --allowlist-type 'scx_dsp_verdict|scx_cpu_preempt_reason|scx_dsp_ctx|sched_dl_entity|scx_deferred_reenq_local|scx_deferred_reenq_user'
 --with-attribute-custom-struct=scx_dsp_ctx='#[cfi_encoding="11scx_dsp_ctx"]'
