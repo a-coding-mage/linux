@@ -18,6 +18,8 @@ $(obj)/bindings/sched_ext_core_generated.rs: $(srctree)/kernel/sched/ext/sched_e
     $(srctree)/kernel/sched/ext/sched_ext_core_enqueue_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_core_consume_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_core_bypass_bindings.h \
+    $(srctree)/kernel/sched/ext/sched_ext_core_root_transition_bindings.h \
+    $(srctree)/kernel/sched/ext/sched_ext_core_placement_tick_bindings.h \
     $(srctree)/kernel/sched/ext/internal.h $(srctree)/kernel/sched/ext/cid.h \
     $(srctree)/kernel/sched/ext/arena.h $(srctree)/kernel/sched/ext/idle.h \
     $(srctree)/kernel/sched/ext/sub.h $(srctree)/kernel/sched/ext/inlines.h \

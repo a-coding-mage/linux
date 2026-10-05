@@ -165,4 +165,32 @@ void lupos_scx_core_spoil_direct_dispatch_task(void);
 #include "sched_ext_core_bypass_bindings.h"
 unsigned int lupos_scx_core_bypass_lb_intv_us_read_once(void);
 unsigned int lupos_scx_core_slice_bypass_us_read_once(void);
+/* F12 requested additive primitives over F00's existing single native slots. */
+struct mutex *lupos_scx_core_enable_mutex(void);
+void lupos_scx_core_switching_all_write_once(bool value);
+void lupos_scx_core_init_task_enabled_write(bool value);
+void lupos_scx_core_cgroup_enabled_write(bool value);
+void lupos_scx_core_rejected_reset(void);
+void lupos_scx_core_enable_seq_inc(void);
+void lupos_scx_core_root_publish(struct scx_sched *sch);
+void lupos_scx_core_root_clear(void);
+void lupos_scx_core_enabled_enable(void);
+void lupos_scx_core_enabled_disable(void);
+void lupos_scx_core_switched_all_enable(void);
+void lupos_scx_core_switched_all_disable(void);
+void lupos_scx_core_cid_type_enable(void);
+void lupos_scx_core_cid_type_disable(void);
+void lupos_scx_core_tid_to_task_enable(void);
+void lupos_scx_core_tid_to_task_disable(void);
+
+#include "sched_ext_core_root_transition_bindings.h"
+/* F00 storage leaves requested by F05; no access acquires protection. */
+void lupos_scx_core_hotplug_seq_inc(void);
+unsigned long lupos_scx_core_watchdog_timestamp_read_once(void);
+void lupos_scx_core_watchdog_timestamp_write_once(unsigned long value);
+unsigned long lupos_scx_core_watchdog_interval_read_once(void);
+void lupos_scx_core_watchdog_interval_write_once(unsigned long value);
+struct delayed_work *lupos_scx_core_watchdog_work(void);
+
+#include "sched_ext_core_placement_tick_bindings.h"
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */

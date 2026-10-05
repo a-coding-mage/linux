@@ -119,6 +119,28 @@ pub(crate) use sched_ext_core_bypass::{
     scx_bypass_lb_timerfn, scx_disable_bypass_dsp, unbypass_renotify_idle,
 };
 
+mod sched_ext_core_root_transition;
+pub(crate) use sched_ext_core_root_transition::{
+    lupos_scx_root_attach_bw_body, lupos_scx_root_detach_fair_body,
+    lupos_scx_root_disable_change_body, lupos_scx_root_enable_body,
+    lupos_scx_root_enable_change_body, lupos_scx_root_enable_work_body,
+    lupos_scx_root_restore_bw_body, lupos_scx_root_set_enable_state,
+    scx_root_disable, scx_validate_ops,
+};
+
+mod sched_ext_core_placement_tick;
+pub(crate) use sched_ext_core_placement_tick::{
+    lupos_scx_core_pt_check_timeouts_locked_body,
+    lupos_scx_core_pt_refresh_interval_rcu_body,
+    lupos_scx_core_pt_rq_offline_body, lupos_scx_core_pt_rq_online_body,
+    lupos_scx_core_pt_select_task_rq_body, lupos_scx_core_pt_set_cpus_allowed_body,
+    lupos_scx_core_pt_task_tick_body, lupos_scx_core_pt_task_woken_body,
+    lupos_scx_core_pt_watchdog_work_body, refresh_watchdog,
+    scx_rq_activate, scx_rq_deactivate, scx_tick,
+};
+#[cfg(CONFIG_NO_HZ_FULL)]
+pub(crate) use sched_ext_core_placement_tick::scx_can_stop_tick;
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }

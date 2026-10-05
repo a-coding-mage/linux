@@ -3,6 +3,14 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+--allowlist-type 'bpf_link|kthread_worker|mutex|delayed_work|affinity_context'
+--allowlist-function 'lupos_scx_root_.*'
+--allowlist-var 'DEQUEUE_MOVE|DEQUEUE_NOCLOCK|DEQUEUE_CLASS|EBUSY|EINVAL|ENOMEM'
+--with-attribute-custom-struct=bpf_link='#[cfi_encoding="8bpf_link"]'
+--with-attribute-custom-struct=kthread_worker='#[cfi_encoding="14kthread_worker"]'
+--with-attribute-custom-struct=mutex='#[cfi_encoding="5mutex"]'
+--with-attribute-custom-struct=delayed_work='#[cfi_encoding="12delayed_work"]'
+--with-attribute-custom-struct=affinity_context='#[cfi_encoding="16affinity_context"]'
 --allowlist-type 'timer_list'
 --with-attribute-custom-struct=timer_list='#[cfi_encoding="10timer_list"]'
 --allowlist-var 'NSEC_PER_USEC'

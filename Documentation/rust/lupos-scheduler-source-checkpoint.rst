@@ -533,7 +533,8 @@ state/parameter boundaries, cursor traversal, slice-OOB accounting and current
 task accounting. Native storage and private layouts retain their original
 definitions. Independent review covers these two bounded source families.
 The subsequent task, cgroup, object, exit/dump, enqueue/consume and bypass
-increments are separately reviewed; nine core families remain outside these checkpoints.
+increments and root/placement additions are separately reviewed; seven core
+families remain outside these checkpoints.
 
 Two current-task reads now use an exact plain native accessor for configured
 rq union access. The native source permits competing slice/vtime writers in
@@ -588,7 +589,8 @@ original native formatting expansion and integer accumulator, without the
 candidate's synthetic BUG fallback; that formatting remains native runtime
 work. The subsequent exit/dump increment supplies its callback declarations;
 the subsequent bypass increment supplies its timer callback. Watchdog callbacks
-and event aggregation remain pending. Native ABI,
+are supplied by the root/placement increment; event aggregation remains pending.
+Native ABI,
 CFI/BTF, allocation attribution, lifetime/RCU and protection qualification are
 still open, with all default-off BROKEN and hard source/selection holds intact.
 
@@ -644,6 +646,22 @@ trace equivalence. The object-lifetime timer callback dependency is now supplied
 by its actual owner. All native ABI/CFI, concurrency/lifetime, stack/context,
 instrumentation and runtime gates remain open, with unchanged source/selection
 errors and default-off BROKEN admission.
+
+Sched_ext root and placement source checkpoint
+---------------------------------------------
+
+Five root-transition and fourteen placement/tick owners now have independently
+reviewed source bodies. Root enable/disable preserves preparation and armed
+failure unwinds, task-death rechecks, cgroup/fork ordering, bandwidth recovery
+and static-key publication. Placement retains CPU conversion inside callbacks,
+DSQ-drainer watchdog attribution, hotplug behavior and stop-tick conditions.
+
+The actual root teardown and refresh_watchdog owners now supply their existing
+cross-family dependencies. Deferred/kick-sync and final registration remain
+pending. The paired shared-field repair is a separate source increment; these
+bodies do not establish Rust memory-model safety by source correspondence alone.
+All native type/ABI/CFI, lifetime, context/protection and runtime gates remain
+open, with original C/header/test oracles and source/selection holds unchanged.
 
 Inactive gates and remaining work
 ---------------------------------

@@ -568,3 +568,35 @@ unsigned int lupos_scx_core_slice_bypass_us_read_once(void)
 {
 	return READ_ONCE(scx_slice_bypass_us);
 }
+
+/* F12 semantic owner. Borrowing an address does not grant its lock/lifetime. */
+struct mutex *lupos_scx_core_enable_mutex(void) { return &scx_enable_mutex; }
+void lupos_scx_core_switching_all_write_once(bool value) { WRITE_ONCE(scx_switching_all, value); }
+void lupos_scx_core_init_task_enabled_write(bool value) { scx_init_task_enabled = value; }
+void lupos_scx_core_cgroup_enabled_write(bool value) { scx_cgroup_enabled = value; }
+void lupos_scx_core_rejected_reset(void) { atomic_long_set(&scx_nr_rejected, 0); }
+void lupos_scx_core_enable_seq_inc(void) { atomic_long_inc(&scx_enable_seq); }
+void lupos_scx_core_root_publish(struct scx_sched *sch) { rcu_assign_pointer(scx_root, sch); }
+void lupos_scx_core_root_clear(void) { RCU_INIT_POINTER(scx_root, NULL); }
+void lupos_scx_core_enabled_enable(void) { static_branch_enable(&__scx_enabled); }
+void lupos_scx_core_enabled_disable(void) { static_branch_disable(&__scx_enabled); }
+void lupos_scx_core_switched_all_enable(void) { static_branch_enable(&__scx_switched_all); }
+void lupos_scx_core_switched_all_disable(void) { static_branch_disable(&__scx_switched_all); }
+void lupos_scx_core_cid_type_enable(void) { static_branch_enable(&__scx_is_cid_type); }
+void lupos_scx_core_cid_type_disable(void) { static_branch_disable(&__scx_is_cid_type); }
+void lupos_scx_core_tid_to_task_enable(void) { static_branch_enable(&__scx_tid_to_task_enabled); }
+void lupos_scx_core_tid_to_task_disable(void) { static_branch_disable(&__scx_tid_to_task_enabled); }
+
+/* F00 sole storage owner: exact F05 atomic/once/address operations. */
+void lupos_scx_core_hotplug_seq_inc(void)
+{ atomic_long_inc(&scx_hotplug_seq); }
+unsigned long lupos_scx_core_watchdog_timestamp_read_once(void)
+{ return READ_ONCE(scx_watchdog_timestamp); }
+void lupos_scx_core_watchdog_timestamp_write_once(unsigned long value)
+{ WRITE_ONCE(scx_watchdog_timestamp, value); }
+unsigned long lupos_scx_core_watchdog_interval_read_once(void)
+{ return READ_ONCE(scx_watchdog_interval); }
+void lupos_scx_core_watchdog_interval_write_once(unsigned long value)
+{ WRITE_ONCE(scx_watchdog_interval, value); }
+struct delayed_work *lupos_scx_core_watchdog_work(void)
+{ return &scx_watchdog_work; }
