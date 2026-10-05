@@ -6,6 +6,7 @@
 //! future native build input, not supplied or fabricated by this source pass.
 
 pub(super) use kernel::bindings::workqueue_native::*;
+pub(super) use kernel::bindings::init_work_with_key;
 pub(super) use kernel::ffi::{
     c_char,
     c_int,

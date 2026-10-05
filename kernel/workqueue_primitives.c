@@ -245,3 +245,172 @@ struct hlist_node *lupos_wq_worker_hentry(struct worker *worker)
 {
 	return &worker->hentry;
 }
+
+/* Native primitive leaves only: scheduling and lifetime decisions stay Rust. */
+void lupos_wq_pool_lock(struct worker_pool *pool) { raw_spin_lock(&pool->lock); }
+void lupos_wq_pool_unlock(struct worker_pool *pool) { raw_spin_unlock(&pool->lock); }
+void lupos_wq_pool_lock_irq(struct worker_pool *pool) { raw_spin_lock_irq(&pool->lock); }
+void lupos_wq_pool_unlock_irq(struct worker_pool *pool) { raw_spin_unlock_irq(&pool->lock); }
+unsigned long lupos_wq_pool_lock_irqsave(struct worker_pool *pool)
+{
+	unsigned long flags;
+	raw_spin_lock_irqsave(&pool->lock, flags);
+	return flags;
+}
+void lupos_wq_pool_unlock_irqrestore(struct worker_pool *pool, unsigned long flags)
+{
+	raw_spin_unlock_irqrestore(&pool->lock, flags);
+}
+bool lupos_wq_pool_trylock(struct worker_pool *pool) { return raw_spin_trylock(&pool->lock); }
+void lupos_wq_nna_lock(struct wq_node_nr_active *nna) { raw_spin_lock(&nna->lock); }
+void lupos_wq_nna_unlock(struct wq_node_nr_active *nna) { raw_spin_unlock(&nna->lock); }
+void lupos_wq_assert_pool_locked(struct worker_pool *pool) { lockdep_assert_held(&pool->lock); }
+void lupos_wq_assert_wq_mutex_held(struct workqueue_struct *wq) { lockdep_assert_held(&wq->mutex); }
+void lupos_wq_mutex_lock(struct mutex *lock) { mutex_lock(lock); }
+void lupos_wq_mutex_unlock(struct mutex *lock) { mutex_unlock(lock); }
+bool lupos_wq_list_empty(const struct list_head *head) { return list_empty(head); }
+void lupos_wq_init_list_head(struct list_head *head) { INIT_LIST_HEAD(head); }
+void lupos_wq_list_add(struct list_head *entry, struct list_head *head) { list_add(entry, head); }
+void lupos_wq_list_add_tail(struct list_head *entry, struct list_head *head) { list_add_tail(entry, head); }
+void lupos_wq_list_del(struct list_head *entry) { list_del(entry); }
+void lupos_wq_list_del_init(struct list_head *entry) { list_del_init(entry); }
+void lupos_wq_list_move(struct list_head *entry, struct list_head *head) { list_move(entry, head); }
+void lupos_wq_list_move_tail(struct list_head *entry, struct list_head *head) { list_move_tail(entry, head); }
+void lupos_wq_list_splice_init(struct list_head *list, struct list_head *head) { list_splice_init(list, head); }
+struct worker *lupos_wq_worker_from_entry(struct list_head *entry)
+{
+	return container_of(entry, struct worker, entry);
+}
+struct worker *lupos_wq_worker_from_hentry(struct hlist_node *entry)
+{
+	return container_of(entry, struct worker, hentry);
+}
+struct work_struct *lupos_wq_work_from_entry(struct list_head *entry)
+{
+	/* Native list-next sentinel conversion is intentionally address-only. */
+	return container_of(entry, struct work_struct, entry);
+}
+struct pool_workqueue *lupos_wq_pwq_from_pwqs_node(struct list_head *entry)
+{
+	return container_of(entry, struct pool_workqueue, pwqs_node);
+}
+struct pool_workqueue *lupos_wq_pwq_from_pending_node(struct list_head *entry)
+{
+	return container_of(entry, struct pool_workqueue, pending_node);
+}
+struct hlist_head *lupos_wq_busy_worker_hash_head(struct worker_pool *pool,
+					       struct work_struct *work)
+{
+	return &pool->busy_hash[hash_min((unsigned long)work, HASH_BITS(pool->busy_hash))];
+}
+struct task_struct *lupos_wq_current(void) { return current; }
+struct worker *lupos_wq_current_wq_worker(void) { return current_wq_worker(); }
+bool lupos_wq_work_func_eq(work_func_t left, work_func_t right) { return left == right; }
+unsigned long lupos_wq_read_jiffies(void) { return jiffies; }
+bool lupos_wq_timer_pending(const struct timer_list *timer) { return timer_pending(timer); }
+bool lupos_wq_work_pending(const struct work_struct *work) { return work_pending(work); }
+bool lupos_wq_time_before(unsigned long left, unsigned long right) { return time_before(left, right); }
+int lupos_wq_read_once_int(const int *value) { return READ_ONCE(*value); }
+void lupos_wq_write_once_int(int *value, int new_value) { WRITE_ONCE(*value, new_value); }
+int lupos_wq_atomic_read(const atomic_t *value) { return atomic_read(value); }
+void lupos_wq_atomic_set(atomic_t *value, int new_value) { atomic_set(value, new_value); }
+void lupos_wq_atomic_inc(atomic_t *value) { atomic_inc(value); }
+bool lupos_wq_atomic_dec_and_test(atomic_t *value) { return atomic_dec_and_test(value); }
+int lupos_wq_atomic_dec_return(atomic_t *value) { return atomic_dec_return(value); }
+bool lupos_wq_atomic_try_cmpxchg_relaxed(atomic_t *value, int *old, int new_value)
+{
+	return atomic_try_cmpxchg_relaxed(value, old, new_value);
+}
+void lupos_wq___set_bit(unsigned int bit, unsigned long *data) { __set_bit(bit, data); }
+void lupos_wq___clear_bit(unsigned int bit, unsigned long *data) { __clear_bit(bit, data); }
+void lupos_wq_complete(struct completion *done) { complete(done); }
+void lupos_wq_local_bh_disable(void) { local_bh_disable(); }
+void lupos_wq_local_bh_enable(void) { local_bh_enable(); }
+
+/* Original insert_wq_barrier keys remain distinct, static and address-stable. */
+static __maybe_unused struct lock_class_key wq_barrier_bh_key, wq_barrier_thr_key;
+struct lock_class_key *lupos_wq_barrier_bh_key(void) { return &wq_barrier_bh_key; }
+struct lock_class_key *lupos_wq_barrier_thr_key(void) { return &wq_barrier_thr_key; }
+void lupos_wq_init_completion_work_map(struct completion *done, struct work_struct *target)
+{
+	/* The pinned native macro erases its map operand when that field is absent. */
+	init_completion_map(done, &target->lockdep_map);
+}
+struct pool_workqueue *lupos_wq_pwq_first(struct workqueue_struct *wq)
+{
+	struct pool_workqueue *pwq;
+	__list_check_rcu(dummy, lockdep_is_held(&wq->mutex), 0);
+	pwq = list_entry_rcu(wq->pwqs.next, struct pool_workqueue, pwqs_node);
+	return &pwq->pwqs_node == &wq->pwqs ? NULL : pwq;
+}
+struct pool_workqueue *lupos_wq_pwq_next(struct workqueue_struct *wq,
+				      struct pool_workqueue *pwq)
+{
+	pwq = list_entry_rcu(pwq->pwqs_node.next, struct pool_workqueue, pwqs_node);
+	return &pwq->pwqs_node == &wq->pwqs ? NULL : pwq;
+}
+void *lupos_wq_kzalloc_node(size_t size, gfp_t flags, int node) { return kzalloc_node(size, flags, node); }
+int lupos_wq_ida_alloc(struct ida *ida, gfp_t flags) { return ida_alloc(ida, flags); }
+bool lupos_wq_is_err(const void *value) { return IS_ERR(value); }
+long lupos_wq_ptr_err(const void *value) { return PTR_ERR(value); }
+void lupos_wq_get_task_struct(struct task_struct *task) { get_task_struct(task); }
+struct kthread_worker *lupos_wq_pwq_release_worker(void) { return pwq_release_worker; }
+bool lupos_wq_topo_initialized(void) { return wq_topo_initialized; }
+const struct cpumask *lupos_wq_unbound_cpumask(void) { return wq_unbound_cpumask; }
+const struct cpumask *lupos_wq_cpu_online_mask(void) { return cpu_online_mask; }
+const struct cpumask *lupos_wq_cpu_active_mask(void) { return cpu_active_mask; }
+const struct cpumask *lupos_wq_cpu_possible_mask(void) { return cpu_possible_mask; }
+unsigned int lupos_wq_nr_cpu_ids(void) { return nr_cpu_ids; }
+unsigned int lupos_wq_smp_processor_id(void) { return smp_processor_id(); }
+bool lupos_wq_cpumask_test_cpu(int cpu, const struct cpumask *mask) { return cpumask_test_cpu(cpu, mask); }
+bool lupos_wq_cpumask_intersects(const struct cpumask *a, const struct cpumask *b)
+{
+	return cpumask_intersects(a, b);
+}
+unsigned int lupos_wq_cpumask_weight_and(const struct cpumask *a, const struct cpumask *b)
+{
+	return cpumask_weight_and(a, b);
+}
+unsigned int lupos_wq_cpumask_any_and_distribute(const struct cpumask *a, const struct cpumask *b)
+{
+	return cpumask_any_and_distribute(a, b);
+}
+struct irq_work *lupos_wq_bh_pool_irq_work_at(int cpu, int index)
+{
+	return &per_cpu(bh_pool_irq_works, cpu)[index];
+}
+void lupos_wq_raise_softirq_irqoff(unsigned int nr) { raise_softirq_irqoff(nr); }
+#ifdef CONFIG_SMP
+int lupos_wq_read_task_wake_cpu(struct task_struct *task) { return READ_ONCE(task->wake_cpu); }
+void lupos_wq_write_task_wake_cpu(struct task_struct *task, int cpu) { WRITE_ONCE(task->wake_cpu, cpu); }
+#endif
+void lupos_wq_trace_workqueue_activate_work(struct work_struct *work)
+{
+	trace_workqueue_activate_work(work);
+}
+
+bool lupos_wq_online(void) { return wq_online; }
+struct list_head *lupos_wq_work_entry(struct work_struct *work)
+{
+	/* Address-only inverse of work_from_entry, including native list sentinels. */
+	return &work->entry;
+}
+struct worker_pool *lupos_wq_bh_pool_at(int cpu, int index)
+{
+	return &per_cpu(bh_worker_pools, cpu)[index];
+}
+static __maybe_unused struct lock_class_key schedule_each_cpu_key;
+static __maybe_unused struct lock_class_key execute_process_context_key;
+static __maybe_unused struct lock_class_key dead_softirq_work_key;
+struct lock_class_key *lupos_wq_schedule_each_cpu_key(void)
+{
+	return &schedule_each_cpu_key;
+}
+struct lock_class_key *lupos_wq_execute_process_context_key(void)
+{
+	return &execute_process_context_key;
+}
+struct lock_class_key *lupos_wq_dead_softirq_work_key(void)
+{
+	return &dead_softirq_work_key;
+}

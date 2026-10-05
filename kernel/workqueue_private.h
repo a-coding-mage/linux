@@ -408,4 +408,11 @@ struct wq_barrier {
 	struct task_struct	*task;	/* purely informational */
 };
 
+/* Native C3804-3808, shared configured stack-work type. */
+struct wq_drain_dead_softirq_work {
+	struct work_struct	work;
+	struct worker_pool	*pool;
+	struct completion	done;
+};
+
 #endif /* LUPOS_WORKQUEUE_PRIVATE_H */

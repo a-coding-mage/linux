@@ -276,6 +276,20 @@ translation-unit filename. Callback/ABI/CFI, source/profiling attribution, nativ
 owner code-generation policy, symbol selection and original tests remain open.
 No workqueue build enrollment or complete-owner coverage is claimed.
 
+A separately reviewed primitive extension adds real native lock/IRQ-save,
+list/container/RCU iterator, atomic/bit, task/per-CPU/mask, completion and trace
+leaves, plus the exact dead-softirq work declaration. Algorithms remain Rust
+decisions; these primitives do not supply missing queue or worker policy.
+The native iterator retains its initial RCU check and each protected link load.
+Non-atomic bit operations and relaxed compare-exchange remain distinct.
+
+Keyed work initialization reuses the existing Rust-kernel helper. Its public
+work_struct, work_func_t and lock-class-key identities must be shared by the
+future binding graph; casts between separate type universes are not a substitute.
+Native callback-value equality also remains an explicit callback-bearing FFI/CFI
+qualification obligation. Distinct native static keys and original operations
+do not prove emitted key, diagnostic, allocator or callsite metadata identity.
+
 Verification scope
 ------------------
 
