@@ -21,6 +21,7 @@ include $(srctree)/kernel/kthread_rust.mk
 include $(srctree)/kernel/task_work_rust.mk
 include $(srctree)/kernel/nsproxy_rust.mk
 include $(srctree)/kernel/cred_rust.mk
+include $(srctree)/kernel/groups_rust.mk
 
 obj-$(CONFIG_MULTIUSER) += groups.o
 obj-$(CONFIG_VHOST_TASK) += vhost_task.o

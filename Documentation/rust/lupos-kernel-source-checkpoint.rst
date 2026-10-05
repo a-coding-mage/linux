@@ -88,6 +88,27 @@ allocation instrumentation parity. All such obligations remain open. The
 selector is default-off and BROKEN, with source and selection errors intact.
 Original credential C, native layout headers and tests remain unchanged.
 
+Supplementary groups and user-access boundaries
+----------------------------------------------
+
+Independent whole-owner review replaces fabricated credential/group layouts,
+numeric type projections and zero allocation flags with configured native
+authority. Rust retains allocation decisions, user-array loops, sorted lookup,
+permission/LSM decisions, references and failure cleanup. Native primitives
+retain the real flexible-array allocation and GFP_KERNEL_ACCOUNT behavior.
+
+The native sort boundary names the retained Rust comparator and the original
+NULL swap callback, without a nullable callback argument crossing Rust FFI.
+Native syscall and export metadata preserve the original public contracts;
+syscall bodies forward to the Rust long-returning owners. Credential entry
+calls use their real native declarations, without cross-module handle casts.
+
+Opaque native storage does not qualify a Rust-plus-RANDSTRUCT profile: the
+pinned global Rust restrictions remain unchanged. Configured value/layout ABI,
+CFI, uaccess, syscall metadata, references, allocation attribution and runtime
+still require qualification. All default-off/BROKEN and source/selection holds
+remain, with the MULTIUSER condition preserved and no object selection changes.
+
 Verification scope
 ------------------
 

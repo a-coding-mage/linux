@@ -1024,6 +1024,7 @@ include $(srctree)/kernel/panic_bindgen.mk
 include $(srctree)/kernel/task_work_bindgen.mk
 include $(srctree)/kernel/nsproxy_bindgen.mk
 include $(srctree)/kernel/cred_native_bindgen.mk
+include $(srctree)/kernel/groups_native_bindgen.mk
 include $(srctree)/arch/x86/kernel/setup-bindgen.mk
 include $(srctree)/arch/x86/kernel/e820-bindgen.mk
 include $(srctree)/arch/x86/mm/physaddr-bindgen.mk

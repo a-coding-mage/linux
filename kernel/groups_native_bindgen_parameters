@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0
+# Inactive proposal only. No bindgen/configuration invocation is authorized.
+# Native randomized objects are opaque pointer targets, never Rust layouts.
+# kgid_t crosses by value and MUST keep the complete configured native typedef.
+--no-doc-comments
+--no-default '.*'
+--allowlist-type 'cred|group_info|user_namespace|kgid_t|gid_t|gfp_t'
+--opaque-type 'cred|group_info|user_namespace'
+--allowlist-function 'lupos_groups_.*|prepare_creds|commit_creds|abort_creds|ns_capable_setid'
+--allowlist-var 'LUPOS_GROUPS_.*'
+--with-attribute-custom-struct=cred='#[cfi_encoding="4cred"]'
+--with-attribute-custom-struct=group_info='#[cfi_encoding="10group_info"]'
+--with-attribute-custom-struct=user_namespace='#[cfi_encoding="14user_namespace"]'
+--with-attribute-custom-struct=kgid_t='#[cfi_encoding="6kgid_t"]'
+# Use the repository's existing target/kernel-ffi bindgen rule and common flags.
+# Do not include sort/cmp_func_t in the Rust boundary: C supplies the comparator
+# by symbol with its actual native prototype and supplies swap=NULL itself.

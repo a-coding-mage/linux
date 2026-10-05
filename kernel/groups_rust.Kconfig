@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_GROUPS
+	bool "Rust supplementary-group source proposal (not admitted)"
+	depends on RUST && MULTIUSER && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing supplementary-group Rust.
+	  Native layout/value ABI, syscall/export/CFI metadata, user access,
+	  reference lifetimes and runtime qualification remain open. Keep off.
