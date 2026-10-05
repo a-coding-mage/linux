@@ -163,3 +163,8 @@ pub mod cputime_native {
 pub mod sched_waiting_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_waiting_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_SYSCALLS)]
+pub mod sched_syscalls_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_syscalls_generated.rs"));
+}

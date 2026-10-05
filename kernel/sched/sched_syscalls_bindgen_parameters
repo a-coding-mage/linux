@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source proposal only. Do not generate bindings or admit this owner yet.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'task_struct|sched_param|sched_attr|cpumask|cpumask_var_t|affinity_context|rq|rq_flags|sched_change_ctx|sched_class|sched_dl_entity|task_group|balance_callback|cred|user_namespace|uclamp_id|uclamp_se|timespec64|__kernel_timespec|old_timespec32|pid_t'
+--allowlist-function 'lupos_syscalls_.*|set_load_weight|find_task_by_vpid|__setparam_dl|__setparam_fair|__getparam_dl|__checkparam_dl|dl_param_changed|update_rq_clock|sched_dl_overflow|__setscheduler_class|sched_change_begin|sched_change_end|splice_balance_callbacks|balance_callbacks|__set_cpus_allowed_ptr|kfree|resched_curr|put_timespec64|put_old_timespec32'
+--allowlist-var 'LUPOS_SYS_.*|SCHED_.*|UCLAMP_.*|sysctl_sched_uclamp_util_min_rt_default'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=sched_param='#[cfi_encoding="11sched_param"]'
+--with-attribute-custom-struct=sched_attr='#[cfi_encoding="10sched_attr"]'
+--with-attribute-custom-struct=cpumask='#[cfi_encoding="7cpumask"]'
+--with-attribute-custom-struct=affinity_context='#[cfi_encoding="16affinity_context"]'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=sched_change_ctx='#[cfi_encoding="16sched_change_ctx"]'
+--with-attribute-custom-struct=sched_class='#[cfi_encoding="11sched_class"]'
+--with-attribute-custom-struct=sched_dl_entity='#[cfi_encoding="15sched_dl_entity"]'
+--with-attribute-custom-struct=task_group='#[cfi_encoding="10task_group"]'
+--with-attribute-custom-struct=balance_callback='#[cfi_encoding="16balance_callback"]'
+--with-attribute-custom-struct=cred='#[cfi_encoding="4cred"]'
+--with-attribute-custom-struct=user_namespace='#[cfi_encoding="14user_namespace"]'
+--with-attribute-custom-struct=uclamp_se='#[cfi_encoding="9uclamp_se"]'
+--with-attribute-custom-struct=timespec64='#[cfi_encoding="10timespec64"]'
+--with-attribute-custom-struct=__kernel_timespec='#[cfi_encoding="17__kernel_timespec"]'
+--with-attribute-custom-struct=old_timespec32='#[cfi_encoding="14old_timespec32"]'
+# Opaque configured architecture payloads follow the native scheduler proposal.
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'

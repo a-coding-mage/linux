@@ -242,6 +242,27 @@ clock updater uses cfg-local declarations for all eight IRQ/paravirt/averaging
 combinations, with exact prior-source reconstruction and unchanged accounting
 operations. These are source checks, not native or configured acceptance.
 
+Scheduler syscall source checkpoint
+----------------------------------
+
+The existing syscall skeleton is continued with its missing permission,
+credential, RLIMIT, LSM, affinity/cpuset, deadline admission, PI/uclamp,
+usercopy/versioning, yield and RR behavior. Native registration supplies the
+original 14 syscall sites and seven exports. Source inventory matches 113
+native declarations/definitions; this is not generated ABI or link evidence.
+
+Independent source review covers validation/permission ordering, user-memory
+access and failure cleanup, including the exact original IRQ guard expansion.
+Configured anonymous rq.curr/rq.donor fields are accessed natively instead of
+assuming flattened bindings when SCHED_PROXY_EXEC is disabled. Handwritten
+naming-lint allowances are removed; generated code keeps only existing policy.
+
+Default-off BROKEN and hard-error hooks retain original aggregate selection.
+Configured layouts, nominal callback CFI, CPUSETS/SCHED_PROXY_EXEC alternatives,
+syscall attributes, hardened usercopy/object-size provenance, instrumentation,
+concurrency, caller attribution and runtime behavior remain unqualified. No
+source review claim establishes a running-kernel vulnerability or acceptance.
+
 Inactive gates and remaining work
 ---------------------------------
 

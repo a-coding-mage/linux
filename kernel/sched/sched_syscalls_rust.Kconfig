@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_SYSCALLS
+	bool "Rust scheduler syscall source owner proposal"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive scheduler syscall implementation. Native syscall/usercopy,
+	  ABI/CFI, permission, concurrency and compiler-policy qualification
+	  must precede any replacement of the original build_policy owner.
