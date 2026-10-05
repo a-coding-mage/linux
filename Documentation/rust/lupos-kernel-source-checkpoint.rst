@@ -290,6 +290,19 @@ Native callback-value equality also remains an explicit callback-bearing FFI/CFI
 qualification obligation. Distinct native static keys and original operations
 do not prove emitted key, diagnostic, allocator or callsite metadata identity.
 
+The separately reviewed completion source supplies all original functions in
+the flush/cancel/disable/convenience span. It preserves linked inactive barriers,
+color generations and overflow cascade, pool revalidation, full RCU flush,
+nested disable depth, pending ownership and IRQ restoration. Stack barriers
+remain at their final address; completion and callback paths do not subsequently
+read objects whose owners may already release them. BH and PREEMPT_RT waiting
+remain distinct, and convenience work uses the original system_percpu_wq target.
+
+This body file is saved unselected. Dispatch/execution imports, remaining native
+primitive requests, callback/public symbol ownership and emitted qualification
+are still incomplete. Function correspondence is source-review scope, not a
+claim that the workqueue can run or that its original tests pass.
+
 Verification scope
 ------------------
 
