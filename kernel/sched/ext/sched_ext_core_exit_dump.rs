@@ -370,12 +370,14 @@ unsafe fn dump_stack_trace(s: *mut seq_buf, prefix: *const c_char,
 /// Caller holds the one dump lock with IRQs disabled; s/prefix remain live
 /// until ops_dump_exit, and callbacks execute synchronously on this CPU.
 unsafe fn ops_dump_init(s: *mut seq_buf, prefix: *const c_char) {
-    // SAFETY: The shared slot is not a per-family duplicate. CPU publication
-    // allows only the current synchronous dump callback to append to it.
+    // SAFETY: The shared slot is not a per-family duplicate. The native plain
+    // CPU store preserves the original acceptance token; it is not release
+    // publication. Both stores and the off-context read use that same held
+    // native field boundary, whose race semantics remain unqualified.
     unsafe {
         let dd = lupos_scx_core_dump_data();
         lupos_scx_exit_assert_irqs_disabled();
-        (*dd).cpu = lupos_scx_exit_ops_dump_cpu();
+        scx_shared_dump_cpu_write(dd, lupos_scx_exit_ops_dump_cpu());
         (*dd).first = true;
         (*dd).cursor = 0;
         (*dd).s = s;
@@ -420,7 +422,7 @@ unsafe fn ops_dump_flush() {
 /// Matches one ops_dump_init under the unchanged dump-lock/IRQ/CPU protection.
 unsafe fn ops_dump_exit() {
     // SAFETY: Disallow later appends only after finishing all pending output.
-    unsafe { ops_dump_flush(); (*lupos_scx_core_dump_data()).cpu = -1; }
+    unsafe { ops_dump_flush(); scx_shared_dump_cpu_write(lupos_scx_core_dump_data(), -1); }
 }
 
 /// Validate, nofault-copy, prepare and format one explicitly packed bstr.
@@ -536,8 +538,9 @@ pub unsafe extern "C" fn lupos_scx_exit_bpf_error_bstr(
 /// ops_dump_init on this CPU own the shared buffer under dump_lock/disabled IRQs;
 /// callers outside that context receive the original scheduler error.
 /// The original rejected-call path reads dd->cpu without dump_lock and may race
-/// with another CPU's dump. Its plain Rust read remains a memory-model admission
-/// obligation; callers are not restricted to already-valid dump contexts.
+/// with another CPU's dump. All runtime CPU-token reads and writes now use
+/// plain native leaves; the C/Rust whole-program race remains unqualified.
+/// Callers are not restricted to already-valid dump contexts.
 #[no_mangle]
 pub unsafe extern "C" fn lupos_scx_exit_bpf_dump_bstr(
     fmt: *mut c_char, data: *mut c_ulonglong, data_sz: u32, aux: *const bpf_prog_aux,
@@ -551,7 +554,7 @@ pub unsafe extern "C" fn lupos_scx_exit_bpf_dump_bstr(
         (|| {
             let sch = lupos_scx_exit_dump_prog_sched(aux);
             if lupos_scx_exit_dump_unlikely_null(sch) { return; }
-            if lupos_scx_exit_raw_cpu() != (*dd).cpu {
+            if lupos_scx_exit_raw_cpu() != scx_shared_dump_cpu_read(dd) {
                 lupos_scx_exit_error_dump_context(sch); return;
             }
             let line = ptr::addr_of_mut!((*dd).buf.line).cast::<c_char>();

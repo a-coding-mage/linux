@@ -20,6 +20,7 @@
 #include "idle.h"
 #include "sub.h"
 #include "inlines.h"
+#include "sched_ext_shared_access.h"
 
 unsigned int lupos_scx_core_nr_cpu_ids(void);
 bool lupos_scx_core_cpu_possible(s32 cpu);

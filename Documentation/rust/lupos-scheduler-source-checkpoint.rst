@@ -663,6 +663,20 @@ bodies do not establish Rust memory-model safety by source correspondence alone.
 All native type/ABI/CFI, lifetime, context/protection and runtime gates remain
 open, with original C/header/test oracles and source/selection holds unchanged.
 
+Paired dump-state access repair
+------------------------------
+
+The two runtime dump-CPU stores and the off-context read now all use the same
+typed native plain-field boundary. Independent review checks their complete
+three-access set, the unchanged static initializer and their original ordering.
+No atomics, ONCE operations, barriers, locks or stronger caller assumptions
+were introduced. The other shared-field declarations are reserved for the
+separate paired-access increment and are not implementations in this subset.
+
+This removes the conflicting direct Rust accesses in this narrow set; it does
+not prove native whole-program race safety or dump-buffer/context validity.
+Those obligations, native ABI/CFI and every source/selection hold remain open.
+
 Inactive gates and remaining work
 ---------------------------------
 

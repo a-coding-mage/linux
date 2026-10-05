@@ -600,3 +600,18 @@ void lupos_scx_core_watchdog_interval_write_once(unsigned long value)
 { WRITE_ONCE(scx_watchdog_interval, value); }
 struct delayed_work *lupos_scx_core_watchdog_work(void)
 { return &scx_watchdog_work; }
+
+/* F11-only subset of the frozen shared field-access boundary. These exact
+ * native plain operations are transitional, not a synchronization protocol.
+ * The dump lock does not cover the off-context reader; whole-program native
+ * race semantics remain unqualified. Keep SOURCE ONLY HOLD above.
+ */
+s32 scx_shared_dump_cpu_read(const struct scx_dump_data *dd)
+{
+	return dd->cpu;
+}
+
+void scx_shared_dump_cpu_write(struct scx_dump_data *dd, s32 cpu)
+{
+	dd->cpu = cpu;
+}
