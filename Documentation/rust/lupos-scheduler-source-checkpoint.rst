@@ -491,6 +491,21 @@ bookkeeping does not grant Rust reference validity for shared arena payload.
 Default-off BROKEN and hard errors remain; shared translation-unit ownership,
 ABI/CFI, native protection, lifetime and original-test behavior are unqualified.
 
+Sched_ext idle source checkpoint
+-------------------------------
+
+The existing idle owner now contains selection, topology, allocation/reset,
+notification/renotify and validation behavior with all 21 original public
+entries represented. Native BPF adapters preserve fourteen continuations and
+five ordered registrations. Source review checks exact CPU/node iteration,
+unsigned node counts and lazy native debug argument evaluation.
+
+An inherited compatibility-selection path can call lock-requiring task-scheduler
+resolution during child rejection before taking pi_lock. This unresolved
+caller/lockdep obligation is retained, not waived or claimed safe. Default-off
+BROKEN and source errors remain; shared BTF/type/linkage, callback ABI/CFI,
+native protection, pinning/IRQ/RCU lifetime and runtime qualification stay open.
+
 Inactive gates and remaining work
 ---------------------------------
 

@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source-only projection proposal; native BTF and configured ABI remain held.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'task_struct|rq|scx_rq|sched_domain|sched_group|sched_ext_ops|scx_sched|bpf_prog_aux|cpumask|scx_idle_cpus|scx_bpf_select_cpu_and_args|nodemask_t'
+--opaque-type 'cpumask|bpf_prog_aux'
+--allowlist-function 'lupos_scx_idle_.*'
+--allowlist-var 'LUPOS_SCX_IDLE_.*'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=scx_rq='#[cfi_encoding="6scx_rq"]'
+--with-attribute-custom-struct=sched_domain='#[cfi_encoding="12sched_domain"]'
+--with-attribute-custom-struct=sched_group='#[cfi_encoding="11sched_group"]'
+--with-attribute-custom-struct=sched_ext_ops='#[cfi_encoding="13sched_ext_ops"]'
+--with-attribute-custom-struct=scx_sched='#[cfi_encoding="9scx_sched"]'
+--with-attribute-custom-struct=bpf_prog_aux='#[cfi_encoding="12bpf_prog_aux"]'
+--with-attribute-custom-struct=cpumask='#[cfi_encoding="7cpumask"]'
+--with-attribute-custom-struct=scx_idle_cpus='#[cfi_encoding="13scx_idle_cpus"]'
+--with-attribute-custom-struct=scx_bpf_select_cpu_and_args='#[cfi_encoding="27scx_bpf_select_cpu_and_args"]'
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
