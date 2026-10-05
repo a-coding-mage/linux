@@ -28,11 +28,19 @@ the sole Rust bodies. Synchronous native callback contexts avoid the known
 nominal outer-KCFI mismatch of unadapted nullable Rust function-pointer arguments,
 without guessing context-dependent callback encodings or weakening CFI.
 
-Remaining obligations are substantive. Extracted warning and cond_resched sites
-change diagnostic source attribution by construction; original attribution is
-not preserved or claimed by this checkpoint. Configured generated layout and
-enum representation, emitted ABI/CFI, instrumentation/callsite effects, native
-concurrency/lifetime and runtime behavior remain unqualified.
+An independently reviewed follow-on repairs explicit warning and cond_resched
+file/line operands under a mandatory, separately verified original-file input.
+The pinned x86 warning expansion retains native UD2, conditional bug-table
+fields, distinct once sites, KUnit suppression and reset ownership. Unsupported
+architecture/table profiles remain rejected; native !BUG behavior is retained.
+The reschedule leaf preserves __might_resched followed by _cond_resched.
+
+This does not restore the original trap PC, registers or stack: they still
+belong to the extracted leaf. The original-file value, emitted records and
+relocations, branch/profiling provenance, generated layout and enum ABI/CFI,
+instrumentation, native concurrency/lifetime and runtime remain unqualified.
+No default file string, generic warning slowpath or synthetic once state is
+introduced, and the unconditional source hold remains.
 
 The declaration recipe and module are inactive proposals. The selector is
 default-off with RUST and BROKEN dependencies; selection-time and both source

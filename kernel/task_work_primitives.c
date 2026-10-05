@@ -15,6 +15,64 @@
 
 #error "SOURCE ONLY HOLD: task work native primitives are not admitted"
 
+/*
+ * Required future input: the actual __FILE__ string from the original native
+ * task_work.c build, after its configured path mapping. No default is safe.
+ * Supplying that verified string literal does not release the source-only hold
+ * or establish equivalence of PCs, stack traces, debug info or instrumentation.
+ */
+#ifndef LUPOS_TASK_WORK_ORIGINAL_FILE
+#error "SOURCE ONLY HOLD: verify the original task_work.c __FILE__ string first"
+#endif
+
+/* Original task_work.c sites at 126a30fae3bba11420ec2fcbde51a0a01bab1b5b. */
+#define LUPOS_TASK_WORK_NOT_CURRENT_LINE	65
+#define LUPOS_TASK_WORK_UNKNOWN_NOTIFY_LINE	99
+#define LUPOS_TASK_WORK_COND_RESCHED_LINE	235
+
+/*
+ * Only the pinned x86 warning expansion has been traced here. Keep all other
+ * profiles blocked; a generic slowpath or a new once flag is not equivalent.
+ */
+#ifndef CONFIG_X86
+#error "SOURCE ONLY HOLD: task work warning attribution needs a native profile"
+#elif !defined(CONFIG_BUG)
+/* Native !BUG behavior: evaluate once and return, with no emitted warning. */
+#define LUPOS_TASK_WORK_WARN_ON_ONCE_AT(condition, site_line) \
+	WARN_ON_ONCE(condition)
+#elif !defined(CONFIG_GENERIC_BUG) || \
+	!defined(CONFIG_GENERIC_BUG_RELATIVE_POINTERS)
+#error "SOURCE ONLY HOLD: task work x86 warning profile is unsupported"
+#else
+/*
+ * Expand the pinned WARN_ON_ONCE -> __WARN_FLAGS -> _BUG_FLAGS sequence,
+ * changing only its explicit file/line operands. Native definitions retain the
+ * configured bug-entry format, relative relocations, size, warning instruction
+ * and reachable annotation. Each use emits its own native once
+ * site; BUGFLAG_DONE, suppression and reset remain in the native trap handler.
+ * The trap PC still belongs to this leaf and is NOT the original C site PC.
+ */
+#define LUPOS_TASK_WORK_WARN_ON_ONCE_AT(condition, site_line) ({	\
+	int __ret_warn_on = !!(condition);				\
+	if (unlikely(__ret_warn_on)) {					\
+		auto __flags = BUGFLAG_WARNING | BUGFLAG_ONCE |		\
+			       BUGFLAG_TAINT(TAINT_WARN);			\
+		instrumentation_begin();					\
+		asm_inline volatile("1:\t" ASM_UD2 "\n"			\
+			_BUG_FLAGS_ASM("%c[fmt]", "%c[file]", "%c[line]",	\
+				       "%c[fl]", "%c[size]",		\
+				       ARCH_WARN_REACHABLE)		\
+			: : [fmt] "i" (WARN_CONDITION_STR(#condition)),	\
+			    [file] "i" (LUPOS_TASK_WORK_ORIGINAL_FILE),	\
+			    [line] "i" (site_line),			\
+			    [fl] "i" (__flags),				\
+			    [size] "i" (sizeof(struct bug_entry)));		\
+		instrumentation_end();					\
+	}								\
+	unlikely(__ret_warn_on);					\
+})
+#endif
+
 /* Native lifetime, alignment and zero initialization, including next == NULL. */
 static struct callback_head work_exited;
 
@@ -152,7 +210,10 @@ void lupos_task_work_unlock_irq(struct task_struct *task)
 
 void lupos_task_work_cond_resched(void)
 {
-	cond_resched();
+	/* Exact cond_resched expansion order and offset; no task-state annotation. */
+	__might_resched(LUPOS_TASK_WORK_ORIGINAL_FILE,
+			LUPOS_TASK_WORK_COND_RESCHED_LINE, 0);
+	_cond_resched();
 }
 
 void lupos_task_work_record_aux_stack(struct callback_head *work)
@@ -163,12 +224,13 @@ void lupos_task_work_record_aux_stack(struct callback_head *work)
 bool lupos_task_work_warn_not_current(struct task_struct *task)
 {
 	/* Distinct native WARN_ON_ONCE site from the invalid-mode warning. */
-	return WARN_ON_ONCE(task != current);
+	return LUPOS_TASK_WORK_WARN_ON_ONCE_AT(task != current,
+					     LUPOS_TASK_WORK_NOT_CURRENT_LINE);
 }
 
 void lupos_task_work_warn_unknown_notify(void)
 {
-	WARN_ON_ONCE(1);
+	LUPOS_TASK_WORK_WARN_ON_ONCE_AT(1, LUPOS_TASK_WORK_UNKNOWN_NOTIFY_LINE);
 }
 
 void lupos_task_work_notify_resume(struct task_struct *task)
