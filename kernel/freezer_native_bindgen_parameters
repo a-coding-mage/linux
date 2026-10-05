@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# INACTIVE configured-native declaration proposal. No generation is admitted.
+# Input: kernel/freezer_native_bindings.h; module: bindings::freezer_native.
+# Built-in owner, preserve normal target flags and -UMODULE in the future recipe.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(task_struct|sighand_struct|spinlock_t|spinlock|static_key_false)$'
+--opaque-type '^(task_struct|sighand_struct|spinlock|static_key_false)$'
+--allowlist-function '^lupos_freezer_.*$'
+--allowlist-var '^(LUPOS_FREEZER_.*|freezer_active|pm_freezing|pm_nosig_freezing)$'
+# Pointees are generated from native declarations and remain pointer-only.
+# No allocation, copied kernel layout or custom nullable-callback encoding.
+# Configured struct-tag identity and emitted ABI/CFI remain admission holds.

@@ -1033,6 +1033,7 @@ include $(srctree)/kernel/smpboot_native_bindgen.mk
 include $(srctree)/kernel/stop_machine_native_bindgen.mk
 include $(srctree)/kernel/irq_work_native_bindgen.mk
 include $(srctree)/kernel/notifier_native_bindgen.mk
+include $(srctree)/kernel/freezer_native_bindgen.mk
 include $(srctree)/arch/x86/kernel/setup-bindgen.mk
 include $(srctree)/arch/x86/kernel/e820-bindgen.mk
 include $(srctree)/arch/x86/mm/physaddr-bindgen.mk

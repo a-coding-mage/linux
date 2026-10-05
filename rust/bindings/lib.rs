@@ -313,3 +313,8 @@ pub mod irq_work_native {
 pub mod notifier_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/notifier_native_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_FREEZER)]
+pub mod freezer_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/freezer_native_generated.rs"));
+}

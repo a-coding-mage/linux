@@ -331,6 +331,28 @@ there is no copied replacement or C hash fallback. That historical helper's
 unsafe-operation/documentation/lint admission and emitted behavior still need
 qualification. Native types, callback identities and all earlier holds remain.
 
+Freezer native storage and task-state protocol
+---------------------------------------------
+
+Independent review retains all eleven existing Rust freezer bodies while
+replacing the incompatible bool key and uninitialized lock with the actual
+native DEFINE_STATIC_KEY_FALSE and DEFINE_SPINLOCK objects. Native constants,
+opaque pointees and fixed task_call_func callback signatures replace fabricated
+interfaces. READ_ONCE/WRITE_ONCE task-state accesses remain distinct from plain
+saved-state reads, including the original second state read before freezing.
+
+Review corrected an important pinned-tree guard distinction: __thaw_task uses
+the native spin_lock_irq_disable/spin_unlock_irq_enable pair, retaining
+refcounted interrupt-disable accounting. Ordinary IRQ-save/restore remains only
+where the original body explicitly used it. PREEMPT_RT keeps its configured
+native behavior; no stronger lock or IRQ protocol is introduced.
+
+RCU thread traversal, sighand flags, short-circuit decisions and the four native
+export classes remain. Configured static-key/lockdep emission, ABI/CFI, diagnostics,
+task-state attribution, synchronization and original tests are still unqualified.
+The FREEZER-dependent selector is default-off/BROKEN with source and selection
+errors, selecting no objects and excluding no original C owner.
+
 Verification scope
 ------------------
 
