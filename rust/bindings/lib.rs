@@ -198,3 +198,8 @@ pub mod sched_debug_native {
 pub mod sched_cpuacct_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_cpuacct_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_ISOLATION)]
+pub mod sched_isolation_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_isolation_generated.rs"));
+}

@@ -57,3 +57,4 @@ include $(srctree)/kernel/sched/sched_pelt_rust.mk
 include $(srctree)/kernel/sched/sched_membarrier_rust.mk
 include $(srctree)/kernel/sched/sched_debug_rust.mk
 include $(srctree)/kernel/sched/sched_cpuacct_rust.mk
+include $(srctree)/kernel/sched/sched_isolation_rust.mk

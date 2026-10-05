@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source-only interface proposal. Binding generation is prohibited by the hold.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'hk_type|cpumask|task_struct|llist_node|lupos_isolation_boot_masks'
+--opaque-type 'cpumask|task_struct|llist_node|lupos_isolation_boot_masks'
+--allowlist-function 'lupos_isolation_.*|set_cpus_allowed_ptr|synchronize_rcu|strncmp'
+--allowlist-var 'HK_TYPE_.*|LUPOS_ISOLATION_.*'
+--newtype-global-enum 'hk_type'
+--with-attribute-custom-enum=hk_type='#[cfi_encoding="7hk_type"]'
+--with-attribute-custom-struct=cpumask='#[cfi_encoding="7cpumask"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=llist_node='#[cfi_encoding="10llist_node"]'
+--with-attribute-custom-struct=lupos_isolation_boot_masks='#[cfi_encoding="26lupos_isolation_boot_masks"]'

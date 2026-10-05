@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_ISOLATION
+	bool "Rust scheduler isolation source owner proposal"
+	depends on RUST && CPU_ISOLATION && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing housekeeping implementation.
+	  Native enum ABI/CFI, RCU, allocation/boot lifetime, single ownership,
+	  compiler/instrumentation policy and runtime qualification are required.

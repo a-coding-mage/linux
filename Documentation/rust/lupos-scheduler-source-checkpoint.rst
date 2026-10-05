@@ -352,6 +352,23 @@ Generated callback/enum ABI and CFI, native context/protection metadata,
 cross-language shared-counter access, per-CPU concurrency, performance and
 original-test behavior remain unqualified. The separate cputime owner is intact.
 
+CPU isolation source checkpoint
+-------------------------------
+
+The existing 14 housekeeping bodies now preserve boot flag/CPU parsing,
+NO_HZ_FULL rejection, present-CPU checks, domain updates and late memblock
+reclamation. Native enum, static-key, RCU and ordinary/READ_ONCE/WRITE_ONCE
+boundaries replace guessed Rust storage. Native scratch masks preserve both
+configured cpumask_var_t representations without moving inline storage.
+
+Independent caller review corrects the update safety contract: cpuset's top
+mutex is held while CPU hotplug may proceed. The inherited unknown-final-flag
+parser can advance past its terminating NUL; its buffer-domain safety remains
+unproved and blocks admission. Boot static-key and partial-init allocation
+caveats are likewise retained, without runtime or security-impact claims.
+Default-off BROKEN and source errors remain, and native enum ABI/CFI, caller
+metadata, RCU/lock lifetime, instrumentation and runtime qualification stay open.
+
 Inactive gates and remaining work
 ---------------------------------
 
