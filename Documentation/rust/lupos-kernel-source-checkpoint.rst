@@ -331,6 +331,17 @@ there is no copied replacement or C hash fallback. That historical helper's
 unsafe-operation/documentation/lint admission and emitted behavior still need
 qualification. Native types, callback identities and all earlier holds remain.
 
+The reviewed resource source now retains attribute identity, pool/PWQ lifetime,
+transactional replacement and unwind, allocation/destruction policy, hotplug,
+freezer/affinity and boot/topology algorithms. CPU/node traversal keeps the native
+iterator categories and limits, including the separate fallback node slot and
+unconditional CPU0 UP cases. Original system-queue ordering and flags remain.
+
+Three public variadic allocation frontends still require compiler-ABI adapters;
+their requests are not implemented-adapter coverage. Configured primitive and
+metadata closure also remains incomplete. The resource body is saved unselected
+and does not imply an executable allocator or completed workqueue owner.
+
 Freezer native storage and task-state protocol
 ---------------------------------------------
 
