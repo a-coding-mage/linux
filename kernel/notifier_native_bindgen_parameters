@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# INACTIVE source proposal. Do not run under the source-only hold.
+# Input: kernel/notifier_native_bindings.h, configured native target/ffi flags.
+# Use the kernel bindgen recipe, with -UMODULE for this built-in owner.
+--no-doc-comments
+--no-default '.*'
+--no-recursive-allowlist
+--no-prepend-enum-name
+--allowlist-type '^(notifier_block|atomic_notifier_head|blocking_notifier_head|raw_notifier_head|srcu_notifier_head|die_args|die_val|pt_regs)$'
+--opaque-type '^(notifier_block|atomic_notifier_head|blocking_notifier_head|raw_notifier_head|srcu_notifier_head|pt_regs)$'
+--allowlist-function '^lupos_notifier_.*$'
+--allowlist-var '^LUPOS_NOTIFIER_.*$'
+--newtype-enum '^die_val$'
+--with-attribute-custom-enum=die_val='#[cfi_encoding="7die_val"]'
+--with-attribute-custom-struct=notifier_block='#[cfi_encoding="14notifier_block"]'
+--with-attribute-custom-struct=atomic_notifier_head='#[cfi_encoding="20atomic_notifier_head"]'
+--with-attribute-custom-struct=blocking_notifier_head='#[cfi_encoding="22blocking_notifier_head"]'
+--with-attribute-custom-struct=raw_notifier_head='#[cfi_encoding="17raw_notifier_head"]'
+--with-attribute-custom-struct=srcu_notifier_head='#[cfi_encoding="18srcu_notifier_head"]'
+--with-attribute-custom-struct=pt_regs='#[cfi_encoding="7pt_regs"]'
+# The tag spellings above are native header identities, not callback encodings.
+# Emitted Rust/C type identity and KCFI equivalence remain unverified blockers.
+# Opaque pointer-only structs are generated from the actual native declarations;
+# they are never allocated or dereferenced in Rust. die_args is generated fully.
+# No notifier_fn_t representation/encoding is substituted: native leaves own it.
+# Proposed module: kernel::bindings::notifier_native
+# Proposed output: rust/bindings/notifier_native_generated.rs

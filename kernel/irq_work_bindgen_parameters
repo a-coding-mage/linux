@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# INACTIVE proposal: kernel/irq_work_bindings.h with original configured flags.
+# Do not generate bindings or change shared bindings under SOURCE ONLY HOLD.
+# Native types, including all recursively required types, have no replacements.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(irq_work|task_struct|llist_head|llist_node)$'
+--allowlist-function '^lupos_irq_work_.*$'
+--allowlist-function '^lupos_irq_workd_(should_run|setup)$'
+--allowlist-function '^arch_irq_work_raise$'
+--allowlist-var '^(IRQ_WORK_PENDING|IRQ_WORK_BUSY|IRQ_WORK_LAZY|IRQ_WORK_HARD_IRQ|IRQ_WORK_CLAIMED|CSD_TYPE_IRQ_WORK)$'
+--with-attribute-custom-struct=irq_work='#[cfi_encoding="8irq_work"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=llist_head='#[cfi_encoding="10llist_head"]'
+--with-attribute-custom-struct=llist_node='#[cfi_encoding="10llist_node"]'

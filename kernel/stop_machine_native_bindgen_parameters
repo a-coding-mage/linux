@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Inactive input proposal only. No generation, configuration or admission.
+# Use the repository's common target-specific kernel bindgen flags and ffi.
+--no-doc-comments
+--no-default '.*'
+--allowlist-type 'cpu_stop_done|cpu_stopper|cpu_stop_work|multi_stop_data|multi_stop_state|lupos_stop_callback|cpumask|task_struct'
+--opaque-type 'cpu_stop_done|cpu_stopper|cpu_stop_work|multi_stop_data|lupos_stop_callback|cpumask|task_struct'
+--newtype-enum multi_stop_state
+--allowlist-function 'lupos_stop_.*'
+--allowlist-var 'LUPOS_STOP_.*'
+--with-attribute-custom-struct=cpu_stop_done='#[cfi_encoding="13cpu_stop_done"]'
+--with-attribute-custom-struct=cpu_stopper='#[cfi_encoding="11cpu_stopper"]'
+--with-attribute-custom-struct=cpu_stop_work='#[cfi_encoding="13cpu_stop_work"]'
+--with-attribute-custom-struct=multi_stop_data='#[cfi_encoding="15multi_stop_data"]'
+--with-attribute-custom-struct=lupos_stop_callback='#[cfi_encoding="19lupos_stop_callback"]'
+--with-attribute-custom-struct=cpumask='#[cfi_encoding="7cpumask"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-enum=multi_stop_state='#[cfi_encoding="16multi_stop_state"]'
+# The enum underlying integer, opaque sizes and alignment come from native C.
+# No Rust Option<fn> is a function argument/result, and no callback-signature
+# encoding is invented. C public entries and C invocation leaves retain typedefs.

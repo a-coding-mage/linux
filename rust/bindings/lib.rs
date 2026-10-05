@@ -293,3 +293,23 @@ pub mod nstree_native {
 pub mod user_accounting_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/user_accounting_native_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SMPBOOT)]
+pub mod smpboot_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/smpboot_native_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_STOP_MACHINE)]
+pub mod stop_machine_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/stop_machine_native_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_IRQ_WORK)]
+pub mod irq_work_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/irq_work_native_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_NOTIFIER)]
+pub mod notifier_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/notifier_native_generated.rs"));
+}

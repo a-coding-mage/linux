@@ -5,306 +5,373 @@
  * Provides a framework for enqueueing and running callbacks from hardirq
  * context. The enqueueing is NMI-safe.
  */
+// Continued from Rust blob ccdfc46cfcf0e8d6d8e9cf0db984108b9ec14291.
+// Native oracle: irq_work.c at 126a30fae3bba11420ec2fcbde51a0a01bab1b5b.
+#![no_std]
 
-// Linux kernel dependencies from the original implementation are supplied externally.
+compile_error!("SOURCE ONLY HOLD: IRQ work is not admitted");
 
-static mut RAISED_LIST: PerCpu<LlistHead> = DEFINE_PER_CPU!();
-static mut LAZY_LIST: PerCpu<LlistHead> = DEFINE_PER_CPU!();
-static mut IRQ_WORKD: PerCpu<*mut TaskStruct> = DEFINE_PER_CPU!();
+// Proposed configured native declarations; no projected kernel layouts.
+use kernel::bindings::irq_work_native::*;
+use kernel::ffi::{c_int, c_uint, c_void};
 
 unsafe fn wake_irq_workd() {
-    let tsk = __this_cpu_read(IRQ_WORKD);
+    // SAFETY: Original caller's CPU-local context protects the per-CPU lookup.
+    // The task slot is the one owned and populated by the hotplug descriptor.
+    unsafe {
+        let tsk = lupos_irq_work_this_task();
 
-    if !llist_empty(this_cpu_ptr(&LAZY_LIST)) && !tsk.is_null() {
-        wake_up_process(tsk);
+        if !lupos_irq_work_list_empty(lupos_irq_work_this_lazy()) && !tsk.is_null() {
+            lupos_irq_work_wake_process(tsk);
+        }
     }
 }
 
 #[cfg(CONFIG_SMP)]
-unsafe fn irq_work_wake(_entry: *mut IrqWork) {
-    wake_irq_workd();
+#[export_name = "lupos_irq_work_wake"]
+unsafe extern "C" fn irq_work_wake(_entry: *mut irq_work) {
+    // SAFETY: Invoked by the native per-CPU hard IRQ-work callback descriptor.
+    unsafe { wake_irq_workd() };
 }
 
-#[cfg(CONFIG_SMP)]
-static mut IRQ_WORK_WAKEUP: PerCpu<IrqWork> = DEFINE_PER_CPU_INIT!(IRQ_WORK_INIT_HARD!(irq_work_wake));
-
-unsafe fn irq_workd_should_run(_cpu: u32) -> i32 {
-    (!llist_empty(this_cpu_ptr(&LAZY_LIST))) as i32
+#[export_name = "lupos_irq_workd_should_run"]
+unsafe extern "C" fn irq_workd_should_run(_cpu: c_uint) -> c_int {
+    // SAFETY: smpboot calls this predicate with preemption disabled.
+    unsafe { (!lupos_irq_work_list_empty(lupos_irq_work_this_lazy())) as c_int }
 }
 
-/*
- * Claim the entry so that no one else will poke at it.
- */
-unsafe fn irq_work_claim(work: *mut IrqWork) -> bool {
-    let oflags = atomic_fetch_or(
-        IRQ_WORK_CLAIMED | CSD_TYPE_IRQ_WORK,
-        &mut (*work).node.a_flags,
-    );
-    /*
-     * If the work is already pending, no need to raise the IPI.
-     * The pairing smp_mb() in irq_work_single() makes sure
-     * everything we did before is visible.
-     */
-    if oflags & IRQ_WORK_PENDING != 0 {
-        return false;
-    }
-    true
-}
-
-pub unsafe extern "C" fn arch_irq_work_raise() {
-    /*
-     * Lame architectures will get the timer tick callback
-     */
-}
-
-#[inline(always)]
-unsafe fn irq_work_raise(work: *mut IrqWork) {
-    if trace_ipi_send_cpu_enabled() && arch_irq_work_has_interrupt() {
-        trace_call__ipi_send_cpu(smp_processor_id(), _RET_IP_, (*work).func);
-    }
-
-    arch_irq_work_raise();
-}
-
-/* Enqueue on current CPU, work must already be claimed and preempt disabled */
-unsafe fn __irq_work_queue_local(work: *mut IrqWork) {
-    let list: *mut LlistHead;
-    let mut rt_lazy_work = false;
-    let mut lazy_work = false;
-
-    let work_flags = atomic_read(&(*work).node.a_flags);
-    if work_flags & IRQ_WORK_LAZY != 0 {
-        lazy_work = true;
-    } else if IS_ENABLED!(CONFIG_PREEMPT_RT) && work_flags & IRQ_WORK_HARD_IRQ == 0 {
-        rt_lazy_work = true;
-    }
-
-    if lazy_work || rt_lazy_work {
-        list = this_cpu_ptr(&LAZY_LIST);
-    } else {
-        list = this_cpu_ptr(&RAISED_LIST);
-    }
-
-    if !llist_add(&mut (*work).node.llist, list) {
-        return;
-    }
-
-    /* If the work is "lazy", handle it from next tick if any */
-    if !lazy_work || tick_nohz_tick_stopped() {
-        irq_work_raise(work);
-    }
-}
-
-/* Enqueue the irq work @work on the current CPU */
-pub unsafe extern "C" fn irq_work_queue(work: *mut IrqWork) -> bool {
-    /* Only queue if not already pending */
-    if !irq_work_claim(work) {
-        return false;
-    }
-
-    /* Queue the entry and raise the IPI if needed. */
-    preempt_disable();
-    __irq_work_queue_local(work);
-    preempt_enable();
-
-    true
-}
-
-pub unsafe extern "C" fn irq_work_queue_on(work: *mut IrqWork, cpu: i32) -> bool {
-    #[cfg(not(CONFIG_SMP))]
-    {
-        return irq_work_queue(work);
-    }
-
-    #[cfg(CONFIG_SMP)]
-    {
-        /* All work should have been flushed before going offline */
-        WARN_ON_ONCE!(cpu_is_offline(cpu));
-
-        /* Only queue if not already pending */
-        if !irq_work_claim(work) {
+/* Claim the entry so that no one else will poke at it. */
+unsafe fn irq_work_claim(work: *mut irq_work) -> bool {
+    // SAFETY: The caller retains the live native work object. Use the exact
+    // unsuffixed kernel atomic, without borrowing shared atomic storage.
+    unsafe {
+        let oflags = lupos_irq_work_atomic_fetch_or(
+            (IRQ_WORK_CLAIMED | CSD_TYPE_IRQ_WORK) as c_int,
+            work,
+        );
+        /*
+         * If the work is already pending, no need to raise the IPI.
+         * The pairing smp_mb() in irq_work_single() makes sure
+         * everything we did before is visible.
+         */
+        if oflags & IRQ_WORK_PENDING as c_int != 0 {
             return false;
         }
-
-        kasan_record_aux_stack(work);
-        preempt_disable();
-        if cpu != smp_processor_id() {
-            /* Arch remote IPI send/receive backend aren't NMI safe */
-            WARN_ON_ONCE!(in_nmi());
-
-            /*
-             * On PREEMPT_RT the items which are not marked as
-             * IRQ_WORK_HARD_IRQ are added to the lazy list and a HARD work
-             * item is used on the remote CPU to wake the thread.
-             */
-            if IS_ENABLED!(CONFIG_PREEMPT_RT)
-                && atomic_read(&(*work).node.a_flags) & IRQ_WORK_HARD_IRQ == 0
-            {
-                if !llist_add(&mut (*work).node.llist, &per_cpu!(LAZY_LIST, cpu)) {
-                    preempt_enable();
-                    return true;
-                }
-
-                work = &mut per_cpu!(IRQ_WORK_WAKEUP, cpu);
-                if !irq_work_claim(work) {
-                    preempt_enable();
-                    return true;
-                }
-            }
-
-            __smp_call_single_queue(cpu, &mut (*work).node.llist);
-        } else {
-            __irq_work_queue_local(work);
-        }
-        preempt_enable();
         true
     }
 }
 
-pub unsafe extern "C" fn irq_work_needs_cpu() -> bool {
-    let raised = this_cpu_ptr(&RAISED_LIST);
-    let lazy = this_cpu_ptr(&LAZY_LIST);
+#[inline(always)]
+unsafe fn irq_work_raise(work: *mut irq_work) {
+    // SAFETY: The work is claimed and the caller has disabled preemption.
+    // arch_irq_work_raise is the native external symbol, with a weak fallback
+    // that a strong architecture implementation can replace at link time.
+    unsafe {
+        if lupos_irq_work_trace_enabled() && lupos_irq_work_has_interrupt() {
+            lupos_irq_work_trace_send(work);
+        }
+        arch_irq_work_raise();
+    }
+}
 
-    if llist_empty(raised) || arch_irq_work_has_interrupt() {
-        if llist_empty(lazy) {
-            return false;
+/* Enqueue on current CPU, work must already be claimed and preempt disabled */
+unsafe fn __irq_work_queue_local(work: *mut irq_work) {
+    // SAFETY: Claiming owns the pending entry; preemption keeps these native
+    // per-CPU addresses stable. List insertion uses the native llist primitive.
+    unsafe {
+        let list: *mut llist_head;
+        let mut rt_lazy_work = false;
+        let mut lazy_work = false;
+
+        let work_flags = lupos_irq_work_atomic_read(work);
+        if work_flags & IRQ_WORK_LAZY as c_int != 0 {
+            lazy_work = true;
+        } else if cfg!(CONFIG_PREEMPT_RT) && work_flags & IRQ_WORK_HARD_IRQ as c_int == 0 {
+            rt_lazy_work = true;
+        }
+
+        if lazy_work || rt_lazy_work {
+            list = lupos_irq_work_this_lazy();
+        } else {
+            list = lupos_irq_work_this_raised();
+        }
+
+        if !lupos_irq_work_list_add(work, list) {
+            return;
+        }
+
+        /* If the work is "lazy", handle it from next tick if any */
+        if !lazy_work || lupos_irq_work_tick_stopped() {
+            irq_work_raise(work);
         }
     }
-
-    /* All work should have been flushed before going offline */
-    WARN_ON_ONCE!(cpu_is_offline(smp_processor_id()));
-    true
 }
 
-pub unsafe extern "C" fn irq_work_single(arg: *mut core::ffi::c_void) {
-    let work = arg as *mut IrqWork;
-    let mut flags;
+/// Enqueue work on the current CPU if it is not already pending.
+///
+/// # Safety
+/// Work and its callable callback obey the original irq_work_queue lifetime,
+/// initialization, context and reuse contract, including NMI-safe primitives.
+#[no_mangle]
+pub unsafe extern "C" fn irq_work_queue(work: *mut irq_work) -> bool {
+    // SAFETY: Retain original claim-before-preemption ordering and balance.
+    unsafe {
+        if !irq_work_claim(work) {
+            return false;
+        }
+        lupos_irq_work_preempt_disable();
+        __irq_work_queue_local(work);
+        lupos_irq_work_preempt_enable();
+        true
+    }
+}
 
-    /*
-     * Clear the PENDING bit, after this point the @work can be re-used.
-     * The PENDING bit acts as a lock, and we own it, so we can clear it
-     * without atomic ops.
-     */
-    flags = atomic_read(&(*work).node.a_flags);
-    flags &= !IRQ_WORK_PENDING;
-    atomic_set(&mut (*work).node.a_flags, flags);
-
-    /*
-     * See irq_work_claim().
-     */
-    smp_mb();
-
-    lockdep_irq_work_enter(flags);
-    ((*work).func)(work);
-    lockdep_irq_work_exit(flags);
-
-    /*
-     * Clear the BUSY bit, if set, and return to the free state if no-one
-     * else claimed it meanwhile.
-     */
-    let _ = atomic_cmpxchg(&mut (*work).node.a_flags, flags, flags & !IRQ_WORK_BUSY);
-
-    if (IS_ENABLED!(CONFIG_PREEMPT_RT) && !irq_work_is_hard(work))
-        || !arch_irq_work_has_interrupt()
+/// Enqueue work on the requested CPU unless it is already pending.
+///
+/// # Safety
+/// The original queue_on CPU, work lifetime and remote non-NMI requirements
+/// apply. Work may be reclaimed while its prior callback is still running.
+#[no_mangle]
+pub unsafe extern "C" fn irq_work_queue_on(work: *mut irq_work, cpu: c_int) -> bool {
+    #[cfg(not(CONFIG_SMP))]
     {
-        rcuwait_wake_up(&mut (*work).irqwait);
+        let _ = cpu;
+        // SAFETY: UP ignores the target CPU exactly as the original branch.
+        return unsafe { irq_work_queue(work) };
+    }
+
+    #[cfg(CONFIG_SMP)]
+    // SAFETY: Native primitives preserve real per-CPU storage and diagnostics.
+    // All claimed remote/local paths balance the original preemption pair.
+    unsafe {
+        let mut work = work;
+        lupos_irq_work_warn_queue_cpu_offline(cpu);
+        if !irq_work_claim(work) {
+            return false;
+        }
+
+        lupos_irq_work_record_aux_stack(work);
+        lupos_irq_work_preempt_disable();
+        if cpu as c_uint != lupos_irq_work_processor_id() {
+            lupos_irq_work_warn_remote_nmi();
+
+            /*
+             * PREEMPT_RT non-HARD work goes on the remote lazy list; a
+             * separate native HARD work entry wakes that CPU's thread.
+             */
+            if cfg!(CONFIG_PREEMPT_RT)
+                && lupos_irq_work_atomic_read(work) & IRQ_WORK_HARD_IRQ as c_int == 0
+            {
+                if !lupos_irq_work_list_add(work, lupos_irq_work_cpu_lazy(cpu)) {
+                    lupos_irq_work_preempt_enable();
+                    return true;
+                }
+
+                work = lupos_irq_work_cpu_wakeup(cpu);
+                if !irq_work_claim(work) {
+                    lupos_irq_work_preempt_enable();
+                    return true;
+                }
+            }
+
+            lupos_irq_work_queue_remote(cpu, work);
+        } else {
+            __irq_work_queue_local(work);
+        }
+        lupos_irq_work_preempt_enable();
+        true
     }
 }
 
-unsafe fn irq_work_run_list(list: *mut LlistHead) {
-    /* On PREEMPT_RT non-HARD IRQ-work runs in preemptible thread context. */
-    BUG_ON!(!irqs_disabled() && !IS_ENABLED!(CONFIG_PREEMPT_RT));
+/// Indicate whether this CPU still needs a tick for queued IRQ work.
+///
+/// # Safety
+/// Called in the original CPU-local irq_work_needs_cpu context.
+#[no_mangle]
+pub unsafe extern "C" fn irq_work_needs_cpu() -> bool {
+    // SAFETY: Caller context pins the original CPU-local list observations.
+    unsafe {
+        let raised = lupos_irq_work_this_raised();
+        let lazy = lupos_irq_work_this_lazy();
 
-    if llist_empty(list) {
-        return;
-    }
+        if lupos_irq_work_list_empty(raised) || lupos_irq_work_has_interrupt() {
+            if lupos_irq_work_list_empty(lazy) {
+                return false;
+            }
+        }
 
-    let mut llnode = llist_del_all(list);
-    while !llnode.is_null() {
-        let work = llist_entry(llnode, IrqWork, node.llist);
-        llnode = (*llnode).next;
-        irq_work_single(work as *mut core::ffi::c_void);
+        lupos_irq_work_warn_needs_cpu_offline();
+        true
     }
 }
 
-/*
- * hotplug calls this through:
- *  hotplug_cfd() -> flush_smp_call_function_queue()
- */
+/// Run one claimed IRQ-work entry.
+///
+/// # Safety
+/// Arg designates a live, claimed native irq_work with a callable callback.
+/// The original execution/RCU context keeps it live through the post-BUSY wake.
+#[no_mangle]
+pub unsafe extern "C" fn irq_work_single(arg: *mut c_void) {
+    // SAFETY: Native field/atomic/callback leaves retain original ownership.
+    // Callback completion alone does not end the entry's required lifetime.
+    unsafe {
+        let work = arg as *mut irq_work;
+        let mut flags;
+
+        /*
+         * Clear PENDING so the entry can be reclaimed. We own PENDING;
+         * retain the original atomic_read/atomic_set, then full barrier.
+         */
+        flags = lupos_irq_work_atomic_read(work);
+        flags &= !(IRQ_WORK_PENDING as c_int);
+        lupos_irq_work_atomic_set(work, flags);
+        lupos_irq_work_mb();
+
+        lupos_irq_work_lockdep_enter(flags);
+        lupos_irq_work_invoke(work);
+        lupos_irq_work_lockdep_exit(flags);
+
+        /* Do not clear BUSY if someone else claimed the work meanwhile. */
+        let _ = lupos_irq_work_atomic_cmpxchg(work, flags, flags & !(IRQ_WORK_BUSY as c_int));
+
+        if (cfg!(CONFIG_PREEMPT_RT) && !lupos_irq_work_is_hard(work))
+            || !lupos_irq_work_has_interrupt()
+        {
+            lupos_irq_work_wait_wake(work);
+        }
+    }
+}
+
+unsafe fn irq_work_run_list(list: *mut llist_head) {
+    // SAFETY: The original CPU/context contract permits detaching this list.
+    // Capture the plain next link before callback execution; never borrow a
+    // node or follow its old link after the callback can reclaim/requeue it.
+    unsafe {
+        lupos_irq_work_bug_run_context();
+        if lupos_irq_work_list_empty(list) {
+            return;
+        }
+
+        let mut llnode = lupos_irq_work_list_del_all(list);
+        while !llnode.is_null() {
+            let work = lupos_irq_work_node_work(llnode);
+            llnode = lupos_irq_work_node_next(llnode);
+            irq_work_single(work.cast());
+        }
+    }
+}
+
+/// Drain the current CPU's IRQ work, including the original hotplug path.
+///
+/// # Safety
+/// Called in the original hardirq/CPU-local context, including
+/// hotplug_cfd -> flush_smp_call_function_queue.
+#[no_mangle]
 pub unsafe extern "C" fn irq_work_run() {
-    irq_work_run_list(this_cpu_ptr(&RAISED_LIST));
-    if !IS_ENABLED!(CONFIG_PREEMPT_RT) {
-        irq_work_run_list(this_cpu_ptr(&LAZY_LIST));
-    } else {
-        wake_irq_workd();
+    // SAFETY: Preserve hard work execution and PREEMPT_RT thread delegation.
+    unsafe {
+        irq_work_run_list(lupos_irq_work_this_raised());
+        if !cfg!(CONFIG_PREEMPT_RT) {
+            irq_work_run_list(lupos_irq_work_this_lazy());
+        } else {
+            wake_irq_workd();
+        }
     }
 }
 
+/// Process the IRQ-work queues due at this CPU's timer tick.
+///
+/// # Safety
+/// Called in the original timer tick CPU/IRQ context.
+#[no_mangle]
 pub unsafe extern "C" fn irq_work_tick() {
-    let raised = this_cpu_ptr(&RAISED_LIST);
+    // SAFETY: Native CPU-local storage and original interrupt distinction.
+    unsafe {
+        let raised = lupos_irq_work_this_raised();
+        if !lupos_irq_work_list_empty(raised) && !lupos_irq_work_has_interrupt() {
+            irq_work_run_list(raised);
+        }
 
-    if !llist_empty(raised) && !arch_irq_work_has_interrupt() {
-        irq_work_run_list(raised);
-    }
-
-    if !IS_ENABLED!(CONFIG_PREEMPT_RT) {
-        irq_work_run_list(this_cpu_ptr(&LAZY_LIST));
-    } else {
-        wake_irq_workd();
-    }
-}
-
-/*
- * Synchronize against the irq_work @entry, ensures the entry is not
- * currently in use.
- */
-pub unsafe extern "C" fn irq_work_sync(work: *mut IrqWork) {
-    lockdep_assert_irqs_enabled();
-    might_sleep();
-
-    if (IS_ENABLED!(CONFIG_PREEMPT_RT) && !irq_work_is_hard(work))
-        || !arch_irq_work_has_interrupt()
-    {
-        rcuwait_wait_event(
-            &mut (*work).irqwait,
-            !irq_work_is_busy(work),
-            TASK_UNINTERRUPTIBLE,
-        );
-        /* Ensure irq_work_single() does not access @work after clearing BUSY. */
-        synchronize_rcu();
-        return;
-    }
-
-    while irq_work_is_busy(work) {
-        cpu_relax();
+        if !cfg!(CONFIG_PREEMPT_RT) {
+            irq_work_run_list(lupos_irq_work_this_lazy());
+        } else {
+            wake_irq_workd();
+        }
     }
 }
 
-unsafe fn run_irq_workd(_cpu: u32) {
-    guard_rcu!();
-    irq_work_run_list(this_cpu_ptr(&LAZY_LIST));
+/// Synchronize with the IRQ-work entry until it is no longer in use.
+///
+/// # Safety
+/// Caller retains work through this call, obeys the original serialization
+/// for its sole rcuwait waiter, and can sleep with IRQs enabled. No racing
+/// producer may invalidate the caller's original reclamation contract.
+#[no_mangle]
+pub unsafe extern "C" fn irq_work_sync(work: *mut irq_work) {
+    // SAFETY: The wait leaves use the actual work->irqwait and native current
+    // state/barriers. Every BUSY test is after that iteration's state publish.
+    unsafe {
+        lupos_irq_work_assert_irqs_enabled();
+        lupos_irq_work_might_sleep();
+
+        if (cfg!(CONFIG_PREEMPT_RT) && !lupos_irq_work_is_hard(work))
+            || !lupos_irq_work_has_interrupt()
+        {
+            lupos_irq_work_wait_prepare(work);
+            loop {
+                lupos_irq_work_wait_set_state();
+                if !lupos_irq_work_is_busy(work) {
+                    break;
+                }
+                // Preserve the macro's signal check position. Native
+                // TASK_UNINTERRUPTIBLE makes this false without signal reads.
+                if lupos_irq_work_wait_signal_pending() {
+                    break;
+                }
+                lupos_irq_work_schedule();
+            }
+            lupos_irq_work_wait_finish(work);
+            // irq_work_single still accesses work after its successful BUSY
+            // clear. Its RCU read-side lifetime must end before this returns.
+            lupos_irq_work_synchronize_rcu();
+            return;
+        }
+
+        while lupos_irq_work_is_busy(work) {
+            lupos_irq_work_relax();
+        }
+    }
 }
 
-unsafe fn irq_workd_setup(_cpu: u32) {
-    sched_set_fifo_low(current());
+#[export_name = "lupos_irq_work_run_workd"]
+unsafe extern "C" fn run_irq_workd(_cpu: c_uint) {
+    // SAFETY: smpboot invokes this for the CPU-bound worker. The native RCU
+    // read section covers the complete drain, callback and post-BUSY wake.
+    unsafe {
+        lupos_irq_work_rcu_read_lock();
+        irq_work_run_list(lupos_irq_work_this_lazy());
+        lupos_irq_work_rcu_read_unlock();
+    }
 }
 
-static mut IRQWORK_THREADS: SmpHotplugThread = SmpHotplugThread {
-    store: &mut IRQ_WORKD,
-    setup: irq_workd_setup,
-    thread_should_run: irq_workd_should_run,
-    thread_fn: run_irq_workd,
-    thread_comm: "irq_work/%u\0",
-};
+#[export_name = "lupos_irq_workd_setup"]
+unsafe extern "C" fn irq_workd_setup(_cpu: c_uint) {
+    // SAFETY: smpboot setup runs in the new worker's context, as in C.
+    unsafe { lupos_irq_work_setup_current() };
+}
 
-#[init]
-unsafe fn irq_work_init_threads() -> i32 {
-    if IS_ENABLED!(CONFIG_PREEMPT_RT) {
-        BUG_ON!(smpboot_register_percpu_thread(&mut IRQWORK_THREADS));
+#[cold]
+#[link_section = ".init.text"]
+#[export_name = "lupos_irq_work_init_threads"]
+unsafe extern "C" fn irq_work_init_threads() -> c_int {
+    // SAFETY: Native early_initcall owns the boot-only call; the native
+    // descriptor owns the actual per-CPU task store and C callback fields.
+    unsafe {
+        if cfg!(CONFIG_PREEMPT_RT) {
+            lupos_irq_work_bug_register_threads();
+        }
     }
     0
 }
-
-early_initcall!(irq_work_init_threads);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

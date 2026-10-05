@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_IRQ_WORK
+	bool "Rust IRQ-work source proposal (not admitted)"
+	depends on RUST && IRQ_WORK && BROKEN
+	default n
+	help
+	  Inactive continuation of IRQ-work queue, callback and wait bodies.
+	  Native ABI/CFI, no-ftrace policy, trace attribution, concurrency
+	  and original tests remain unqualified. Keep this disabled.

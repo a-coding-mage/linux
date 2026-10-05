@@ -27,6 +27,10 @@ include $(srctree)/kernel/ucount_rust.mk
 include $(srctree)/kernel/nstree_rust.mk
 include $(srctree)/kernel/user_accounting_rust.mk
 include $(srctree)/kernel/capability_boot_rust.mk
+include $(srctree)/kernel/smpboot_rust.mk
+include $(srctree)/kernel/stop_machine_rust.mk
+include $(srctree)/kernel/irq_work_rust.mk
+include $(srctree)/kernel/notifier_rust.mk
 
 obj-$(CONFIG_MULTIUSER) += groups.o
 obj-$(CONFIG_VHOST_TASK) += vhost_task.o

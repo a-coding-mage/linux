@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+config RUST_STOP_MACHINE
+	bool "Rust stop-machine source proposal (not admitted)"
+	depends on RUST && SMP && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing stopper Rust owner.
+	  Native callbacks, state, per-CPU lifetime, ABI/CFI and original
+	  tests remain unqualified. Keep this disabled.

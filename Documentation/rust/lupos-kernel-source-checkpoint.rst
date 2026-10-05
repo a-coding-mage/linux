@@ -199,6 +199,55 @@ unconditional Rust source error alongside the native metadata error and the
 inactive default-off/BROKEN selection guard. Init-body attributes, emitted setup
 records, ABI and original tests remain open; no object selection changes.
 
+CPU-thread and stopper lifecycle
+-------------------------------
+
+The reviewed smpboot continuation replaces the former successful-return
+placeholder with the native thread state machine, callback decisions and
+creation/parking/publication order. Unpark traverses forward, park traverses
+backward, and registration failure joins all possible-CPU tasks before cleanup.
+The separate configured idle-cache body reuses native per-CPU storage, fork
+results and the original possible-CPU iterator.
+
+The stop-machine continuation retains all twenty-seven Rust bodies. Its native
+thread descriptor now addresses the real per-CPU stopper task member. The state
+representation permits the original terminal EXIT-to-next-value acknowledgement;
+callback invocation passes the original data. Nowait callback values are copied
+before publication, without escaping a wrapper's stack context. Native warning
+operands and the distinct NR_CPUS==1 possible-CPU expansion are retained.
+
+Independent source review covers reference, callback, retry and unwind ordering.
+It does not establish emitted ABI/CFI, exact diagnostic PCs, configured init
+attributes, live CPU-hotplug synchronization or original-test equivalence.
+
+IRQ work and notifier callbacks
+-------------------------------
+
+IRQ-work waiting now reloads the native BUSY atomic predicate on each iteration,
+preserving prepare/state/check/signal/schedule/finish and synchronize_rcu order.
+The non-RT hard-interrupt spin and RT/deferred wait cases remain distinct.
+Native per-CPU storage and callbacks are retained, and a true weak architecture
+fallback remains overridable by the original strong architecture owner.
+
+The extracted trace leaf still changes _RET_IP_ scope: with ordinary non-inlined
+FFI it returns into Rust rather than identifying the original native callsite.
+This is a concrete attribution obligation, not a passed comparison. Original
+irq_work.o no-ftrace policy must cover every future Rust/native split object;
+no new instrumentation exemption is granted by this inactive checkpoint.
+
+Notifier review preserves all twenty-six existing function identities, including
+DEBUG_NOTIFIERS rejection before callback/count/budget updates, callback-address
+traces, ordered rollback and native synchronization. Native storage retains the
+exact static ATOMIC_NOTIFIER_HEAD(die_chain) initializer and lock name. Twelve
+lock/RCU/SRCU leaves carry their native acquire/release context contracts, and
+four distinct boot-check unlikely sites remain distinct.
+
+Actual Rust-body notrace, complete NOKPROBE coverage, branch-profiling provenance
+and configured cross-language context analysis remain substantive blockers.
+Native annotations alone do not establish them. All four selectors remain
+default-off/BROKEN, with SMP and IRQ_WORK constraints where originally required,
+unconditional source stops and selection errors. No object ownership changes.
+
 Verification scope
 ------------------
 

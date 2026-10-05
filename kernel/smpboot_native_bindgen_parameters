@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# INACTIVE: no generation, configuration or object selection is authorized.
+# Use the configured kernel target/ffi rules. These are native pointer-only
+# types; no guessed Rust layout, callback type or storage is permitted.
+--no-doc-comments
+--no-default '.*'
+--no-recursive-allowlist
+--allowlist-type 'task_struct|smp_hotplug_thread|smpboot_thread_data|list_head'
+--opaque-type 'task_struct|smp_hotplug_thread|smpboot_thread_data|list_head'
+--allowlist-function 'lupos_smpboot_.*|kthread_should_stop|kthread_should_park|kthread_parkme|kthread_set_per_cpu|kthread_park|kthread_unpark|kthread_stop_put|schedule|fork_idle'
+--allowlist-var 'HP_THREAD_.*|LUPOS_SMPBOOT_.*'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=smp_hotplug_thread='#[cfi_encoding="18smp_hotplug_thread"]'
+--with-attribute-custom-struct=smpboot_thread_data='#[cfi_encoding="19smpboot_thread_data"]'
+--with-attribute-custom-struct=list_head='#[cfi_encoding="9list_head"]'
+# All optional callback fields remain opaque in native smp_hotplug_thread.
+# Creation passes smpboot_thread_fn by its native int(void *) declaration.
+# Do not generate a nullable Rust callback argument or invent its CFI encoding.
+# Proposed single declaration module: kernel::bindings::smpboot_native.
+# Proposed generated path: rust/bindings/smpboot_native_generated.rs.
