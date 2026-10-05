@@ -248,6 +248,34 @@ Native annotations alone do not establish them. All four selectors remain
 default-off/BROKEN, with SMP and IRQ_WORK constraints where originally required,
 unconditional source stops and selection errors. No object ownership changes.
 
+Workqueue common foundation
+---------------------------
+
+The historical kernel/workqueue.rs file contains comments rather than an
+executable worker-pool owner. It is preserved, as is the existing working
+rust/kernel/workqueue.rs client API. A separate source-held entrypoint begins
+the missing implementation without replacing those client abstractions.
+
+The first independently reviewed common slice supplies original work-data
+encoding, pending publication, PWQ/pool lookup, ID assignment and off-queue
+packing decisions. Pending-clear publication preserves the original write
+barrier, atomic replacement and full barrier. Native configured declarations
+retain the real private layouts, alignment, flexible arrays, per-CPU and RCU
+annotations; source constants are not guessed Rust substitutes.
+
+One native storage proposal retains original static objects, initialized locks,
+system pointers and declaration text. This does not implement the missing
+resource/boot, dispatch, execution, completion or diagnostic algorithms. Native
+inline/macro leaves provide primitives; no original C workqueue policy fallback
+is introduced. The new Rust entrypoint and native companion both hard-fail.
+
+The proposed workqueue_native binding graph remains absent and unqualified,
+including reuse of existing public native type identities. Original KBUILD_MODNAME
+must preserve workqueue.* parameter-name and parmtype metadata despite the new
+translation-unit filename. Callback/ABI/CFI, source/profiling attribution, native
+owner code-generation policy, symbol selection and original tests remain open.
+No workqueue build enrollment or complete-owner coverage is claimed.
+
 Verification scope
 ------------------
 
