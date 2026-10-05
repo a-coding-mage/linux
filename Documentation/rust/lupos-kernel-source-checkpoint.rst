@@ -303,6 +303,20 @@ primitive requests, callback/public symbol ownership and emitted qualification
 are still incomplete. Function correspondence is source-review scope, not a
 claim that the workqueue can run or that its original tests pass.
 
+Independent dispatch and execution review now covers the missing policy,
+PWQ reference/activation/retirement, pending ownership, immediate/timer/RCU
+submission and scheduler-hook bodies, together with worker creation, culling,
+management, execution, rescuer and BH/dead-CPU lifecycle bodies. Deferred task
+wakes retain the original pool-unlock/RCU-lifetime interval. Callback execution
+snapshots the required state; subsequent tracing passes the work address and
+saved callback without reading work that the callback may have freed.
+
+The source retains native unlocked advisory contexts rather than adding locks.
+Reviewer corrections reconcile the shared native bit-operation and BH-pool
+argument types. These two files are also saved unselected; public symbol/export
+composition, remaining native/diagnostic dependencies and the Rust/native race
+model remain open. A raw-pointer spelling alone proves none of those contracts.
+
 Verification scope
 ------------------
 
