@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_DEBUG
+	bool "Rust scheduler debug source proposal (not admitted)"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive source-only continuation of the existing debug.rs owner.
+	  Configured ABI, strict warnings, native instrumentation, callback CFI,
+	  synchronization and behavior remain unqualified. Do not select.

@@ -55,3 +55,4 @@ include $(srctree)/kernel/sched/sched_loadavg_rust.mk
 include $(srctree)/kernel/sched/sched_autogroup_rust.mk
 include $(srctree)/kernel/sched/sched_pelt_rust.mk
 include $(srctree)/kernel/sched/sched_membarrier_rust.mk
+include $(srctree)/kernel/sched/sched_debug_rust.mk

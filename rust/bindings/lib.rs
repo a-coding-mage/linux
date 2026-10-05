@@ -188,3 +188,8 @@ pub mod sched_pelt_native {
 pub mod sched_membarrier_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_membarrier_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_DEBUG)]
+pub mod sched_debug_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_debug_generated.rs"));
+}

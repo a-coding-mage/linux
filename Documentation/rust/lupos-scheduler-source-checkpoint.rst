@@ -321,6 +321,23 @@ Configured mask layout, nullable callback and enclosing-function CFI, native
 compiler/instrumentation and init policy, allocation attribution, emitted
 barriers, hotplug/MM lifetime and original-test behavior remain unqualified.
 
+Scheduler debug source checkpoint
+---------------------------------
+
+The existing debug skeleton is continued with feature/control writes, domain
+directory management, deadline-server validation, task reset, latency warnings
+and task/runqueue/CPU/header output. Native headers replace invented layouts
+and feature counts. Independent source review corrects bitfield/anonymous-union
+access, signed flags, callback size types, UP iteration and output-call grouping.
+The init algorithm retains explicit cold/init-section intent.
+
+A concrete source parity gap remains: generic native formatting records
+PRINTK_INDEX wrapper formats and locations instead of the original literal
+format/callsite metadata. This instrumentation is not disabled or waived.
+Default-off BROKEN and unconditional source errors retain the hold. Configured
+ABI/CFI, variadic widths, exact instrumentation/protection and caller metadata,
+locks/RCU, debugfs/VFS lifetime and runtime behavior also remain unqualified.
+
 Inactive gates and remaining work
 ---------------------------------
 

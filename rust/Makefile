@@ -1050,6 +1050,7 @@ include $(srctree)/kernel/sched/sched_loadavg_bindgen.mk
 include $(srctree)/kernel/sched/sched_autogroup_bindgen.mk
 include $(srctree)/kernel/sched/sched_pelt_bindgen.mk
 include $(srctree)/kernel/sched/sched_membarrier_bindgen.mk
+include $(srctree)/kernel/sched/sched_debug_bindgen.mk
 
 include $(srctree)/mm/memory_native_bindgen.mk
 include $(srctree)/mm/userfaultfd_native_bindgen.mk

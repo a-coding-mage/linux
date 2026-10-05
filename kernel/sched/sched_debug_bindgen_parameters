@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# SOURCE ONLY proposal. Do not run bindgen in this phase.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'seq_file|file|inode|rq|rq_flags|cfs_rq|rt_rq|dl_rq|sched_entity|sched_dl_entity|task_struct|sched_domain|sched_statistics|task_group|pid_namespace|dentry|loff_t|size_t|ssize_t|cpumask|list_head|new_utsname|atomic_long_t|lupos_debug_file_kind'
+--allowlist-function 'lupos_debug_.*'
+--allowlist-var 'LUPOS_DEBUG_.*|lupos_debug_root|lupos_debug_sd_dentry|sched_debug_verbose|sysctl_sched_features|sysctl_sched_tunable_scaling|sysctl_sched_cache_user|sysctl_sched_base_slice|sysctl_resched_latency_warn_ms|sysctl_resched_latency_warn_once|sysctl_sched_migration_cost|sysctl_sched_nr_migrate|sysctl_numa_balancing_scan_delay|sysctl_numa_balancing_scan_period_min|sysctl_numa_balancing_scan_period_max|sysctl_numa_balancing_scan_size|sysctl_numa_balancing_hot_threshold|llc_aggr_tolerance|llc_epoch_period|llc_epoch_affinity_timeout|llc_overaggr_pct|llc_imb_pct|cpu_khz'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=inode='#[cfi_encoding="5inode"]'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=cfs_rq='#[cfi_encoding="6cfs_rq"]'
+--with-attribute-custom-struct=rt_rq='#[cfi_encoding="5rt_rq"]'
+--with-attribute-custom-struct=dl_rq='#[cfi_encoding="5dl_rq"]'
+--with-attribute-custom-struct=sched_entity='#[cfi_encoding="12sched_entity"]'
+--with-attribute-custom-struct=sched_dl_entity='#[cfi_encoding="15sched_dl_entity"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=sched_domain='#[cfi_encoding="12sched_domain"]'
+--with-attribute-custom-struct=sched_statistics='#[cfi_encoding="16sched_statistics"]'
+--with-attribute-custom-struct=task_group='#[cfi_encoding="10task_group"]'
+--with-attribute-custom-struct=pid_namespace='#[cfi_encoding="13pid_namespace"]'
+--with-attribute-custom-struct=dentry='#[cfi_encoding="6dentry"]'
+--with-attribute-custom-struct=cpumask='#[cfi_encoding="7cpumask"]'
+--with-attribute-custom-struct=list_head='#[cfi_encoding="9list_head"]'
+--with-attribute-custom-struct=new_utsname='#[cfi_encoding="11new_utsname"]'
+# Preserve the existing native compiler-derived opacity for packed/aligned and
+# architecture-private dependencies. No handwritten sizes or alignment values.
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib|spinlock'
