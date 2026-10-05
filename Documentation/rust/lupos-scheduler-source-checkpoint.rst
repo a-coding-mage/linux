@@ -506,6 +506,24 @@ caller/lockdep obligation is retained, not waived or claimed safe. Default-off
 BROKEN and source errors remain; shared BTF/type/linkage, callback ABI/CFI,
 native protection, pinning/IRQ/RCU lifetime and runtime qualification stay open.
 
+Sched_ext sub-scheduler source checkpoint
+----------------------------------------
+
+The existing sub-scheduler owner is continued through tree/shard allocation,
+rescue and rejection, capability propagation and BPF access, and enable/disable
+transactions with task/cgroup migration. All 68 inventoried original identities
+have source bodies; the four original disabled fallbacks remain byte-identical.
+Two independent source reviews cover all families, including all sixteen
+lifecycle functions and their failure, reference and IRQ/RCU ordering.
+
+Review restores the native RCU-list entry diagnostic and separates original
+lockdep, error and cgroup-op callsites. Same-unit BTF/context visibility, shared
+canonical binding types and storage, callback/CFI and stack behavior, native
+metadata/protection attribution and arena/concurrency semantics remain open.
+Native leaves remain explicit runtime C boundaries, and ext-owned dispatch
+helpers remain ext dependencies. No original owner is replaced by these
+default-off BROKEN proposals; unconditional source and selection errors remain.
+
 Inactive gates and remaining work
 ---------------------------------
 

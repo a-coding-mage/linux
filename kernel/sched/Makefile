@@ -66,3 +66,4 @@ include $(srctree)/kernel/sched/sched_topology_rust.mk
 include $(srctree)/kernel/sched/ext/sched_ext_cid_rust.mk
 include $(srctree)/kernel/sched/ext/sched_ext_arena_rust.mk
 include $(srctree)/kernel/sched/ext/sched_ext_idle_rust.mk
+include $(srctree)/kernel/sched/ext/sched_ext_sub_rust.mk

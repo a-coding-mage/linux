@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_EXT_SUB
+	bool "Rust sched_ext sub-scheduler source owner proposal"
+	depends on RUST && SCHED_CLASS_EXT && BROKEN
+	default n
+	help
+	  Inactive continuation of sub-scheduler trees, rescue, capabilities and
+	  lifecycle, including the original disabled-configuration fallbacks.
+	  Shared native type/BTF ownership, ABI/CFI, protection and lifetime
+	  qualification remain outstanding. No implementation is selected.
