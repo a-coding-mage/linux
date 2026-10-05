@@ -2,6 +2,20 @@
 
 menu "Memory Management options"
 
+config RUST_VMSTAT
+	bool "Rust virtual-memory statistics and diagnostics"
+	depends on RUST
+	depends on !RANDSTRUCT && !GCC_PLUGIN_LATENT_ENTROPY && !CFI
+	default y
+	help
+	  Build vmstat.o from Rust, preserving per-CPU accounting, thresholds
+	  and flush policy, NUMA resets, work and CPU-hotplug lifetimes,
+	  fragmentation diagnostics and proc/sysctl registration. Configured
+	  native aligned/per-CPU storage, architecture and header boundaries
+	  remain explicit. The original C file is retained as reference and
+	  is not linked when selected. Native compiler/ABI/link and original
+	  C runtime acceptance remain required after this source checkpoint.
+
 config RUST_COMPACTION
 	bool "Rust memory compaction owner"
 	depends on RUST

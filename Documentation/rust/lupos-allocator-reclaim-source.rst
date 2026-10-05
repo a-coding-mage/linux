@@ -181,3 +181,36 @@ Configured signature/layout/CFI, compiler protection, callback/data identity,
 link ownership and original C runtime tests remain unverified. Formatting,
 inventories, source review and patch checks do not establish those gates.
 No compiler, bindgen, configuration, probe, full build or guest was run.
+
+VM statistics
+-------------
+
+The VM statistics source candidate maps 92 configured definition occurrences
+(86 unique original names), plus the two seq-open macro bodies. Rust owns the
+accounting/threshold/folding algorithms, NUMA reset, work/hotplug policy,
+fragmentation calculations, proc/seq/debug output and registration sequence.
+Native aligned atomic arrays, per-CPU objects, lock/work initializers and 101
+configured primitive entries remain explicitly native runtime/storage work.
+
+Source review corrected two concrete errors before compilation:
+
+* ``scoped_guard`` generates an inner loop. Its original isolated-CPU
+  ``continue`` releases RCU and still reaches the outer ``cond_resched``.
+  The Rust shepherd now preserves that behavior, independently source-checked.
+* The original text array infers its extent from designated initializers and
+  compares it with the statistics count only under PROC_FS. One configured
+  Rust initializer inventory now supplies both inferred extent and values,
+  retaining the PROC_FS-only constant assertion and alternate-config storage.
+  All 218 prior initializer expression/value pairs and their ordered cfg
+  inventory remain unchanged. The repaired extent/assertion logic received
+  an independent narrow review.
+
+The original candidate and intermediate fixes are retained in source evidence.
+The source review covers accounting/locking and byte-counter arithmetic, IRQ
+fallback versus compare-exchange retry, zone/node folding, page-set expiry,
+NUMA and CPU lifecycle, snapshot/error handling and diagnostic walks. It is not
+exhaustive validation of every native leaf, generated type or configuration.
+Formatting and source composition checks passed. No compiler, bindgen,
+configuration, probe, kernel build, guest or original C tests ran. Native
+layout/signature/CFI, compiler protection, data/callback/symbol identity,
+dependency/inspection and runtime acceptance remain open.

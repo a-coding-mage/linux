@@ -94,3 +94,10 @@ pub const compat_ptr_ioctl: Option<
         None
     }
 };
+
+// This native module inherits the crate's existing generated-code policy.
+// The handwritten vmstat owner retains the original kernel warning policy.
+#[cfg(CONFIG_RUST_VMSTAT)]
+pub mod vmstat_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/vmstat_native_generated.rs"));
+}

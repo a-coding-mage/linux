@@ -1054,3 +1054,5 @@ include $(srctree)/mm/slab_common_bindgen.mk
 include $(srctree)/mm/compaction_native_bindgen.mk
 
 include $(srctree)/mm/migrate_native_bindgen.mk
+
+include $(srctree)/mm/vmstat_native_bindgen.mk

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(atomic_long_t|page|zone|pglist_data|per_cpu_pages|per_cpu_zonestat|per_cpu_nodestat|vm_event_state|work_struct|delayed_work|workqueue_struct|seq_file|seq_operations|ctl_table|file_operations|inode|file|dentry|proc_dir_entry|node_stat_item|zone_stat_item|numa_stat_item|vm_stat_item|vm_event_item|cpuhp_state|gfp_t|loff_t)$'
+--allowlist-function '^(rust_vmstat_.*|first_online_pgdat|next_online_pgdat|next_zone|decay_pcp_high|drain_zone_pages|proc_dointvec_minmax|proc_dointvec_jiffies|seq_printf|seq_putc|__seq_puts|seq_put_decimal_ull|seq_open|seq_read|seq_lseek|seq_release|debugfs_create_dir|drain_all_pages|pagetypeinfo_showmixedcount_print|kswapd_test_hopeless|global_dirty_limits|kfree|memchr_inv|schedule_on_each_cpu|queue_delayed_work_on|round_jiffies_relative|work_busy|disable_delayed_work_sync|enable_delayed_work)$'
+--allowlist-var '^(RUST_VMSTAT_.*|vm_zone_stat|vm_node_stat|vm_numa_event|system_state|sysctl_vals|migratetype_names|NR_.*|MAX_NR_ZONES|MIGRATE_TYPES|NUMA_.*|PG.*|PSWP.*|WORKINGSET_.*|ALLOCSTALL_.*|SLABS_SCANNED|KSWAPD_.*|PAGEOUTRUN|DROP_.*|OOM_KILL|COMPACT.*|KCOMPACTD_.*|HTLB_.*|CMA_ALLOC_.*|UNEVICTABLE_.*|THP_.*|BALLOON_.*|SWAP_.*|SWPIN_.*|SWPOUT_.*|KSM_.*|COW_KSM|ZSWP.*|DIRECT_MAP_.*|VMA_LOCK_.*|KSTACK_.*|NRSWP.*|CPUHP_MM_VMSTAT_DEAD|CPUHP_AP_ONLINE_DYN|SYSTEM_RUNNING)$'
+--with-attribute-custom-struct=page='#[cfi_encoding="4page"]'
+--with-attribute-custom-struct=zone='#[cfi_encoding="4zone"]'
+--with-attribute-custom-struct=pglist_data='#[cfi_encoding="11pglist_data"]'
+--with-attribute-custom-struct=work_struct='#[cfi_encoding="11work_struct"]'
+--with-attribute-custom-struct=ctl_table='#[cfi_encoding="9ctl_table"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'
+--with-attribute-custom-struct=inode='#[cfi_encoding="5inode"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'

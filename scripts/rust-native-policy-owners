@@ -45,3 +45,5 @@ mm/slab_common            strong -
 mm/compaction             strong -
 
 mm/migrate                strong -
+
+mm/vmstat                 strong -
