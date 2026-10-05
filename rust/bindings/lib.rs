@@ -283,3 +283,13 @@ pub mod umh_native {
 pub mod ucount_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/ucount_native_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_NSTREE)]
+pub mod nstree_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/nstree_native_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_USER_ACCOUNTING)]
+pub mod user_accounting_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/user_accounting_native_generated.rs"));
+}

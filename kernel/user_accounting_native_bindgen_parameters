@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Inactive proposal. No generation/configuration is authorized under this hold.
+# Use actual configured native headers and the existing kernel ffi aliases.
+# kuid_t/uid_t are real by-value types; every aggregate pointee remains opaque.
+--no-doc-comments
+--no-default '.*'
+--allowlist-type 'user_struct|kmem_cache|hlist_head|kuid_t|uid_t|size_t'
+--opaque-type 'user_struct|kmem_cache|hlist_head'
+--allowlist-function 'lupos_user_accounting_.*'
+--allowlist-var 'LUPOS_USER_ACCOUNTING_.*'
+# Native initcall_t remains entirely in C. The Rust init body is reached by
+# a direct int(void) call from the native __init trampoline. Do not invent
+# contextual KCFI encodings. Generated ABI/CFI identities require qualification.

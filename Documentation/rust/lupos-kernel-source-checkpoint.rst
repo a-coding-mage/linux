@@ -162,6 +162,43 @@ ABI/CFI, symbol/section ownership, configured instrumentation, native concurrenc
 or runtime parity. All default-off/BROKEN, selection and source holds remain;
 original C, layout headers and tests are unchanged.
 
+Namespace-tree listing and user-cache ownership
+----------------------------------------------
+
+Independent namespace-tree review restores locked-reader and RCU protection,
+lower-bound and exact lookup, request validation, cursor ownership and both
+listing modes. Accepted entries hold a reference while RCU is dropped for
+faultable user stores; RCU is reacquired before the next link is read. Native
+put_user retains the value read inside its macro, and disabled VFS warnings
+retain their original operand laziness. Readers and writers share one native
+seqlock. Callback-bearing signatures use synchronous native contexts.
+
+User-cache review retains the original allocation race and reference decisions.
+IRQ-save outputs have native unsigned-long writable storage; final hash removal
+precedes unlock/restore, epoll destruction and slab free. PREEMPT_RT keeps its
+native zero-flags/no-hardware-IRQ-disable behavior. BINFMT_MISC y and m retain
+their actual native storage and exports. Namespace/root initializers and the
+native subsys-init entry preserve their configured source contracts.
+
+Both owners remain inactive behind default-off BROKEN selectors and explicit
+source/selection errors. Configured bindings, ABI/CFI, native memory ordering,
+metadata/instrumentation and runtime still require later qualification.
+
+Capability boot registration
+----------------------------
+
+The bounded boot repair retains one Rust file_caps_enabled integer initialized
+to one. The exact native __setup("no_file_caps", file_caps_disable) entry calls
+the retained Rust body, which ignores its input, stores zero and returns one.
+The native char pointer uses the existing kernel FFI alias. Registration remains
+independent of MULTIUSER, preserving native parser prefix/suffix behavior.
+
+Only this boot prefix was reviewed. The remaining capability Rust body is
+byte-preserved and is not credited as qualified coverage. Integration adds an
+unconditional Rust source error alongside the native metadata error and the
+inactive default-off/BROKEN selection guard. Init-body attributes, emitted setup
+records, ABI and original tests remain open; no object selection changes.
+
 Verification scope
 ------------------
 

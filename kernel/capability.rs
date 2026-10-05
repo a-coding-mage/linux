@@ -10,14 +10,30 @@
 
 // #include dependencies are supplied by the kernel environment.
 
-pub static mut file_caps_enabled: i32 = 1;
+compile_error!("SOURCE ONLY HOLD: capability boot and retained owner are not admitted");
 
-unsafe fn file_caps_disable(_str: *mut i8) -> i32 {
-    file_caps_enabled = 0;
+/// Native file-capability policy state; this Rust owner supplies its one definition.
+#[no_mangle]
+pub static mut file_caps_enabled: kernel::ffi::c_int = 1;
+
+// Called only by capability_boot_metadata.c's native __init setup entry.
+// The argument is deliberately ignored, as in the original handler.
+#[export_name = "lupos_capability_file_caps_disable"]
+#[link_section = ".init.text"]
+#[cold]
+unsafe extern "C" fn file_caps_disable(
+    _str: *mut kernel::ffi::c_char,
+) -> kernel::ffi::c_int {
+    // SAFETY: The native boot parser calls this before concurrent policy readers
+    // and before init text is freed. No reference to the shared state is formed.
+    unsafe {
+        file_caps_enabled = 0;
+    }
     1
 }
 
-// __setup("no_file_caps", file_caps_disable);
+// __setup registration and the complete native __init entry attributes are
+// owned by capability_boot_metadata.c; the Rust section alone is not __init.
 
 #[cfg(CONFIG_MULTIUSER)]
 unsafe fn warn_legacy_capability_use() {

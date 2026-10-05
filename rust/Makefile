@@ -1027,6 +1027,8 @@ include $(srctree)/kernel/cred_native_bindgen.mk
 include $(srctree)/kernel/groups_native_bindgen.mk
 include $(srctree)/kernel/umh_native_bindgen.mk
 include $(srctree)/kernel/ucount_native_bindgen.mk
+include $(srctree)/kernel/nstree_native_bindgen.mk
+include $(srctree)/kernel/user_accounting_native_bindgen.mk
 include $(srctree)/arch/x86/kernel/setup-bindgen.mk
 include $(srctree)/arch/x86/kernel/e820-bindgen.mk
 include $(srctree)/arch/x86/mm/physaddr-bindgen.mk

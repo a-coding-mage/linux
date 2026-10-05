@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_CAPABILITY_BOOT
+	bool "Rust capability boot source proposal (not admitted)"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive boot-registration repair only, not whole-owner admission.
+	  Native setup metadata, init attributes, ABI and original tests
+	  remain unqualified. Keep this disabled.

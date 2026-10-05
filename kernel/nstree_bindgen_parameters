@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# INACTIVE proposal; no generation or shared bindings edits authorized.
+# Input: kernel/nstree_native_bindings.h; module: bindings::nstree_native.
+# Preserve configured kernel rust/Makefile bindgen target/preprocessor defaults.
+# No translated headers, permissive warning override, or contextual callback CFI.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(ns_common|ns_tree_root|ns_tree_node|rb_node|list_head|user_namespace|proc_ns_operations|rust_nstree_cmp_context|ns_id_req|size_t|ssize_t)$'
+--opaque-type '^(ns_common|ns_tree_root|ns_tree_node|rb_node|list_head|user_namespace|proc_ns_operations|rust_nstree_cmp_context)$'
+# ns_id_req MUST be materialized from configured native declarations: Rust owns
+# MaybeUninit<ns_id_req> storage. Anonymous members are accessed only natively.
+# All opaque pointees stay pointer-only; no Rust zero layout / size assumptions.
+--allowlist-function '^rust_nstree_(writer_lock|writer_unlock|reader_lock|reader_unlock|seqbegin|seqretry|rcu_lock|rcu_unlock|unified_root|root_node|list_head|owner_root|left|right|node_ns|node_unified|node_owner|id|set_id|type|ops|owner|put|get|user_common|to_user|current_user|put_user|is_current|may_see_all|type_node|unified_node|owner_node|clear_node|init_list|init_root_rb|init_root_list|empty_node|find_add|prev|tree_node|add_head|add_after|erase|del_list|type_cmp|unified_cmp|owner_cmp|key_id|find_type|find_unified_node|previous_entry|next_entry|entry_is_head|entry_ns|error|next_id|warn_add_id|warn_add_owner|warn_add_owner_type|warn_add_initial|warn_add_duplicate|warn_remove_node|warn_remove_list|warn_lookup_owner_type|warn_userns_id|warn_lookup_rcu|warn_adjoined_rcu|first_type|first_unified|first_owner|next_type|next_unified|next_owner|type_is_head|unified_is_head|owner_is_head|hweight|get_size|page_size|zero_request|copy_request|request_spare|request_type|request_id|request_user|output_access_ok|store_id)$'
+--allowlist-var '^RUST_NSTREE_.*$'
+--allowlist-var '^(mnt|net|uts|user|ipc|pid|cgroup|time)_ns_tree$'
+# CFI qualification must use actual native struct tags and the pinned compiler's
+# emitted identities, including constness and pointer nesting. No hand-authored
+# encoding for Option<callback> is proposed: callbacks stay entirely native.
+# Ordinary tag-identity parameter additions are also held pending that readback;
+# no ABI/CFI admission follows from this source parameter inventory.

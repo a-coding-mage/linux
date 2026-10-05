@@ -9,179 +9,199 @@
  * able to have per-user limits for system resources.
  */
 
-// C dependencies supplied by the surrounding kernel translation.
+// Continued from Rust blob 6868dd0cee275e6b84fd8e94b34674cc816dca70.
+// Native oracle: user.c blob 21bafdc1137956c8996bb41ea24c63ce9a2a5baa.
+// Configured native headers own every layout, lock and static initializer.
+#![no_std]
+compile_error!("SOURCE ONLY HOLD: user-accounting Rust owner is not admitted");
 
-#[cfg(any())]
-pub static mut init_binfmt_misc: binfmt_misc = binfmt_misc {
-    entries: HLIST_HEAD_INIT,
-    enabled: true,
-    entries_lock: __SPIN_LOCK_UNLOCKED,
-};
+use kernel::bindings::user_accounting_native::*;
+use kernel::ffi::{c_int, c_ulong};
 
-/*
- * userns count is 1 for root user, 1 for init_uts_ns,
- * and 1 for... ?
- */
-#[no_mangle]
-pub static mut init_user_ns: user_namespace = user_namespace {
-    ns: NS_COMMON_INIT,
-    uid_map: {
-        let mut value = Default::default();
-        value.extent[0] = uid_gid_extent { first: 0, lower_first: 0, count: 4_294_967_295u32 };
-        value.nr_extents = 1;
-        value
-    },
-    gid_map: {
-        let mut value = Default::default();
-        value.extent[0] = uid_gid_extent { first: 0, lower_first: 0, count: 4_294_967_295u32 };
-        value.nr_extents = 1;
-        value
-    },
-    projid_map: {
-        let mut value = Default::default();
-        value.extent[0] = uid_gid_extent { first: 0, lower_first: 0, count: 4_294_967_295u32 };
-        value.nr_extents = 1;
-        value
-    },
-    owner: GLOBAL_ROOT_UID,
-    group: GLOBAL_ROOT_GID,
-    flags: USERNS_INIT_FLAGS,
-    #[cfg(CONFIG_KEYS)]
-    keyring_name_list: LIST_HEAD_INIT,
-    #[cfg(CONFIG_KEYS)]
-    keyring_sem: __RWSEM_INITIALIZER,
-    #[cfg(any())]
-    binfmt_misc: unsafe { &mut init_binfmt_misc },
-};
-
-#[cfg(CONFIG_BASE_SMALL)]
-const UIDHASH_BITS: usize = 3;
-#[cfg(not(CONFIG_BASE_SMALL))]
-const UIDHASH_BITS: usize = 7;
-const UIDHASH_SZ: usize = 1usize << UIDHASH_BITS;
+// init_binfmt_misc, init_user_ns and root_user have native storage in
+// user_accounting_native_storage.c. In particular, IS_ENABLED(CONFIG_BINFMT_MISC)
+// includes both y and m; n has neither the object nor the namespace field.
+const UIDHASH_BITS: u32 = LUPOS_USER_ACCOUNTING_UIDHASH_BITS;
+const UIDHASH_SZ: usize = LUPOS_USER_ACCOUNTING_UIDHASH_SZ as usize;
 const UIDHASH_MASK: usize = UIDHASH_SZ - 1;
 
 #[inline]
-fn __uidhashfn(uid: u32) -> usize {
-    (((uid >> UIDHASH_BITS) + uid) as usize) & UIDHASH_MASK
+fn __uidhashfn(uid: uid_t) -> usize {
+    // Native uid_t arithmetic is unsigned, including the addition's wrap.
+    ((uid >> UIDHASH_BITS).wrapping_add(uid) as usize) & UIDHASH_MASK
 }
 
 static mut uid_cachep: *mut kmem_cache = core::ptr::null_mut();
-static mut uidhash_table: [hlist_head; UIDHASH_SZ] = [/* HLIST_HEAD_INIT */ unsafe { core::mem::zeroed() }; UIDHASH_SZ];
-static mut uidhash_lock: spinlock_t = unsafe { core::mem::zeroed() };
-
-/* root_user.__count is 1, for init task cred */
-#[no_mangle]
-pub static mut root_user: user_struct = user_struct {
-    __count: REFCOUNT_INIT(1),
-    uid: GLOBAL_ROOT_UID,
-    ratelimit: RATELIMIT_STATE_INIT,
-};
 
 /* These routines must be called with the uidhash spinlock held! */
+// SAFETY: up is initialized and pinned, and hashent is an owner hash bucket.
 unsafe fn uid_hash_insert(up: *mut user_struct, hashent: *mut hlist_head) {
-    hlist_add_head(&mut (*up).uidhash_node, hashent);
+    // SAFETY: The caller owns the native hash lock and the node insertion.
+    unsafe { lupos_user_accounting_hash_insert(up, hashent) };
 }
 
+// SAFETY: up is the final-reference object, still linked under uidhash_lock.
 unsafe fn uid_hash_remove(up: *mut user_struct) {
-    hlist_del_init(&mut (*up).uidhash_node);
+    // SAFETY: The held native hash lock excludes lookup and list mutation.
+    unsafe { lupos_user_accounting_hash_remove(up) };
 }
 
+// SAFETY: The caller holds uidhash_lock throughout traversal and reference get.
 unsafe fn uid_hash_find(uid: kuid_t, hashent: *mut hlist_head) -> *mut user_struct {
-    let mut user: *mut user_struct;
-    hlist_for_each_entry!(user, hashent, uidhash_node, {
-        if uid_eq((*user).uid, uid) {
-            refcount_inc(&mut (*user).__count);
-            return user;
+    // SAFETY: The lock keeps each node live; only a matching user gains a ref.
+    unsafe {
+        let mut user = lupos_user_accounting_hash_first(hashent);
+        while !user.is_null() {
+            if lupos_user_accounting_uid_eq(lupos_user_accounting_uid(user), uid) {
+                lupos_user_accounting_ref_inc(user);
+                return user;
+            }
+            user = lupos_user_accounting_hash_next(user);
         }
-    });
-    core::ptr::null_mut()
+        core::ptr::null_mut()
+    }
 }
 
-unsafe fn user_epoll_alloc(up: *mut user_struct) -> i32 {
+// SAFETY: up is unpublished zero-allocated storage, or the initial root_user.
+unsafe fn user_epoll_alloc(up: *mut user_struct) -> c_int {
     #[cfg(CONFIG_EPOLL)]
-    { return percpu_counter_init(&mut (*up).epoll_watches, 0, GFP_KERNEL); }
+    {
+        // SAFETY: No other actor uses this counter during its initialization.
+        unsafe { lupos_user_accounting_epoll_init(up) }
+    }
     #[cfg(not(CONFIG_EPOLL))]
     { let _ = up; 0 }
 }
 
+// SAFETY: up has a successfully initialized counter and no remaining users.
 unsafe fn user_epoll_free(up: *mut user_struct) {
     #[cfg(CONFIG_EPOLL)]
-    { percpu_counter_destroy(&mut (*up).epoll_watches); }
+    {
+        // SAFETY: This is final cleanup of the initialized native counter.
+        unsafe { lupos_user_accounting_epoll_destroy(up) };
+    }
     #[cfg(not(CONFIG_EPOLL))]
     { let _ = up; }
 }
 
+// SAFETY: uidhash_lock is held and the final ref is gone. flags is the output
+// of the configured native irqsave operation. Non-RT restores saved IRQ state;
+// PREEMPT_RT retains its native lock contract without an added IRQ-state change.
 unsafe fn free_user(up: *mut user_struct, flags: c_ulong) {
-    uid_hash_remove(up);
-    spin_unlock_irqrestore(&mut uidhash_lock, flags);
-    user_epoll_free(up);
-    kmem_cache_free(uid_cachep, up as *mut core::ffi::c_void);
+    // SAFETY: Remove before unlock; after unlock only this owner may free up.
+    unsafe {
+        uid_hash_remove(up);
+        lupos_user_accounting_unlock_irqrestore(flags);
+        user_epoll_free(up);
+        lupos_user_accounting_cache_free(uid_cachep, up);
+    }
 }
 
+/// # Safety
+/// The native user cache has been initialized. A nonnull return transfers a
+/// reference that the caller must release through free_uid.
 #[no_mangle]
-pub unsafe fn find_user(uid: kuid_t) -> *mut user_struct {
-    let flags: c_ulong = 0;
-    spin_lock_irqsave(&mut uidhash_lock, &flags);
-    let ret = uid_hash_find(uid, uidhash_table.as_mut_ptr().add(__uidhashfn(uid.val))); // uidhashentry(uid)
-    spin_unlock_irqrestore(&mut uidhash_lock, flags);
-    ret
+pub unsafe extern "C" fn find_user(uid: kuid_t) -> *mut user_struct {
+    // SAFETY: The native irqsave operation writes this exclusive local output
+    // before lookup; the matching native restore consumes that value on both exits.
+    unsafe {
+        let mut flags: c_ulong = 0;
+        lupos_user_accounting_lock_irqsave(&mut flags);
+        let ret = uid_hash_find(uid, lupos_user_accounting_hash_bucket(
+            __uidhashfn(lupos_user_accounting_kuid_val(uid))));
+        lupos_user_accounting_unlock_irqrestore(flags);
+        ret
+    }
 }
 
+/// # Safety
+/// A nonnull up transfers one live native user reference to this call.
 #[no_mangle]
-pub unsafe fn free_uid(up: *mut user_struct) {
+pub unsafe extern "C" fn free_uid(up: *mut user_struct) {
     if up.is_null() { return; }
-    let flags: c_ulong = 0;
-    if refcount_dec_and_lock_irqsave(&mut (*up).__count, &mut uidhash_lock, &flags) {
-        free_user(up, flags);
+    // SAFETY: The native conditional decrement owns the final-ref race. Only
+    // true transfers the held lock and native flags output to free_user.
+    unsafe {
+        let mut flags: c_ulong = 0;
+        if lupos_user_accounting_ref_dec_and_lock_irqsave(up, &mut flags) {
+            free_user(up, flags);
+        }
     }
 }
 
+/// # Safety
+/// The native user cache is initialized and the caller may allocate with
+/// GFP_KERNEL. The original spin_lock_irq/unlock_irq caller contract applies.
 #[no_mangle]
-pub unsafe fn alloc_uid(uid: kuid_t) -> *mut user_struct {
-    let hashent = uidhash_table.as_mut_ptr().add(__uidhashfn(uid.val));
-    spin_lock_irq(&mut uidhash_lock);
-    let mut up = uid_hash_find(uid, hashent);
-    spin_unlock_irq(&mut uidhash_lock);
-    if up.is_null() {
-        let new = kmem_cache_zalloc(uid_cachep, GFP_KERNEL) as *mut user_struct;
-        if new.is_null() { return core::ptr::null_mut(); }
-        (*new).uid = uid;
-        refcount_set(&mut (*new).__count, 1);
-        if user_epoll_alloc(new) != 0 {
-            kmem_cache_free(uid_cachep, new as *mut core::ffi::c_void);
-            return core::ptr::null_mut();
+pub unsafe extern "C" fn alloc_uid(uid: kuid_t) -> *mut user_struct {
+    // SAFETY: Hash lookup and insertion hold uidhash_lock. Fresh storage stays
+    // private until insertion; a race loser destroys only its own allocation.
+    unsafe {
+        let hashent = lupos_user_accounting_hash_bucket(
+            __uidhashfn(lupos_user_accounting_kuid_val(uid)));
+        lupos_user_accounting_lock_irq();
+        let mut up = uid_hash_find(uid, hashent);
+        lupos_user_accounting_unlock_irq();
+        if up.is_null() {
+            let new = lupos_user_accounting_cache_zalloc(uid_cachep);
+            if new.is_null() { return core::ptr::null_mut(); }
+            lupos_user_accounting_set_uid(new, uid);
+            lupos_user_accounting_ref_set(new, 1);
+            if user_epoll_alloc(new) != 0 {
+                lupos_user_accounting_cache_free(uid_cachep, new);
+                return core::ptr::null_mut();
+            }
+            lupos_user_accounting_ratelimit_init(new);
+            lupos_user_accounting_ratelimit_set_flags(new);
+            lupos_user_accounting_lock_irq();
+            up = uid_hash_find(uid, hashent);
+            if !up.is_null() {
+                user_epoll_free(new);
+                lupos_user_accounting_cache_free(uid_cachep, new);
+            } else {
+                uid_hash_insert(new, hashent);
+                up = new;
+            }
+            lupos_user_accounting_unlock_irq();
         }
-        ratelimit_state_init(&mut (*new).ratelimit, HZ, 100);
-        ratelimit_set_flags(&mut (*new).ratelimit, RATELIMIT_MSG_ON_RELEASE);
-        spin_lock_irq(&mut uidhash_lock);
-        up = uid_hash_find(uid, hashent);
-        if !up.is_null() {
-            user_epoll_free(new);
-            kmem_cache_free(uid_cachep, new as *mut core::ffi::c_void);
-        } else {
-            uid_hash_insert(new, hashent);
-            up = new;
-        }
-        spin_unlock_irq(&mut uidhash_lock);
+        up
     }
-    up
 }
 
-unsafe fn uid_cache_init() -> i32 {
-    uid_cachep = kmem_cache_create(c"uid_cache", core::mem::size_of::<user_struct>(), 0, SLAB_HWCACHE_ALIGN | SLAB_PANIC, core::ptr::null_mut());
-    let mut n = 0;
-    while n < UIDHASH_SZ {
-        INIT_HLIST_HEAD(uidhash_table.as_mut_ptr().add(n));
-        n += 1;
+// SAFETY: Called once during the native subsys init phase, before allocation.
+#[cold]
+#[link_section = ".init.text"]
+unsafe fn uid_cache_init() -> c_int {
+    // SAFETY: This phase exclusively initializes the cache pointer, hash heads
+    // and root counter. Root publication still uses the native hash lock.
+    unsafe {
+        uid_cachep = lupos_user_accounting_cache_create();
+        let mut n = 0;
+        while n < UIDHASH_SZ {
+            lupos_user_accounting_hash_init(lupos_user_accounting_hash_bucket(n));
+            n += 1;
+        }
+        if user_epoll_alloc(lupos_user_accounting_root_user()) != 0 {
+            lupos_user_accounting_root_epoll_panic();
+        }
+        lupos_user_accounting_lock_irq();
+        uid_hash_insert(lupos_user_accounting_root_user(),
+            lupos_user_accounting_hash_bucket(__uidhashfn(
+                lupos_user_accounting_kuid_val(lupos_user_accounting_root_uid()))));
+        lupos_user_accounting_unlock_irq();
+        0
     }
-    if user_epoll_alloc(&mut root_user) != 0 { panic!("root_user epoll percpu counter alloc failed"); }
-    spin_lock_irq(&mut uidhash_lock);
-    uid_hash_insert(&mut root_user, uidhash_table.as_mut_ptr().add(__uidhashfn(GLOBAL_ROOT_UID.val)));
-    spin_unlock_irq(&mut uidhash_lock);
-    0
 }
 
-subsys_initcall!(uid_cache_init);
+/// # Safety
+/// Only the native __init uid_cache_init(void) trampoline calls this body,
+/// exactly once at subsys_initcall time while .init.text remains live.
+#[no_mangle]
+#[cold]
+#[link_section = ".init.text"]
+pub unsafe extern "C" fn lupos_user_accounting_uid_cache_init() -> c_int {
+    // SAFETY: The native initcall provides the phase and one-shot contract.
+    unsafe { uid_cache_init() }
+}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
