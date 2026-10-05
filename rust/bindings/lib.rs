@@ -133,3 +133,8 @@ pub mod sched_core_native {
 pub mod sched_fair_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_fair_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_RT)]
+pub mod sched_rt_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_rt_generated.rs"));
+}

@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source proposal only; no binding generation performed in this phase.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
+# Native callback type spelling. Emitted CFI equality remains an admission gate.
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=task_group='#[cfi_encoding="10task_group"]'
+--with-attribute-custom-struct=hrtimer='#[cfi_encoding="7hrtimer"]'
+--with-attribute-custom-struct=irq_work='#[cfi_encoding="8irq_work"]'
+--with-attribute-custom-struct=ctl_table='#[cfi_encoding="9ctl_table"]'
+--newtype-global-enum 'hrtimer_restart'
+--with-attribute-custom-enum=hrtimer_restart='#[cfi_encoding="15hrtimer_restart"]'
+--allowlist-type 'rq|rq_flags|task_struct|task_group|root_domain|sched_rt_entity|rt_rq|rt_prio_array|rt_bandwidth|rt_schedulable_data|sched_statistics|plist_node|list_head|cpumask|atomic_t|hrtimer|hrtimer_restart|hrtimer_mode|irq_work|css_task_iter|ctl_table|seq_file|ktime_t|loff_t|uclamp_id'
+--allowlist-var 'RUST_RT_.*|HRTIMER_.*|UCLAMP_.*|root_task_group|task_groups|rt_sched_class|scheduler_running'
+--allowlist-function 'rust_rt_.*|cpupri_find|cpupri_find_fitness|cpupri_set|css_task_iter_start|css_task_iter_next|css_task_iter_end|hrtimer_cancel|irq_work_queue_on|kfree|plist_add|plist_del|print_rt_rq|proc_dointvec|proc_dointvec_minmax|push_cpu_stop|rebuild_sched_domains|resched_curr|sched_dl_do_global|sched_dl_global_validate|sched_domains_mutex_lock|sched_domains_mutex_unlock|sched_get_rd|sched_put_rd|tg_nop|to_ratio|update_curr_common|update_rq_clock'

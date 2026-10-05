@@ -29,11 +29,11 @@ fair-composed-review-002.tar.gz, SHA256
 its complete file manifest matched, including corrections F001 through F015.
 Complete foundation and tail backups were separately recovered.
 
-The RT bodies archive was recovered separately, but does not contain the
-later native interface layer. The deadline early archive contains only
-Kconfig and review/oracle context, not later Rust bodies. Neither missing
-work nor later private policy fixes are claimed as byte-identical recovery.
-Their continuing implementation is separate from this core/fair checkpoint.
+The RT bodies archive was recovered separately and its missing native interface
+layer has been newly supplied and independently source-reviewed. The deadline
+early archive contains only Kconfig and review/oracle context, not later Rust
+bodies. Missing work and later private policy fixes are never described as
+byte-identical recovery.
 
 Source repairs after recovery
 -----------------------------
@@ -95,6 +95,31 @@ pointer casts, callback extraction, and ten public C ABI symbol definitions.
 The original heap, fallback and barrier algorithms are retained. These
 support fragments still require configured native binding/macro and
 single-owner integration.
+
+RT source checkpoint
+--------------------
+
+The five recovered RT body modules remain the implementation baseline. Native
+header/macro declarations, private storage, class/sysctl metadata and configured
+binding inputs are newly supplied. Source inventories find all 119 distinct
+original C function names and all 172 referenced native boundaries, consisting
+of 143 header/macro leaves, 28 original diagnostic sites and registration.
+These counts establish source presence only.
+
+Independent source corrections restore private static-inline helper linkage,
+route move_queued_task_locked through its actual header operation, preserve
+CPU-mask advancement after runqueue unlock and at original continue points,
+and fix configured CPU limits and argument types. The 125 unsafe functions
+now have explicit regions and caller contracts; independent token comparison
+preserved every pre-scope body. Thirteen genuine disabled-config alternatives
+keep the unsafe region inside their enabled configuration only.
+
+RT generated declarations use the existing bindings crate policy. The hidden
+default-off selector and hard errors in both RT make fragments remain intact.
+No original build_policy.c inclusion is changed, no replacement object is
+selected, and no original RT scheduling algorithm is used as a new C fallback.
+Generated ABI, shared-memory/locking/RCU semantics, callback CFI and native
+protection/caller/registration policy remain unqualified.
 
 Inactive gates and remaining work
 ---------------------------------

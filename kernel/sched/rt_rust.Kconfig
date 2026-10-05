@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source-only declaration. No prompt, select, or enablement is supplied.
+config RUST_SCHED_RT
+	bool
+	default n
+	help
+	  Reserved owner selector for the RT scheduler source proposal.
+	  RT build and binding make fragments reject activation until the
+	  later integrated ABI, policy, ownership and behavior qualification.

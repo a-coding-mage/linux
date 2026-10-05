@@ -2606,3 +2606,4 @@ config RUST_INIT_MM
 source "kernel/sched/sched_idle_clock.Kconfig"
 source "kernel/sched/sched_core_rust.Kconfig"
 source "kernel/sched/fair.Kconfig"
+source "kernel/sched/rt_rust.Kconfig"
