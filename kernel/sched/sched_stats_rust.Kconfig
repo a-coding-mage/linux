@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_STATS
+	bool "Rust scheduler statistics source (not admitted)"
+	depends on RUST && SCHEDSTATS
+	depends on BROKEN
+	default n
+	help
+	  Source-only continuation of existing scheduler statistics Rust bodies.
+	  Native ABI, compiler policy, bindings, callback/RCU boundaries and
+	  behavioral verification remain unadmitted. Do not enable this owner.

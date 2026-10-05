@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source-only proposal; configured generation is prohibited during this hold.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'rq|task_struct|sched_statistics|sched_domain|seq_file|loff_t'
+--opaque-type 'rq|task_struct|sched_statistics|sched_domain|seq_file'
+--allowlist-function 'lupos_stats_.*|seq_printf|__update_stats_.*'
+--allowlist-var 'LUPOS_STATS_.*'
+# Native C tags; generated layouts and ABI/CFI equivalence remain unverified.
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=sched_statistics='#[cfi_encoding="16sched_statistics"]'
+--with-attribute-custom-struct=sched_domain='#[cfi_encoding="12sched_domain"]'
+--with-attribute-custom-struct=seq_file='#[cfi_encoding="8seq_file"]'

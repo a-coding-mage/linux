@@ -380,6 +380,20 @@ Existing RCU and RT READ_ONCE sites and distinct cfs_rq.curr fields are intact.
 This source correction does not qualify configured ABI/CFI, emitted load or
 instrumentation behavior, concurrency, performance or native owner admission.
 
+Scheduler statistics source checkpoint
+-------------------------------------
+
+The eight existing statistics bodies now use native types and fields, preserve
+signed sleep/block accounting and latency narrowing, restore the version
+newline and complete domain output, and retain native seq/proc/init callbacks.
+Independent review checks seven format strings, domain ordering and iterator
+bounds, and preserves native RCU acquire/release context annotations.
+
+The original SCHEDSTATS utility owner and stats_header.rs consumers are intact.
+Default-off BROKEN and selected-owner hard errors remain. Generated ABI/CFI,
+native context and protection metadata, cross-language locking, configured
+emission and original-test/runtime behavior remain unqualified.
+
 Inactive gates and remaining work
 ---------------------------------
 

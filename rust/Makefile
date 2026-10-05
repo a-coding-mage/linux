@@ -1053,6 +1053,7 @@ include $(srctree)/kernel/sched/sched_membarrier_bindgen.mk
 include $(srctree)/kernel/sched/sched_debug_bindgen.mk
 include $(srctree)/kernel/sched/sched_cpuacct_bindgen.mk
 include $(srctree)/kernel/sched/sched_isolation_bindgen.mk
+include $(srctree)/kernel/sched/sched_stats_bindgen.mk
 
 include $(srctree)/mm/memory_native_bindgen.mk
 include $(srctree)/mm/userfaultfd_native_bindgen.mk
