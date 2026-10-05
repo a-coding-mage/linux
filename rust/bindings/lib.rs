@@ -213,3 +213,13 @@ pub mod sched_stats_native {
 pub mod sched_cpufreq_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_cpufreq_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_SCHED_CORE_COOKIE)]
+pub mod sched_core_cookie_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_core_cookie_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_SCHED_STOP_TASK)]
+pub mod sched_stop_task_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_stop_task_generated.rs"));
+}

@@ -60,3 +60,5 @@ include $(srctree)/kernel/sched/sched_cpuacct_rust.mk
 include $(srctree)/kernel/sched/sched_isolation_rust.mk
 include $(srctree)/kernel/sched/sched_stats_rust.mk
 include $(srctree)/kernel/sched/sched_cpufreq_rust.mk
+include $(srctree)/kernel/sched/sched_core_cookie_rust.mk
+include $(srctree)/kernel/sched/sched_stop_task_rust.mk

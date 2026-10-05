@@ -409,6 +409,24 @@ ownership. Generated layout/callback CFI, worker/kobject/RCU lifetime, native
 allocation/caller and protection metadata, configured emission, concurrency
 and runtime qualification remain open. Generic CPUFreq drivers are unchanged.
 
+Core-cookie and stop-task source checkpoint
+------------------------------------------
+
+The eleven existing core-cookie functions retain reference/permission ordering,
+raw uninitialized lock-state storage, two-pass PID/thread traversal, native
+usercopy and corrected force-idle masks and arithmetic. Source review preserves
+four distinct RCU diagnostic sites and the native unsigned CPU-mask comparison.
+The force-idle fallback reads core_pick once and accesses rq.curr through a
+native plain-field leaf across both proxy-execution layouts.
+The thirteen stop-task callbacks retain C ABI and native DEFINE_SCHED_CLASS
+registration, including const storage, linker section and the shared affinity
+callback. Neither owner duplicates the separately reviewed core.c family.
+
+Separate default-off BROKEN selectors and hard errors retain original utility
+ownership. Generated enum/callback ABI and CFI, diagnostics/caller attribution,
+refcount/lock/usercopy and compiler protection policy, symbol ownership and
+original-test/runtime qualification remain open.
+
 Inactive gates and remaining work
 ---------------------------------
 

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_STOP_TASK
+	bool "Rust scheduler stop-task source owner proposal"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing stop-task scheduling class.
+	  Configured callback ABI/CFI, native metadata/protection and runtime
+	  qualification must precede replacement of its original owner.

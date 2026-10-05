@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_SCHED_CORE_COOKIE
+	bool "Rust scheduler core-cookie source owner proposal"
+	depends on RUST && SCHED_CORE && BROKEN
+	default n
+	help
+	  Inactive continuation of core scheduling cookie and force-idle source.
+	  Generated ABI/CFI, native reference/locking and compiler policy,
+	  usercopy and runtime qualification must precede owner replacement.

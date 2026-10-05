@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0
+# Source-only interface proposal. No binding generation is authorized.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'rq|rq_flags|task_struct|sched_class'
+--allowlist-function 'lupos_stop_task_.*|update_curr_common'
+--allowlist-var 'stop_sched_class'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=sched_class='#[cfi_encoding="11sched_class"]'
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'

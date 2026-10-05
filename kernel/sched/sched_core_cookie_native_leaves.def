@@ -1,0 +1,134 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Native macro/header primitives only; no core_sched.c owner algorithm. */
+LUPOS_CORE_COOKIE_BODY(struct sched_core_cookie *, lupos_core_cookie_alloc,
+	(void),
+	struct sched_core_cookie *ck = kmalloc_obj(*ck);
+	return ck;)
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_refcount_set,
+	(refcount_t *ref, int value), refcount_set(ref, value))
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_refcount_dec_and_test,
+	(refcount_t *ref), refcount_dec_and_test(ref))
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_refcount_inc,
+	(refcount_t *ref), refcount_inc(ref))
+LUPOS_CORE_COOKIE_VALUE(struct rq *, lupos_core_cookie_task_rq_lock,
+	(struct task_struct *p, struct rq_flags *rf), task_rq_lock(p, rf))
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_task_rq_unlock,
+	(struct rq *rq, struct task_struct *p, struct rq_flags *rf),
+	task_rq_unlock(rq, p, rf))
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_enabled,
+	(struct rq *rq), sched_core_enabled(rq))
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_enqueued,
+	(struct task_struct *p), sched_core_enqueued(p))
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_task_on_rq_queued,
+	(struct task_struct *p), task_on_rq_queued(p))
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_task_on_cpu,
+	(struct rq *rq, struct task_struct *p), task_on_cpu(rq, p))
+LUPOS_CORE_COOKIE_BODY(unsigned long, lupos_core_cookie_pi_lock_irqsave,
+	(struct task_struct *p),
+	unsigned long flags;
+	raw_spin_lock_irqsave(&p->pi_lock, flags);
+	return flags;)
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_pi_unlock_irqrestore,
+	(struct task_struct *p, unsigned long flags),
+	raw_spin_unlock_irqrestore(&p->pi_lock, flags))
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_clear_node,
+	(struct rb_node *node), RB_CLEAR_NODE(node))
+LUPOS_CORE_COOKIE_VALUE(struct task_struct *, lupos_core_cookie_current,
+	(void), current)
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_smt_active,
+	(void), sched_smt_active())
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_rcu_read_lock,
+	(void), rcu_read_lock())
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_rcu_read_unlock,
+	(void), rcu_read_unlock())
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_get_task_struct,
+	(struct task_struct *p), get_task_struct(p))
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_put_task_struct,
+	(struct task_struct *p), put_task_struct(p))
+LUPOS_CORE_COOKIE_VALUE(int, lupos_core_cookie_put_user_id,
+	(unsigned long id, unsigned long uaddr),
+	put_user(id, (u64 __user *)uaddr))
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_tasklist_read_lock,
+	(void), read_lock(&tasklist_lock))
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_tasklist_read_unlock,
+	(void), read_unlock(&tasklist_lock))
+LUPOS_CORE_COOKIE_VALUE(struct pid *, lupos_core_cookie_task_pid_type,
+	(struct task_struct *p, enum pid_type type), task_pid_type(p, type))
+
+/* Split only the native list cursor mechanics. Rust retains the two complete
+ * permission/update passes and the PIDTYPE_PID break from while_each_pid_task.
+ * Separate first-cursor leaves preserve each pass's RCU warning once-state.
+ * Keep the original list_entry_rcu reads and sentinel comparison. */
+LUPOS_CORE_COOKIE_BODY(struct task_struct *, lupos_core_cookie_pid_first_check,
+	(struct pid *pid, enum pid_type type),
+	if (!pid)
+		return NULL;
+	__list_check_rcu(dummy, 0);
+	return hlist_entry_safe(
+		rcu_dereference_raw(hlist_first_rcu(&pid->tasks[type])),
+		struct task_struct, pid_links[type]);)
+LUPOS_CORE_COOKIE_BODY(struct task_struct *, lupos_core_cookie_pid_first_set,
+	(struct pid *pid, enum pid_type type),
+	if (!pid)
+		return NULL;
+	__list_check_rcu(dummy, 0);
+	return hlist_entry_safe(
+		rcu_dereference_raw(hlist_first_rcu(&pid->tasks[type])),
+		struct task_struct, pid_links[type]);)
+LUPOS_CORE_COOKIE_VALUE(struct task_struct *, lupos_core_cookie_pid_next,
+	(struct task_struct *p, enum pid_type type),
+	hlist_entry_safe(rcu_dereference_raw(hlist_next_rcu(&p->pid_links[type])),
+			 struct task_struct, pid_links[type]))
+LUPOS_CORE_COOKIE_BODY(struct task_struct *, lupos_core_cookie_thread_first_check,
+	(struct task_struct *group),
+	struct task_struct *p;
+	__list_check_rcu(dummy, lockdep_is_held(&tasklist_lock));
+	p = list_entry_rcu(group->signal->thread_head.next,
+			   struct task_struct, thread_node);
+	return &p->thread_node != &group->signal->thread_head ? p : NULL;)
+LUPOS_CORE_COOKIE_BODY(struct task_struct *, lupos_core_cookie_thread_first_set,
+	(struct task_struct *group),
+	struct task_struct *p;
+	__list_check_rcu(dummy, lockdep_is_held(&tasklist_lock));
+	p = list_entry_rcu(group->signal->thread_head.next,
+			   struct task_struct, thread_node);
+	return &p->thread_node != &group->signal->thread_head ? p : NULL;)
+LUPOS_CORE_COOKIE_BODY(struct task_struct *, lupos_core_cookie_thread_next,
+	(struct task_struct *group, struct task_struct *p),
+	p = list_entry_rcu(p->thread_node.next, struct task_struct, thread_node);
+	return &p->thread_node != &group->signal->thread_head ? p : NULL;)
+
+/* Each warning has its own native call site and once-state. These boundaries
+ * remain part of native diagnostic/CFI/instrumentation qualification. */
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_warn_disabled,
+	(bool condition), WARN_ON_ONCE(condition))
+
+#ifdef CONFIG_SCHEDSTATS
+LUPOS_CORE_COOKIE_VALUE(const struct cpumask *, lupos_core_cookie_smt_mask,
+	(struct rq *rq), cpu_smt_mask(cpu_of(rq)))
+LUPOS_CORE_COOKIE_VALUE(u64, lupos_core_cookie_rq_clock,
+	(struct rq *rq), rq_clock(rq))
+LUPOS_CORE_COOKIE_VOID(lupos_core_cookie_assert_rq_held,
+	(struct rq *rq), lockdep_assert_rq_held(rq))
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_warn_forceidle_count,
+	(bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_COOKIE_VALUE(bool, lupos_core_cookie_warn_forceidle_occupation,
+	(bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_COOKIE_VALUE(u64, lupos_core_cookie_div_u64,
+	(u64 dividend, u32 divisor), div_u64(dividend, divisor))
+/* Exact for_each_cpu bit-scan and bound, including small_cpumask_bits. */
+LUPOS_CORE_COOKIE_VALUE(int, lupos_core_cookie_cpu_first,
+	(const struct cpumask *mask),
+	find_next_bit(cpumask_bits(mask), small_cpumask_bits, 0))
+LUPOS_CORE_COOKIE_VALUE(int, lupos_core_cookie_cpu_next,
+	(int cpu, const struct cpumask *mask),
+	find_next_bit(cpumask_bits(mask), small_cpumask_bits, cpu + 1))
+LUPOS_CORE_COOKIE_VALUE(unsigned int, lupos_core_cookie_cpu_limit,
+	(void), small_cpumask_bits)
+LUPOS_CORE_COOKIE_VALUE(struct rq *, lupos_core_cookie_cpu_rq,
+	(int cpu), cpu_rq(cpu))
+/* curr is an anonymous-union member without CONFIG_SCHED_PROXY_EXEC.
+ * Keep the original ordinary read; Rust calls this only when core_pick is NULL. */
+LUPOS_CORE_COOKIE_VALUE(struct task_struct *, lupos_core_cookie_rq_curr,
+	(struct rq *rq), rq->curr)
+#endif /* CONFIG_SCHEDSTATS */

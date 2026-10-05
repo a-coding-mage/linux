@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Source-only interface proposal. No binding generation is authorized.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type 'rq|rq_flags|task_struct|sched_core_cookie|refcount_t|rb_node|pid|pid_t|pid_type|cpumask'
+--allowlist-function 'lupos_core_cookie_.*|sched_core_get|sched_core_put|sched_core_enqueue|sched_core_dequeue|resched_curr|kfree|find_task_by_vpid|ptrace_may_access|ptr_to_hashval|update_rq_clock|__account_forceidle_time'
+--allowlist-var 'LUPOS_CORE_COOKIE_.*|PIDTYPE_.*'
+--newtype-global-enum 'pid_type'
+--with-attribute-custom-enum=pid_type='#[cfi_encoding="8pid_type"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
