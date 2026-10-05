@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_TASK_WORK
+	bool "Rust task-work source proposal (not admitted)"
+	depends on RUST && BROKEN
+	default n
+	help
+	  Inactive continuation of the existing task-work Rust implementation.
+	  Native ABI/CFI, diagnostic attribution, instrumentation, concurrency
+	  and original-test qualification remain open. Keep this disabled.

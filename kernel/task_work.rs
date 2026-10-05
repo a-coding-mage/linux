@@ -1,71 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0
+// Continued from Rust blob 9eaf9999263e3bdd98b6ff5c8207170321c450ad.
+// Native oracle: task_work.c at 126a30fae3bba11420ec2fcbde51a0a01bab1b5b.
+#![no_std]
 
-use core::ffi::c_void;
+compile_error!("SOURCE ONLY HOLD: task work is not admitted");
 
-#[repr(C)]
-pub struct callback_head {
-    pub next: *mut callback_head,
-    pub func: Option<unsafe extern "C" fn(*mut callback_head)>,
-}
-
-#[repr(C)]
-pub struct task_struct {
-    pub task_works: *mut callback_head,
-    pub pi_lock: c_void,
-    pub flags: usize,
-}
-
-#[repr(C)]
-pub struct irq_work {
-    _private: [u8; 0],
-}
-
-pub type task_work_func_t = Option<unsafe extern "C" fn(*mut callback_head)>;
-
-#[repr(C)]
-#[derive(Copy, Clone, PartialEq, Eq)]
-pub enum task_work_notify_mode {
-    TWA_NONE,
-    TWA_RESUME,
-    TWA_SIGNAL,
-    TWA_SIGNAL_NO_IPI,
-    TWA_NMI_CURRENT,
-}
-
-unsafe extern "C" {
-    static mut current: *mut task_struct;
-
-    fn kasan_record_aux_stack(work: *mut callback_head);
-    fn set_notify_resume(task: *mut task_struct);
-    fn set_notify_signal(task: *mut task_struct);
-    fn __set_notify_signal(task: *mut task_struct);
-    fn set_tsk_thread_flag(task: *mut task_struct, flag: usize);
-    fn irq_work_queue(work: *mut irq_work);
-    fn task_work_pending(task: *mut task_struct) -> bool;
-    fn raw_spin_lock_irqsave(lock: *mut c_void, flags: *mut usize);
-    fn raw_spin_unlock_irqrestore(lock: *mut c_void, flags: usize);
-    fn raw_spin_lock_irq(lock: *mut c_void);
-    fn raw_spin_unlock_irq(lock: *mut c_void);
-    fn cond_resched();
-    fn try_cmpxchg(
-        ptr: *mut *mut callback_head,
-        old: *mut callback_head,
-        new: *mut callback_head,
-    ) -> bool;
-    fn warn_on_once(condition: bool) -> bool;
-}
-
-const EINVAL: i32 = 22;
-const ESRCH: i32 = 3;
-const PF_EXITING: usize = 0x00000004;
-const TIF_NOTIFY_RESUME: usize = 0;
-
-static mut WORK_EXITED: callback_head = callback_head {
-    next: core::ptr::null_mut(),
-    func: None,
-};
+// Proposed configured declarations; no generated or hand-projected layouts.
+use kernel::bindings::task_work_native::*;
+use kernel::ffi::{c_int, c_void};
 
 #[cfg(CONFIG_IRQ_WORK)]
+#[export_name = "lupos_task_work_set_notify_irq"]
 unsafe extern "C" fn task_work_set_notify_irq(_entry: *mut irq_work) {
     /*
      * no-op IPI
@@ -75,138 +20,192 @@ unsafe extern "C" fn task_work_set_notify_irq(_entry: *mut irq_work) {
      */
 }
 
-#[cfg(CONFIG_IRQ_WORK)]
-static mut IRQ_WORK_NMI_RESUME: irq_work = irq_work { _private: [] };
-
+/// Queue a caller-owned callback and request the selected notification.
+///
+/// # Safety
+/// The task and work satisfy the original task_work_add lifetime and context
+/// contract. The work is not already queued; its callback remains callable.
+#[no_mangle]
 pub unsafe extern "C" fn task_work_add(
     task: *mut task_struct,
     work: *mut callback_head,
     notify: task_work_notify_mode,
-) -> i32 {
-    let mut head: *mut callback_head;
+) -> c_int {
+    // SAFETY: Native leaves own the configured fields, primitives and storage.
+    // Only local expected pointers are passed by mutable address to cmpxchg.
+    unsafe {
+        let mut head: *mut callback_head;
 
-    if notify == task_work_notify_mode::TWA_NMI_CURRENT {
-        if warn_on_once(task != current) {
-            return -EINVAL;
+        if notify.0 == TWA_NMI_CURRENT.0 {
+            if lupos_task_work_warn_not_current(task) {
+                return -(LUPOS_TASK_WORK_EINVAL as c_int);
+            }
+            #[cfg(not(CONFIG_IRQ_WORK))]
+            {
+                return -(LUPOS_TASK_WORK_EINVAL as c_int);
+            }
+        } else {
+            lupos_task_work_record_aux_stack(work);
         }
-        #[cfg(not(CONFIG_IRQ_WORK))]
-        {
-            return -EINVAL;
+
+        let task_works = lupos_task_work_head_slot(task);
+        head = lupos_task_work_read_once(task_works);
+        loop {
+            if lupos_task_work_is_exited(head) {
+                return -(LUPOS_TASK_WORK_ESRCH as c_int);
+            }
+            lupos_task_work_set_next(work, head);
+            if lupos_task_work_try_cmpxchg(task_works, &raw mut head, work) {
+                break;
+            }
+            // Failure updated head in place; do not substitute another load.
         }
-    } else {
-        kasan_record_aux_stack(work);
+
+        match notify.0 {
+            mode if mode == TWA_NONE.0 => {}
+            mode if mode == TWA_RESUME.0 => lupos_task_work_notify_resume(task),
+            mode if mode == TWA_SIGNAL.0 => lupos_task_work_notify_signal(task),
+            mode if mode == TWA_SIGNAL_NO_IPI.0 => {
+                lupos_task_work_notify_signal_no_ipi(task);
+            }
+            #[cfg(CONFIG_IRQ_WORK)]
+            mode if mode == TWA_NMI_CURRENT.0 => {
+                lupos_task_work_notify_nmi_current();
+            }
+            _ => lupos_task_work_warn_unknown_notify(),
+        }
+
+        0
     }
-
-    head = (*task).task_works;
-    loop {
-        if head == core::ptr::addr_of_mut!(WORK_EXITED) {
-            return -ESRCH;
-        }
-        (*work).next = head;
-        if try_cmpxchg(&mut (*task).task_works, head, work) {
-            break;
-        }
-        head = (*task).task_works;
-    }
-
-    match notify {
-        task_work_notify_mode::TWA_NONE => {}
-        task_work_notify_mode::TWA_RESUME => set_notify_resume(task),
-        task_work_notify_mode::TWA_SIGNAL => set_notify_signal(task),
-        task_work_notify_mode::TWA_SIGNAL_NO_IPI => __set_notify_signal(task),
-        #[cfg(CONFIG_IRQ_WORK)]
-        task_work_notify_mode::TWA_NMI_CURRENT => {
-            set_tsk_thread_flag(current, TIF_NOTIFY_RESUME);
-            irq_work_queue(core::ptr::addr_of_mut!(IRQ_WORK_NMI_RESUME));
-        }
-        #[cfg(not(CONFIG_IRQ_WORK))]
-        task_work_notify_mode::TWA_NMI_CURRENT => {}
-    }
-
-    0
 }
 
+/// Remove the first pending callback for which the supplied matcher succeeds.
+///
+/// # Safety
+/// The task, matcher, data and callback lifetimes obey the original C contract.
+/// The native matcher context remains live for this synchronous call; its
+/// stored callback may be NULL only when no invocation is reached.
+/// A matcher actually reached during traversal must be callable in this IRQ-
+/// disabled, pi_lock-held context. No references to shared links are formed.
+#[export_name = "lupos_task_work_cancel_match"]
 pub unsafe extern "C" fn task_work_cancel_match(
     task: *mut task_struct,
-    r#match: unsafe extern "C" fn(*mut callback_head, *mut c_void) -> bool,
+    r#match: *const lupos_task_work_match_ctx,
     data: *mut c_void,
 ) -> *mut callback_head {
-    let mut pprev: *mut *mut callback_head = &mut (*task).task_works;
-    let mut work: *mut callback_head;
-    let mut flags = 0usize;
+    // SAFETY: The native lock protects cancellation and synchronizes with run.
+    // A failed CAS may replace work with a new head, NULL or the exit sentinel.
+    unsafe {
+        let mut pprev: *mut *mut callback_head = lupos_task_work_head_slot(task);
+        let mut work: *mut callback_head;
 
-    if !task_work_pending(task) {
-        return core::ptr::null_mut();
-    }
-    raw_spin_lock_irqsave(&mut (*task).pi_lock, &mut flags);
-    work = *pprev;
-    while !work.is_null() {
-        if !r#match(work, data) {
-            pprev = &mut (*work).next;
-            work = *pprev;
-        } else if try_cmpxchg(pprev, work, (*work).next) {
-            break;
+        if lupos_task_work_likely_not_pending(task) {
+            return core::ptr::null_mut();
         }
+        let flags = lupos_task_work_lock_irqsave(task);
+        work = lupos_task_work_read_once(pprev);
+        while !work.is_null() {
+            if !lupos_task_work_call_match(r#match, work, data) {
+                pprev = lupos_task_work_next_slot(work);
+                work = lupos_task_work_read_once(pprev);
+            } else {
+                let next = lupos_task_work_next(work);
+                if lupos_task_work_try_cmpxchg(pprev, &raw mut work, next) {
+                    break;
+                }
+                // Keep pprev: work now contains the failed CAS observation.
+            }
+        }
+        lupos_task_work_unlock_irqrestore(task, flags);
+        work
     }
-    raw_spin_unlock_irqrestore(&mut (*task).pi_lock, flags);
-    work
 }
 
+#[export_name = "lupos_task_work_func_match"]
 unsafe extern "C" fn task_work_func_match(cb: *mut callback_head, data: *mut c_void) -> bool {
-    (*cb).func.map(|f| f as *const () == data as *const ()).unwrap_or(false)
+    // SAFETY: Called under cancel_match's protection; native function-pointer
+    // equality also preserves C's NULL callback/data comparison.
+    unsafe { lupos_task_work_func_matches(cb, data) }
 }
 
+/// Cancel the last queued pending work whose callback equals func.
+///
+/// # Safety
+/// The task and work lifetimes satisfy task_work_cancel_match's C contract.
+/// The native public entry point passes func through the original C
+/// function-pointer-to-void-pointer conversion, including NULL.
+#[export_name = "lupos_task_work_cancel_func"]
 pub unsafe extern "C" fn task_work_cancel_func(
     task: *mut task_struct,
-    func: task_work_func_t,
+    func: *mut c_void,
 ) -> *mut callback_head {
-    task_work_cancel_match(task, task_work_func_match, func.map(|f| f as *mut c_void).unwrap_or(core::ptr::null_mut()))
+    // SAFETY: Native static storage holds the retained Rust matcher. The
+    // opaque data preserves the native conversion without a Rust fn cast.
+    unsafe { task_work_cancel_match(task, lupos_task_work_func_match_context(), func) }
 }
 
+#[export_name = "lupos_task_work_match"]
 unsafe extern "C" fn task_work_match(cb: *mut callback_head, data: *mut c_void) -> bool {
     cb == data as *mut callback_head
 }
 
+/// Cancel the supplied callback if it is still pending on the task.
+///
+/// # Safety
+/// The task and callback satisfy the original cancellation lifetime contract.
+#[no_mangle]
 pub unsafe extern "C" fn task_work_cancel(task: *mut task_struct, cb: *mut callback_head) -> bool {
-    task_work_cancel_match(task, task_work_match, cb as *mut c_void) == cb
+    // SAFETY: The matcher compares pointers only and uses the protected walk.
+    unsafe {
+        task_work_cancel_match(task, lupos_task_work_match_context(), cb.cast()) == cb
+    }
 }
 
+/// Drain current's pending work, installing the exit sentinel only when empty.
+///
+/// # Safety
+/// Called for current in the original task_work_run context with IRQs enabled.
+/// Each detached callback is callable and follows the native lifetime contract.
+#[no_mangle]
 pub unsafe extern "C" fn task_work_run() {
-    let task = current;
-    let mut work: *mut callback_head;
-    let mut head: *mut callback_head;
-    let mut next: *mut callback_head;
+    // SAFETY: The successful detach and pi_lock round trip provide the original
+    // exclusion from cancel. Read next before a callback can consume its work.
+    unsafe {
+        let task = lupos_task_work_current();
+        let task_works = lupos_task_work_head_slot(task);
+        let mut work: *mut callback_head;
+        let mut head: *mut callback_head;
+        let mut next: *mut callback_head;
 
-    loop {
-        work = (*task).task_works;
         loop {
-            head = core::ptr::null_mut();
-            if work.is_null() {
-                if (*task).flags & PF_EXITING != 0 {
-                    head = core::ptr::addr_of_mut!(WORK_EXITED);
-                } else {
+            work = lupos_task_work_read_once(task_works);
+            loop {
+                head = core::ptr::null_mut();
+                if work.is_null() {
+                    if lupos_task_work_task_exiting(task) {
+                        head = lupos_task_work_exited();
+                    } else {
+                        break;
+                    }
+                }
+                if lupos_task_work_try_cmpxchg(task_works, &raw mut work, head) {
                     break;
                 }
+                // Failure updated work, including a newly queued callback.
             }
-            if try_cmpxchg(&mut (*task).task_works, work, head) {
-                break;
-            }
-            work = (*task).task_works;
-        }
-        if work.is_null() {
-            break;
-        }
-        raw_spin_lock_irq(&mut (*task).pi_lock);
-        raw_spin_unlock_irq(&mut (*task).pi_lock);
-        loop {
-            next = (*work).next;
-            if let Some(func) = (*work).func {
-                func(work);
-            }
-            work = next;
-            cond_resched();
             if work.is_null() {
                 break;
+            }
+            lupos_task_work_lock_irq(task);
+            lupos_task_work_unlock_irq(task);
+            loop {
+                next = lupos_task_work_next(work);
+                lupos_task_work_invoke(work);
+                work = next;
+                lupos_task_work_cond_resched();
+                if work.is_null() {
+                    break;
+                }
             }
         }
     }

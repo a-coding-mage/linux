@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0
+# Owner-local proposal only; do not run bindgen under the source-only hold.
+# Input: kernel/task_work_bindings.h, using the original configured kernel flags.
+# Types remain native declarations; no manual, blocklisted or opaque substitute.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(task_struct|callback_head|irq_work|task_work_func_t|task_work_notify_mode|lupos_task_work_match_t|lupos_task_work_match_ctx)$'
+--allowlist-function '^lupos_task_work_(current|head_slot|next_slot|read_once|try_cmpxchg|next|set_next|exited|is_exited|task_exiting|likely_not_pending|lock_irqsave|unlock_irqrestore|lock_irq|unlock_irq|cond_resched|record_aux_stack|warn_not_current|warn_unknown_notify|notify_resume|notify_signal|notify_signal_no_ipi|call_match|func_matches|invoke|notify_nmi_current|set_notify_irq|cancel_match|cancel_func|func_match|match|func_match_context|match_context)$'
+--allowlist-var '^(LUPOS_TASK_WORK_EINVAL|LUPOS_TASK_WORK_ESRCH|TWA_NONE|TWA_RESUME|TWA_SIGNAL|TWA_SIGNAL_NO_IPI|TWA_NMI_CURRENT)$'
+--newtype-global-enum '^task_work_notify_mode$'
+--with-attribute-custom-enum=task_work_notify_mode='#[cfi_encoding="21task_work_notify_mode"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=callback_head='#[cfi_encoding="13callback_head"]'
+--with-attribute-custom-struct=irq_work='#[cfi_encoding="8irq_work"]'
+--with-attribute-custom-struct=lupos_task_work_match_ctx='#[cfi_encoding="25lupos_task_work_match_ctx"]'

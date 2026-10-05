@@ -253,3 +253,8 @@ pub use self::sched_ext_native as sched_ext_idle_native;
 pub use self::sched_ext_native as sched_ext_sub_native;
 #[cfg(CONFIG_RUST_SCHED_EXT_CORE)]
 pub use self::sched_ext_native as sched_ext_core_native;
+
+#[cfg(CONFIG_RUST_TASK_WORK)]
+pub mod task_work_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/task_work_generated.rs"));
+}

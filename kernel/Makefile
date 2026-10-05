@@ -18,6 +18,7 @@ include $(srctree)/kernel/exit_rust.mk
 include $(srctree)/kernel/softirq_rust.mk
 include $(srctree)/kernel/panic_rust.mk
 include $(srctree)/kernel/kthread_rust.mk
+include $(srctree)/kernel/task_work_rust.mk
 
 obj-$(CONFIG_MULTIUSER) += groups.o
 obj-$(CONFIG_VHOST_TASK) += vhost_task.o
