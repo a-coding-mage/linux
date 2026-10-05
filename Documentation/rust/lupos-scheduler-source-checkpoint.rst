@@ -698,6 +698,34 @@ buffer contexts remain explicitly unqualified. This is a paired source-ownership
 repair, not whole-kernel memory-model proof or full Rust ownership. All admission
 and source errors remain; the matched pick/deferred packages are composed later.
 
+Struct-ops, verifier metadata and query/event source
+--------------------------------------------------
+
+The independently reviewed struct-ops family now supplies fourteen runtime
+bodies alongside the original metadata records, six ext BTF sets and five
+registration records. The CPU-only set remains unregistered. The forty-one
+original CFI metadata-only bodies are preserved as such, without counting them
+as runtime algorithm coverage. CID/idle local sets still require the original
+single native translation-unit envelope.
+
+The query/event family adds twenty-seven owners, including twenty-four native
+kfunc shells around Rust bodies. Event reads retain the signed counters,
+READ_ONCE operations and original accumulation order. TID lookup keeps its
+native hash table and RCU protection, and current-task queries retain their
+distinct plain or RCU reads.
+
+The live CPU-performance target store now uses the exact native plain store
+before cpufreq update. Its target-rq lock does not exclude a sibling-CPU
+schedutil reader holding the policy lock. That paired source boundary repairs
+the direct Rust/native access mismatch without inventing stronger ordering or
+claiming native race safety. Initialization is separately bounded by the
+original disabled-state, static-key and RCU-drain sequence.
+
+Binding declarations and dependencies remain inactive proposals. Final
+registration, whole-envelope kfunc diagnostics, generated native type identity,
+ABI/CFI/BTF, verifier/trampoline, optimizer, lifetime and runtime qualification
+remain open. Every source and selection hold is preserved.
+
 Inactive gates and remaining work
 ---------------------------------
 

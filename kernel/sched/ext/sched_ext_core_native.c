@@ -601,6 +601,11 @@ void lupos_scx_core_watchdog_interval_write_once(unsigned long value)
 struct delayed_work *lupos_scx_core_watchdog_work(void)
 { return &scx_watchdog_work; }
 
+struct sched_ext_entity *lupos_scx_core_tid_lookup(u64 tid)
+{
+	return rhashtable_lookup(&scx_tid_hash, &tid, scx_tid_hash_params);
+}
+
 /* F11-only subset of the frozen shared field-access boundary. These exact
  * native plain operations are transitional, not a synchronization protocol.
  * The dump lock does not cover the off-context reader; whole-program native

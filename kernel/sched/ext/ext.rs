@@ -141,6 +141,11 @@ pub(crate) use sched_ext_core_placement_tick::{
 #[cfg(CONFIG_NO_HZ_FULL)]
 pub(crate) use sched_ext_core_placement_tick::scx_can_stop_tick;
 
+mod sched_ext_core_query_events;
+pub(crate) use sched_ext_core_query_events::{__scx_bpf_now, scx_read_events};
+
+mod sched_ext_core_structops_btf;
+
 pub fn u32_before(a: u32, b: u32) -> bool {
     (a.wrapping_sub(b) as i32) < 0
 }

@@ -194,4 +194,13 @@ void lupos_scx_core_watchdog_interval_write_once(unsigned long value);
 struct delayed_work *lupos_scx_core_watchdog_work(void);
 
 #include "sched_ext_core_placement_tick_bindings.h"
+
+/* F16 shares this canonical native type universe with the existing owners. */
+#include "sched_ext_core_query_events_bindings.h"
+
+/* F16 caller retains the original TID-table RCU read-side protection. */
+struct sched_ext_entity *lupos_scx_core_tid_lookup(u64 tid);
+
+/* F13 native metadata and typed Rust continuations share these native types. */
+#include "sched_ext_core_structops_btf_bindings.h"
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */

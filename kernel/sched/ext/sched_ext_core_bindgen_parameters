@@ -3,6 +3,20 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+# F13/F16 source declarations only; generated native identities remain held.
+--allowlist-function 'lupos_scx_st_.*'
+--allowlist-var 'LUPOS_SCX_ST_.*|BPF_READ|SCALAR_VALUE|BPF_PROG_TYPE_SYSCALL|BPF_PROG_TYPE_STRUCT_OPS|INT_MAX|EACCES|E2BIG|EOPNOTSUPP'
+--allowlist-type 'bpf_access_type|bpf_prog_type|bpf_reg_type|scx_arena_scan|bpf_prog|bpf_insn_access_aux|bpf_verifier_log|bpf_reg_state|btf_type|btf_member|btf|bpf_map|bpf_struct_ops'
+--with-attribute-custom-struct=scx_arena_scan='#[cfi_encoding="14scx_arena_scan"]'
+--with-attribute-custom-struct=bpf_prog='#[cfi_encoding="8bpf_prog"]'
+--with-attribute-custom-struct=bpf_insn_access_aux='#[cfi_encoding="19bpf_insn_access_aux"]'
+--with-attribute-custom-struct=bpf_verifier_log='#[cfi_encoding="16bpf_verifier_log"]'
+--with-attribute-custom-struct=bpf_reg_state='#[cfi_encoding="13bpf_reg_state"]'
+--with-attribute-custom-struct=btf_type='#[cfi_encoding="8btf_type"]'
+--with-attribute-custom-struct=btf_member='#[cfi_encoding="10btf_member"]'
+--with-attribute-custom-struct=btf='#[cfi_encoding="3btf"]'
+--with-attribute-custom-struct=bpf_map='#[cfi_encoding="7bpf_map"]'
+--with-attribute-custom-struct=bpf_struct_ops='#[cfi_encoding="14bpf_struct_ops"]'
 --allowlist-type 'bpf_link|kthread_worker|mutex|delayed_work|affinity_context'
 --allowlist-function 'lupos_scx_root_.*'
 --allowlist-var 'DEQUEUE_MOVE|DEQUEUE_NOCLOCK|DEQUEUE_CLASS|EBUSY|EINVAL|ENOMEM'
