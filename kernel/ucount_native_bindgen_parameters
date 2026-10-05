@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# INACTIVE proposal, never execute generation during the source-only hold.
+# Input: kernel/ucount_native_bindings.h with pinned configured native flags.
+# Proposed destination: kernel::bindings::ucount_native. No shared recipe added.
+# All types are header-derived, including by-value kuid_t and native enum widths.
+# Do not blocklist, handwrite or replace layouts. Rust does not project fields.
+# Native wrappers own all public/callback/init indirect-call type metadata;
+# the Rust bodies are direct-call targets. No guessed CFI encodings are added.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--newtype-global-enum '^(ucount_type|rlimit_type)$'
+--allowlist-type '^(ucounts|user_namespace|kuid_t|ucount_type|rlimit_type|atomic_long_t|hlist_nulls_head|hlist_nulls_node|ctl_table_root|ctl_table_set|ctl_table_header|ctl_table)$'
+--allowlist-function '^lupos_ucount_.*$'
+--allowlist-var '^(init_ucounts|LUPOS_UCOUNT_.*)$'

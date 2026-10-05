@@ -278,3 +278,8 @@ pub mod groups_native {
 pub mod umh_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/umh_native_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_UCOUNT)]
+pub mod ucount_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/ucount_native_generated.rs"));
+}

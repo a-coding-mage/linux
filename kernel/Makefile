@@ -23,6 +23,7 @@ include $(srctree)/kernel/nsproxy_rust.mk
 include $(srctree)/kernel/cred_rust.mk
 include $(srctree)/kernel/groups_rust.mk
 include $(srctree)/kernel/umh_rust.mk
+include $(srctree)/kernel/ucount_rust.mk
 
 obj-$(CONFIG_MULTIUSER) += groups.o
 obj-$(CONFIG_VHOST_TASK) += vhost_task.o
