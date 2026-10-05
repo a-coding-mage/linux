@@ -331,12 +331,18 @@ and feature counts. Independent source review corrects bitfield/anonymous-union
 access, signed flags, callback size types, UP iteration and output-call grouping.
 The init algorithm retains explicit cold/init-section intent.
 
-A concrete source parity gap remains: generic native formatting records
-PRINTK_INDEX wrapper formats and locations instead of the original literal
-format/callsite metadata. This instrumentation is not disabled or waived.
+The follow-up PRINTK_INDEX source proposal uses real native pi_entry records
+with literal formats, original owner/line keys, configuration scopes, duplicate
+group-path sites and native sizeof branches. All 165 Rust keys match its native
+manifest by independent source review; seq-only calls have no index records.
+The owner algorithms and output-call grouping remain unchanged.
+
+Exact original __FILE__ spelling remains externally required with a hard error,
+and macro-expanded provenance, object retention/emission and metadata parity
+are unqualified. No path, layout or protection exception is fabricated.
 Default-off BROKEN and unconditional source errors retain the hold. Configured
-ABI/CFI, variadic widths, exact instrumentation/protection and caller metadata,
-locks/RCU, debugfs/VFS lifetime and runtime behavior also remain unqualified.
+ABI/CFI, variadic widths, instrumentation/caller metadata, locks/RCU,
+debugfs/VFS lifetime and runtime behavior also remain unqualified.
 
 Cgroup CPU accounting source checkpoint
 --------------------------------------
@@ -426,6 +432,10 @@ Separate default-off BROKEN selectors and hard errors retain original utility
 ownership. Generated enum/callback ABI and CFI, diagnostics/caller attribution,
 refcount/lock/usercopy and compiler protection policy, symbol ownership and
 original-test/runtime qualification remain open.
+
+Core task-group RCU callback parameters now name the native callback_head
+instead of presuming a Rust type for the C-only rcu_head macro. Source readback
+preserves both callback bodies, registrations and their two grace periods.
 
 Inactive gates and remaining work
 ---------------------------------

@@ -4,6 +4,7 @@
  */
 #include "sched_debug_bindings.h"
 #error "Lupos scheduler debug native leaves are source-only and not build-admitted"
+#include "sched_debug_printk_index.h"
 
 __read_mostly bool sched_debug_verbose;
 struct dentry *lupos_debug_root;
@@ -29,17 +30,28 @@ void lupos_debug_feat_enable(int i) { static_key_enable_cpuslocked(&sched_feat_k
 #endif
 const char *lupos_debug_feat_name(int i) { return sched_feat_names[i]; }
 
-void lupos_debug_printf(struct seq_file *m, const char *fmt, ...)
+void lupos_debug_printf(struct seq_file *m, unsigned int source_line, const char *fmt, ...)
 {
  va_list args;
  struct va_format vaf;
+ /* Metadata is supplied at the original literal sites, not at the %pV bridge.
+  * source_line must match fmt and its original site in the native manifest.
+  */
+ lupos_debug_print_index(source_line);
  va_start(args, fmt);
  if (m) seq_vprintf(m, fmt, args);
  else {
   vaf.fmt = fmt;
   vaf.va = &args;
-  pr_cont("%pV", &vaf);
+  _printk(KERN_CONT "%pV", &vaf);
  }
+ va_end(args);
+}
+void lupos_debug_seq_printf(struct seq_file *m, const char *fmt, ...)
+{
+ va_list args;
+ va_start(args, fmt);
+ seq_vprintf(m, fmt, args);
  va_end(args);
 }
 void lupos_debug_error(const char *fmt, ...)
@@ -48,7 +60,9 @@ void lupos_debug_error(const char *fmt, ...)
  struct va_format vaf;
  va_start(args, fmt);
  vaf.fmt = fmt; vaf.va = &args;
- pr_err("%pV", &vaf);
+ LUPOS_DEBUG_INDEX(KERN_ERR pr_fmt("sched: CPU %d need_resched set for > %llu ns (%d ticks) without schedule\n"),
+                   "resched_latency_warn", 1538);
+ _printk(KERN_ERR pr_fmt("%pV"), &vaf);
  va_end(args);
 }
 void lupos_debug_info(const char *fmt, ...)
@@ -57,7 +71,9 @@ void lupos_debug_info(const char *fmt, ...)
  struct va_format vaf;
  va_start(args, fmt);
  vaf.fmt = fmt; vaf.va = &args;
- pr_info("%pV", &vaf);
+ LUPOS_DEBUG_INDEX(KERN_INFO pr_fmt("%s server %sabled on CPU %d%s.\n"),
+                   "sched_server_write_common", 432);
+ _printk(KERN_INFO pr_fmt("%pV"), &vaf);
  va_end(args);
 }
 int lupos_debug_snprintf(char *buf, size_t size, const char *fmt, ...)

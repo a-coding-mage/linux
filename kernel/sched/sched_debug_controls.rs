@@ -108,7 +108,7 @@ pub unsafe extern "C" fn lupos_debug_cache_enable_show(m: *mut seq_file, _v: *mu
     // SAFETY: The caller supplies the live native objects and original entry
     // point's locking/IRQ/VFS context; native primitives retain their checks.
     unsafe {
-    out!(m, "%d\n", b::sysctl_sched_cache_user);
+    seqout!(m, "%d\n", b::sysctl_sched_cache_user);
     0
 
     }
@@ -246,7 +246,7 @@ macro_rules! server_callbacks {
     unsafe {
             let rq = b::lupos_debug_cpu_rq((*m).private as c_ulong as c_int);
             let server = addr_of!((*rq).$field);
-            out!(m, "%llu\n", if $period { (*server).dl_period } else { (*server).dl_runtime });
+            seqout!(m, "%llu\n", if $period { (*server).dl_period } else { (*server).dl_runtime });
             0
 
     }

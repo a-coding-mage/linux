@@ -19,14 +19,20 @@ macro_rules! cstr {
     ($s:expr) => { concat!($s, "\0").as_ptr().cast::<c_char>() };
 }
 macro_rules! out {
+    ($m:expr, $site:expr, $fmt:expr $(, $arg:expr)* $(,)?) => {
+        b::lupos_debug_printf($m, $site, cstr!($fmt) $(, $arg)*)
+    };
+}
+// Pure seq_printf callers had no console arm or native printk-index record.
+macro_rules! seqout {
     ($m:expr, $fmt:expr $(, $arg:expr)* $(,)?) => {
-        b::lupos_debug_printf($m, cstr!($fmt) $(, $arg)*)
+        b::lupos_debug_seq_printf($m, cstr!($fmt) $(, $arg)*)
     };
 }
 macro_rules! ns {
-    ($m:expr, $fmt:expr, $label:expr, $value:expr) => {{
+    ($m:expr, $site:expr, $fmt:expr, $label:expr, $value:expr) => {{
         let value = $value as u64;
-        out!($m, $fmt, $label, nsec_high(value), nsec_low(value));
+        out!($m, $site, $fmt, $label, nsec_high(value), nsec_low(value));
     }};
 }
 macro_rules! stat_value {
@@ -60,7 +66,7 @@ pub unsafe extern "C" fn sched_feat_show(m: *mut seq_file, _v: *mut c_void) -> c
         if (b::sysctl_sched_features as c_ulong) & (1 as c_ulong).wrapping_shl(i as u32) == 0 {
             b::lupos_debug_seq_puts(m, cstr!("NO_"));
         }
-        out!(m, "%s ", b::lupos_debug_feat_name(i as c_int));
+        seqout!(m, "%s ", b::lupos_debug_feat_name(i as c_int));
     }
     b::lupos_debug_seq_puts(m, cstr!("\n"));
     0
@@ -78,7 +84,7 @@ pub unsafe extern "C" fn sched_scaling_show(m: *mut seq_file, _v: *mut c_void) -
     // SAFETY: The caller supplies the live native objects and original entry
     // point's locking/IRQ/VFS context; native primitives retain their checks.
     unsafe {
-    out!(m, "%d\n", b::sysctl_sched_tunable_scaling as c_int);
+    seqout!(m, "%d\n", b::sysctl_sched_tunable_scaling as c_int);
     0
 
     }

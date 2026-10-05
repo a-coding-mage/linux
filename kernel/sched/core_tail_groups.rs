@@ -37,7 +37,7 @@ unsafe fn sched_free_group(tg: *mut task_group) {
     }
 }
 #[cfg(CONFIG_CGROUP_SCHED)]
-unsafe extern "C" fn sched_free_group_rcu(rcu: *mut rcu_head) {
+unsafe extern "C" fn sched_free_group_rcu(rcu: *mut callback_head) {
     // SAFETY: The RCU callback receives the embedded node of the retired
     // group after its required grace period and owns its final reclamation.
     unsafe {
@@ -100,7 +100,7 @@ pub unsafe extern "C" fn sched_online_group(tg: *mut task_group, parent: *mut ta
     }
 }
 #[cfg(CONFIG_CGROUP_SCHED)]
-unsafe extern "C" fn sched_unregister_group_rcu(rcu: *mut rcu_head) {
+unsafe extern "C" fn sched_unregister_group_rcu(rcu: *mut callback_head) {
     // SAFETY: The callback receives a retired group's embedded RCU node;
     // its first grace period permits class unregister and the second deferred free.
     unsafe {

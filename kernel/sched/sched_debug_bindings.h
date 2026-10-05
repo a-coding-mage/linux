@@ -78,7 +78,9 @@ void *lupos_debug_next(struct seq_file *, void *, loff_t *);
 void lupos_debug_stop(struct seq_file *, void *);
 int __init lupos_debug_init(void);
 
-__printf(2, 3) void lupos_debug_printf(struct seq_file *, const char *, ...);
+/* source_line selects the literal/provenance in sched_debug_printk_sites.h. */
+__printf(3, 4) void lupos_debug_printf(struct seq_file *, unsigned int source_line, const char *, ...);
+__printf(2, 3) void lupos_debug_seq_printf(struct seq_file *, const char *, ...);
 __printf(1, 2) void lupos_debug_error(const char *, ...);
 __printf(1, 2) void lupos_debug_info(const char *, ...);
 __printf(3, 4) int lupos_debug_snprintf(char *, size_t, const char *, ...);
