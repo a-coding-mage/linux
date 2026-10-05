@@ -11,6 +11,7 @@ $(obj)/bindings/sched_ext_core_generated.rs: private bindgen_target_flags = \
 $(obj)/bindings/sched_ext_core_generated.rs: private bindgen_target_cflags = -UMODULE
 $(obj)/bindings/sched_ext_core_generated.rs: $(srctree)/kernel/sched/ext/sched_ext_core_bindings.h \
     $(srctree)/kernel/sched/ext/sched_ext_core_slice_cursor_bindings.h \
+    $(srctree)/kernel/sched/ext/sched_ext_core_task_lifetime_bindings.h \
     $(srctree)/kernel/sched/ext/internal.h $(srctree)/kernel/sched/ext/cid.h \
     $(srctree)/kernel/sched/ext/arena.h $(srctree)/kernel/sched/ext/idle.h \
     $(srctree)/kernel/sched/ext/sub.h $(srctree)/kernel/sched/ext/inlines.h \

@@ -2,7 +2,6 @@
 // Source repair of the existing ext.rs against the pinned native baseline
 // 126a30fae3bba11420ec2fcbde51a0a01bab1b5b. Not a completed translation.
 // Native leaves are an explicit, unqualified C runtime boundary.
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
 #![no_std]
 
 compile_error!("SOURCE ONLY HOLD: sched_ext core owners and qualification remain incomplete");
@@ -28,6 +27,26 @@ pub const SCX_SLICE_OOB_PENDING: u64 =
 mod sched_ext_core_slice_cursor;
 // Select the Rust-owned body over internal.h's native declaration glob.
 pub(crate) use sched_ext_core_slice_cursor::scx_task_slice_ended;
+
+mod sched_ext_core_task_lifetime;
+// Explicit owned identities take precedence over matching native declarations.
+pub(crate) use sched_ext_core_task_lifetime::{
+    __scx_disable_and_exit_task, __scx_enable_task, __scx_init_task,
+    __scx_task_iter_maybe_relock, __scx_task_iter_rq_unlock, init_scx_entity,
+    lupos_scx_core_task_dead_unpublish_body,
+    lupos_scx_core_task_post_fork_publish_body,
+    lupos_scx_core_task_prio_changed_body, lupos_scx_core_task_reweight_body,
+    lupos_scx_core_task_switched_from_body, lupos_scx_core_task_switched_to_body,
+    lupos_scx_core_task_switching_to_body, sched_ext_dead, scx_alloc_tid,
+    scx_allow_ttwu_queue, scx_cancel_fork, scx_check_setscheduler,
+    scx_disable_and_exit_task, scx_disable_task, scx_enable_task, scx_fork,
+    scx_get_task_state, scx_post_fork, scx_pre_fork, scx_set_task_state,
+    scx_sub_init_cancel_task, scx_task_iter_next, scx_task_iter_next_locked,
+    scx_task_iter_relock, scx_task_iter_start, scx_task_iter_stop,
+    scx_task_iter_unlock, scx_tid_hash_insert, task_dead_and_done, task_should_scx,
+};
+#[cfg(CONFIG_EXT_GROUP_SCHED)]
+pub(crate) use sched_ext_core_task_lifetime::tg_cgrp;
 pub(crate) use sched_ext_core_slice_cursor::*;
 
 pub fn u32_before(a: u32, b: u32) -> bool {
@@ -415,3 +434,5 @@ pub(crate) unsafe fn wait_ops_state(p: *mut task_struct, opss: c_ulong) {
         }
     }
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

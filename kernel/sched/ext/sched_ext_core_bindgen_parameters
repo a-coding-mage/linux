@@ -3,6 +3,17 @@
 --no-doc-comments
 --no-default '.*'
 --no-prepend-enum-name
+--allowlist-type 'scx_task_iter|sched_ext_entity|scx_exit_task_args|scx_init_task_args|rq_flags|task_group|cgroup|kernel_clone_args|load_weight|css_task_iter'
+--with-attribute-custom-struct=scx_task_iter='#[cfi_encoding="13scx_task_iter"]'
+--with-attribute-custom-struct=sched_ext_entity='#[cfi_encoding="16sched_ext_entity"]'
+--with-attribute-custom-struct=scx_exit_task_args='#[cfi_encoding="18scx_exit_task_args"]'
+--with-attribute-custom-struct=scx_init_task_args='#[cfi_encoding="18scx_init_task_args"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=task_group='#[cfi_encoding="10task_group"]'
+--with-attribute-custom-struct=cgroup='#[cfi_encoding="6cgroup"]'
+--with-attribute-custom-struct=kernel_clone_args='#[cfi_encoding="17kernel_clone_args"]'
+--with-attribute-custom-struct=load_weight='#[cfi_encoding="11load_weight"]'
+--with-attribute-custom-struct=css_task_iter='#[cfi_encoding="13css_task_iter"]'
 --allowlist-type 'scx_sched|scx_dispatch_q|scx_dsq_list_node|scx_cmask|scx_cmask_ref|scx_kick_syncs|scx_tid_alloc|scx_dump_data|bpf_iter_scx_dsq_kern|bpf_iter_scx_dsq|rq|task_struct|sched_class|cpumask|kernel_param|list_head|rhashtable|rhashtable_params|callback_head|percpu_rw_semaphore|scx_enable_state|scx_slice_oob_consts|scx_dsq_iter_flags|raw_spinlock_t|size_t'
 --allowlist-function 'lupos_scx_core_.*|_*scx_.*|update_curr_common|dl_server_update'
 --allowlist-var 'LUPOS_SCX_CORE_.*|_*SCX_.*'

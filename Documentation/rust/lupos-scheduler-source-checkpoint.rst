@@ -531,8 +531,9 @@ This partial continuation preserves the existing unsigned-order helper and
 repairs CPU validation and protected task-slice behavior. It supplies common
 state/parameter boundaries, cursor traversal, slice-OOB accounting and current
 task accounting. Native storage and private layouts retain their original
-definitions. Independent review covers these two bounded source families;
-the other sixteen core families are not supplied by this checkpoint.
+definitions. Independent review covers these two bounded source families.
+The task-lifetime family below is a separate increment; the other fifteen core
+families are not supplied by these bounded checkpoints.
 
 Two current-task reads now use an exact plain native accessor for configured
 rq union access. The native source permits competing slice/vtime writers in
@@ -541,6 +542,22 @@ not an assumption of exclusive access. Native varargs formatting, remaining
 owner algorithms, canonical cross-family types, shared BTF/CFI/initialization,
 source attribution, compiler protections and runtime behavior remain open.
 Default-off BROKEN and unconditional selection/source holds remain unchanged.
+
+Sched_ext task-lifetime source checkpoint
+----------------------------------------
+
+The task-lifetime increment supplies all 35 original function identities,
+including the two original no-op class callbacks. State transitions, iteration,
+init/enable/exit, fork/death, TID allocation and scheduling-class transitions
+retain their source ordering and configuration alternatives.
+
+Independent review corrects two native scoped IRQ guards to preserve this
+tree's reference-counted interrupt semantics. Integration review restores
+task_rq expression evaluation inside the normal and cancelled-exit callback
+envelopes. Three supported raw concurrent-read cases remain explicit Rust
+memory-model blockers; ABI/CFI, stack/context analysis, native diagnostics and
+all runtime qualification remain open. The held enqueue-family dependency is
+not supplied by a C fallback. All selection/source errors remain.
 
 Inactive gates and remaining work
 ---------------------------------

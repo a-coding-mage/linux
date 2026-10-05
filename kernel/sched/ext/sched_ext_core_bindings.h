@@ -124,4 +124,7 @@ struct percpu_rw_semaphore *lupos_scx_core_fork_rwsem(void);
 /* F01 is the sole native authority for its ext.c-private enum/iterator types. */
 #include "sched_ext_core_slice_cursor_bindings.h"
 
+/* Independently reviewed F06 interfaces; no duplicate shared native state. */
+#include "sched_ext_core_task_lifetime_bindings.h"
+
 #endif /* LUPOS_SCHED_EXT_CORE_BINDINGS_H */
