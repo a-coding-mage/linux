@@ -42,3 +42,5 @@ obj-y += build_policy.o
 obj-y += build_utility.o
 
 include $(srctree)/kernel/sched/sched_idle_clock_rust.mk
+include $(srctree)/kernel/sched/sched_core_rust.mk
+include $(srctree)/kernel/sched/fair_rust.mk

@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0
+config RUST_SCHED_FAIR_NATIVE_POLICY
+	bool
+	# No default: integrated review must map the actual configured policies
+	# before this can admit the SOURCE implementation. Not a bypass switch.
+
+config RUST_SCHED_FAIR
+	bool "Rust fair scheduler source owner"
+	depends on RUST && RUST_SCHED_FAIR_NATIVE_POLICY
+	default n
+	help
+	  Direct Rust implementation of kernel/sched/fair.c, with configured
+	  native header/macro/architecture ABI leaves. This source candidate
+	  requires the single integrated build-fix and native policy phase.

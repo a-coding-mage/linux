@@ -2604,3 +2604,5 @@ config RUST_INIT_MM
 	  a saved configuration with this option disabled remains untranslated.
 
 source "kernel/sched/sched_idle_clock.Kconfig"
+source "kernel/sched/sched_core_rust.Kconfig"
+source "kernel/sched/fair.Kconfig"

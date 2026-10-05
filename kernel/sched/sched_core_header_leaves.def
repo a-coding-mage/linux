@@ -1,0 +1,169 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Header-inline/config-alternative entry leaves. Body authority is the exact
+ * included native header; no original core.c algorithm body is forwarded. */
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/hrtimer_rearm.h:80 */
+LUPOS_CORE_VOID(lupos_core_header___hrtimer_rearm_deferred, (void), __hrtimer_rearm_deferred())
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:1919 */
+LUPOS_CORE_VOID(lupos_core_header_assert_balance_callbacks_empty, (struct rq *rq), assert_balance_callbacks_empty(rq))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:3135 */
+LUPOS_CORE_VOID(lupos_core_header_attach_one_task, (struct rq *rq, struct task_struct *p), attach_one_task(rq, p))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/autogroup.h:49 */
+LUPOS_CORE_VOID(lupos_core_header_autogroup_free, (struct task_group *tg), autogroup_free(tg))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/autogroup.h:48 */
+LUPOS_CORE_VOID(lupos_core_header_autogroup_init, (struct task_struct *init_task), autogroup_init(init_task))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/blk_plug.h:48 */
+LUPOS_CORE_VOID(lupos_core_header_blk_flush_plug, (struct blk_plug *plug, bool async), blk_flush_plug(plug, async))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/sched/nohz.h:22 */
+LUPOS_CORE_VOID(lupos_core_header_calc_load_nohz_remote, (struct rq *rq), calc_load_nohz_remote(rq))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/cpumask.h:266 */
+LUPOS_CORE_VALUE(unsigned int, lupos_core_header_cpumask_any_and_distribute, (const struct cpumask *src1p, const struct cpumask *src2p), cpumask_any_and_distribute(src1p, src2p))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/cpuset.h:209 */
+LUPOS_CORE_VOID(lupos_core_header_cpuset_cpus_allowed, (struct task_struct *p, struct cpumask *mask), cpuset_cpus_allowed(p, mask))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/cpuset.h:190 */
+LUPOS_CORE_VOID(lupos_core_header_cpuset_force_rebuild, (void), cpuset_force_rebuild())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/cpuset.h:286 */
+LUPOS_CORE_VOID(lupos_core_header_cpuset_reset_sched_domains, (void), cpuset_reset_sched_domains())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/cpuset.h:192 */
+LUPOS_CORE_VOID(lupos_core_header_cpuset_update_active_cpus, (void), cpuset_update_active_cpus())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/debug_locks.h:56 */
+LUPOS_CORE_VOID(lupos_core_header_debug_show_all_locks, (void), debug_show_all_locks())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/debug_locks.h:60 */
+LUPOS_CORE_VOID(lupos_core_header_debug_show_held_locks, (struct task_struct *task), debug_show_held_locks(task))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/printk.h:298 */
+LUPOS_CORE_VOID(lupos_core_header_dump_stack, (void), dump_stack())
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/smp.h:19 */
+LUPOS_CORE_VOID(lupos_core_header_flush_smp_call_function_queue, (void), flush_smp_call_function_queue())
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:565 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_free_fair_sched_group, (struct task_group *tg), free_fair_sched_group(tg))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/ftrace.h:1366 */
+LUPOS_CORE_VOID(lupos_core_header_ftrace_graph_init_idle_task, (struct task_struct *t, int cpu), ftrace_graph_init_idle_task(t, cpu))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:57 */
+LUPOS_CORE_VOID(lupos_core_header_init_sched_ext_class, (void), init_sched_ext_class())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/livepatch_sched.h:14 */
+LUPOS_CORE_VOID(lupos_core_header_klp_sched_try_switch, (struct task_struct *curr), klp_sched_try_switch(curr))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/kstrtox.h:58 */
+LUPOS_CORE_VALUE(int, lupos_core_header_kstrtol, (const char *s, unsigned int base, long *res), kstrtol(s, base, res))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:3482 */
+LUPOS_CORE_VOID(lupos_core_header_nohz_balance_exit_idle, (struct rq *rq), nohz_balance_exit_idle(rq))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:570 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_online_fair_sched_group, (struct task_group *tg), online_fair_sched_group(tg))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/perf_event.h:2003 */
+LUPOS_CORE_VOID(lupos_core_header_perf_event_task_tick, (void), perf_event_task_tick())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/kallsyms.h:169 */
+LUPOS_CORE_VOID(lupos_core_header_print_ip_sym, (const char *loglvl, unsigned long ip), print_ip_sym(loglvl, ip))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/lockdep.h:481 */
+LUPOS_CORE_VOID(lupos_core_header_print_irqtrace_events, (struct task_struct *curr), print_irqtrace_events(curr))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/module.h:855 */
+LUPOS_CORE_VOID(lupos_core_header_print_modules, (void), print_modules())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/sched/ext.h:297 */
+LUPOS_CORE_VOID(lupos_core_header_print_scx_info, (const char *log_lvl, struct task_struct *p), print_scx_info(log_lvl, p))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/stop_machine.h:85 */
+LUPOS_CORE_VOID(lupos_core_header_print_stop_info, (const char *log_lvl, struct task_struct *task), print_stop_info(log_lvl, task))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/stats.h:109 */
+LUPOS_CORE_VOID(lupos_core_header_psi_account_irqtime, (struct rq *rq, struct task_struct *curr, struct task_struct *prev), psi_account_irqtime(rq, curr, prev))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/psi.h:50 */
+LUPOS_CORE_VOID(lupos_core_header_psi_init, (void), psi_init())
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/stats.h:211 */
+LUPOS_CORE_VOID(lupos_core_header_psi_sched_switch, (struct task_struct *prev, struct task_struct *next, bool sleep), psi_sched_switch(prev, next, sleep))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/sched/clock.h:41 */
+LUPOS_CORE_VOID(lupos_core_header_sched_clock_tick, (void), sched_clock_tick())
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:3497 */
+LUPOS_CORE_VOID(lupos_core_header_sched_core_account_forceidle, (struct rq *rq), sched_core_account_forceidle(rq))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:3505 */
+LUPOS_CORE_VOID(lupos_core_header_sched_core_tick, (struct rq *rq), sched_core_tick(rq))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:2112 */
+LUPOS_CORE_VOID(lupos_core_header_sched_domains_numa_masks_clear, (unsigned int cpu), sched_domains_numa_masks_clear(cpu))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:2111 */
+LUPOS_CORE_VOID(lupos_core_header_sched_domains_numa_masks_set, (unsigned int cpu), sched_domains_numa_masks_set(cpu))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:610 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VALUE(int, lupos_core_header_sched_group_set_idle, (struct task_group *tg, long idle), sched_group_set_idle(tg, idle))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:609 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VALUE(int, lupos_core_header_sched_group_set_shares, (struct task_group *tg, unsigned long shares), sched_group_set_shares(tg, shares))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:2109 */
+LUPOS_CORE_VOID(lupos_core_header_sched_init_numa, (int offline_node), sched_init_numa(offline_node))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:3677 */
+LUPOS_CORE_VOID(lupos_core_header_sched_uclamp_enable, (void), sched_uclamp_enable())
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:2110 */
+LUPOS_CORE_VOID(lupos_core_header_sched_update_numa, (int cpu, bool online), sched_update_numa(cpu, online))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:88 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VALUE(int, lupos_core_header_scx_cgroup_can_attach, (struct cgroup_taskset *tset), scx_cgroup_can_attach(tset))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:90 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_scx_cgroup_cancel_attach, (struct cgroup_taskset *tset), scx_cgroup_cancel_attach(tset))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:89 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_scx_cgroup_move_task, (struct task_struct *p), scx_cgroup_move_task(p))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:93 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_scx_group_set_bandwidth, (struct task_group *tg, u64 period_us, u64 quota_us, u64 burst_us), scx_group_set_bandwidth(tg, period_us, quota_us, burst_us))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:92 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_scx_group_set_idle, (struct task_group *tg, bool idle), scx_group_set_idle(tg, idle))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:91 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_scx_group_set_weight, (struct task_group *tg, unsigned long cgrp_weight), scx_group_set_weight(tg, cgrp_weight))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:52 */
+LUPOS_CORE_VOID(lupos_core_header_scx_rq_activate, (struct rq *rq), scx_rq_activate(rq))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:53 */
+LUPOS_CORE_VOID(lupos_core_header_scx_rq_deactivate, (struct rq *rq), scx_rq_deactivate(rq))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:85 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_scx_tg_init, (struct task_group *tg), scx_tg_init(tg))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:87 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_scx_tg_offline, (struct task_group *tg), scx_tg_offline(tg))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:86 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VALUE(int, lupos_core_header_scx_tg_online, (struct task_group *tg), scx_tg_online(tg))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/ext/ext.h:45 */
+LUPOS_CORE_VOID(lupos_core_header_scx_tick, (struct rq *rq), scx_tick(rq))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/seq_file.h:122 */
+LUPOS_CORE_VOID(lupos_core_header_seq_puts, (struct seq_file *m, const char *s), seq_puts(m, s))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:2375 */
+LUPOS_CORE_VOID(lupos_core_header_set_task_rq, (struct task_struct *p, unsigned int cpu), set_task_rq(p, cpu))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/stop_machine.h:53 */
+LUPOS_CORE_VALUE(int, lupos_core_header_stop_one_cpu, (unsigned int cpu, cpu_stop_fn_t fn, void *arg), stop_one_cpu(cpu, fn, arg))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/stop_machine.h:72 */
+LUPOS_CORE_VOID(lupos_core_header_stop_one_cpu_nowait, (unsigned int cpu, cpu_stop_fn_t fn, void *arg, struct cpu_stop_work *work_buf), stop_one_cpu_nowait(cpu, fn, arg, work_buf))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/tick.h:145 */
+LUPOS_CORE_VALUE(int, lupos_core_header_tick_nohz_tick_stopped_cpu, (int cpu), tick_nohz_tick_stopped_cpu(cpu))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/nmi.h:55 */
+LUPOS_CORE_VOID(lupos_core_header_touch_all_softlockup_watchdogs, (void), touch_all_softlockup_watchdogs())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/nmi.h:141 */
+LUPOS_CORE_VOID(lupos_core_header_touch_nmi_watchdog, (void), touch_nmi_watchdog())
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/nmi.h:180 */
+LUPOS_CORE_VALUE(bool, lupos_core_header_trigger_single_cpu_backtrace, (int cpu), trigger_single_cpu_backtrace(cpu))
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/sched.h:571 */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VOID(lupos_core_header_unregister_fair_sched_group, (struct task_group *tg), unregister_fair_sched_group(tg))
+#endif
+/* /workspace/shared/lupos-recovery-20261003/linux/kernel/sched/pelt.h:23 */
+LUPOS_CORE_VALUE(int, lupos_core_header_update_hw_load_avg, (u64 now, struct rq *rq, u64 capacity), update_hw_load_avg(now, rq, capacity))
+/* /workspace/shared/lupos-recovery-20261003/linux/include/linux/vtime.h:26 */
+LUPOS_CORE_VOID(lupos_core_header_vtime_init_idle, (struct task_struct *tsk, int cpu), vtime_init_idle(tsk, cpu))
+/* kernel/sched/sched.h:566, configured external-or-inline alternative. */
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VALUE(int, lupos_core_header_alloc_fair_sched_group, (struct task_group *tg, struct task_group *parent), alloc_fair_sched_group(tg, parent))
+#endif
+/* include/linux/capability.h:166, configured external-or-inline alternative. */
+LUPOS_CORE_VALUE(bool, lupos_core_header_capable, (int cap), capable(cap))
+/* kernel/sched/sched.h:1894/1913 native static-key/config macro. */
+LUPOS_CORE_VALUE(bool, lupos_core_header_scx_switched_all, (void), scx_switched_all())

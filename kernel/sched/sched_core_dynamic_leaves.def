@@ -1,0 +1,24 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+#ifdef CONFIG_PREEMPT_DYNAMIC
+/* Only native per-target mutation; __sched_dynamic_update stays Rust. */
+#define LC_DYNAMIC_TARGET(target) \
+LUPOS_CORE_VOID(lupos_core_dynamic_set_##target, (bool enabled), \
+	if (enabled) LUPOS_CORE_DYNAMIC_ENABLE(target); else LUPOS_CORE_DYNAMIC_DISABLE(target))
+LC_DYNAMIC_TARGET(cond_resched)
+LC_DYNAMIC_TARGET(might_resched)
+LC_DYNAMIC_TARGET(preempt_schedule)
+LC_DYNAMIC_TARGET(preempt_schedule_notrace)
+LC_DYNAMIC_TARGET(irqentry_exit_cond_resched)
+#undef LC_DYNAMIC_TARGET
+LUPOS_CORE_VOID(lupos_core_dynamic_set_preempt_lazy, (bool enabled),
+	if (enabled) static_key_enable(&lupos_core_sk_dynamic_preempt_lazy.key);
+	else static_key_disable(&lupos_core_sk_dynamic_preempt_lazy.key))
+#if !defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
+LUPOS_CORE_VALUE(bool, lupos_core_dynamic_cond_resched_enabled, (void), static_branch_unlikely(&sk_dynamic_cond_resched))
+LUPOS_CORE_VALUE(bool, lupos_core_dynamic_might_resched_enabled, (void), static_branch_unlikely(&sk_dynamic_might_resched))
+#ifdef CONFIG_PREEMPTION
+LUPOS_CORE_VALUE(bool, lupos_core_dynamic_preempt_schedule_enabled, (void), static_branch_unlikely(&sk_dynamic_preempt_schedule))
+LUPOS_CORE_VALUE(bool, lupos_core_dynamic_preempt_schedule_notrace_enabled, (void), static_branch_unlikely(&sk_dynamic_preempt_schedule_notrace))
+#endif
+#endif
+#endif

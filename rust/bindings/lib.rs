@@ -121,3 +121,15 @@ pub mod shmem_native {
 pub mod filemap_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/filemap_native_generated.rs"));
 }
+
+// Keep generated scheduler declarations under the existing bindings policy.
+// Handwritten scheduler owners retain the ordinary kernel diagnostics.
+#[cfg(CONFIG_RUST_SCHED_CORE)]
+pub mod sched_core_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_core_generated.rs"));
+}
+
+#[cfg(CONFIG_RUST_SCHED_FAIR)]
+pub mod sched_fair_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/sched_fair_generated.rs"));
+}

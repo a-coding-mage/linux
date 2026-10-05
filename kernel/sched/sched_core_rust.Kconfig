@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# SOURCE PROPOSAL ONLY. The negative dependency is deliberate admission
+# blocking, not a suggested reduction of any kernel protection.
+config RUST_SCHED_CORE
+    bool "Rust scheduler core source proposal"
+    depends on RUST && X86_64 && BROKEN
+    default n
+    help
+      Source translation of kernel/sched/core.c. Not admitted for execution:
+      the configured native bindings, callback identities, compiler policy,
+      macro leaves and context-switch ABI require integrated qualification.
+      No original core.c body is used as an enabled implementation fallback.

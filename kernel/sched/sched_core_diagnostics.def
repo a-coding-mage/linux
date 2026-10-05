@@ -1,0 +1,121 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* One macro expansion per Rust diagnostic site. No shared once-state or
+ * runtime-ID dispatcher. Numeric suffixes are stable source mapping IDs,
+ * not a claim of identical emitted/native source coordinates. */
+LUPOS_CORE_VOID(lupos_core_bug_on_site_5951, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_7585, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_8619, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_8631, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_8967, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_8968, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_8969, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_8970, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_8972, (bool condition), BUG_ON(condition))
+LUPOS_CORE_VOID(lupos_core_bug_on_site_8973, (bool condition), BUG_ON(condition))
+/* include/linux/debug_locks.h macro expansion; preserve the original expression text. */
+LUPOS_CORE_BODY(bool, lupos_core_debug_locks_warn_on_site_5990, (bool condition),
+	int ret = 0;
+	if (!oops_in_progress && unlikely(condition)) {
+		instrumentation_begin();
+		if (debug_locks_off() && !debug_locks_silent)
+			WARN(1, "DEBUG_LOCKS_WARN_ON(%s)", "(preempt_count() < 0)");
+		instrumentation_end();
+		ret = 1;
+	}
+	return ret;)
+/* include/linux/debug_locks.h macro expansion; preserve the original expression text. */
+LUPOS_CORE_BODY(bool, lupos_core_debug_locks_warn_on_site_5999, (bool condition),
+	int ret = 0;
+	if (!oops_in_progress && unlikely(condition)) {
+		instrumentation_begin();
+		if (debug_locks_off() && !debug_locks_silent)
+			WARN(1, "DEBUG_LOCKS_WARN_ON(%s)", "(preempt_count() & PREEMPT_MASK) >= PREEMPT_MASK - 10");
+		instrumentation_end();
+		ret = 1;
+	}
+	return ret;)
+/* include/linux/debug_locks.h macro expansion; preserve the original expression text. */
+LUPOS_CORE_BODY(bool, lupos_core_debug_locks_warn_on_site_6026, (bool condition),
+	int ret = 0;
+	if (!oops_in_progress && unlikely(condition)) {
+		instrumentation_begin();
+		if (debug_locks_off() && !debug_locks_silent)
+			WARN(1, "DEBUG_LOCKS_WARN_ON(%s)", "pc - uval > pc");
+		instrumentation_end();
+		ret = 1;
+	}
+	return ret;)
+/* include/linux/debug_locks.h macro expansion; preserve the original expression text. */
+LUPOS_CORE_BODY(bool, lupos_core_debug_locks_warn_on_site_6033, (bool condition),
+	int ret = 0;
+	if (!oops_in_progress && unlikely(condition)) {
+		instrumentation_begin();
+		if (debug_locks_off() && !debug_locks_silent)
+			WARN(1, "DEBUG_LOCKS_WARN_ON(%s)", "(val < PREEMPT_MASK) && !(preempt_count() & PREEMPT_MASK)");
+		instrumentation_end();
+		ret = 1;
+	}
+	return ret;)
+LUPOS_CORE_VOID(lupos_core_lockdep_assert_site_7370, (bool condition), lockdep_assert(condition))
+LUPOS_CORE_VOID(lupos_core_lockdep_assert_site_7638, (bool condition), lockdep_assert(condition))
+LUPOS_CORE_VOID(lupos_core_lockdep_assert_site_7644, (bool condition), lockdep_assert(condition))
+LUPOS_CORE_VOID(lupos_core_lockdep_assert_site_7651, (bool condition), lockdep_assert(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_message_site_8878, (bool condition, const char *message), WARN(condition, "%s", message))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_message_site_7064, (bool condition, const char *message), WARN_ONCE(condition, "%s", message))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_11057, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_11115, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_11122, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_11203, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_11266, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_11301, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_5876, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_5885, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_5905, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_5918, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_5922, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_5938, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_5943, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6121, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6334, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6418, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6464, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6608, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6624, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6634, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6651, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6667, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6754, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6806, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_6807, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_7051, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_7333, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_7399, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_7604, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_8084, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_8532, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_once_site_9660, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_site_10370, (bool condition), WARN_ON(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_site_6869, (bool condition), WARN_ON(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_site_7717, (bool condition), WARN_ON(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_site_7718, (bool condition), WARN_ON(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_site_9126, (bool condition), WARN_ON(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_site_9445, (bool condition), WARN_ON(condition))
+#ifdef CONFIG_PREEMPT_DYNAMIC
+LUPOS_CORE_VALUE(bool, lupos_core_warn_preempt_model_none, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_preempt_model_voluntary, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_preempt_model_full, (bool condition), WARN_ON_ONCE(condition))
+LUPOS_CORE_VALUE(bool, lupos_core_warn_preempt_model_lazy, (bool condition), WARN_ON_ONCE(condition))
+#endif
+#ifdef CONFIG_DEBUG_ATOMIC_SLEEP
+LUPOS_CORE_VOID(lupos_core_warn_invalid_sleep_state, (bool condition, unsigned int state, unsigned long ip),
+	WARN_ONCE(condition, "do not call blocking ops when !TASK_RUNNING; "
+		"state=%x set at [<%p>] %pS\n", state, (void *)ip, (void *)ip))
+#endif
+
+/* BUG can be a NOP in the original generic header; preserve its caller's
+ * continuation, especially do_task_dead's explicit cpu_relax loop. */
+LUPOS_CORE_VOID(lupos_core_bug_site_3599, (void), BUG())
+LUPOS_CORE_VOID(lupos_core_bug_site_6184, (void), BUG())
+LUPOS_CORE_VOID(lupos_core_bug_site_6223, (void), BUG())
+LUPOS_CORE_VOID(lupos_core_bug_site_7289, (void), BUG())
+LUPOS_CORE_VOID(lupos_core_bug_site_8913, (void), BUG())

@@ -1,0 +1,194 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Values/types derive from configured original macros; no replacement numbers. */
+#ifdef DEQUEUE_DELAYED
+static const __typeof__(DEQUEUE_DELAYED) RUST_FAIR_DEQUEUE_DELAYED = DEQUEUE_DELAYED;
+#endif
+#ifdef DEQUEUE_NOCLOCK
+static const __typeof__(DEQUEUE_NOCLOCK) RUST_FAIR_DEQUEUE_NOCLOCK = DEQUEUE_NOCLOCK;
+#endif
+#ifdef DEQUEUE_SLEEP
+static const __typeof__(DEQUEUE_SLEEP) RUST_FAIR_DEQUEUE_SLEEP = DEQUEUE_SLEEP;
+#endif
+#ifdef DEQUEUE_SPECIAL
+static const __typeof__(DEQUEUE_SPECIAL) RUST_FAIR_DEQUEUE_SPECIAL = DEQUEUE_SPECIAL;
+#endif
+#ifdef DEQUEUE_THROTTLE
+static const __typeof__(DEQUEUE_THROTTLE) RUST_FAIR_DEQUEUE_THROTTLE = DEQUEUE_THROTTLE;
+#endif
+#ifdef ENQUEUE_DELAYED
+static const __typeof__(ENQUEUE_DELAYED) RUST_FAIR_ENQUEUE_DELAYED = ENQUEUE_DELAYED;
+#endif
+#ifdef ENQUEUE_QUEUED
+static const __typeof__(ENQUEUE_QUEUED) RUST_FAIR_ENQUEUE_QUEUED = ENQUEUE_QUEUED;
+#endif
+#ifdef ENQUEUE_WAKEUP
+static const __typeof__(ENQUEUE_WAKEUP) RUST_FAIR_ENQUEUE_WAKEUP = ENQUEUE_WAKEUP;
+#endif
+#ifdef GFP_KERNEL
+static const __typeof__(GFP_KERNEL) RUST_FAIR_GFP_KERNEL = GFP_KERNEL;
+#endif
+#ifdef __GFP_NOWARN
+static const __typeof__(__GFP_NOWARN) RUST_FAIR_GFP_NOWARN = __GFP_NOWARN;
+#endif
+#ifdef HPAGE_SIZE
+static const __typeof__(HPAGE_SIZE) RUST_FAIR_HPAGE_SIZE = HPAGE_SIZE;
+#endif
+#ifdef HZ
+static const __typeof__(HZ) RUST_FAIR_HZ = HZ;
+#endif
+#ifdef LAST_CPUPID_MASK
+static const __typeof__(LAST_CPUPID_MASK) RUST_FAIR_LAST_CPUPID_MASK = LAST_CPUPID_MASK;
+#endif
+#define LBF_ACTIVE_LB	0x10
+#ifdef LBF_ACTIVE_LB
+static const __typeof__(LBF_ACTIVE_LB) RUST_FAIR_LBF_ACTIVE_LB = LBF_ACTIVE_LB;
+#endif
+#define LBF_ALL_PINNED	0x01
+#ifdef LBF_ALL_PINNED
+static const __typeof__(LBF_ALL_PINNED) RUST_FAIR_LBF_ALL_PINNED = LBF_ALL_PINNED;
+#endif
+#define LBF_DST_PINNED  0x04
+#ifdef LBF_DST_PINNED
+static const __typeof__(LBF_DST_PINNED) RUST_FAIR_LBF_DST_PINNED = LBF_DST_PINNED;
+#endif
+#define LBF_LLC_PINNED	0x20
+#ifdef LBF_LLC_PINNED
+static const __typeof__(LBF_LLC_PINNED) RUST_FAIR_LBF_LLC_PINNED = LBF_LLC_PINNED;
+#endif
+#define LBF_NEED_BREAK	0x02
+#ifdef LBF_NEED_BREAK
+static const __typeof__(LBF_NEED_BREAK) RUST_FAIR_LBF_NEED_BREAK = LBF_NEED_BREAK;
+#endif
+#define LBF_SOME_PINNED	0x08
+#ifdef LBF_SOME_PINNED
+static const __typeof__(LBF_SOME_PINNED) RUST_FAIR_LBF_SOME_PINNED = LBF_SOME_PINNED;
+#endif
+#ifdef LOAD_AVG_PERIOD
+static const __typeof__(LOAD_AVG_PERIOD) RUST_FAIR_LOAD_AVG_PERIOD = LOAD_AVG_PERIOD;
+#endif
+#ifdef MAX_NUMNODES
+static const __typeof__(MAX_NUMNODES) RUST_FAIR_MAX_NUMNODES = MAX_NUMNODES;
+#endif
+#define MAX_PINNED_INTERVAL	512
+#ifdef MAX_PINNED_INTERVAL
+static const __typeof__(MAX_PINNED_INTERVAL) RUST_FAIR_MAX_PINNED_INTERVAL = MAX_PINNED_INTERVAL;
+#endif
+#ifdef MAX_SHARES
+static const __typeof__(MAX_SHARES) RUST_FAIR_MAX_SHARES = MAX_SHARES;
+#endif
+#define MIN_NR_TASKS_DURING_FORCEIDLE	2
+#ifdef MIN_NR_TASKS_DURING_FORCEIDLE
+static const __typeof__(MIN_NR_TASKS_DURING_FORCEIDLE) RUST_FAIR_MIN_NR_TASKS_DURING_FORCEIDLE = MIN_NR_TASKS_DURING_FORCEIDLE;
+#endif
+#ifdef MIN_SHARES
+static const __typeof__(MIN_SHARES) RUST_FAIR_MIN_SHARES = MIN_SHARES;
+#endif
+#ifdef NICE_0_LOAD
+static const __typeof__(NICE_0_LOAD) RUST_FAIR_NICE_0_LOAD = NICE_0_LOAD;
+#endif
+#ifdef NOHZ_BALANCE_KICK
+static const __typeof__(NOHZ_BALANCE_KICK) RUST_FAIR_NOHZ_BALANCE_KICK = NOHZ_BALANCE_KICK;
+#endif
+#ifdef NOHZ_KICK_MASK
+static const __typeof__(NOHZ_KICK_MASK) RUST_FAIR_NOHZ_KICK_MASK = NOHZ_KICK_MASK;
+#endif
+#ifdef NOHZ_NEWILB_KICK
+static const __typeof__(NOHZ_NEWILB_KICK) RUST_FAIR_NOHZ_NEWILB_KICK = NOHZ_NEWILB_KICK;
+#endif
+#ifdef NOHZ_NEXT_KICK
+static const __typeof__(NOHZ_NEXT_KICK) RUST_FAIR_NOHZ_NEXT_KICK = NOHZ_NEXT_KICK;
+#endif
+#ifdef NOHZ_STATS_KICK
+static const __typeof__(NOHZ_STATS_KICK) RUST_FAIR_NOHZ_STATS_KICK = NOHZ_STATS_KICK;
+#endif
+#ifdef NR_CPUS
+static const __typeof__(NR_CPUS) RUST_FAIR_NR_CPUS = NR_CPUS;
+#endif
+#define NUMA_IMBALANCE_MIN 2
+#ifdef NUMA_IMBALANCE_MIN
+static const __typeof__(NUMA_IMBALANCE_MIN) RUST_FAIR_NUMA_IMBALANCE_MIN = NUMA_IMBALANCE_MIN;
+#endif
+#ifdef PAGE_ACCESS_TIME_MASK
+static const __typeof__(PAGE_ACCESS_TIME_MASK) RUST_FAIR_PAGE_ACCESS_TIME_MASK = PAGE_ACCESS_TIME_MASK;
+#endif
+#ifdef PAGE_SIZE
+static const __typeof__(PAGE_SIZE) RUST_FAIR_PAGE_SIZE = PAGE_SIZE;
+#endif
+#ifdef PELT_MIN_DIVIDER
+static const __typeof__(PELT_MIN_DIVIDER) RUST_FAIR_PELT_MIN_DIVIDER = PELT_MIN_DIVIDER;
+#endif
+#ifdef PF_EXITING
+static const __typeof__(PF_EXITING) RUST_FAIR_PF_EXITING = PF_EXITING;
+#endif
+#ifdef RUNTIME_INF
+static const __typeof__(RUNTIME_INF) RUST_FAIR_RUNTIME_INF = RUNTIME_INF;
+#endif
+#ifdef SCHED_CAPACITY_SCALE
+static const __typeof__(SCHED_CAPACITY_SCALE) RUST_FAIR_SCHED_CAPACITY_SCALE = SCHED_CAPACITY_SCALE;
+#endif
+#ifdef SCHED_CPUFREQ_IOWAIT
+static const __typeof__(SCHED_CPUFREQ_IOWAIT) RUST_FAIR_SCHED_CPUFREQ_IOWAIT = SCHED_CPUFREQ_IOWAIT;
+#endif
+#ifdef SCHED_NR_MIGRATE_BREAK
+static const __typeof__(SCHED_NR_MIGRATE_BREAK) RUST_FAIR_SCHED_NR_MIGRATE_BREAK = SCHED_NR_MIGRATE_BREAK;
+#endif
+static const __typeof__(SD_ASYM_CPUCAPACITY) RUST_FAIR_SD_ASYM_CPUCAPACITY = SD_ASYM_CPUCAPACITY;
+static const __typeof__(SD_ASYM_PACKING) RUST_FAIR_SD_ASYM_PACKING = SD_ASYM_PACKING;
+static const __typeof__(SD_BALANCE_FORK) RUST_FAIR_SD_BALANCE_FORK = SD_BALANCE_FORK;
+static const __typeof__(SD_BALANCE_NEWIDLE) RUST_FAIR_SD_BALANCE_NEWIDLE = SD_BALANCE_NEWIDLE;
+static const __typeof__(SD_CLUSTER) RUST_FAIR_SD_CLUSTER = SD_CLUSTER;
+static const __typeof__(SD_NUMA) RUST_FAIR_SD_NUMA = SD_NUMA;
+static const __typeof__(SD_PREFER_SIBLING) RUST_FAIR_SD_PREFER_SIBLING = SD_PREFER_SIBLING;
+static const __typeof__(SD_SERIALIZE) RUST_FAIR_SD_SERIALIZE = SD_SERIALIZE;
+static const __typeof__(SD_SHARE_CPUCAPACITY) RUST_FAIR_SD_SHARE_CPUCAPACITY = SD_SHARE_CPUCAPACITY;
+static const __typeof__(SD_SHARE_LLC) RUST_FAIR_SD_SHARE_LLC = SD_SHARE_LLC;
+static const __typeof__(SD_WAKE_AFFINE) RUST_FAIR_SD_WAKE_AFFINE = SD_WAKE_AFFINE;
+#define SKIP_AGE_LOAD	0x02
+#ifdef SKIP_AGE_LOAD
+static const __typeof__(SKIP_AGE_LOAD) RUST_FAIR_SKIP_AGE_LOAD = SKIP_AGE_LOAD;
+#endif
+#ifdef TASK_NEW
+static const __typeof__(TASK_NEW) RUST_FAIR_TASK_NEW = TASK_NEW;
+#endif
+#ifdef TICK_NSEC
+static const __typeof__(TICK_NSEC) RUST_FAIR_TICK_NSEC = TICK_NSEC;
+#endif
+#define UPDATE_TG	0x01
+#ifdef UPDATE_TG
+static const __typeof__(UPDATE_TG) RUST_FAIR_UPDATE_TG = UPDATE_TG;
+#endif
+#define UPDATE_UTIL_EST	0x10
+#ifdef UPDATE_UTIL_EST
+static const __typeof__(UPDATE_UTIL_EST) RUST_FAIR_UPDATE_UTIL_EST = UPDATE_UTIL_EST;
+#endif
+#define UTIL_EST_MARGIN (SCHED_CAPACITY_SCALE / 100)
+#ifdef UTIL_EST_MARGIN
+static const __typeof__(UTIL_EST_MARGIN) RUST_FAIR_UTIL_EST_MARGIN = UTIL_EST_MARGIN;
+#endif
+#ifdef VM_MIXEDMAP
+static const __typeof__(VM_MIXEDMAP) RUST_FAIR_VM_MIXEDMAP = VM_MIXEDMAP;
+#endif
+#ifdef VM_READ
+static const __typeof__(VM_READ) RUST_FAIR_VM_READ = VM_READ;
+#endif
+#ifdef VM_WRITE
+static const __typeof__(VM_WRITE) RUST_FAIR_VM_WRITE = VM_WRITE;
+#endif
+#ifdef WEIGHT_IDLEPRIO
+static const __typeof__(WEIGHT_IDLEPRIO) RUST_FAIR_WEIGHT_IDLEPRIO = WEIGHT_IDLEPRIO;
+#endif
+#ifdef WF_CURRENT_CPU
+static const __typeof__(WF_CURRENT_CPU) RUST_FAIR_WF_CURRENT_CPU = WF_CURRENT_CPU;
+#endif
+#ifdef WF_FORK
+static const __typeof__(WF_FORK) RUST_FAIR_WF_FORK = WF_FORK;
+#endif
+#ifdef WF_RQ_SELECTED
+static const __typeof__(WF_RQ_SELECTED) RUST_FAIR_WF_RQ_SELECTED = WF_RQ_SELECTED;
+#endif
+#ifdef WF_SYNC
+static const __typeof__(WF_SYNC) RUST_FAIR_WF_SYNC = WF_SYNC;
+#endif
+#ifdef WF_TTWU
+static const __typeof__(WF_TTWU) RUST_FAIR_WF_TTWU = WF_TTWU;
+#endif

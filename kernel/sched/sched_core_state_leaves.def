@@ -1,0 +1,63 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Address-only native leaves, except explicitly named native initialization
+ * and class/cpumask header iterator operations below. */
+LUPOS_CORE_VALUE(bool *, lupos_core_resched_warned_once, (void), &lupos_core_resched_warned_once_state)
+LUPOS_CORE_VALUE(struct lockdep_map *, lupos_core_sched_wait_map, (void), &lupos_core_sched_map)
+LUPOS_CORE_VALUE(struct sched_change_ctx *, lupos_core_this_sched_change_ctx, (void), this_cpu_ptr(&sched_change_ctx))
+LUPOS_CORE_VALUE(int *, lupos_core_num_cpus_frozen, (void), &num_cpus_frozen)
+LUPOS_CORE_VALUE(char *, lupos_core_preempt_model_buffer, (void), lupos_core_preempt_model_buf)
+LUPOS_CORE_VALUE(const char *const *, lupos_core_preempt_modes, (void), preempt_modes)
+#ifdef CONFIG_DEBUG_ATOMIC_SLEEP
+LUPOS_CORE_VALUE(unsigned long *, lupos_core_might_resched_prev_jiffy, (void), &lupos_core_might_resched_jiffy)
+LUPOS_CORE_VALUE(unsigned long *, lupos_core_cant_sleep_prev_jiffy, (void), &lupos_core_cant_sleep_jiffy)
+#ifdef CONFIG_SMP
+LUPOS_CORE_VALUE(unsigned long *, lupos_core_cant_migrate_prev_jiffy, (void), &lupos_core_cant_migrate_jiffy)
+#endif
+#endif
+#ifdef CONFIG_SCHED_CORE
+LUPOS_CORE_VALUE(struct balance_callback *, lupos_core_core_balance_head, (int cpu), &per_cpu(core_balance_head, cpu))
+#endif
+#ifdef CONFIG_HOTPLUG_CPU
+LUPOS_CORE_VALUE(struct cpu_stop_work *, lupos_core_this_push_work, (void), this_cpu_ptr(&push_work))
+#endif
+#ifdef CONFIG_PREEMPT_DYNAMIC
+LUPOS_CORE_VALUE(struct mutex *, lupos_core_sched_dynamic_mutex, (void), &sched_dynamic_mutex)
+#endif
+#ifdef CONFIG_CFS_BANDWIDTH
+LUPOS_CORE_VALUE(struct mutex *, lupos_core_cfs_constraints_mutex, (void), &cfs_constraints_mutex)
+#endif
+#ifdef CONFIG_CGROUP_SCHED
+LUPOS_CORE_VALUE(struct kmem_cache **, lupos_core_task_group_cache_slot, (void), &task_group_cache)
+LUPOS_CORE_VALUE(struct kmem_cache *, lupos_core_kmem_cache_task_group_create, (void), KMEM_CACHE(task_group, 0))
+LUPOS_CORE_VALUE(struct list_head *, lupos_core_task_groups, (void), &task_groups)
+LUPOS_CORE_VALUE(spinlock_t *, lupos_core_task_group_lock, (void), &task_group_lock)
+#endif
+#ifdef CONFIG_FAIR_GROUP_SCHED
+LUPOS_CORE_VALUE(struct cfs_rq __percpu *, lupos_core_percpu_runqueues_cfs, (void), &runqueues.cfs)
+#endif
+#ifdef CONFIG_RT_GROUP_SCHED
+LUPOS_CORE_VALUE(struct cftype *, lupos_core_rt_group_files, (void), rt_group_files)
+LUPOS_CORE_VALUE(bool, lupos_core_rt_group_sched_enabled, (void), rt_group_sched_enabled())
+LUPOS_CORE_VOID(lupos_core_rt_group_sched_enable, (void), static_branch_enable(&rt_group_sched))
+LUPOS_CORE_VOID(lupos_core_rt_group_sched_disable, (void), static_branch_disable(&rt_group_sched))
+#endif
+LUPOS_CORE_VOID(lupos_core_prandom_init_sched_once, (void), prandom_init_once(&sched_rnd_state))
+#ifdef CONFIG_NO_HZ_FULL
+LUPOS_CORE_VOID(lupos_core_alloc_tick_work_percpu, (void), tick_work_cpu = alloc_percpu(struct tick_work))
+LUPOS_CORE_VALUE(bool, lupos_core_tick_work_base_is_null, (void), !tick_work_cpu)
+LUPOS_CORE_VALUE(struct tick_work *, lupos_core_tick_work_cpu, (int cpu), per_cpu_ptr(tick_work_cpu, cpu))
+#endif
+LUPOS_CORE_VOID(lupos_core_sched_smt_present_inc_cpuslocked, (void), static_branch_inc_cpuslocked(&sched_smt_present))
+LUPOS_CORE_VOID(lupos_core_sched_smt_present_dec_cpuslocked, (void), static_branch_dec_cpuslocked(&sched_smt_present))
+LUPOS_CORE_VALUE(const struct sched_class *, lupos_core_first_class, (void), __sched_class_highest)
+LUPOS_CORE_BODY(const struct sched_class *, lupos_core_next_class, (const struct sched_class *class),
+	++class; return class < __sched_class_lowest ? class : NULL;)
+LUPOS_CORE_VALUE(const struct sched_class *, lupos_core_first_active_class, (void), __sched_class_highest)
+LUPOS_CORE_VALUE(const struct sched_class *, lupos_core_first_active_class_from, (const struct sched_class *class), class)
+LUPOS_CORE_BODY(const struct sched_class *, lupos_core_next_active_class, (const struct sched_class *class),
+	class = next_active_class(class); return class != __sched_class_lowest ? class : NULL;)
+/* Exact two clauses of for_each_set_bit_wrap from include/linux/find.h.
+ * Unlike cpumask_next_wrap, the second clause terminates after one traversal. */
+LUPOS_CORE_VALUE(int, lupos_core_cpu_next_wrap, (int cpu, const struct cpumask *mask, int start),
+	cpu == -1 ? find_next_bit_wrap(cpumask_bits(mask), small_cpumask_bits, start) :
+	__for_each_wrap(cpumask_bits(mask), small_cpumask_bits, start, cpu + 1))

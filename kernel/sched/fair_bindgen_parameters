@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-2.0
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--opaque-type 'xregs_state|desc_struct|arch_lbr_state|local_apic|alt_instr|x86_msi_data|x86_msi_addr_lo|lowcore|tod_clock|tpi_info|uv_cb.*|uv_secret.*|zpci_fib'
+# Native type spelling for all owner callbacks crossing C/Rust.
+--with-attribute-custom-struct=rq='#[cfi_encoding="2rq"]'
+--with-attribute-custom-struct=rq_flags='#[cfi_encoding="8rq_flags"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=sched_entity='#[cfi_encoding="12sched_entity"]'
+--with-attribute-custom-struct=sched_dl_entity='#[cfi_encoding="15sched_dl_entity"]'
+--with-attribute-custom-struct=cfs_rq='#[cfi_encoding="6cfs_rq"]'
+--with-attribute-custom-struct=load_weight='#[cfi_encoding="11load_weight"]'
+--with-attribute-custom-struct=task_group='#[cfi_encoding="10task_group"]'
+--with-attribute-custom-struct=affinity_context='#[cfi_encoding="16affinity_context"]'
+--with-attribute-custom-struct=callback_head='#[cfi_encoding="13callback_head"]'
+--with-attribute-custom-struct=hrtimer='#[cfi_encoding="7hrtimer"]'
+--with-attribute-custom-struct=rb_node='#[cfi_encoding="7rb_node"]'
+--newtype-global-enum 'hrtimer_restart'
+--with-attribute-custom-enum=hrtimer_restart='#[cfi_encoding="15hrtimer_restart"]'
+# Broad configured header view is deliberate source-stage input. Reduce only
+# after integrated ABI/callback review, without hand-written layout substitutes.
+--allowlist-type '.*'
+--allowlist-var '.*'
+--allowlist-function '.*'
