@@ -38,6 +38,31 @@ The declaration recipe and module are inactive proposals. The selector is
 default-off with RUST and BROKEN dependencies; selection-time and both source
 errors remain. No objects are selected and no original C owner is excluded.
 
+Namespace transition and staged cleanup
+--------------------------------------
+
+Independent review restores namespace-fd flag normalization, pidfd error checks,
+fd lifetime on each return, and the original boundary between preparation
+cleanup and caller cleanup. User and active-PID namespace snapshots, references,
+installation and releases retain their native ordering. Successful credential
+transfer precedes the original filesystem, IPC and time commits. Namespace exit
+stores the nullable proxy pointer itself rather than dereferencing NULL.
+
+Configured unsupported-namespace checks, native syscall metadata and the exact
+native init-entry shell are retained. The existing Rust transition algorithms
+remain the sole candidate owners, with explicit unsafe scopes and no diagnostic
+exemptions. Native types and operations replace fabricated pointer/layout views.
+
+The pinned source has an inherited preparation path where filesystem-copy
+failure leaves a prepared credential outside flag-gated cleanup. This checkpoint
+preserves that behavior instead of silently changing the C policy. Source
+correspondence does not establish freedom from native bugs.
+
+Generated types, syscall/ABI/CFI, full init-body attributes and relocations,
+diagnostic/instrumentation identity, non-local cleanup and runtime remain open.
+The default-off BROKEN selector, selection errors and source holds remain;
+no new objects are selected and the original C owner stays unchanged.
+
 Verification scope
 ------------------
 

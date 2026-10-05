@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Inactive source-only parameter proposal. Do not execute generation in this hold.
+# Input: kernel/nsproxy_native_bindings.h; proposed module: nsproxy_native.
+# Preserve configured kernel bindgen defaults (--use-core, --ctypes-prefix ffi,
+# --no-layout-tests, native target/config flags). No shadow structs or C casts.
+--no-doc-comments
+--no-default '.*'
+--no-prepend-enum-name
+--allowlist-type '^(nsproxy|nsset|fd|refcount_t|atomic_t|kmem_cache|task_struct|cred|fs_struct|ns_common|mnt_namespace|uts_namespace|ipc_namespace|pid_namespace|cgroup_namespace|net|time_namespace|user_namespace|file|pid)$'
+# These pointees are never dereferenced, sized, allocated or passed by value in
+# Rust. nsproxy, nsset and fd must NOT be opaque: field access / stack / return ABI.
+--opaque-type '^(kmem_cache|task_struct|cred|fs_struct|ns_common|mnt_namespace|uts_namespace|ipc_namespace|pid_namespace|cgroup_namespace|net|time_namespace|user_namespace|file|pid)$'
+--allowlist-function '^rust_nsproxy_(cache_create|alloc|free|refcount_set|error|is_err_nsproxy|error_nsproxy|is_err_mnt|error_mnt|is_err_uts|error_uts|is_err_ipc|error_ipc|is_err_pid_ns|error_pid_ns|is_err_cgroup|error_cgroup|is_err_net|error_net|is_err_time|error_time|is_err_pid)$'
+--allowlist-function '^rust_nsproxy_(current|task_nsproxy|store_task_nsproxy|task_fs|cred_user_ns|task_real_cred_user_ns|task_cred_user_ns|task_user_ns_rcu|current_user_ns|current_cred|prepare_creds|commit_creds|put_cred|nsset_cred|user_active_get|user_active_put)$'
+--allowlist-function '^rust_nsproxy_(likely|unlikely|ns_capable|ptrace_may_access|might_sleep|task_lock|task_unlock|rcu_read_lock|rcu_read_unlock|pid_task|task_active_pid_ns|get_pid_ns|get_user_ns|put_user_ns|get_nsproxy|put_nsproxy|active_get|active_put)$'
+--allowlist-function '^rust_nsproxy_(copy_mnt_ns|copy_utsname|copy_ipcs|copy_pid_ns|copy_cgroup_ns|copy_net_ns|copy_time_ns|get_time_ns|put_mnt_ns|put_uts_ns|put_ipc_ns|put_pid_ns|put_time_ns|put_cgroup_ns|put_net|timens_on_fork)$'
+--allowlist-function '^rust_nsproxy_(copy_fs_struct|free_fs_struct|set_fs_root|set_fs_pwd|exit_sem|timens_commit|install|ns_type|from_mnt_ns|from_user_ns|from_uts_ns|from_ipc_ns|from_pid_ns|from_cgroup_ns|from_net_ns|from_time_ns)$'
+--allowlist-function '^rust_nsproxy_(fdget|fd_empty|fd_file|fdput|proc_ns_file|proc_ns|pidfd_pid|perf_event_namespaces)$'
+# Rust implements rust_nsproxy_setns and rust_nsproxy_cache_init; it does not
+# import its own declarations. Native entry shells preserve their metadata.
+--allowlist-var '^RUST_NSPROXY_(CLONE_NS_ALL|CLONE_NEWUSER|CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|CLONE_NEWIPC|CLONE_NEWCGROUP|CLONE_NEWNET|CLONE_NEWTIME|CLONE_VM|CLONE_SYSVSEM|UNSHARE_EMPTY_MNTNS|CLONE_EMPTY_MNTNS|ENOMEM|EPERM|EINVAL|ESRCH|EBADF|CAP_SYS_ADMIN|PTRACE_MODE_READ_REALCREDS)$'
+--allowlist-var '^init_nsproxy$'
+# Exact native C tag spellings, including pointer-only opaque objects. Emitted
+# ABI and KCFI identities remain unverified until separately authorized checks.
+--with-attribute-custom-struct=nsproxy='#[cfi_encoding="7nsproxy"]'
+--with-attribute-custom-struct=nsset='#[cfi_encoding="5nsset"]'
+--with-attribute-custom-struct=fd='#[cfi_encoding="2fd"]'
+--with-attribute-custom-struct=kmem_cache='#[cfi_encoding="10kmem_cache"]'
+--with-attribute-custom-struct=task_struct='#[cfi_encoding="11task_struct"]'
+--with-attribute-custom-struct=cred='#[cfi_encoding="4cred"]'
+--with-attribute-custom-struct=fs_struct='#[cfi_encoding="9fs_struct"]'
+--with-attribute-custom-struct=ns_common='#[cfi_encoding="9ns_common"]'
+--with-attribute-custom-struct=mnt_namespace='#[cfi_encoding="13mnt_namespace"]'
+--with-attribute-custom-struct=uts_namespace='#[cfi_encoding="13uts_namespace"]'
+--with-attribute-custom-struct=ipc_namespace='#[cfi_encoding="13ipc_namespace"]'
+--with-attribute-custom-struct=pid_namespace='#[cfi_encoding="13pid_namespace"]'
+--with-attribute-custom-struct=cgroup_namespace='#[cfi_encoding="16cgroup_namespace"]'
+--with-attribute-custom-struct=net='#[cfi_encoding="3net"]'
+--with-attribute-custom-struct=time_namespace='#[cfi_encoding="14time_namespace"]'
+--with-attribute-custom-struct=user_namespace='#[cfi_encoding="14user_namespace"]'
+--with-attribute-custom-struct=file='#[cfi_encoding="4file"]'
+--with-attribute-custom-struct=pid='#[cfi_encoding="3pid"]'

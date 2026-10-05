@@ -258,3 +258,8 @@ pub use self::sched_ext_native as sched_ext_core_native;
 pub mod task_work_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/task_work_generated.rs"));
 }
+
+#[cfg(CONFIG_RUST_NSPROXY)]
+pub mod nsproxy_native {
+    include!(concat!(env!("OBJTREE"), "/rust/bindings/nsproxy_generated.rs"));
+}
