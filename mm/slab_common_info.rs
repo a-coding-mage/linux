@@ -30,12 +30,12 @@ unsafe fn print_slabinfo_header(m: *mut seq_file) {
 #[no_mangle]
 pub unsafe extern "C" fn slab_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut Void {
     rust_slab_common_mutex_lock(addr_of_mut!(slab_mutex));
-    seq_list_start(addr_of_mut!(slab_caches), *pos)
+    seq_list_start(addr_of_mut!(slab_caches), *pos).cast()
 }
 #[cfg(CONFIG_SLUB_DEBUG)]
 #[no_mangle]
 pub unsafe extern "C" fn slab_next(_m: *mut seq_file, p: *mut Void, pos: *mut loff_t) -> *mut Void {
-    seq_list_next(p, addr_of_mut!(slab_caches), pos)
+    seq_list_next(p, addr_of_mut!(slab_caches), pos).cast()
 }
 #[cfg(CONFIG_SLUB_DEBUG)]
 #[no_mangle]

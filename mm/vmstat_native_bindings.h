@@ -24,7 +24,8 @@ enum {
 #if defined(CONFIG_CC_HAS_SANE_FUNCTION_ALIGNMENT) || CONFIG_FUNCTION_ALIGNMENT == 0
 static const bool RUST_VMSTAT_CFG_INIT_COLD = true;
 #endif
-#define RUST_VMSTAT_NATIVE_READ_MOSTLY __stringify(__read_mostly)
+/* A const array, not a macro: bindgen cannot evaluate nested function-like macros. */
+static const char RUST_VMSTAT_NATIVE_READ_MOSTLY[] = __stringify(__read_mostly);
 #if IS_ENABLED(CONFIG_ZSMALLOC)
 static const bool RUST_VMSTAT_CFG_ENABLED_ZSMALLOC = true;
 #endif

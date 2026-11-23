@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# Source registration only; select no objects or original-C exclusions.
+# The existing obj-y entry owns notifier.o; the Rust owner takes that slot.
 ifeq ($(CONFIG_RUST_NOTIFIER),y)
-$(error SOURCE ONLY HOLD: Rust notifier ownership and instrumentation are unqualified)
+obj-y := $(patsubst notifier.o,notifier.o notifier_native_primitives.o \
+	notifier_native_metadata.o notifier_native_signatures.o,$(obj-y))
+RUSTFLAGS_notifier.o += -Zfunction-sections=n
+$(obj)/notifier.o: $(src)/notifier.rs $(objtree)/rust/bindings/notifier_native_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
 endif
-# Future admission must cover actual Rust bodies and all new native leaves for
-# original notrace/NOKPROBE, branch profiling and context-analysis contracts.

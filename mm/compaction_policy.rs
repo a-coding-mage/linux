@@ -202,7 +202,7 @@ pub unsafe extern "C" fn compaction_zonelist_suitable(
                 zone,
                 order,
                 rust_compaction_min_wmark_pages(zone),
-                (*ac).highest_zoneidx,
+                (*ac).highest_zoneidx as c_int,
                 available,
             ) {
                 return true;
@@ -475,7 +475,7 @@ pub unsafe extern "C" fn try_to_compact_pages(
                     gfp_mask,
                     prio,
                     alloc_flags,
-                    (*ac).highest_zoneidx,
+                    (*ac).highest_zoneidx as c_int,
                     capc,
                 );
                 rust_compaction_write_capture_zone(capc, null_mut());

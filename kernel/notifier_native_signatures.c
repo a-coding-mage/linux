@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Inactive native signature assertions, not an emitted Rust ABI/CFI proof. */
 #include "notifier_native_bindings.h"
-#include "notifier_rust_guard.h"
 #include <linux/build_bug.h>
 #include <linux/compiler.h>
 

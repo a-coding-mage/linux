@@ -259,8 +259,8 @@ unsafe fn consider_reclaim_throttle(pgdat: *mut pglist_data, sc: *mut scan_contr
 }
 unsafe fn shrink_zones(zl: *mut zonelist, sc: *mut scan_control) {
     let orig = (*sc).gfp_mask;
-    let mut last = null_mut();
-    let mut first = null_mut();
+    let mut last: *mut pglist_data = null_mut();
+    let mut first: *mut pglist_data = null_mut();
     if native_buffer_heads_over_limit() != 0 {
         (*sc).gfp_mask |= __GFP_HIGHMEM;
         (*sc).reclaim_idx = gfp_zone((*sc).gfp_mask) as i8;
@@ -1131,13 +1131,13 @@ pub unsafe extern "C" fn user_proactive_reclaim(
     {
         return -(EINVAL as i32);
     }
-    buf = strstrip(buf);
+    buf = strim(buf);
     let old = buf;
     let goal = (memparse(buf, &mut buf) / PAGE_SIZE as u64) as ULong;
     if buf == old {
         return -(EINVAL as i32);
     }
-    buf = strstrip(buf);
+    buf = strim(buf);
     loop {
         let start = strsep(&mut buf, b" \0".as_ptr().cast());
         if start.is_null() {
@@ -1251,7 +1251,7 @@ unsafe extern "C" fn reclaim_store(
     buf: *const CChar,
     count: usize,
 ) -> isize {
-    let ret = user_proactive_reclaim(buf.cast_mut(), null_mut(), node_data((*dev).id));
+    let ret = user_proactive_reclaim(buf.cast_mut(), null_mut(), node_data((*dev).id as i32));
     if ret != 0 {
         ret as isize
     } else {

@@ -1,9 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0
 config RUST_TASK_WORK
-	bool "Rust task-work source proposal (not admitted)"
-	depends on RUST && BROKEN
-	default n
+	bool "Rust task-work queueing, cancellation and execution"
+	depends on RUST && X86_64
+	default y
 	help
-	  Inactive continuation of the existing task-work Rust implementation.
-	  Native ABI/CFI, diagnostic attribution, instrumentation, concurrency
-	  and original-test qualification remain open. Keep this disabled.
+	  Build task_work_add(), the cancellation entry points and
+	  task_work_run() from kernel/task_work.rs in the original
+	  kernel/task_work.o slot. task_work_primitives.o keeps the native
+	  field accessors, locks, per-CPU NMI irq_work storage, the
+	  callback-bearing public shells and the x86 warning-site expansion.
+	  Only the x86-64 warning profile is implemented by that companion.
+	  Turning this option off selects the unchanged original C provider.

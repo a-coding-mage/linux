@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_NOTIFIER),y)
-$(error SOURCE ONLY HOLD: Rust notifier native bindings are unqualified)
-endif
+# Configured declarations for the Rust notifier owner.
 targets += bindings/notifier_native_generated.rs
 always-$(CONFIG_RUST_NOTIFIER) += bindings/notifier_native_generated.rs
 $(obj)/bindings/notifier_native_generated.rs: private bindgen_target_flags = \

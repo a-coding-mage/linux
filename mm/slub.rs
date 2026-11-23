@@ -4,7 +4,21 @@
 // Bodies reconciled with authoritative mm/slub.c at
 // e1d84f501551943a11f4c5271e9f5c85d7e15168 during this source-only phase.
 //! SLUB Rust owner; configured native headers retain all shared ABI authority.
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    unused_imports,
+    unused_variables,
+    unused_mut,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unreachable_pub
+)]
 #![cfg_attr(CONFIG_KMSAN, feature(no_sanitize))]
+#[allow(improper_ctypes)]
 mod bindings {
     use kernel::ffi;
     include!(concat!(env!("OBJTREE"), "/rust/bindings/slub_generated.rs"));

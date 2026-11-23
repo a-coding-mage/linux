@@ -459,7 +459,8 @@ unsafe fn check_bytes_and_report(
     if !slab_add_kunit_errors() {
         rust_slub_printk(
             c"\x013[%s overwritten] 0x%p-0x%p @offset=%tu. First byte 0x%x instead of 0x%x\n"
-                .as_ptr(),
+                .as_ptr()
+                .cast(),
             what,
             fault,
             end.sub(1),

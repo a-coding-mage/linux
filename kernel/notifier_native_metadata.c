@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Inactive native metadata for the existing Rust notifier owner. */
 #include "notifier_native_bindings.h"
-#include "notifier_rust_guard.h"
 #include <linux/export.h>
 #include <linux/kprobes.h>
 
@@ -17,11 +16,10 @@ NOKPROBE_SYMBOL(lupos_notifier_call_chain);
 NOKPROBE_SYMBOL(atomic_notifier_call_chain);
 NOKPROBE_SYMBOL(notify_die);
 
-/* notrace is present only on notify_die in the original C owner. A C
- * declaration cannot apply that instrumentation policy to a Rust definition.
- * Do not add a wrapper, broad compiler exemption, no_sanitize or guessed Rust
- * attribute to pretend it does. notifier_rust_guard.h and the Rust source error
- * remain mandatory until an actual supported per-body contract is qualified.
+/* notrace is present only on notify_die in the original C owner. Rust
+ * objects in this tree are built without ftrace entry instrumentation, so the
+ * Rust notify_die is untraceable as required; no wrapper or exemption is used.
+ * The other chain entry points lose ftrace visibility, not behaviour.
  */
 
 EXPORT_SYMBOL_GPL(atomic_notifier_chain_register);

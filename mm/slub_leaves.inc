@@ -108,7 +108,7 @@ RSL_LEAF(struct page *, alloc_frozen_pages, (gfp_t f, unsigned int o), return al
 RSL_LEAF(void, set_page_slab, (struct page *p), __SetPageSlab(p);)
 RSL_LEAF(void, clear_page_slab, (struct page *p), __ClearPageSlab(p);)
 RSL_LEAF(struct slab *, page_slab, (struct page *p), return page_slab(p);)
-RSL_LEAF(struct page *, slab_page, (const struct slab *s), return slab_page(s);)
+RSL_LEAF(struct page *, slab_page, (const struct slab *s), return (struct page *)slab_page(s);)
 RSL_LEAF(bool, page_is_pfmemalloc, (const struct page *p), return page_is_pfmemalloc(p);)
 #ifdef CONFIG_SLAB_FREELIST_RANDOM
 RSL_LEAF(void, log_random_seq_failure, (struct kmem_cache *s), pr_err("SLUB: Unable to initialize free list for %s\n", s->name);)
@@ -205,9 +205,10 @@ RSL_LEAF(bool, is_codetag_empty, (union codetag_ref *r), return is_codetag_empty
 RSL_LEAF(void, set_codetag_empty, (union codetag_ref *r), set_codetag_empty(r);)
 RSL_LEAF(void, warn_codetag_present, (bool c), WARN_ON(c);)
 #endif
+/* PageLargeKmalloc is unconditional in slub.c (__ksize, kfree, free_large_kmalloc). */
+RSL_LEAF(bool, page_large_kmalloc, (struct page *p), return PageLargeKmalloc(p);)
 #ifdef CONFIG_MEMCG
 RSL_LEAF(bool, slab_needs_objcg, (struct slab *s), return slab_needs_objcg(s);)
-RSL_LEAF(bool, page_large_kmalloc, (struct page *p), return PageLargeKmalloc(p);)
 RSL_LEAF(bool, page_memcg_kmem, (struct page *p), return PageMemcgKmem(p);)
 RSL_LEAF(unsigned int, large_kmalloc_order, (struct page *p), return large_kmalloc_order(p);)
 RSL_LEAF(struct pglist_data *, page_pgdat, (struct page *p), return page_pgdat(p);)

@@ -348,6 +348,8 @@ unsafe fn __do_kmalloc_node(
     );
     ret
 }
+// Empty without KMALLOC_PARTITION_CACHES: x86-64 C and Rust both ignore it.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 unsafe extern "C" fn rust_slub_kmalloc_node_noprof_body(
     size: usize,
@@ -360,6 +362,8 @@ unsafe extern "C" fn rust_slub_kmalloc_node_noprof_body(
     let ac = alloc_context(null_mut(), caller, size, RSL_SLAB_ALLOC_DEFAULT);
     __do_kmalloc_node(b, flags, node, token, &ac)
 }
+// Empty without KMALLOC_PARTITION_CACHES: x86-64 C and Rust both ignore it.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 unsafe extern "C" fn rust_slub_kmalloc_noprof_body(
     size: usize,
@@ -369,6 +373,8 @@ unsafe extern "C" fn rust_slub_kmalloc_noprof_body(
 ) -> *mut Void {
     rust_slub_kmalloc_node_noprof_body(size, null_mut(), token, flags, RSL_NUMA_NO_NODE, caller)
 }
+// Empty without KMALLOC_PARTITION_CACHES: x86-64 C and Rust both ignore it.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 unsafe extern "C" fn rust_slub_kmalloc_node_track_caller_noprof_body(
     size: usize,
@@ -423,6 +429,8 @@ unsafe fn __kmalloc_nolock_noprof(
         return rust_slub_kasan_kmalloc(s, ret, (*ac).orig_size, flags);
     }
 }
+// Empty without KMALLOC_PARTITION_CACHES: x86-64 C and Rust both ignore it.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 unsafe extern "C" fn rust_slub_kmalloc_nolock_noprof_body(
     size: usize,
@@ -456,6 +464,8 @@ unsafe extern "C" fn rust_slub_kmalloc_cache_node_noprof_body(
     rust_slub_trace_kmalloc(caller, ret, size, (*s).size as usize, flags, node);
     rust_slub_kasan_kmalloc(s, ret, size, flags)
 }
+// Empty without KMALLOC_PARTITION_CACHES: x86-64 C and Rust both ignore it.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 unsafe extern "C" fn rust_slub_kmalloc_flags_noprof_body(
     size: usize,
@@ -1328,6 +1338,8 @@ unsafe fn __do_krealloc(
     }
     ret
 }
+// Empty without KMALLOC_PARTITION_CACHES: x86-64 C and Rust both ignore it.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 unsafe extern "C" fn rust_slub_krealloc_node_align_noprof_body(
     p: *const Void,
@@ -1358,6 +1370,8 @@ unsafe fn kmalloc_gfp_adjust(mut flags: gfp_t, size: usize) -> gfp_t {
     }
     flags
 }
+// Empty without KMALLOC_PARTITION_CACHES: x86-64 C and Rust both ignore it.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 unsafe extern "C" fn rust_slub_kvmalloc_node_noprof_body(
     size: usize,
@@ -1403,6 +1417,8 @@ unsafe extern "C" fn kvfree_sensitive(addr: *const Void, len: usize) {
         kvfree(addr);
     }
 }
+// Empty without KMALLOC_PARTITION_CACHES: x86-64 C and Rust both ignore it.
+#[allow(improper_ctypes_definitions)]
 #[no_mangle]
 unsafe extern "C" fn rust_slub_kvrealloc_node_align_noprof_body(
     p: *const Void,
@@ -1917,6 +1933,8 @@ unsafe fn free_kmem_cache_nodes(s: *mut kmem_cache) {
 }
 #[no_mangle]
 unsafe extern "C" fn __kmem_cache_release(s: *mut kmem_cache) {
+    // mm/slab.h: a no-op static inline without CONFIG_SLAB_FREELIST_RANDOM.
+    #[cfg(CONFIG_SLAB_FREELIST_RANDOM)]
     cache_random_seq_destroy(s);
     pcs_destroy(s);
     #[cfg(CONFIG_SLUB_STATS)]
@@ -2067,7 +2085,7 @@ unsafe fn list_slab_objects(s: *mut kmem_cache, slab: *mut slab) {
             slab_bug!(s, "Objects remaining on __kmem_cache_shutdown()");
         }
         rust_slub_object_map_lock();
-        __fill_map(object_map.as_mut_ptr(), s, slab);
+        __fill_map(addr_of_mut!(object_map).cast::<ULong>(), s, slab);
         let mut p = fixup_red_left(s, addr);
         let end = addr
             .cast::<u8>()
@@ -2075,7 +2093,7 @@ unsafe fn list_slab_objects(s: *mut kmem_cache, slab: *mut slab) {
         while (p as usize) < end {
             if !rust_slub_test_bit(
                 rust_slub_obj_to_index(s, addr, p) as ULong,
-                object_map.as_ptr(),
+                addr_of!(object_map).cast::<ULong>(),
             ) && !slab_add_kunit_errors()
             {
                 rust_slub_report_remaining_object(p, p as Long - addr as Long);

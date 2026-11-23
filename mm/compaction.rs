@@ -1,5 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0
 // Rust owner of mm/compaction.c; native ABI is imported from configured headers.
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    unused_imports,
+    unused_variables,
+    unused_mut,
+    unused_unsafe,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unreachable_pub
+)]
+#[allow(improper_ctypes)]
 mod b {
     use kernel::ffi;
     include!(concat!(

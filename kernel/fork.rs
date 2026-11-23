@@ -19,7 +19,7 @@ mod b {
 use b::*;
 use core::mem::{offset_of, size_of, zeroed};
 use core::ptr::{
-    addr_of, addr_of_mut, copy_nonoverlapping, null_mut, read_volatile, write_volatile,
+    addr_of, addr_of_mut, null_mut, read_volatile, write_volatile,
 };
 use kernel::ffi::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
 type rcu_head = callback_head;

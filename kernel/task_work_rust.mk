@@ -1,10 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0
-# Source registration only. Select no objects and exclude no original owner.
+# The existing obj-y entry owns task_work.o; the Rust owner takes that slot.
 ifeq ($(CONFIG_RUST_TASK_WORK),y)
-$(error SOURCE ONLY HOLD: Rust task-work ownership and native behavior are unqualified)
-endif
+obj-y := $(patsubst task_work.o,task_work.o task_work_primitives.o,$(obj-y))
 
-# Future admission must explicitly preserve kernel/task_work.o's complete native
-# compiler/instrumentation policy and avoid duplicate public owners or storage.
-# The native companion retains primitive/storage/signature work, not the old
-# task-work algorithm. Removing this error is not ABI or runtime qualification.
+# The native companion's warning and cond_resched sites keep the original
+# translation unit's __FILE__, as -fmacro-prefix-map spells it for task_work.c.
+CFLAGS_task_work_primitives.o += -DLUPOS_TASK_WORK_ORIGINAL_FILE='"kernel/task_work.c"'
+
+RUSTFLAGS_task_work.o += -Zfunction-sections=n
+$(obj)/task_work.o: $(src)/task_work.rs $(objtree)/rust/bindings/task_work_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+endif

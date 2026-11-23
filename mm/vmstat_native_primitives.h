@@ -54,6 +54,7 @@ RVM(void, rust_vmstat_log_numa_enabled, (void), { pr_info("enable numa statistic
 RVM(void, rust_vmstat_log_numa_disabled, (void), { pr_info("disable numa statistics, and clear numa counters\n"); })
 #endif
 #endif
+/* Per-CPU read macros assign a typeof(*p) temporary: cast away const there only. */
 #ifdef CONFIG_SMP
 RVM(unsigned int, rust_vmstat_num_online_cpus, (void), { return num_online_cpus(); })
 RVM(int, rust_vmstat_fls, (unsigned int word), { return fls(word); })
@@ -61,13 +62,13 @@ RVM(struct per_cpu_nodestat *, rust_vmstat_node_cpu, (struct per_cpu_nodestat __
 RVM(struct per_cpu_pages *, rust_vmstat_this_pages, (struct per_cpu_pages __percpu *p), { return this_cpu_ptr(p); })
 RVM(void, rust_vmstat_preempt_disable_nested, (void), { preempt_disable_nested(); })
 RVM(void, rust_vmstat_preempt_enable_nested, (void), { preempt_enable_nested(); })
-RVM(s8, rust_vmstat_raw_read_s8, (const s8 __percpu *p), { return __this_cpu_read(*p); })
+RVM(s8, rust_vmstat_raw_read_s8, (const s8 __percpu *p), { return __this_cpu_read(*(s8 __percpu *)p); })
 RVM(void, rust_vmstat_raw_write_s8, (s8 __percpu *p, s8 value), { __this_cpu_write(*p, value); })
 RVM(s8, rust_vmstat_raw_inc_s8, (s8 __percpu *p), { return __this_cpu_inc_return(*p); })
 RVM(s8, rust_vmstat_raw_dec_s8, (s8 __percpu *p), { return __this_cpu_dec_return(*p); })
 RVM(s8, rust_vmstat_this_xchg_s8, (s8 __percpu *p, s8 value), { return this_cpu_xchg(*p, value); })
 #ifdef CONFIG_HAVE_CMPXCHG_LOCAL
-RVM(s8, rust_vmstat_this_read_s8, (const s8 __percpu *p), { return this_cpu_read(*p); })
+RVM(s8, rust_vmstat_this_read_s8, (const s8 __percpu *p), { return this_cpu_read(*(s8 __percpu *)p); })
 RVM(bool, rust_vmstat_this_cmpxchg_s8, (s8 __percpu *p, s8 *old, s8 value), { return this_cpu_try_cmpxchg(*p, old, value); })
 #else
 RVM(unsigned long, rust_vmstat_irq_save, (void), { unsigned long flags; local_irq_save(flags); return flags; })
@@ -80,10 +81,10 @@ RVM(void, rust_vmstat_warn_dec_node_bytes, (bool condition), { VM_WARN_ON_ONCE(c
 RVM(void, rust_vmstat_warn_cmpxchg_node_bytes, (bool condition), { VM_WARN_ON_ONCE(condition); })
 #endif
 #ifdef CONFIG_NUMA
-RVM(u8, rust_vmstat_raw_read_u8, (const u8 __percpu *p), { return __this_cpu_read(*p); })
+RVM(u8, rust_vmstat_raw_read_u8, (const u8 __percpu *p), { return __this_cpu_read(*(u8 __percpu *)p); })
 RVM(void, rust_vmstat_raw_write_u8, (u8 __percpu *p, u8 value), { __this_cpu_write(*p, value); })
 RVM(u8, rust_vmstat_raw_dec_u8, (u8 __percpu *p), { return __this_cpu_dec_return(*p); })
-RVM(int, rust_vmstat_raw_read_int, (const int __percpu *p), { return __this_cpu_read(*p); })
+RVM(int, rust_vmstat_raw_read_int, (const int __percpu *p), { return __this_cpu_read(*(int __percpu *)p); })
 RVM(int, rust_vmstat_numa_node_id, (void), { return numa_node_id(); })
 RVM(int, rust_vmstat_zone_to_nid, (const struct zone *z), { return zone_to_nid(z); })
 #endif

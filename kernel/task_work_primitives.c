@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Task-work native layout/storage and primitive boundary, explicitly
- * UNQUALIFIED. This is not translated algorithm coverage. The existing Rust
+ * Task-work native layout/storage and primitive boundary. This is not
+ * translated algorithm coverage. The existing Rust
  * owner retains add/cancel/run control flow; task_work.c is not a fallback.
  * The two callback-bearing public entry points only forward through native
  * storage/conversion, retaining their exact C outer KCFI signatures.
@@ -13,8 +13,6 @@
 #include <linux/sched/signal.h>
 #include <linux/spinlock.h>
 
-#error "SOURCE ONLY HOLD: task work native primitives are not admitted"
-
 /*
  * Required future input: the actual __FILE__ string from the original native
  * task_work.c build, after its configured path mapping. No default is safe.
@@ -22,7 +20,7 @@
  * or establish equivalence of PCs, stack traces, debug info or instrumentation.
  */
 #ifndef LUPOS_TASK_WORK_ORIGINAL_FILE
-#error "SOURCE ONLY HOLD: verify the original task_work.c __FILE__ string first"
+#error "task_work_rust.mk must define LUPOS_TASK_WORK_ORIGINAL_FILE"
 #endif
 
 /* Original task_work.c sites at 126a30fae3bba11420ec2fcbde51a0a01bab1b5b. */
@@ -35,14 +33,14 @@
  * profiles blocked; a generic slowpath or a new once flag is not equivalent.
  */
 #ifndef CONFIG_X86
-#error "SOURCE ONLY HOLD: task work warning attribution needs a native profile"
+#error "task work warning sites are implemented for the x86 profile only"
 #elif !defined(CONFIG_BUG)
 /* Native !BUG behavior: evaluate once and return, with no emitted warning. */
 #define LUPOS_TASK_WORK_WARN_ON_ONCE_AT(condition, site_line) \
 	WARN_ON_ONCE(condition)
 #elif !defined(CONFIG_GENERIC_BUG) || \
 	!defined(CONFIG_GENERIC_BUG_RELATIVE_POINTERS)
-#error "SOURCE ONLY HOLD: task work x86 warning profile is unsupported"
+#error "task work x86 warning sites need GENERIC_BUG relative pointers"
 #else
 /*
  * Expand the pinned WARN_ON_ONCE -> __WARN_FLAGS -> _BUG_FLAGS sequence,

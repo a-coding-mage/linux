@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# INACTIVE source proposal. Do not run under the source-only hold.
 # Input: kernel/notifier_native_bindings.h, configured native target/ffi flags.
 # Use the kernel bindgen recipe, with -UMODULE for this built-in owner.
 --no-doc-comments
@@ -7,6 +6,9 @@
 --no-recursive-allowlist
 --no-prepend-enum-name
 --allowlist-type '^(notifier_block|atomic_notifier_head|blocking_notifier_head|raw_notifier_head|srcu_notifier_head|die_args|die_val|pt_regs)$'
+# Non-recursive mode: name the scalar typedefs and pt_regs' nested FRED types.
+# Patterns match bindgen's mangled names (u64 -> u64_, bool -> bool_).
+--allowlist-type '^(bool_|u16_|u64_|__u16|__u64|fred_cs|fred_ss)$'
 --opaque-type '^(notifier_block|atomic_notifier_head|blocking_notifier_head|raw_notifier_head|srcu_notifier_head|pt_regs)$'
 --allowlist-function '^lupos_notifier_.*$'
 --allowlist-var '^LUPOS_NOTIFIER_.*$'

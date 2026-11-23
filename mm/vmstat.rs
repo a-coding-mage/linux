@@ -4,6 +4,20 @@
 // SOURCE-COMMIT: e1d84f501551943a11f4c5271e9f5c85d7e15168
 // RECONCILED-SOURCE-COMMIT: e1d84f501551943a11f4c5271e9f5c85d7e15168
 // RECONCILED-C-SHA256: 637aac81a55a905e93b1feae46ebdd31b97bc1727cbe56a621fe5cc3e82379e6
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    unused_imports,
+    unused_variables,
+    unused_mut,
+    unused_unsafe,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unreachable_pub
+)]
 use b::*;
 #[cfg(CONFIG_SMP)]
 use core::cmp::{max, min};

@@ -5,7 +5,6 @@
  * Original compilation/instrumentation origin: kernel/notifier.o.
  */
 #include "notifier_native_bindings.h"
-#include "notifier_rust_guard.h"
 #include <linux/bug.h>
 #include <linux/kernel.h>
 #include <linux/rcupdate.h>

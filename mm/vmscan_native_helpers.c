@@ -71,7 +71,7 @@ int rust_vs_atomic_read(const atomic_t *p) { return atomic_read(p); }
 void rust_vs_atomic_set(atomic_t *p, int v) { atomic_set(p, v); }
 int rust_vs_atomic_xchg(atomic_t *p, int v) { return atomic_xchg(p, v); }
 void rust_vs_init_wait(struct wait_queue_entry *w) { init_wait(w); }
-bool rust_vs_waitqueue_active(const struct wait_queue_head *w) { return waitqueue_active(w); }
+bool rust_vs_waitqueue_active(const struct wait_queue_head *w) { return waitqueue_active((struct wait_queue_head *)w); }
 void rust_vs_wake_up(struct wait_queue_head *w) { wake_up(w); }
 void rust_vs_wake_up_all(struct wait_queue_head *w) { wake_up_all(w); }
 void rust_vs_wake_up_interruptible(struct wait_queue_head *w) { wake_up_interruptible(w); }
@@ -130,7 +130,7 @@ bool rust_vs_folio_test_lazyfree(const struct folio *f) { return folio_test_lazy
 bool rust_vs_folio_test_locked(const struct folio *f) { return folio_test_locked(f); }
 bool rust_vs_folio_test_lru(const struct folio *f) { return folio_test_lru(f); }
 bool rust_vs_folio_test_mlocked(const struct folio *f) { return folio_test_mlocked(f); }
-bool rust_vs_folio_test_pmd_mappable(const struct folio *f) { return folio_test_pmd_mappable(f); }
+bool rust_vs_folio_test_pmd_mappable(const struct folio *f) { return folio_test_pmd_mappable((struct folio *)f); }
 bool rust_vs_folio_test_private(const struct folio *f) { return folio_test_private(f); }
 bool rust_vs_folio_test_reclaim(const struct folio *f) { return folio_test_reclaim(f); }
 bool rust_vs_folio_test_referenced(const struct folio *f) { return folio_test_referenced(f); }
@@ -163,7 +163,7 @@ bool rust_vs_folio_try_get(struct folio *f) { return folio_try_get(f); }
 void rust_vs_folio_get(struct folio *f) { folio_get(f); }
 void rust_vs_folio_put(struct folio *f) { folio_put(f); }
 bool rust_vs_folio_put_testzero(struct folio *f) { return folio_put_testzero(f); }
-bool rust_vs_folio_maybe_dma_pinned(const struct folio *f) { return folio_maybe_dma_pinned(f); }
+bool rust_vs_folio_maybe_dma_pinned(const struct folio *f) { return folio_maybe_dma_pinned((struct folio *)f); }
 bool rust_vs_folio_mapped(const struct folio *f) { return folio_mapped(f); }
 bool rust_vs_folio_trylock(struct folio *f) { return folio_trylock(f); }
 void rust_vs_folio_lock(struct folio *f) { folio_lock(f); }
@@ -228,7 +228,8 @@ void rust_vs_mod_node_page_state(struct pglist_data *p, unsigned int item, long 
 void rust_vs_count_vm_event(unsigned int item) { count_vm_event(item); }
 void rust_vs_count_vm_events(unsigned int item, unsigned long delta) { count_vm_events(item, delta); }
 void rust_vs___count_vm_events(unsigned int item, unsigned long delta) { __count_vm_events(item, delta); }
-void rust_vs___count_zid_vm_events(unsigned int item, int zid, unsigned long delta) { __count_zid_vm_events(item, zid, delta); }
+/* item is a zone-family base (X_NORMAL - ZONE_NORMAL), as in the macro. */
+void rust_vs___count_zid_vm_events(unsigned int item, int zid, unsigned long delta) { __count_vm_events(item + zid, delta); }
 void rust_vs_count_mthp_stat(unsigned int order, unsigned int item) { count_mthp_stat(order, item); }
 void rust_vs_set_pgdat_normal_threshold(struct pglist_data *p) { set_pgdat_percpu_threshold(p, calculate_normal_threshold); }
 void rust_vs_set_pgdat_pressure_threshold(struct pglist_data *p) { set_pgdat_percpu_threshold(p, calculate_pressure_threshold); }

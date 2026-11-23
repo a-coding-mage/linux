@@ -123,8 +123,9 @@ static dev_attr_compact: CompactDeviceAttribute = CompactDeviceAttribute(device_
         mode: 0o200,
         ..unsafe { zeroed() }
     },
-    show: None,
-    store: Some(compact_store),
+    // RUST_COMPACTION requires !CFI, so __SYSFS_FUNCTION_ALTERNATIVE is a union.
+    __bindgen_anon_1: device_attribute__bindgen_ty_1 { show: None },
+    __bindgen_anon_2: device_attribute__bindgen_ty_2 { store: Some(compact_store) },
 });
 #[cfg(all(CONFIG_SYSFS, CONFIG_NUMA))]
 #[no_mangle]

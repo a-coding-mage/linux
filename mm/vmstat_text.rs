@@ -361,8 +361,11 @@ macro_rules! vmstat_entries {
             );
         }
         {
-            names[(NR_VM_ZONE_STAT_ITEMS + NR_VM_NUMA_EVENT_ITEMS + 0 + NR_VMSCAN_IMMEDIATE)
-                as usize] = b"nr_vmscan_immediate_reclaim\0".as_ptr().cast();
+            $entry!(
+                $target,
+                (NR_VM_ZONE_STAT_ITEMS + NR_VM_NUMA_EVENT_ITEMS + 0 + NR_VMSCAN_IMMEDIATE) as usize,
+                b"nr_vmscan_immediate_reclaim\0".as_ptr().cast()
+            );
         }
         {
             $entry!(
@@ -473,8 +476,11 @@ macro_rules! vmstat_entries {
         }
         #[cfg(all(CONFIG_NUMA_BALANCING))]
         {
-            names[(NR_VM_ZONE_STAT_ITEMS + NR_VM_NUMA_EVENT_ITEMS + 0 + PGPROMOTE_CANDIDATE)
-                as usize] = b"pgpromote_candidate\0".as_ptr().cast();
+            $entry!(
+                $target,
+                (NR_VM_ZONE_STAT_ITEMS + NR_VM_NUMA_EVENT_ITEMS + 0 + PGPROMOTE_CANDIDATE) as usize,
+                b"pgpromote_candidate\0".as_ptr().cast()
+            );
         }
         #[cfg(all(CONFIG_NUMA_BALANCING))]
         {
@@ -500,8 +506,11 @@ macro_rules! vmstat_entries {
             );
         }
         {
-            names[(NR_VM_ZONE_STAT_ITEMS + NR_VM_NUMA_EVENT_ITEMS + 0 + PGDEMOTE_KHUGEPAGED)
-                as usize] = b"pgdemote_khugepaged\0".as_ptr().cast();
+            $entry!(
+                $target,
+                (NR_VM_ZONE_STAT_ITEMS + NR_VM_NUMA_EVENT_ITEMS + 0 + PGDEMOTE_KHUGEPAGED) as usize,
+                b"pgdemote_khugepaged\0".as_ptr().cast()
+            );
         }
         {
             $entry!(

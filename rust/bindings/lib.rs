@@ -97,14 +97,19 @@ pub const compat_ptr_ioctl: Option<
 
 // This native module inherits the crate's existing generated-code policy.
 // The handwritten vmstat owner retains the original kernel warning policy.
+// Its kernel-function declarations repeat bindings_raw prototypes over this
+// module's own bindgen record types; the C signatures are identical.
 #[cfg(CONFIG_RUST_VMSTAT)]
+#[allow(clashing_extern_declarations)]
 pub mod vmstat_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/vmstat_native_generated.rs"));
 }
 
 // Generated native declarations inherit this crate's existing policy only.
 // Handwritten owners retain the kernel's ordinary diagnostics.
+// As for vmstat_native, repeated kernel prototypes differ only nominally.
 #[cfg(CONFIG_RUST_VMSCAN)]
+#[allow(clashing_extern_declarations)]
 pub mod vmscan_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/vmscan_native_generated.rs"));
 }
@@ -264,17 +269,23 @@ pub mod nsproxy_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/nsproxy_generated.rs"));
 }
 
+// Repeats bindings_raw kernel prototypes over this module's record types.
 #[cfg(CONFIG_RUST_CRED)]
+#[allow(clashing_extern_declarations)]
 pub mod cred_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/cred_native_generated.rs"));
 }
 
+// Repeats bindings_raw kernel prototypes over this module's record types.
 #[cfg(CONFIG_RUST_GROUPS)]
+#[allow(clashing_extern_declarations)]
 pub mod groups_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/groups_native_generated.rs"));
 }
 
+// Repeats bindings_raw kernel prototypes over this module's record types.
 #[cfg(CONFIG_RUST_UMH)]
+#[allow(clashing_extern_declarations)]
 pub mod umh_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/umh_native_generated.rs"));
 }
@@ -294,7 +305,9 @@ pub mod user_accounting_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/user_accounting_native_generated.rs"));
 }
 
+// Repeats bindings_raw kernel prototypes over this module's record types.
 #[cfg(CONFIG_RUST_SMPBOOT)]
+#[allow(clashing_extern_declarations)]
 pub mod smpboot_native {
     include!(concat!(env!("OBJTREE"), "/rust/bindings/smpboot_native_generated.rs"));
 }

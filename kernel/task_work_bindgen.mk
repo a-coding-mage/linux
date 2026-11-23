@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-# Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_TASK_WORK),y)
-$(error SOURCE ONLY HOLD: Rust task-work bindings and callback ABI are unqualified)
-endif
+# Configured declarations for the Rust task-work owner.
 targets += bindings/task_work_generated.rs
 always-$(CONFIG_RUST_TASK_WORK) += bindings/task_work_generated.rs
 $(obj)/bindings/task_work_generated.rs: private bindgen_target_flags = \

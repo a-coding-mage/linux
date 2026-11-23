@@ -1,6 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-only
 //! Reclaim policy and mechanics, transcribed from native mm/vmscan.c.
 //! Native headers remain the authority for layouts, bitfields and constants.
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    unused_imports,
+    unused_variables,
+    unused_mut,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unreachable_pub
+)]
 use bindings as b;
 use bindings::*;
 use core::cmp::{max, min};

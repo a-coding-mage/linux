@@ -49,7 +49,8 @@ static const bool RUST_COMPACTION_CFG_INIT_COLD = true;
 #endif
 /* The companion source-only recipe decodes this exact configured expansion,
  * accepts the original empty or .data..read_mostly spelling, fails otherwise. */
-#define RUST_COMPACTION_NATIVE_READ_MOSTLY __stringify(__read_mostly)
+/* A const array, not a macro: bindgen cannot evaluate nested function-like macros. */
+static const char RUST_COMPACTION_NATIVE_READ_MOSTLY[] = __stringify(__read_mostly);
 #endif
 #undef RC_UINT
 #undef RC_ULONG

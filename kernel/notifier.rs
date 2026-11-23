@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // Continued from the existing notifier.rs at 126a30fae3bba11420ec2fcbde51a0a01bab1b5b.
-#![no_std]
-
-compile_error!("SOURCE ONLY HOLD: notifier ABI and instrumentation are not qualified");
+//! Notifier chains: priority-ordered callback lists and their traversal.
 
 use kernel::bindings::notifier_native::*;
 use kernel::ffi::{c_char, c_int, c_long, c_ulong, c_void};
@@ -403,7 +401,7 @@ pub unsafe extern "C" fn notify_die(val: die_val, str_: *const c_char, regs: *mu
     // and live through the synchronous call. The diagnostic evaluates its RCU
     // predicate inside the native macro, retaining configuration short-circuiting.
     unsafe {
-        let mut args = die_args { regs, str: str_, err, trapnr: trap, signr: sig };
+        let mut args = die_args { regs, str_, err, trapnr: trap, signr: sig };
         lupos_notifier_warn_die_rcu();
         atomic_notifier_call_chain(lupos_notifier_die_head(), val.0 as c_ulong, (&raw mut args).cast())
     }

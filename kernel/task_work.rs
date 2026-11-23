@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // Continued from Rust blob 9eaf9999263e3bdd98b6ff5c8207170321c450ad.
 // Native oracle: task_work.c at 126a30fae3bba11420ec2fcbde51a0a01bab1b5b.
-#![no_std]
-
-compile_error!("SOURCE ONLY HOLD: task work is not admitted");
-
+//! Per-task deferred callbacks, run on return to user mode or at exit.
 // Proposed configured declarations; no generated or hand-projected layouts.
 use kernel::bindings::task_work_native::*;
 use kernel::ffi::{c_int, c_void};

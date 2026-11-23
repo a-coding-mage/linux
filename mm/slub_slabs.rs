@@ -498,7 +498,7 @@ unsafe fn get_from_any_partial(
             } else {
                 0
             };
-            let zonelist = rust_slub_node_zonelist(mempolicy_slab_node(), gfp_flags);
+            let zonelist = rust_slub_node_zonelist(mempolicy_slab_node() as i32, gfp_flags);
             let mut z = rust_slub_first_zones_zonelist(zonelist, highest);
             while !(*z).zone.is_null() {
                 let zone = (*z).zone;
@@ -834,7 +834,7 @@ unsafe fn apply_strict_numa_policy(mut node: i32) -> i32 {
             && ((*mpol).mode != MPOL_BIND as u16
                 || !rust_slub_node_isset(rust_slub_numa_mem_id(), addr_of!((*mpol).nodes)))
         {
-            node = mempolicy_slab_node();
+            node = mempolicy_slab_node() as i32;
         }
     }
     node

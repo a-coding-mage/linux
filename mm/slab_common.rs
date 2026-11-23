@@ -5,6 +5,20 @@
 // mm/slab_common.c at e1d84f501551943a11f4c5271e9f5c85d7e15168,
 // SHA256 c9d139bf5894a36f2f369d3d7d27a5785c847dc305522343618d50453b41c38a.
 //! Allocator-independent slab ownership and deferred RCU reclamation.
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    unused_imports,
+    unused_variables,
+    unused_mut,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unreachable_pub
+)]
+#[allow(improper_ctypes)]
 mod bindings {
     use kernel::ffi;
     include!(concat!(

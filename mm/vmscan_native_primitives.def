@@ -207,7 +207,7 @@ void|mod_node_page_state|struct pglist_data *p, unsigned int item, long delta|mo
 void|count_vm_event|unsigned int item|count_vm_event(item);
 void|count_vm_events|unsigned int item, unsigned long delta|count_vm_events(item, delta);
 void|__count_vm_events|unsigned int item, unsigned long delta|__count_vm_events(item, delta);
-void|__count_zid_vm_events|unsigned int item, int zid, unsigned long delta|__count_zid_vm_events(item, zid, delta);
+void|__count_zid_vm_events|unsigned int item, int zid, unsigned long delta|__count_vm_events(item + zid, delta);
 void|count_mthp_stat|unsigned int order, unsigned int item|count_mthp_stat(order, item);
 void|set_pgdat_normal_threshold|struct pglist_data *p|set_pgdat_percpu_threshold(p, calculate_normal_threshold);
 void|set_pgdat_pressure_threshold|struct pglist_data *p|set_pgdat_percpu_threshold(p, calculate_pressure_threshold);

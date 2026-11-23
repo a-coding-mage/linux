@@ -6,7 +6,8 @@ set -eu
 bindings=$1
 vmstat_enabled=${2:-}
 sed -n 's/^pub const RUST_VMSTAT_CFG_\([A-Z0-9_]*\): bool[_]* = true;/--cfg RUST_VMSTAT_\1/p' "$bindings"
-line=$(sed -n '/^pub const RUST_VMSTAT_NATIVE_READ_MOSTLY:/p' "$bindings")
+# bindgen may wrap the value onto following lines; join through the ';'.
+line=$(sed -n '/^pub const RUST_VMSTAT_NATIVE_READ_MOSTLY:/,/;$/p' "$bindings" | tr -s ' \n' ' ')
 # An unconfigured vmstat translation unit has no data to annotate.
 if [ -z "$line" ]; then
     if [ "$vmstat_enabled" = y ]; then
@@ -16,8 +17,8 @@ if [ -z "$line" ]; then
     exit 0
 fi
 case "$line" in
-    *'= b"\0";'|*'= b"";') ;;
-    *'= b"__attribute__((__section__(\".data..read_mostly\")))\0";')
+    *'= b"\0";'*|*'= b"";'*) ;;
+    *'= b"__attribute__((__section__(\".data..read_mostly\")))\0";'*)
         printf '%s\n' '--cfg RUST_VMSTAT_READ_MOSTLY' ;;
     *) echo 'Unsupported native __read_mostly expansion in vmstat bindings' >&2; exit 1 ;;
 esac

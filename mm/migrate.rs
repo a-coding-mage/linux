@@ -1,6 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0
 // Executable owner of mm/migrate.c, reconciled against
 // e1d84f501551943a11f4c5271e9f5c85d7e15168 (original C remains immutable).
+#![allow(
+    non_camel_case_types,
+    non_snake_case,
+    non_upper_case_globals,
+    dead_code,
+    unused_imports,
+    unused_variables,
+    unused_mut,
+    missing_docs,
+    unsafe_op_in_unsafe_fn,
+    clippy::all,
+    unreachable_pub
+)]
+#[allow(improper_ctypes)]
 mod b {
     use kernel::ffi;
     include!(concat!(
