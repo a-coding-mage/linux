@@ -21,6 +21,27 @@ config RUST_SCATTERLIST
 
 	  Rebuild dependent modules after switching when using DWARF versions.
 
+config RUST_RANDOM32
+	bool "Rust implementation of the prandom Tausworthe generator helpers"
+	depends on RUST
+	default y
+	help
+	  Build prandom_u32_state(), prandom_bytes_state(), the KUnit-visible
+	  prandom_warmup() and prandom_seed_full_state() from lib/random32.rs
+	  with the original exported C interface. Possible-CPU iteration and
+	  per-CPU addressing stay native in lib/random32_helpers.c.
+	  Disable this option to retain the original C implementation.
+
+config RUST_RATELIMIT
+	bool "Rust implementation of the generic rate limiter"
+	depends on RUST
+	default y
+	help
+	  Build ___ratelimit() from lib/ratelimit.rs with the original
+	  exported C interface. Lock/IRQ, atomic, warning, deferred printk
+	  and miss-counter primitives stay native in lib/ratelimit_helpers.c.
+	  Disable this option to retain the original C implementation.
+
 config RUST_SIPHASH
 	bool "Rust implementation of SipHash and HalfSipHash"
 	depends on RUST

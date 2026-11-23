@@ -64,6 +64,22 @@ else
 argv-split-provider := argv_split.o
 endif
 
+# Keep random32's original object slot and translation-unit identity.
+ifeq ($(CONFIG_RUST_RANDOM32),y)
+random32-provider := random32_rust.o random32_helpers.o
+$(obj)/random32_rust.o: modfile := lib/random32
+else
+random32-provider := random32.o
+endif
+
+# Keep ratelimit's original archive slot and translation-unit identity.
+ifeq ($(CONFIG_RUST_RATELIMIT),y)
+ratelimit-provider := ratelimit_rust.o ratelimit_helpers.o
+$(obj)/ratelimit_rust.o: modfile := lib/ratelimit
+else
+ratelimit-provider := ratelimit.o
+endif
+
 # Keep siphash's original archive slot and translation-unit identity.
 ifeq ($(CONFIG_RUST_SIPHASH),y)
 siphash-provider := siphash_rust.o siphash_helpers.o
@@ -84,7 +100,7 @@ endif
 lib-y += string.o vsprintf.o $(cmdline-provider) \
 	 $(rbtree-provider) radix-tree.o timerqueue.o xarray.o \
 	 maple_tree.o idr.o extable.o irq_regs.o $(argv-split-provider) \
-	 flex_proportions.o ratelimit.o \
+	 flex_proportions.o $(ratelimit-provider) \
 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
 	 $(earlycpio-provider) seq_buf.o $(siphash-provider) dec_and_lock.o \
 	 nmi_backtrace.o
@@ -137,7 +153,7 @@ $(obj)/scatterlist_rust.o: modfile := lib/scatterlist
 else
 scatterlist-provider := scatterlist.o
 endif
-obj-y += debug_locks.o random32.o \
+obj-y += debug_locks.o $(random32-provider) \
 	 bust_spinlocks.o kasprintf.o bitmap.o $(scatterlist-provider)
 ifeq ($(CONFIG_RUST_LIST_SORT),y)
 obj-y += list_sort_rust.o

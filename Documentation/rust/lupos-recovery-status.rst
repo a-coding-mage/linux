@@ -51,9 +51,34 @@ Results, each compared with a matched all-C control that differs only in the
   THP or soft-dirty in this configuration, a 256 MiB guest for the 2 GiB
   mremap cases, and PROC_MEM_FORCE_PTRACE for the /proc/self/mem write.
 
+An extended configuration adds THP, userfaultfd (selecting the Rust
+userfaultfd owner), KSM, soft-dirty, anonymous VMA names, debugfs and user
+namespaces; it also builds and boots. A static helper run first mounts sysfs,
+debugfs and a tmpfs ``/tmp`` for the unchanged tests, with busybox
+``/bin/sleep`` and ``pidfd_exec_helper`` in the initramfs. Against its matched
+C control:
+
+* 20 original mm kselftests: identical per-test outcomes, including
+  uffd-unit-tests (101 pass), pagemap_ioctl (118), cow (210), guard-regions
+  (73), soft-dirty (17) and merge (25). The one differing line is a passing
+  transact_test's timing-dependent "extra pages" count.
+* 13 original pidfd kselftests: identical, 78 pass and 1 skip on both,
+  covering fork/exit/pid, credentials, setns, ucounts and pidfs.
+
+New lib owners translated from the bulk sources and selected by default:
+siphash (``RUST_SIPHASH``), ratelimit (``RUST_RATELIMIT``) and prandom
+(``RUST_RANDOM32``). Each keeps its exports, including prandom_warmup's
+``EXPORTED_FOR_KUNIT_TESTING`` namespace, with native leaves only for
+architecture loads, locks/atomics, warnings, printk and per-CPU access. Their
+original siphash, lib_ratelimit (with the concurrent stress case) and prandom
+KUnit suites pass. Guest runs use ``-accel kvm`` ahead of the runner's TCG
+fallback; every Rust/C pair uses the same accelerator.
+
 Open: arm64 and other architectures for the new owners, CFI/RANDSTRUCT
-configurations, the 67 default-off owners in a combined build, USER_NS and
-libcap-dependent namespace/clone3 suites, and broader original suites.
+configurations, the 67 default-off owners in a combined build, libcap-dependent
+namespace/clone3 suites, and broader original suites. The bulk usercopy.rs
+reads user memory without exception-table protection and must not be admitted
+as is.
 
 Current recovery and configured-build repairs (2026-10-03)
 -------------------------------------------------------

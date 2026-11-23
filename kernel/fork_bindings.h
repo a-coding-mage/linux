@@ -11,5 +11,9 @@
 #ifdef CONFIG_SCHED_MM_CID
 /* Bindgen-only typed view of the native BIT() expression; no runtime storage. */
 static const unsigned int RUST_FORK_MM_CID_UNSET = MM_CID_UNSET;
+#ifdef CONFIG_MM_ID
+/* MM_ID_BITS uses sizeof, which bindgen's macro evaluation cannot follow. */
+static const unsigned int RUST_FORK_MM_ID_MAX = MM_ID_MAX;
+#endif
 #endif
 #endif

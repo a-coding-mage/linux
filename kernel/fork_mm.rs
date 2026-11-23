@@ -43,7 +43,7 @@ unsafe fn mm_alloc_id(mm: *mut mm_struct) -> i32 {
         let id = ida_alloc_range(
             rust_fork_mm_ida(),
             MM_ID_MIN as u32,
-            MM_ID_MAX as u32,
+            RUST_FORK_MM_ID_MAX as u32,
             rust_fork_mm_gfp_kernel(),
         );
         if id < 0 {
@@ -63,7 +63,7 @@ unsafe fn mm_free_id(mm: *mut mm_struct) {
         if id == MM_ID_DUMMY as _ {
             return;
         }
-        if rust_fork_mm_warn_bad_id(id < MM_ID_MIN as _ || id > MM_ID_MAX as _) {
+        if rust_fork_mm_warn_bad_id(id < MM_ID_MIN as _ || id > RUST_FORK_MM_ID_MAX as _) {
             return;
         }
         ida_free(rust_fork_mm_ida(), id as u32);
