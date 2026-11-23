@@ -64,6 +64,14 @@ else
 argv-split-provider := argv_split.o
 endif
 
+# Keep siphash's original archive slot and translation-unit identity.
+ifeq ($(CONFIG_RUST_SIPHASH),y)
+siphash-provider := siphash_rust.o siphash_helpers.o
+$(obj)/siphash_rust.o: modfile := lib/siphash
+else
+siphash-provider := siphash.o
+endif
+
 # Preserve the early parser's original archive slot and built-in identity.
 ifeq ($(CONFIG_RUST_EARLYCPIO),y)
 earlycpio-provider := earlycpio_rust.o
@@ -78,7 +86,7 @@ lib-y += string.o vsprintf.o $(cmdline-provider) \
 	 maple_tree.o idr.o extable.o irq_regs.o $(argv-split-provider) \
 	 flex_proportions.o ratelimit.o \
 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
-	 $(earlycpio-provider) seq_buf.o siphash.o dec_and_lock.o \
+	 $(earlycpio-provider) seq_buf.o $(siphash-provider) dec_and_lock.o \
 	 nmi_backtrace.o
 ifeq ($(CONFIG_RUST_WIN_MINMAX),y)
 lib-y += win_minmax_rust.o

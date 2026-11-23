@@ -12,6 +12,8 @@
 // The owner-local interface is an inactive proposal; no source is selected.
 
 use kernel::bindings::cred_native::*;
+// bindgen's newtype enum exposes the enumerator as an associated constant.
+const UCOUNT_RLIMIT_NPROC: rlimit_type = rlimit_type::UCOUNT_RLIMIT_NPROC;
 use kernel::bindings::cred_native::{
     LUPOS_CRED_CLONE_NEWUSER as CLONE_NEWUSER,
     LUPOS_CRED_CLONE_THREAD as CLONE_THREAD,
@@ -22,7 +24,6 @@ use kernel::bindings::cred_native::{
     LUPOS_CRED_GFP_KERNEL_ACCOUNT as GFP_KERNEL_ACCOUNT,
     LUPOS_CRED_PROC_EVENT_GID as PROC_EVENT_GID,
     LUPOS_CRED_PROC_EVENT_UID as PROC_EVENT_UID,
-    UCOUNT_RLIMIT_NPROC,
     lupos_cred_uid_eq as uid_eq, lupos_cred_uid_lt as uid_lt,
     lupos_cred_uid_gt as uid_gt, lupos_cred_uid_valid as uid_valid,
     lupos_cred_gid_eq as gid_eq, lupos_cred_gid_lt as gid_lt,

@@ -5,6 +5,56 @@ This branch contains an incomplete migration checkpoint, not a release or a
 claim that all Linux tests pass. Earlier raw build/test artifacts became
 unavailable when the execution workspace was replaced on 2026-10-02.
 
+Integrated x86-64 build, boot and matched C controls (2026-11-23)
+-----------------------------------------------------------------
+
+The default-on owners added on 2026-10-03..05 had never been compiled
+together. They now build, link and boot as one x86-64 kernel
+(``x86_64_defconfig`` + ``kvm_guest.config`` + ``rust.config`` + KUnit),
+with 74 upstream C units Rust-owned: page allocation, SLUB/slab_common,
+memory faults, mmap/mremap/mprotect, vmalloc, memblock, rmap, vmscan,
+migrate, compaction, vmstat, fork/exit/pid/kthread, softirq/panic, IRQ core,
+init main/initramfs/version/task, x86 setup/e820/head64/mm init and the lib
+providers. Build repairs were source-only and preserve C semantics: zone-family
+vm_event bases, const casts at native macro operands, unconditional
+PageLargeKmalloc, SLUB/vmstat/vmscan binding allowlists (named enums match
+bindgen's mangled names), ``__noreturn`` on the SLUB OOM panic leaf, a bindgen-
+evaluable ``__read_mostly`` metadata array, and the established crate lint
+header on the Oct 5 mm owners. Nominal extern-declaration clashes between
+bindgen type universes are allowed per module; their C prototypes are identical.
+
+Thirteen former source-only owners are admitted and default on: task_work,
+notifier, ucount, cred, groups, umh, nsproxy, nstree, user accounting,
+smpboot, stop_machine, irq_work and freezer. Their native companions follow
+the original object's link position, so initcall order is unchanged. Rust
+objects carry no ftrace entry instrumentation, so notify_die stays notrace.
+capability_boot stays held: capability.rs does not yet export the complete
+capability.o API to C.
+
+Toolchain: rustc 1.85.1, bindgen 0.71.1 and QEMU 8.2.2 as pinned. The
+native-policy owners link rustc LLVM 19 IR with clang IR, so CC needs LLVM
+>= 19; these runs used Android NDK r29 clang/lld/llvm-link 21.0.0 with its
+libclang, and system clang 18 for host tools. Pinned clang 19.1.7 builds
+remain to be rerun.
+
+Results, each compared with a matched all-C control that differs only in the
+``RUST_*`` owner selectors:
+
+* KUnit: 476 original C tests, 463 pass, 13 skip (CRNG not yet seeded,
+  built-in-only kfree_rcu cases, perf/kprobe and debugfs options, benchmarks),
+  0 fail. Per-test outcomes are identical to the C control, including after
+  each admission batch. Console events are only KUnit's deliberate NULL
+  dereference and the int_log zero-input warnings, as in C.
+* Original mm kselftests (20 static binaries, unchanged sources): identical
+  per-test outcomes to the C control. The remaining failures are
+  environmental and reproduce in C: no ``/tmp`` for tmpfile(), no userfaultfd,
+  THP or soft-dirty in this configuration, a 256 MiB guest for the 2 GiB
+  mremap cases, and PROC_MEM_FORCE_PTRACE for the /proc/self/mem write.
+
+Open: arm64 and other architectures for the new owners, CFI/RANDSTRUCT
+configurations, the 67 default-off owners in a combined build, USER_NS and
+libcap-dependent namespace/clone3 suites, and broader original suites.
+
 Current recovery and configured-build repairs (2026-10-03)
 -------------------------------------------------------
 

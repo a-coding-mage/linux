@@ -27,8 +27,12 @@ use b::{RUST_NSTREE_CLONE_NEWCGROUP as CLONE_NEWCGROUP,
     RUST_NSTREE_EFAULT as EFAULT, RUST_NSTREE_E2BIG as E2BIG,
     RUST_NSTREE_EOPNOTSUPP as EOPNOTSUPP, RUST_NSTREE_ENOENT as ENOENT,
     RUST_NSTREE_NS_ALL as NS_ALL,
-    RUST_NSTREE_LISTNS_CURRENT_USER as LISTNS_CURRENT_USER,
+    RUST_NSTREE_LISTNS_CURRENT_USER,
     RUST_NSTREE_NS_ID_REQ_SIZE_VER0 as NS_ID_REQ_SIZE_VER0};
+
+// bindgen types the uapi all-ones macro as i32 -1; C compares it as __u64.
+const LISTNS_CURRENT_USER: u64 = RUST_NSTREE_LISTNS_CURRENT_USER as u64;
+const _: () = assert!(LISTNS_CURRENT_USER == u64::MAX);
 
 // Native storage preserves cacheline placement, self-referential list heads,
 // atomic initialization and exactly one shared lock for all three reader modes.

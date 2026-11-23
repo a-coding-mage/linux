@@ -17,6 +17,23 @@
 // type; every function performs the same operations in the same order.
 
 use core::ffi::c_void;
+use kernel::bindings::{hsiphash_key_t, siphash_key_t};
+use kernel::bindings::{SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3};
+#[cfg(not(CONFIG_64BIT))]
+use kernel::bindings::{HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3};
+
+#[cfg(all(CONFIG_DCACHE_WORD_ACCESS, CONFIG_64BIT))]
+extern "C" {
+    /// The configured word-at-a-time load with its zero-padding fixup.
+    fn lupos_siphash_load_unaligned_zeropad(addr: *const c_void) -> core::ffi::c_ulong;
+}
+
+/// linux/dcache.h little-endian `bytemask_from_count(cnt)`: the low `cnt` bytes.
+#[cfg(all(CONFIG_DCACHE_WORD_ACCESS, CONFIG_64BIT))]
+#[inline(always)]
+fn bytemask_from_count(cnt: usize) -> u64 {
+    !(!0u64 << (cnt * 8))
+}
 
 /// SipHash state: `PREAMBLE(len)` initializes it, `SIPROUND` permutes it.
 struct Sip {
@@ -90,20 +107,23 @@ impl Sip {
 /// with CONFIG_DCACHE_WORD_ACCESS on 64-bit, `load_unaligned_zeropad()`).
 #[inline(always)]
 unsafe fn sip_tail(end: *const u8, left: usize) -> u64 {
-    #[cfg(all(CONFIG_DCACHE_WORD_ACCESS, CONFIG_64BIT))]
-    {
-        if left != 0 {
-            return u64::from_le(load_unaligned_zeropad(end.cast()) & bytemask_from_count(left as _));
+    // SAFETY: the caller guarantees the pointer/length contract stated for the C entry point.
+    unsafe {
+        #[cfg(all(CONFIG_DCACHE_WORD_ACCESS, CONFIG_64BIT))]
+        {
+            if left != 0 {
+                return u64::from_le(lupos_siphash_load_unaligned_zeropad(end.cast()) & bytemask_from_count(left));
+            }
+            0
         }
-        0
-    }
-    #[cfg(not(all(CONFIG_DCACHE_WORD_ACCESS, CONFIG_64BIT)))]
-    {
-        let mut b: u64 = 0;
-        for i in 0..left {
-            b |= (*end.add(i) as u64) << (8 * i);
+        #[cfg(not(all(CONFIG_DCACHE_WORD_ACCESS, CONFIG_64BIT)))]
+        {
+            let mut b: u64 = 0;
+            for i in 0..left {
+                b |= (*end.add(i) as u64) << (8 * i);
+            }
+            b
         }
-        b
     }
 }
 
@@ -113,32 +133,44 @@ unsafe fn sip_tail(end: *const u8, left: usize) -> u64 {
 #[inline(always)]
 unsafe fn sip_bytes(data: *const c_void, len: usize, key: &[u64; 2], c_rounds: u32, d_rounds: u32, aligned: bool) -> u64 {
     let mut data = data.cast::<u8>();
-    let end = data.add(len - (len % 8));
-    let left = len & 7;
-    let mut s = Sip::new(len as u64, key);
-    while data != end {
-        let m = if aligned {
-            u64::from_le(data.cast::<u64>().read())
-        } else {
-            u64::from_le_bytes(data.cast::<[u8; 8]>().read_unaligned())
-        };
-        s.compress(m, c_rounds);
-        data = data.add(8);
+    // SAFETY: the caller passes len readable bytes at data (aligned to 8
+    // bytes when `aligned`), so every word read stays within that range.
+    unsafe {
+        let end = data.add(len - (len % 8));
+        let left = len & 7;
+        let mut s = Sip::new(len as u64, key);
+        while data != end {
+            let m = if aligned {
+                u64::from_le(data.cast::<u64>().read())
+            } else {
+                u64::from_le_bytes(data.cast::<[u8; 8]>().read_unaligned())
+            };
+            s.compress(m, c_rounds);
+            data = data.add(8);
+        }
+        s.b |= sip_tail(end, left);
+        s.finish(c_rounds, d_rounds)
     }
-    s.b |= sip_tail(end, left);
-    s.finish(c_rounds, d_rounds)
 }
 
+/// SipHash PRF over the arguments; original C `__siphash_aligned()` from lib/siphash.c.
 #[cfg(not(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))]
 #[no_mangle]
 pub unsafe extern "C" fn __siphash_aligned(data: *const c_void, len: usize, key: *const siphash_key_t) -> u64 {
-    sip_bytes(data, len, &(*key).key, 2, 4, true)
+    // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+    unsafe {
+        sip_bytes(data, len, &(*key).key, 2, 4, true)
+    }
 }
 // EXPORT_SYMBOL(__siphash_aligned);
 
+/// SipHash PRF over the arguments; original C `__siphash_unaligned()` from lib/siphash.c.
 #[no_mangle]
 pub unsafe extern "C" fn __siphash_unaligned(data: *const c_void, len: usize, key: *const siphash_key_t) -> u64 {
-    sip_bytes(data, len, &(*key).key, 2, 4, false)
+    // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+    unsafe {
+        sip_bytes(data, len, &(*key).key, 2, 4, false)
+    }
 }
 // EXPORT_SYMBOL(__siphash_unaligned);
 
@@ -149,9 +181,12 @@ pub unsafe extern "C" fn __siphash_unaligned(data: *const c_void, len: usize, ke
  */
 #[no_mangle]
 pub unsafe extern "C" fn siphash_1u64(first: u64, key: *const siphash_key_t) -> u64 {
-    let mut s = Sip::new(8, &(*key).key);
-    s.compress(first, 2);
-    s.finish(2, 4)
+    // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+    unsafe {
+        let mut s = Sip::new(8, &(*key).key);
+        s.compress(first, 2);
+        s.finish(2, 4)
+    }
 }
 // EXPORT_SYMBOL(siphash_1u64);
 
@@ -163,10 +198,13 @@ pub unsafe extern "C" fn siphash_1u64(first: u64, key: *const siphash_key_t) -> 
  */
 #[no_mangle]
 pub unsafe extern "C" fn siphash_2u64(first: u64, second: u64, key: *const siphash_key_t) -> u64 {
-    let mut s = Sip::new(16, &(*key).key);
-    s.compress(first, 2);
-    s.compress(second, 2);
-    s.finish(2, 4)
+    // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+    unsafe {
+        let mut s = Sip::new(16, &(*key).key);
+        s.compress(first, 2);
+        s.compress(second, 2);
+        s.finish(2, 4)
+    }
 }
 // EXPORT_SYMBOL(siphash_2u64);
 
@@ -179,11 +217,14 @@ pub unsafe extern "C" fn siphash_2u64(first: u64, second: u64, key: *const sipha
  */
 #[no_mangle]
 pub unsafe extern "C" fn siphash_3u64(first: u64, second: u64, third: u64, key: *const siphash_key_t) -> u64 {
-    let mut s = Sip::new(24, &(*key).key);
-    s.compress(first, 2);
-    s.compress(second, 2);
-    s.compress(third, 2);
-    s.finish(2, 4)
+    // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+    unsafe {
+        let mut s = Sip::new(24, &(*key).key);
+        s.compress(first, 2);
+        s.compress(second, 2);
+        s.compress(third, 2);
+        s.finish(2, 4)
+    }
 }
 // EXPORT_SYMBOL(siphash_3u64);
 
@@ -197,30 +238,41 @@ pub unsafe extern "C" fn siphash_3u64(first: u64, second: u64, third: u64, key: 
  */
 #[no_mangle]
 pub unsafe extern "C" fn siphash_4u64(first: u64, second: u64, third: u64, forth: u64, key: *const siphash_key_t) -> u64 {
-    let mut s = Sip::new(32, &(*key).key);
-    s.compress(first, 2);
-    s.compress(second, 2);
-    s.compress(third, 2);
-    s.compress(forth, 2);
-    s.finish(2, 4)
+    // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+    unsafe {
+        let mut s = Sip::new(32, &(*key).key);
+        s.compress(first, 2);
+        s.compress(second, 2);
+        s.compress(third, 2);
+        s.compress(forth, 2);
+        s.finish(2, 4)
+    }
 }
 // EXPORT_SYMBOL(siphash_4u64);
 
+/// SipHash PRF over the arguments; original C `siphash_1u32()` from lib/siphash.c.
 #[no_mangle]
 pub unsafe extern "C" fn siphash_1u32(first: u32, key: *const siphash_key_t) -> u64 {
-    let mut s = Sip::new(4, &(*key).key);
-    s.b |= first as u64;
-    s.finish(2, 4)
+    // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+    unsafe {
+        let mut s = Sip::new(4, &(*key).key);
+        s.b |= first as u64;
+        s.finish(2, 4)
+    }
 }
 // EXPORT_SYMBOL(siphash_1u32);
 
+/// SipHash PRF over the arguments; original C `siphash_3u32()` from lib/siphash.c.
 #[no_mangle]
 pub unsafe extern "C" fn siphash_3u32(first: u32, second: u32, third: u32, key: *const siphash_key_t) -> u64 {
-    let combined: u64 = (second as u64) << 32 | first as u64;
-    let mut s = Sip::new(12, &(*key).key);
-    s.compress(combined, 2);
-    s.b |= third as u64;
-    s.finish(2, 4)
+    // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+    unsafe {
+        let combined: u64 = (second as u64) << 32 | first as u64;
+        let mut s = Sip::new(12, &(*key).key);
+        s.compress(combined, 2);
+        s.b |= third as u64;
+        s.finish(2, 4)
+    }
 }
 // EXPORT_SYMBOL(siphash_3u32);
 
@@ -232,59 +284,87 @@ mod hsip {
     use super::*;
 
     #[inline(always)]
-    fn key64(key: *const hsiphash_key_t) -> [u64; 2] {
+    /// Reads the native unsigned long key words.
+    ///
+    /// # Safety
+    /// `key` points to a valid `hsiphash_key_t`.
+    unsafe fn key64(key: *const hsiphash_key_t) -> [u64; 2] {
         // SAFETY: callers pass a valid key; unsigned long is 64-bit here.
         unsafe { [(*key).key[0] as u64, (*key).key[1] as u64] }
     }
 
+    /// HalfSipHash PRF over the arguments; original C `__hsiphash_aligned()` from lib/siphash.c.
     #[cfg(not(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))]
     #[no_mangle]
     pub unsafe extern "C" fn __hsiphash_aligned(data: *const c_void, len: usize, key: *const hsiphash_key_t) -> u32 {
-        sip_bytes(data, len, &key64(key), 1, 3, true) as u32
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            sip_bytes(data, len, &key64(key), 1, 3, true) as u32
+        }
     }
     // EXPORT_SYMBOL(__hsiphash_aligned);
 
+    /// HalfSipHash PRF over the arguments; original C `__hsiphash_unaligned()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn __hsiphash_unaligned(data: *const c_void, len: usize, key: *const hsiphash_key_t) -> u32 {
-        sip_bytes(data, len, &key64(key), 1, 3, false) as u32
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            sip_bytes(data, len, &key64(key), 1, 3, false) as u32
+        }
     }
     // EXPORT_SYMBOL(__hsiphash_unaligned);
 
+    /// HalfSipHash PRF over the arguments; original C `hsiphash_1u32()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn hsiphash_1u32(first: u32, key: *const hsiphash_key_t) -> u32 {
-        let mut s = Sip::new(4, &key64(key));
-        s.b |= first as u64;
-        s.finish(1, 3) as u32
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            let mut s = Sip::new(4, &key64(key));
+            s.b |= first as u64;
+            s.finish(1, 3) as u32
+        }
     }
     // EXPORT_SYMBOL(hsiphash_1u32);
 
+    /// HalfSipHash PRF over the arguments; original C `hsiphash_2u32()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn hsiphash_2u32(first: u32, second: u32, key: *const hsiphash_key_t) -> u32 {
-        let combined: u64 = (second as u64) << 32 | first as u64;
-        let mut s = Sip::new(8, &key64(key));
-        s.compress(combined, 1);
-        s.finish(1, 3) as u32
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            let combined: u64 = (second as u64) << 32 | first as u64;
+            let mut s = Sip::new(8, &key64(key));
+            s.compress(combined, 1);
+            s.finish(1, 3) as u32
+        }
     }
     // EXPORT_SYMBOL(hsiphash_2u32);
 
+    /// HalfSipHash PRF over the arguments; original C `hsiphash_3u32()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn hsiphash_3u32(first: u32, second: u32, third: u32, key: *const hsiphash_key_t) -> u32 {
-        let combined: u64 = (second as u64) << 32 | first as u64;
-        let mut s = Sip::new(12, &key64(key));
-        s.compress(combined, 1);
-        s.b |= third as u64;
-        s.finish(1, 3) as u32
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            let combined: u64 = (second as u64) << 32 | first as u64;
+            let mut s = Sip::new(12, &key64(key));
+            s.compress(combined, 1);
+            s.b |= third as u64;
+            s.finish(1, 3) as u32
+        }
     }
     // EXPORT_SYMBOL(hsiphash_3u32);
 
+    /// HalfSipHash PRF over the arguments; original C `hsiphash_4u32()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn hsiphash_4u32(first: u32, second: u32, third: u32, forth: u32, key: *const hsiphash_key_t) -> u32 {
-        let mut combined: u64 = (second as u64) << 32 | first as u64;
-        let mut s = Sip::new(16, &key64(key));
-        s.compress(combined, 1);
-        combined = (forth as u64) << 32 | third as u64;
-        s.compress(combined, 1);
-        s.finish(1, 3) as u32
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            let mut combined: u64 = (second as u64) << 32 | first as u64;
+            let mut s = Sip::new(16, &key64(key));
+            s.compress(combined, 1);
+            combined = (forth as u64) << 32 | third as u64;
+            s.compress(combined, 1);
+            s.finish(1, 3) as u32
+        }
     }
     // EXPORT_SYMBOL(hsiphash_4u32);
 }
@@ -359,73 +439,100 @@ mod hsip {
 
     #[inline(always)]
     unsafe fn hsip_bytes(data: *const c_void, len: usize, key: *const hsiphash_key_t, aligned: bool) -> u32 {
-        let mut data = data.cast::<u8>();
-        let end = data.add(len - (len % 4));
-        let left = len & 3;
-        let mut s = HSip::new(len as u32, key);
-        while data != end {
-            let m = if aligned {
-                u32::from_le(data.cast::<u32>().read())
-            } else {
-                u32::from_le_bytes(data.cast::<[u8; 4]>().read_unaligned())
-            };
-            s.compress(m);
-            data = data.add(4);
+        // SAFETY: the caller guarantees the pointer/length contract stated for the C entry point.
+        unsafe {
+            let mut data = data.cast::<u8>();
+            let end = data.add(len - (len % 4));
+            let left = len & 3;
+            let mut s = HSip::new(len as u32, key);
+            while data != end {
+                let m = if aligned {
+                    u32::from_le(data.cast::<u32>().read())
+                } else {
+                    u32::from_le_bytes(data.cast::<[u8; 4]>().read_unaligned())
+                };
+                s.compress(m);
+                data = data.add(4);
+            }
+            for i in 0..left {
+                s.b |= (*end.add(i) as u32) << (8 * i);
+            }
+            s.finish()
         }
-        for i in 0..left {
-            s.b |= (*end.add(i) as u32) << (8 * i);
-        }
-        s.finish()
     }
 
+    /// HalfSipHash PRF over the arguments; original C `__hsiphash_aligned()` from lib/siphash.c.
     #[cfg(not(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))]
     #[no_mangle]
     pub unsafe extern "C" fn __hsiphash_aligned(data: *const c_void, len: usize, key: *const hsiphash_key_t) -> u32 {
-        hsip_bytes(data, len, key, true)
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            hsip_bytes(data, len, key, true)
+        }
     }
     // EXPORT_SYMBOL(__hsiphash_aligned);
 
+    /// HalfSipHash PRF over the arguments; original C `__hsiphash_unaligned()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn __hsiphash_unaligned(data: *const c_void, len: usize, key: *const hsiphash_key_t) -> u32 {
-        hsip_bytes(data, len, key, false)
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            hsip_bytes(data, len, key, false)
+        }
     }
     // EXPORT_SYMBOL(__hsiphash_unaligned);
 
+    /// HalfSipHash PRF over the arguments; original C `hsiphash_1u32()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn hsiphash_1u32(first: u32, key: *const hsiphash_key_t) -> u32 {
-        let mut s = HSip::new(4, key);
-        s.compress(first);
-        s.finish()
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            let mut s = HSip::new(4, key);
+            s.compress(first);
+            s.finish()
+        }
     }
     // EXPORT_SYMBOL(hsiphash_1u32);
 
+    /// HalfSipHash PRF over the arguments; original C `hsiphash_2u32()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn hsiphash_2u32(first: u32, second: u32, key: *const hsiphash_key_t) -> u32 {
-        let mut s = HSip::new(8, key);
-        s.compress(first);
-        s.compress(second);
-        s.finish()
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            let mut s = HSip::new(8, key);
+            s.compress(first);
+            s.compress(second);
+            s.finish()
+        }
     }
     // EXPORT_SYMBOL(hsiphash_2u32);
 
+    /// HalfSipHash PRF over the arguments; original C `hsiphash_3u32()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn hsiphash_3u32(first: u32, second: u32, third: u32, key: *const hsiphash_key_t) -> u32 {
-        let mut s = HSip::new(12, key);
-        s.compress(first);
-        s.compress(second);
-        s.compress(third);
-        s.finish()
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            let mut s = HSip::new(12, key);
+            s.compress(first);
+            s.compress(second);
+            s.compress(third);
+            s.finish()
+        }
     }
     // EXPORT_SYMBOL(hsiphash_3u32);
 
+    /// HalfSipHash PRF over the arguments; original C `hsiphash_4u32()` from lib/siphash.c.
     #[no_mangle]
     pub unsafe extern "C" fn hsiphash_4u32(first: u32, second: u32, third: u32, forth: u32, key: *const hsiphash_key_t) -> u32 {
-        let mut s = HSip::new(16, key);
-        s.compress(first);
-        s.compress(second);
-        s.compress(third);
-        s.compress(forth);
-        s.finish()
+        // SAFETY: callers uphold the C contract: key and data point to valid memory for len bytes.
+        unsafe {
+            let mut s = HSip::new(16, key);
+            s.compress(first);
+            s.compress(second);
+            s.compress(third);
+            s.compress(forth);
+            s.finish()
+        }
     }
     // EXPORT_SYMBOL(hsiphash_4u32);
 }
