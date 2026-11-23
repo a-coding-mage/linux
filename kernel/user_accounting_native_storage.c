@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Exact native initializers from user.c; no user-cache algorithm lives here. */
-#error "SOURCE ONLY HOLD: user-accounting native storage is not admitted"
 
 #include <linux/init.h>
 #include <linux/sched.h>

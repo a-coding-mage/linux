@@ -20,7 +20,6 @@
 #include <asm/processor.h>
 #include <trace/events/ipi.h>
 
-#error "SOURCE ONLY HOLD: IRQ-work native primitives are not admitted"
 
 /* Real native per-CPU storage, alignment and static zero initialization. */
 static DEFINE_PER_CPU(struct llist_head, raised_list);

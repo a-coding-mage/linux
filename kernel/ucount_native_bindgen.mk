@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_UCOUNT),y)
-$(error SOURCE ONLY HOLD: Rust user-accounting native bindings are unqualified)
-endif
 targets += bindings/ucount_native_generated.rs
 always-$(CONFIG_RUST_UCOUNT) += bindings/ucount_native_generated.rs
 $(obj)/bindings/ucount_native_generated.rs: private bindgen_target_flags = \

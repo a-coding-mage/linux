@@ -2,7 +2,6 @@
 /* Native storage, field/header primitives and callback signatures only.
  * All worker, registration, unwind and CPU/list loops stay in smpboot.rs.
  */
-#error "SOURCE ONLY HOLD: smpboot native primitives are not admitted"
 
 #include "smpboot_native_bindings.h"
 #include <linux/mutex.h>

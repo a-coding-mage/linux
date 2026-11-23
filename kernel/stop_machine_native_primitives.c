@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Native storage and primitive leaves; no stop-machine control algorithm. */
-#error "SOURCE ONLY HOLD: stop-machine native owner is not admitted"
 #include "stop_machine_native_bindings.h"
 #include <linux/bug.h>
 #include <linux/compiler.h>

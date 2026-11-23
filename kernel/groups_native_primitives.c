@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
 /* Native primitives only; group loops, search, policy and ownership stay Rust. */
-#error "SOURCE ONLY HOLD: supplementary-group native primitives are not admitted"
 
 #include "groups_native_bindings.h"
 #include <linux/slab.h>

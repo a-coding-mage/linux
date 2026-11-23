@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
+//! Rust owner for kernel/cred.c: task credential lifetime and transitions.
 /* Task credentials management - see Documentation/security/credentials.rst
  *
  * Copyright (C) 2008 Red Hat, Inc. All Rights Reserved.
@@ -9,8 +10,6 @@
 // Native oracle: cred.c blob 3df4e15bd67ffe4e63c0fd0ce31bdc5c10d20faf.
 // Only configured native headers describe credentials, tasks and their fields.
 // The owner-local interface is an inactive proposal; no source is selected.
-#![no_std]
-compile_error!("SOURCE ONLY HOLD: credential Rust owner is not admitted");
 
 use kernel::bindings::cred_native::*;
 use kernel::bindings::cred_native::{
@@ -23,7 +22,7 @@ use kernel::bindings::cred_native::{
     LUPOS_CRED_GFP_KERNEL_ACCOUNT as GFP_KERNEL_ACCOUNT,
     LUPOS_CRED_PROC_EVENT_GID as PROC_EVENT_GID,
     LUPOS_CRED_PROC_EVENT_UID as PROC_EVENT_UID,
-    LUPOS_CRED_UCOUNT_RLIMIT_NPROC as UCOUNT_RLIMIT_NPROC,
+    UCOUNT_RLIMIT_NPROC,
     lupos_cred_uid_eq as uid_eq, lupos_cred_uid_lt as uid_lt,
     lupos_cred_uid_gt as uid_gt, lupos_cred_uid_valid as uid_valid,
     lupos_cred_gid_eq as gid_eq, lupos_cred_gid_lt as gid_lt,

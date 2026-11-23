@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
 # Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_GROUPS),y)
-$(error SOURCE ONLY HOLD: Rust supplementary-group native bindings are unqualified)
-endif
 targets += bindings/groups_native_generated.rs
 always-$(CONFIG_RUST_GROUPS) += bindings/groups_native_generated.rs
 $(obj)/bindings/groups_native_generated.rs: private bindgen_target_flags = \

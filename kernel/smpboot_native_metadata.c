@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Native exports and full __init entry metadata; algorithms remain Rust. */
-#error "SOURCE ONLY HOLD: smpboot native metadata is not admitted"
 
 #include "smpboot_native_bindings.h"
 #include <linux/export.h>

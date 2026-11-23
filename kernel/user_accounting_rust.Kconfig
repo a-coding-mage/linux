@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-only
 config RUST_USER_ACCOUNTING
-	bool "Rust user-cache source proposal (not admitted)"
-	depends on RUST && BROKEN
-	default n
+	bool "Rust per-user accounting cache"
+	depends on RUST
+	default y
 	help
-	  Inactive continuation of the existing user-cache Rust owner.
-	  Native ABI/CFI, configured storage, reference and IRQ semantics,
-	  init metadata and original tests remain unqualified.
+	  Build the per-user accounting cache bodies from kernel/user.rs in the
+	  original kernel/user.o slot, with native companions for configured
+	  primitives, storage and metadata. Turning this option off selects
+	  the unchanged original C provider.

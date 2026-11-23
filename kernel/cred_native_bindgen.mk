@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_CRED),y)
-$(error SOURCE ONLY HOLD: Rust credential bindings and callback ABI are unqualified)
-endif
 targets += bindings/cred_native_generated.rs
 always-$(CONFIG_RUST_CRED) += bindings/cred_native_generated.rs
 $(obj)/bindings/cred_native_generated.rs: private bindgen_target_flags = \

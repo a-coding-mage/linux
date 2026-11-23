@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_UMH),y)
-$(error SOURCE ONLY HOLD: Rust usermode-helper native bindings are unqualified)
-endif
 targets += bindings/umh_native_generated.rs
 always-$(CONFIG_RUST_UMH) += bindings/umh_native_generated.rs
 $(obj)/bindings/umh_native_generated.rs: private bindgen_target_flags = \

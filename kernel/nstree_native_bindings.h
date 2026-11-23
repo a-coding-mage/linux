@@ -37,7 +37,8 @@ NSTREE_INT(ENOENT)
 #undef NSTREE_INT
 static const u32 RUST_NSTREE_NS_ALL = PID_NS | USER_NS | MNT_NS | UTS_NS |
 	IPC_NS | NET_NS | CGROUP_NS | TIME_NS;
-static const u64 RUST_NSTREE_LISTNS_CURRENT_USER = LISTNS_CURRENT_USER;
+/* A macro alias: bindgen emits it as a constant, not an unlinkable static. */
+#define RUST_NSTREE_LISTNS_CURRENT_USER LISTNS_CURRENT_USER
 static const size_t RUST_NSTREE_NS_ID_REQ_SIZE_VER0 = NS_ID_REQ_SIZE_VER0;
 #endif /* __BINDGEN__ */
 

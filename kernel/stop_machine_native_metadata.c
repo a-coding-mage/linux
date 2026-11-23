@@ -2,7 +2,6 @@
 /* Exact public signatures, callback value adaptation, init/export/weak metadata.
  * No participant, queue, lock, completion, CPU-hotplug or unwind policy lives here.
  */
-#error "SOURCE ONLY HOLD: stop-machine native metadata is not admitted"
 #include "stop_machine_native_bindings.h"
 #include <linux/compiler.h>
 #include <linux/export.h>

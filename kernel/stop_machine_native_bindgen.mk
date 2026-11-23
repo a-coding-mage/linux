@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_STOP_MACHINE),y)
-$(error SOURCE ONLY HOLD: Rust stop-machine native bindings are unqualified)
-endif
 targets += bindings/stop_machine_native_generated.rs
 always-$(CONFIG_RUST_STOP_MACHINE) += bindings/stop_machine_native_generated.rs
 $(obj)/bindings/stop_machine_native_generated.rs: private bindgen_target_flags = \

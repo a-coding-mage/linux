@@ -21,17 +21,13 @@ include $(srctree)/kernel/kthread_rust.mk
 include $(srctree)/kernel/task_work_rust.mk
 include $(srctree)/kernel/nsproxy_rust.mk
 include $(srctree)/kernel/cred_rust.mk
-include $(srctree)/kernel/groups_rust.mk
 include $(srctree)/kernel/umh_rust.mk
 include $(srctree)/kernel/ucount_rust.mk
 include $(srctree)/kernel/nstree_rust.mk
 include $(srctree)/kernel/user_accounting_rust.mk
 include $(srctree)/kernel/capability_boot_rust.mk
 include $(srctree)/kernel/smpboot_rust.mk
-include $(srctree)/kernel/stop_machine_rust.mk
-include $(srctree)/kernel/irq_work_rust.mk
 include $(srctree)/kernel/notifier_rust.mk
-include $(srctree)/kernel/freezer_rust.mk
 
 obj-$(CONFIG_MULTIUSER) += groups.o
 obj-$(CONFIG_VHOST_TASK) += vhost_task.o
@@ -276,3 +272,9 @@ clean-files := kheaders.md5 kheaders-srclist kheaders-objlist
 
 # Private inspection sidecars remain cleanable after deselection.
 clean-files += .rust-listing/ .rust-listing-elf/
+
+# Rust owners of conditionally added objects must see the complete obj-y list.
+include $(srctree)/kernel/groups_rust.mk
+include $(srctree)/kernel/stop_machine_rust.mk
+include $(srctree)/kernel/irq_work_rust.mk
+include $(srctree)/kernel/freezer_rust.mk

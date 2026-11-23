@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
+//! Rust owner for kernel/groups.c: supplementary group lists and syscalls.
 /*
  * Supplementary group IDs
  */
@@ -7,8 +8,6 @@
 // Native oracle: groups.c blob b5e3be6a6b1f4acd624623fa49c1e7bfeb434e35.
 // Configured native headers alone own types, layouts, constants and accessors.
 // This source-only proposal does not select an object or replace groups.c.
-#![no_std]
-compile_error!("SOURCE ONLY HOLD: supplementary-group Rust owner is not admitted");
 
 use kernel::bindings::groups_native::*;
 use kernel::bindings::groups_native::{

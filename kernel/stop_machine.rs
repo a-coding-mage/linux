@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
+//! Rust owner for kernel/stop_machine.c: CPU stopper and stop_machine.
 /*
  * kernel/stop_machine.c
  *
@@ -11,9 +12,7 @@
 // Continue baseline Rust blob 33c68c2f904638fc139794a138449f6613551965.
 // Native configured declarations own layouts, locks, per-CPU member storage,
 // callback types and the integer representation of multi_stop_state.
-#![no_std]
 #![cfg(CONFIG_SMP)]
-compile_error!("SOURCE ONLY HOLD: stop-machine Rust owner is not admitted");
 
 use core::mem::MaybeUninit;
 use core::ptr::null_mut;

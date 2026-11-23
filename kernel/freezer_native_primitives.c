@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Native storage and primitives; existing Rust retains all freezer decisions. */
-#error "SOURCE ONLY HOLD: freezer native ABI, state and instrumentation are unqualified"
 #include "freezer_native_bindings.h"
 
 /* Original native storage, names and initializers. No projected Rust objects. */

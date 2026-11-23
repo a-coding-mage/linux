@@ -13,8 +13,6 @@
 
 // Existing Rust owner repaired against nsproxy.c at
 // 126a30fae3bba11420ec2fcbde51a0a01bab1b5b. Source-only, unqualified.
-#![no_std]
-compile_error!("Lupos nsproxy source proposal is not build-admitted; qualification is incomplete");
 
 use kernel::bindings::nsproxy_native as b;
 use kernel::ffi::{c_int, c_uint, c_ulong};

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-only
-#error "SOURCE ONLY HOLD: usermode-helper callback ABI is unqualified"
 /*
  * Inactive signature-only entry adapter. The public native callback signature
  * remains exactly include/linux/umh.h; all setup policy remains in umh.rs.

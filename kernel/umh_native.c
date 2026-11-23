@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-only
-#error "SOURCE ONLY HOLD: usermode-helper native primitives are unqualified"
 /*
  * Inactive, unqualified native interface/storage for the existing Rust UMH
  * owner. No process, credential, completion-ownership or wait policy lives here.

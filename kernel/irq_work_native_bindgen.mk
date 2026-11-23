@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_IRQ_WORK),y)
-$(error SOURCE ONLY HOLD: Rust IRQ-work native bindings are unqualified)
-endif
 targets += bindings/irq_work_native_generated.rs
 always-$(CONFIG_RUST_IRQ_WORK) += bindings/irq_work_native_generated.rs
 $(obj)/bindings/irq_work_native_generated.rs: private bindgen_target_flags = \

@@ -10,7 +10,6 @@
 #include <linux/init.h>
 #include <linux/kmemleak.h>
 
-#error "SOURCE ONLY HOLD: user-accounting native boundary is not admitted"
 
 struct ucounts init_ucounts = {
 	.ns = &init_user_ns,

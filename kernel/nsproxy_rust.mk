@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# Select no objects and exclude no original C owner during the source phase.
+# The existing obj-y entry owns nsproxy.o; the Rust owner takes that slot and its
+# native companions follow it, keeping the original link and initcall order.
 ifeq ($(CONFIG_RUST_NSPROXY),y)
-$(error SOURCE ONLY HOLD: Rust namespace-transition ownership and ABI are unqualified)
+obj-y := $(patsubst nsproxy.o,nsproxy.o nsproxy_native.o,$(obj-y))
+RUSTFLAGS_nsproxy.o += -Zfunction-sections=n
+$(obj)/nsproxy.o: $(src)/nsproxy.rs $(objtree)/rust/bindings/nsproxy_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
 endif
-
-# Future admission must retain kernel/nsproxy.o's complete native policy and
-# unique syscall, initial-storage and init-entry ownership. Native primitives
-# are explicit remaining runtime work, not an old-C transition fallback.

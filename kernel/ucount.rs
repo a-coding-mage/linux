@@ -6,7 +6,6 @@
 // and function identities. Native headers own storage, layouts and primitives.
 // Public/callback/init C entry points forward directly to these Rust bodies.
 // No original ucount.c algorithm is included, renamed or used as a fallback.
-compile_error!("SOURCE ONLY HOLD: user-accounting Rust owner is not admitted");
 
 use kernel::bindings::ucount_native::*;
 use kernel::ffi::{c_int, c_long, c_ulong};

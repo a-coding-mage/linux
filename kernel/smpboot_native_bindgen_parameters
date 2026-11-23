@@ -6,6 +6,8 @@
 --no-default '.*'
 --no-recursive-allowlist
 --allowlist-type 'task_struct|smp_hotplug_thread|smpboot_thread_data|list_head'
+# Non-recursive mode: patterns match bindgen's mangled names (bool -> bool_).
+--allowlist-type '^bool_$'
 --opaque-type 'task_struct|smp_hotplug_thread|smpboot_thread_data|list_head'
 --allowlist-function 'lupos_smpboot_.*|kthread_should_stop|kthread_should_park|kthread_parkme|kthread_set_per_cpu|kthread_park|kthread_unpark|kthread_stop_put|schedule|fork_idle'
 --allowlist-var 'HP_THREAD_.*|LUPOS_SMPBOOT_.*'

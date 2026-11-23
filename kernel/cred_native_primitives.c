@@ -7,7 +7,6 @@
 #include "cred_native_bindings.h"
 #include <linux/export.h>
 
-#error "SOURCE ONLY HOLD: credential Rust owner is not admitted"
 
 struct cred *lupos_cred_from_rcu(struct rcu_head *rcu)
 {

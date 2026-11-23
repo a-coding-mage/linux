@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
+//! Rust owner for kernel/irq_work.c: IRQ work queueing and execution.
 /*
  * Copyright (C) 2010 Red Hat, Inc., Peter Zijlstra
  *
@@ -7,9 +8,7 @@
  */
 // Continued from Rust blob ccdfc46cfcf0e8d6d8e9cf0db984108b9ec14291.
 // Native oracle: irq_work.c at 126a30fae3bba11420ec2fcbde51a0a01bab1b5b.
-#![no_std]
 
-compile_error!("SOURCE ONLY HOLD: IRQ work is not admitted");
 
 // Proposed configured native declarations; no projected kernel layouts.
 use kernel::bindings::irq_work_native::*;

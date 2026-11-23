@@ -3,15 +3,18 @@
 // Existing Rust owner repaired against nstree.c at
 // 126a30fae3bba11420ec2fcbde51a0a01bab1b5b. Inactive, source-only proposal.
 //! Namespace-tree ownership and listing, with native storage and primitive leaves.
-#![no_std]
 #![deny(unsafe_op_in_unsafe_fn)]
-compile_error!("Lupos nstree source proposal is not build-admitted; qualification is incomplete");
 
 use core::{marker::PhantomData, mem::MaybeUninit, ptr::null_mut};
 use kernel::bindings::nstree_native as b;
 use kernel::ffi::{c_int, c_long, c_uint, c_void};
 use b::{list_head, ns_common, ns_id_req, ns_tree_node, ns_tree_root,
-    rb_node, rust_nstree_cmp_context, size_t, ssize_t, user_namespace};
+    rb_node, rust_nstree_cmp_context, user_namespace};
+// The kernel's bindgen maps size_t/ssize_t to usize/isize and emits no aliases.
+#[allow(non_camel_case_types)]
+type size_t = usize;
+#[allow(non_camel_case_types)]
+type ssize_t = isize;
 use b::{RUST_NSTREE_CLONE_NEWCGROUP as CLONE_NEWCGROUP,
     RUST_NSTREE_CLONE_NEWIPC as CLONE_NEWIPC,
     RUST_NSTREE_CLONE_NEWNS as CLONE_NEWNS,

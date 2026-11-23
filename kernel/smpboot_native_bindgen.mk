@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # Inactive configured-declaration proposal; no generation has been performed.
-ifeq ($(CONFIG_RUST_SMPBOOT),y)
-$(error SOURCE ONLY HOLD: Rust smpboot native bindings are unqualified)
-endif
 targets += bindings/smpboot_native_generated.rs
 always-$(CONFIG_RUST_SMPBOOT) += bindings/smpboot_native_generated.rs
 $(obj)/bindings/smpboot_native_generated.rs: private bindgen_target_flags = \

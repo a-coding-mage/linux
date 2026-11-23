@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-only
 config RUST_FREEZER
-	bool "Rust freezer source proposal (not admitted)"
-	depends on RUST && FREEZER && BROKEN
-	default n
+	bool "Rust task freezing and thawing"
+	depends on RUST && FREEZER
+	default y
 	help
-	  Inactive continuation of the existing task-freezer Rust owner.
-	  Native static-key/lock initialization, IRQ/state protocols,
-	  ABI/CFI, diagnostic attribution and original tests remain
-	  unqualified. Keep this disabled.
+	  Build the task freezing and thawing bodies from kernel/freezer.rs in the
+	  original kernel/freezer.o slot, with native companions for configured
+	  primitives, storage and metadata. Turning this option off selects
+	  the unchanged original C provider.

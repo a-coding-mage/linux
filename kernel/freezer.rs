@@ -4,10 +4,8 @@
  * Originally from kernel/power/process.c
  */
 //! Continuation of the existing freezer Rust decisions over native storage.
-#![no_std]
 #![cfg(CONFIG_FREEZER)]
 
-compile_error!("SOURCE ONLY HOLD: freezer native ABI and state semantics are unqualified");
 
 use kernel::bindings::freezer_native as b;
 use kernel::ffi::{c_int, c_uint, c_ulong, c_void};

@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# Source registration only; select no objects or original-C exclusions.
+# The existing obj-y entry owns umh.o; the Rust owner takes that slot and its
+# native companions follow it, keeping the original link and initcall order.
 ifeq ($(CONFIG_RUST_UMH),y)
-$(error SOURCE ONLY HOLD: Rust usermode-helper ownership and ABI are unqualified)
+obj-y := $(patsubst umh.o,umh.o umh_native.o umh_abi.o umh_init.o,$(obj-y))
+RUSTFLAGS_umh.o += -Zfunction-sections=n
+$(obj)/umh.o: $(src)/umh.rs $(objtree)/rust/bindings/umh_native_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
 endif
-
-# Future admission must retain kernel/umh.o's native compiler/instrumentation
-# policy, unique public/callback/init ownership and configured helper policy.
-# Native storage/primitives remain explicit runtime work, not a C algorithm fallback.

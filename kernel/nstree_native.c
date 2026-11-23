@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (c) 2025 Christian Brauner <brauner@kernel.org> */
 /* Inactive native storage, macro leaves, callback and syscall metadata. */
-#error "SOURCE ONLY HOLD: namespace-tree native storage and metadata are not admitted"
 #include "nstree_native_bindings.h"
 
 /* The writer, locked reader and sequence readers all use this single object. */

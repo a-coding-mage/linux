@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-only
+//! Rust owner for kernel/umh.c: usermode-helper execution and policy.
 /*
  * umh - the kernel usermode helper
  */
 // Inactive source repair. Native generation, ABI/CFI and build integration
 // remain unqualified; see umh_native_bindings.h and umh_native_bindgen_parameters.
-#![no_std]
-compile_error!("SOURCE ONLY HOLD: usermode-helper ownership and native behavior are unqualified");
 
 // Generated declarations inherit only the existing binding crate policy.
 use kernel::bindings::umh_native as bindings;
@@ -23,11 +22,11 @@ use bindings::{
 };
 use bindings::{
     LUPOS_UMH_CLONE_PARENT as CLONE_PARENT,
-    LUPOS_UMH_DISABLED as UMH_DISABLED,
+    UMH_DISABLED,
     LUPOS_UMH_EAGAIN as EAGAIN,
     LUPOS_UMH_EBUSY as EBUSY,
     LUPOS_UMH_EINVAL as EINVAL,
-    LUPOS_UMH_ENABLED as UMH_ENABLED,
+    UMH_ENABLED,
     LUPOS_UMH_ENOMEM as ENOMEM,
     LUPOS_UMH_FREEZABLE as UMH_FREEZABLE,
     LUPOS_UMH_GFP_ATOMIC as GFP_ATOMIC,

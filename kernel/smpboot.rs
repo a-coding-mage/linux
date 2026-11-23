@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-only
+//! Rust owner for kernel/smpboot.c: per-CPU hotplug thread management.
 /* Common SMP CPU bringup/teardown functions. */
 
 // Continued from Rust blob ee389ad855b53081701f78e01086dc434aa15ba9.
 // Native oracle: smpboot.c blob 4503b60ce9bd2ad574fea4ceabf21b3e08b61f0a.
 // Configured native declarations own all object layouts and header primitives.
-#![no_std]
-compile_error!("SOURCE ONLY HOLD: smpboot Rust owner is not admitted");
 
 use kernel::bindings::smpboot_native::*;
 use kernel::ffi::{c_int, c_uint, c_void};

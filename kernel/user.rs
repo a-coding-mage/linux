@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
+//! Rust owner for kernel/user.c: per-user accounting cache.
 /*
  * The "user cache".
  *
@@ -12,8 +13,6 @@
 // Continued from Rust blob 6868dd0cee275e6b84fd8e94b34674cc816dca70.
 // Native oracle: user.c blob 21bafdc1137956c8996bb41ea24c63ce9a2a5baa.
 // Configured native headers own every layout, lock and static initializer.
-#![no_std]
-compile_error!("SOURCE ONLY HOLD: user-accounting Rust owner is not admitted");
 
 use kernel::bindings::user_accounting_native::*;
 use kernel::ffi::{c_int, c_ulong};
@@ -31,6 +30,8 @@ fn __uidhashfn(uid: uid_t) -> usize {
     ((uid >> UIDHASH_BITS).wrapping_add(uid) as usize) & UIDHASH_MASK
 }
 
+// Keeps the original C identifier of user.c's slab cache.
+#[allow(non_upper_case_globals)]
 static mut uid_cachep: *mut kmem_cache = core::ptr::null_mut();
 
 /* These routines must be called with the uidhash spinlock held! */

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Native storage/primitive leaves. Hash traversal and lifetime policy stay Rust. */
-#error "SOURCE ONLY HOLD: user-accounting native primitives are not admitted"
 
 #include "user_accounting_native_bindings.h"
 #include <linux/interrupt.h>

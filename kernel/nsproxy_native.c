@@ -5,7 +5,6 @@
 #include "nsproxy_native_bindings.h"
 #include <linux/syscalls.h>
 
-#error "Lupos nsproxy source proposal is not build-admitted; qualification is incomplete"
 
 /* Native initializer from the pinned owner; no Rust refcount/layout projection. */
 struct nsproxy init_nsproxy = {

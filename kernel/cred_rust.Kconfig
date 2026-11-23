@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 config RUST_CRED
-	bool "Rust credential source proposal (not admitted)"
-	depends on RUST && BROKEN
-	default n
+	bool "Rust task credential lifetime and transitions"
+	depends on RUST
+	default y
 	help
-	  Inactive continuation of the existing credential Rust implementation.
-	  Configured ABI/CFI, init and diagnostic metadata, native lifetimes and
-	  original-test qualification remain open. Keep this disabled.
+	  Build the task credential lifetime and transitions bodies from kernel/cred.rs in the
+	  original kernel/cred.o slot, with native companions for configured
+	  primitives, storage and metadata. Turning this option off selects
+	  the unchanged original C provider.

@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-only
-# Source registration only; select no objects or original-C exclusions.
+# The existing obj-y entry owns ucount.o; the Rust owner takes that slot and its
+# native companions follow it, keeping the original link and initcall order.
 ifeq ($(CONFIG_RUST_UCOUNT),y)
-$(error SOURCE ONLY HOLD: Rust user-accounting ownership and ABI are unqualified)
+obj-y := $(patsubst ucount.o,ucount.o ucount_native.o,$(obj-y))
+RUSTFLAGS_ucount.o += -Zfunction-sections=n
+$(obj)/ucount.o: $(src)/ucount.rs $(objtree)/rust/bindings/ucount_native_generated.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
 endif
-
-# Future admission must retain kernel/ucount.o's native compiler/instrumentation
-# policy and unique initial storage, sysctl, callback and public entry ownership.
-# Native primitives remain explicit runtime work, not an old-C policy fallback.

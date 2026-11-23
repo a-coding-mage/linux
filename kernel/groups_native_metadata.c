@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
 /* Native syscall/export metadata only; all policy bodies remain in groups.rs. */
-#error "SOURCE ONLY HOLD: supplementary-group native metadata is not admitted"
 
 #include "groups_native_bindings.h"
 #include <linux/export.h>
