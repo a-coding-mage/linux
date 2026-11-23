@@ -10,10 +10,14 @@
  *  Copyright (C) 2006 Red Hat, Inc., Ingo Molnar <mingo@redhat.com>
  */
 
-/* Dependencies supplied by the surrounding kernel translation unit. */
-unsafe extern "C" {
-    fn __debug_locks_off() -> i32;
+// Dependencies: linux/debug_locks.h, linux/printk.h, linux/export.h.
+
+use core::ptr::{addr_of, read_volatile};
+use kernel::ffi::c_int;
+
+extern "C" {
     fn console_verbose();
+    fn lupos_debug_locks_xchg_off() -> c_int;
 }
 
 /*
@@ -23,8 +27,10 @@ unsafe extern "C" {
  * that would just muddy the log. So we report the first one and
  * shut up after that.
  */
+/// The global lock-debugging enable flag.
 #[no_mangle]
-pub static mut debug_locks: i32 = 1;
+#[link_section = ".data..read_mostly"]
+pub static mut debug_locks: c_int = 1;
 // EXPORT_SYMBOL_GPL(debug_locks);
 
 /*
@@ -32,19 +38,26 @@ pub static mut debug_locks: i32 = 1;
  * 'silent failure': nothing is printed to the console when
  * a locking bug is detected.
  */
+/// Suppresses console output for detected locking bugs when nonzero.
 #[no_mangle]
-pub static mut debug_locks_silent: i32 = 0;
+#[link_section = ".data..read_mostly"]
+pub static mut debug_locks_silent: c_int = 0;
 // EXPORT_SYMBOL_GPL(debug_locks_silent);
 
 /*
  * Generic 'turn off all lock debugging' function:
  */
+/// Turns all lock debugging off; returns 1 when the caller should report.
 #[no_mangle]
-pub unsafe extern "C" fn debug_locks_off() -> i32 {
-    if debug_locks != 0 && __debug_locks_off() != 0 {
-        if debug_locks_silent == 0 {
-            console_verbose();
-            return 1;
+pub extern "C" fn debug_locks_off() -> c_int {
+    // SAFETY: both flags are always-valid globals; __debug_locks_off() is
+    // the native fully ordered xchg() and console_verbose() a plain call.
+    unsafe {
+        if read_volatile(addr_of!(debug_locks)) != 0 && lupos_debug_locks_xchg_off() != 0 {
+            if read_volatile(addr_of!(debug_locks_silent)) == 0 {
+                console_verbose();
+                return 1;
+            }
         }
     }
     0

@@ -64,6 +64,85 @@ else
 argv-split-provider := argv_split.o
 endif
 
+# Keep llist's original object slot and translation-unit identity.
+ifeq ($(CONFIG_RUST_LLIST),y)
+llist-provider := llist_rust.o llist_helpers.o
+$(obj)/llist_rust.o: modfile := lib/llist
+else
+llist-provider := llist.o
+endif
+
+ifeq ($(CONFIG_RUST_MEMCAT_P),y)
+memcat-p-provider := memcat_p_rust.o memcat_p_helpers.o
+$(obj)/memcat_p_rust.o: modfile := lib/memcat_p
+else
+memcat-p-provider := memcat_p.o
+endif
+
+ifeq ($(CONFIG_RUST_KLIST),y)
+klist-provider := klist_rust.o klist_helpers.o
+$(obj)/klist_rust.o: modfile := lib/klist
+else
+klist-provider := klist.o
+endif
+
+ifeq ($(CONFIG_RUST_CPUMASK),y)
+cpumask-provider := cpumask_rust.o cpumask_helpers.o
+$(obj)/cpumask_rust.o: modfile := lib/cpumask
+else
+cpumask-provider := cpumask.o
+endif
+
+ifeq ($(CONFIG_RUST_DEBUG_LOCKS),y)
+debug-locks-provider := debug_locks_rust.o debug_locks_helpers.o
+$(obj)/debug_locks_rust.o: modfile := lib/debug_locks
+else
+debug-locks-provider := debug_locks.o
+endif
+
+ifeq ($(CONFIG_RUST_BUST_SPINLOCKS),y)
+bust-spinlocks-provider := bust_spinlocks_rust.o
+$(obj)/bust_spinlocks_rust.o: modfile := lib/bust_spinlocks
+else
+bust-spinlocks-provider := bust_spinlocks.o
+endif
+
+ifeq ($(CONFIG_RUST_IS_SINGLE_THREADED),y)
+is-single-threaded-provider := is_single_threaded_rust.o
+$(obj)/is_single_threaded_rust.o: modfile := lib/is_single_threaded
+else
+is-single-threaded-provider := is_single_threaded.o
+endif
+
+ifeq ($(CONFIG_RUST_NET_UTILS),y)
+net-utils-provider := net_utils_rust.o net_utils_helpers.o
+$(obj)/net_utils_rust.o: modfile := lib/net_utils
+else
+net-utils-provider := net_utils.o
+endif
+
+ifeq ($(CONFIG_RUST_CHECK_SIGNATURE),y)
+check-signature-provider := check_signature_rust.o
+$(obj)/check_signature_rust.o: modfile := lib/check_signature
+else
+check-signature-provider := check_signature.o
+endif
+
+ifeq ($(CONFIG_RUST_KSTRTOX),y)
+kstrtox-provider := kstrtox_rust.o kstrtox_helpers.o
+$(obj)/kstrtox_rust.o: modfile := lib/kstrtox
+else
+kstrtox-provider := kstrtox.o
+endif
+
+ifeq ($(CONFIG_RUST_SEQ_BUF),y)
+seq-buf-provider := seq_buf_rust.o seq_buf_helpers.o
+$(obj)/seq_buf_rust.o: modfile := lib/seq_buf
+RUST_ALLOWED_FEATURES_seq_buf_rust.o += c_variadic
+else
+seq-buf-provider := seq_buf.o
+endif
+
 # Keep random32's original object slot and translation-unit identity.
 ifeq ($(CONFIG_RUST_RANDOM32),y)
 random32-provider := random32_rust.o random32_helpers.o
@@ -101,15 +180,15 @@ lib-y += string.o vsprintf.o $(cmdline-provider) \
 	 $(rbtree-provider) radix-tree.o timerqueue.o xarray.o \
 	 maple_tree.o idr.o extable.o irq_regs.o $(argv-split-provider) \
 	 flex_proportions.o $(ratelimit-provider) \
-	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
-	 $(earlycpio-provider) seq_buf.o $(siphash-provider) dec_and_lock.o \
+	 $(is-single-threaded-provider) plist.o decompress.o kobject_uevent.o \
+	 $(earlycpio-provider) $(seq-buf-provider) $(siphash-provider) dec_and_lock.o \
 	 nmi_backtrace.o
 ifeq ($(CONFIG_RUST_WIN_MINMAX),y)
 lib-y += win_minmax_rust.o
 else
 lib-y += win_minmax.o
 endif
-lib-y += memcat_p.o \
+lib-y += $(memcat-p-provider) \
 	 buildid.o objpool.o iomem_copy.o sys_info.o
 
 ifeq ($(CONFIG_RUST_UNION_FIND),y)
@@ -119,10 +198,10 @@ else
 lib-$(CONFIG_UNION_FIND) += union_find.o
 endif
 lib-$(CONFIG_PRINTK) += dump_stack.o
-lib-$(CONFIG_SMP) += cpumask.o
+lib-$(CONFIG_SMP) += $(cpumask-provider)
 lib-$(CONFIG_MIN_HEAP) += min_heap.o
 
-lib-y	+= kobject.o klist.o
+lib-y	+= kobject.o $(klist-provider)
 obj-y	+= lockref.o
 
 CONTEXT_ANALYSIS_rhashtable.o := y
@@ -153,8 +232,8 @@ $(obj)/scatterlist_rust.o: modfile := lib/scatterlist
 else
 scatterlist-provider := scatterlist.o
 endif
-obj-y += debug_locks.o $(random32-provider) \
-	 bust_spinlocks.o kasprintf.o bitmap.o $(scatterlist-provider)
+obj-y += $(debug-locks-provider) $(random32-provider) \
+	 $(bust-spinlocks-provider) kasprintf.o bitmap.o $(scatterlist-provider)
 ifeq ($(CONFIG_RUST_LIST_SORT),y)
 obj-y += list_sort_rust.o
 else
@@ -173,7 +252,7 @@ RUSTFLAGS_bsearch_rust.o += --extern bindings
 else
 obj-y += bsearch.o
 endif
-obj-y += find_bit.o llist.o lwq.o
+obj-y += find_bit.o $(llist-provider) lwq.o
 ifeq ($(CONFIG_RUST_MEMWEIGHT),y)
 obj-y += memweight_rust.o
 else
@@ -196,7 +275,7 @@ else
 obj-y += hexdump.o
 endif
 obj-$(CONFIG_TEST_HEXDUMP) += test_hexdump.o
-obj-y += kstrtox.o
+obj-y += $(kstrtox-provider)
 obj-$(CONFIG_FIND_BIT_BENCHMARK) += find_bit_benchmark.o
 obj-$(CONFIG_REGION_ALLOC_BENCHMARK) += region_alloc_benchmark.o
 obj-$(CONFIG_FIND_BIT_BENCHMARK_RUST) += find_bit_benchmark_rust.o
@@ -260,7 +339,7 @@ obj-y += math/ crc/ crypto/ tests/ vdso/ raid/
 
 obj-$(CONFIG_GENERIC_IOMAP) += iomap.o
 obj-$(CONFIG_HAS_IOMEM) += iomap_copy.o devres.o
-obj-$(CONFIG_CHECK_SIGNATURE) += check_signature.o
+obj-$(CONFIG_CHECK_SIGNATURE) += $(check-signature-provider)
 obj-$(CONFIG_DEBUG_LOCKING_API_SELFTESTS) += locking-selftest.o
 
 obj-$(CONFIG_GENERIC_CPU_CACHE_MAINTENANCE) += cache_maint.o
@@ -438,7 +517,7 @@ lib-$(CONFIG_CLZ_TAB) += clz_tab.o
 obj-$(CONFIG_GENERIC_STRNCPY_FROM_USER) += strncpy_from_user.o
 obj-$(CONFIG_GENERIC_STRNLEN_USER) += strnlen_user.o
 
-obj-$(CONFIG_GENERIC_NET_UTILS) += net_utils.o
+obj-$(CONFIG_GENERIC_NET_UTILS) += $(net-utils-provider)
 
 obj-$(CONFIG_SG_SPLIT) += sg_split.o
 obj-$(CONFIG_SG_POOL) += sg_pool.o

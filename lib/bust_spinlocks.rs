@@ -9,23 +9,32 @@
  * and panic() information from reaching the user.
  */
 
-// External symbols supplied by the kernel headers and other translation units.
-use core::ffi::c_int;
+// Dependencies: linux/printk.h, linux/console.h.
 
-unsafe extern "C" {
-    static mut oops_in_progress: c_int;
+use core::ptr::{addr_of_mut, read_volatile, write_volatile};
+use kernel::bindings::{oops_in_progress, wake_up_klogd};
+use kernel::ffi::c_int;
+
+extern "C" {
     fn console_unblank();
-    fn wake_up_klogd();
 }
 
-pub unsafe fn bust_spinlocks(yes: c_int) {
-    if yes != 0 {
-        oops_in_progress += 1;
-    } else {
-        console_unblank();
-        oops_in_progress -= 1;
-        if oops_in_progress == 0 {
-            wake_up_klogd();
+/// Enters (`yes` != 0) or leaves an oops, waking klogd on the final exit.
+#[no_mangle]
+pub extern "C" fn bust_spinlocks(yes: c_int) {
+    // SAFETY: oops_in_progress is an always-valid global, updated with the
+    // same plain read-modify-write (wrapping, -fno-strict-overflow) as C.
+    unsafe {
+        let counter = addr_of_mut!(oops_in_progress);
+        if yes != 0 {
+            write_volatile(counter, read_volatile(counter).wrapping_add(1));
+        } else {
+            console_unblank();
+            let value = read_volatile(counter).wrapping_sub(1);
+            write_volatile(counter, value);
+            if value == 0 {
+                wake_up_klogd();
+            }
         }
     }
 }

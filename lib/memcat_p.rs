@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0
 
-use core::ffi::c_void;
-use core::mem::size_of;
+// Dependencies: linux/slab.h, linux/export.h.
 
-// Supplied by the kernel allocator interface included by the original source.
+use core::ffi::c_void;
+use core::ptr::null_mut;
+use kernel::ffi::c_int;
+
 extern "C" {
-    fn kmalloc_array(n: usize, size: usize, flags: u32) -> *mut *mut c_void;
-    static GFP_KERNEL: u32;
+    fn lupos_memcat_p_alloc(nr: c_int) -> *mut *mut c_void;
 }
 
 /*
@@ -14,45 +15,51 @@ extern "C" {
  * array, which is also NULL-terminated. Nomenclature is inspired by
  * memset_p() and memcat() found elsewhere in the kernel source tree.
  */
+/// Returns a new NULL-terminated array holding `a` followed by `b`.
+///
+/// # Safety
+/// `a` and `b` point to valid NULL-terminated pointer arrays.
 #[no_mangle]
 pub unsafe extern "C" fn __memcat_p(a: *mut *mut c_void, b: *mut *mut c_void) -> *mut *mut c_void {
-    let mut p = a;
-    let mut nr: isize;
+    let mut nr: c_int = 0;
+    let mut p: *mut *mut c_void;
 
-    /* count the elements in both arrays */
-    nr = 0;
-    p = a;
-    while !(*p).is_null() {
-        nr += 1;
-        p = p.add(1);
-    }
-    while !(*p).is_null() {
-        nr += 1;
-        p = p.add(1);
-    }
-    /* one for the NULL-terminator */
-    nr += 1;
+    // SAFETY: both arrays are valid up to and including their NULL
+    // terminators, which bound every read below.
+    unsafe {
+        /* count the elements in both arrays */
+        p = a;
+        // The int counter wraps as under the kernel's -fno-strict-overflow.
+        while !(*p).is_null() {
+            nr = nr.wrapping_add(1);
+            p = p.add(1);
+        }
+        p = b;
+        while !(*p).is_null() {
+            nr = nr.wrapping_add(1);
+            p = p.add(1);
+        }
+        /* one for the NULL-terminator */
+        nr = nr.wrapping_add(1);
 
-    let new = kmalloc_array(nr as usize, size_of::<*mut c_void>(), GFP_KERNEL);
-    if new.is_null() {
-        return core::ptr::null_mut();
-    }
+        let new = lupos_memcat_p_alloc(nr);
+        if new.is_null() {
+            return null_mut();
+        }
 
-    /* nr -> last index; p points to NULL in b[] */
-    nr -= 1;
-    while nr >= 0 {
-        *new.add(nr as usize) = *p;
-        nr -= 1;
-        p = if p == b {
-            a.add(nr as usize)
-        } else {
-            p.sub(1)
-        };
-    }
+        /* nr -> last index; p points to NULL in b[] */
+        nr = nr.wrapping_sub(1);
+        while nr >= 0 {
+            *new.add(nr as usize) = *p;
+            nr = nr.wrapping_sub(1);
+            // C forms &a[nr] even after the final element (nr == -1), so
+            // keep that pointer step free of in-bounds requirements.
+            p = if p == b { a.wrapping_offset(nr as isize) } else { p.wrapping_sub(1) };
+        }
 
-    new
+        new
+    }
 }
-
 // EXPORT_SYMBOL_GPL(__memcat_p);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

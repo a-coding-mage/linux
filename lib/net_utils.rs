@@ -1,48 +1,55 @@
 // SPDX-License-Identifier: GPL-2.0
-// Dependencies corresponding to the included Linux headers are supplied externally.
 
-use core::ffi::{c_char, c_int};
+// Dependencies: linux/string.h, linux/if_ether.h, linux/ctype.h, linux/hex.h.
 
-const ETH_ALEN: usize = 6;
-const MAC_ADDR_STR_LEN: usize = 17;
+use kernel::bindings::{_ctype, strnlen, ETH_ALEN, MAC_ADDR_STR_LEN};
+use kernel::ffi::{c_char, c_int};
 
-unsafe extern "C" {
-    fn strnlen(s: *const c_char, maxlen: usize) -> usize;
-    fn isxdigit(c: c_int) -> c_int;
-    fn hex_to_bin(c: u8) -> c_int;
+extern "C" {
+    fn hex_to_bin(ch: u8) -> c_int;
 }
 
-pub unsafe fn mac_pton(s: *const c_char, mac: *mut u8) -> bool {
-    let mut i: c_int;
+/// `_D` and `_X` from linux/ctype.h; lib/net_utils_helpers.c asserts them.
+const CTYPE_D: u8 = 0x04;
+const CTYPE_X: u8 = 0x40;
 
-    if strnlen(s, MAC_ADDR_STR_LEN) < MAC_ADDR_STR_LEN {
-        return false;
-    }
+/// isxdigit(): `(__ismask(c) & (_D | _X)) != 0` on the shared _ctype table.
+fn isxdigit(c: c_char) -> bool {
+    // SAFETY: the C declaration is an incomplete array; the definition has
+    // 256 entries indexed by the unsigned char value.
+    unsafe { *core::ptr::addr_of!(_ctype).cast::<u8>().add(usize::from(c)) & (CTYPE_D | CTYPE_X) != 0 }
+}
 
-    /* Don't dirty result unless string is valid MAC. */
-    i = 0;
-    while i < ETH_ALEN as c_int {
-        if isxdigit(*s.add((i * 3) as usize) as c_int) == 0
-            || isxdigit(*s.add((i * 3 + 1) as usize) as c_int) == 0
-        {
+/// Parses a "xx:xx:xx:xx:xx:xx" MAC address into `mac`.
+///
+/// # Safety
+/// `s` is a NUL-terminated string or holds at least MAC_ADDR_STR_LEN
+/// characters; `mac` has room for ETH_ALEN bytes.
+#[no_mangle]
+pub unsafe extern "C" fn mac_pton(s: *const c_char, mac: *mut u8) -> bool {
+    let alen = ETH_ALEN as usize;
+
+    // SAFETY: strnlen() bounds every later index below MAC_ADDR_STR_LEN.
+    unsafe {
+        if strnlen(s, MAC_ADDR_STR_LEN as usize) < MAC_ADDR_STR_LEN as usize {
             return false;
         }
-        if i != ETH_ALEN as c_int - 1
-            && *s.add((i * 3 + 2) as usize) as u8 != b':'
-        {
-            return false;
+
+        /* Don't dirty result unless string is valid MAC. */
+        for i in 0..alen {
+            if !isxdigit(*s.add(i * 3)) || !isxdigit(*s.add(i * 3 + 1)) {
+                return false;
+            }
+            if i != alen - 1 && *s.add(i * 3 + 2) != b':' {
+                return false;
+            }
         }
-        i += 1;
-    }
-    i = 0;
-    while i < ETH_ALEN as c_int {
-        *mac.add(i as usize) = ((hex_to_bin(*s.add((i * 3) as usize) as u8) << 4)
-            | hex_to_bin(*s.add((i * 3 + 1) as usize) as u8)) as u8;
-        i += 1;
+        for i in 0..alen {
+            *mac.add(i) = ((hex_to_bin(*s.add(i * 3)) << 4) | hex_to_bin(*s.add(i * 3 + 1))) as u8;
+        }
     }
     true
 }
-
 // EXPORT_SYMBOL(mac_pton);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -53,6 +53,118 @@ config RUST_SIPHASH
 	  lib/siphash_helpers.c. Disable this option to retain the original
 	  C implementation.
 
+config RUST_LLIST
+	bool "Rust implementation of the lock-less list helpers"
+	depends on RUST
+	default y
+	help
+	  Build llist_del_first(), llist_del_first_this() and
+	  llist_reverse_order() from lib/llist.rs with the original exported
+	  C interface. The acquire load and pointer try_cmpxchg() stay native
+	  in lib/llist_helpers.c. Disable this option to retain the original
+	  C implementation.
+
+config RUST_MEMCAT_P
+	bool "Rust implementation of the pointer-array merge helper"
+	depends on RUST
+	default y
+	help
+	  Build __memcat_p() from lib/memcat_p.rs with the original exported
+	  C interface. The kmalloc_array() allocation stays native in
+	  lib/memcat_p_helpers.c. Disable this option to retain the original
+	  C implementation.
+
+config RUST_KLIST
+	bool "Rust implementation of klists"
+	depends on RUST
+	default y
+	help
+	  Build the klist API from lib/klist.rs with the original exported C
+	  interface. Lock initialization and lock/IRQ primitives, the static
+	  removal lock, list and kref inlines, task-state transitions and
+	  warnings stay native in lib/klist_helpers.c. Disable this option to
+	  retain the original C implementation.
+
+config RUST_CPUMASK
+	bool "Rust implementation of the out-of-line cpumask helpers"
+	depends on RUST && SMP && !CPUMASK_OFFSTACK
+	default y
+	help
+	  Build cpumask_local_spread(), cpumask_any_and_distribute() and
+	  cpumask_any_distribute() from lib/cpumask.rs with the original
+	  exported C interface. The per-CPU cursor, NUMA lookup, wrapping
+	  searches and warning stay native in lib/cpumask_helpers.c.
+	  Off-stack cpumask allocators keep the original C implementation.
+
+config RUST_DEBUG_LOCKS
+	bool "Rust implementation of the lock-debugging flags"
+	depends on RUST
+	default y
+	help
+	  Define debug_locks, debug_locks_silent and debug_locks_off() in
+	  lib/debug_locks.rs with the original exported C interface. The
+	  fully ordered xchg() stays native in lib/debug_locks_helpers.c.
+	  Disable this option to retain the original C implementation.
+
+config RUST_BUST_SPINLOCKS
+	bool "Rust implementation of the generic bust_spinlocks()"
+	depends on RUST
+	default y
+	help
+	  Build bust_spinlocks() from lib/bust_spinlocks.rs. Disable this
+	  option to retain the original C implementation.
+
+config RUST_IS_SINGLE_THREADED
+	bool "Rust implementation of current_is_single_threaded()"
+	depends on RUST
+	default y
+	help
+	  Build current_is_single_threaded() from lib/is_single_threaded.rs,
+	  walking the RCU task and thread lists with the kernel's RCU read
+	  lock helpers. Disable this option to retain the original C
+	  implementation.
+
+config RUST_NET_UTILS
+	bool "Rust implementation of the MAC address parser"
+	depends on RUST && GENERIC_NET_UTILS
+	default y
+	help
+	  Build mac_pton() from lib/net_utils.rs with the original exported C
+	  interface. Disable this option to retain the original C
+	  implementation.
+
+config RUST_CHECK_SIGNATURE
+	bool "Rust implementation of the BIOS signature comparison"
+	depends on RUST && CHECK_SIGNATURE
+	default y
+	help
+	  Build check_signature() from lib/check_signature.rs with the
+	  original exported C interface, reading MMIO through readb().
+	  Disable this option to retain the original C implementation.
+
+config RUST_KSTRTOX
+	bool "Rust implementation of the kstrto*() conversions"
+	depends on RUST
+	default y
+	help
+	  Build the kstrto*() string-to-integer conversions, their
+	  _from_user variants and the _parse_integer helpers shared with
+	  vsprintf and bitmap parsing from lib/kstrtox.rs, with the original
+	  exported C interface. User copies use the kernel's copy_from_user()
+	  helper. Disable this option to retain the original C implementation.
+
+config RUST_SEQ_BUF
+	bool "Rust implementation of the seq_buf sequence buffer"
+	depends on RUST && RUSTC_VERSION = 108501
+	default y
+	help
+	  Build the seq_buf API, including its C-variadic seq_buf_printf()
+	  and va_list seq_buf_vprintf(), from lib/seq_buf.rs with the original
+	  exported C interface. The C-variadic ABI was inspected for rustc
+	  1.85.1 only. Warning and BUG sites stay native in
+	  lib/seq_buf_helpers.c. Disable this option to retain the original
+	  C implementation.
+
 config RUST_EARLYCPIO
 	bool "Rust implementation of the early CPIO parser"
 	depends on RUST
