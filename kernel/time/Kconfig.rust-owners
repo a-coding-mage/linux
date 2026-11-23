@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_TIMECONV
+	bool "Rust implementation of the calendar-time conversion"
+	depends on RUST
+	default y
+	help
+	  Build time64_to_tm() from kernel/time/timeconv.rs with the original
+	  exported C interface. Disable this option to retain the original C
+	  implementation.
+
+config RUST_TIMECOUNTER
+	bool "Rust implementation of the cycle-counter time counter"
+	depends on RUST && 64BIT
+	default y
+	help
+	  Build timecounter_init() and timecounter_read() from
+	  kernel/time/timecounter.rs with the original exported C interface.
+	  kernel/time/timecounter_helpers.c asserts the mirrored structure
+	  layouts. Disable this option to retain the original C
+	  implementation.

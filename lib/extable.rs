@@ -5,45 +5,62 @@
  * Copyright (C) 2004 Paul Mackerras, IBM Corp.
  */
 
-// Required declarations are supplied by the corresponding kernel headers.
+// Dependencies: linux/bsearch.h, linux/module.h, linux/init.h, linux/sort.h,
+// linux/uaccess.h, linux/extable.h.
+//
+// lib/Kconfig limits RUST_EXTABLE to x86, whose relative entries carry
+// insn, fixup and data and whose swap_ex_entry_fixup() also swaps data.
 
-#[repr(C)]
-pub struct exception_table_entry {
-    pub insn: usize,
-    pub fixup: usize,
+use core::ffi::c_void;
+use core::mem::size_of;
+use core::ptr::addr_of;
+use kernel::bindings::{exception_table_entry, module};
+use kernel::ffi::{c_int, c_ulong};
+
+type CmpFn = unsafe extern "C" fn(*const c_void, *const c_void) -> c_int;
+type SwapFn = unsafe extern "C" fn(*mut c_void, *mut c_void, c_int);
+
+// `struct module` embeds zero-sized lockdep keys; only pointers cross here.
+#[allow(improper_ctypes)]
+extern "C" {
+    fn sort(base: *mut c_void, num: usize, size: usize, cmp_func: Option<CmpFn>, swap_func: Option<SwapFn>);
+    fn bsearch(key: *const c_void, base: *const c_void, num: usize, size: usize, cmp: Option<CmpFn>) -> *mut c_void;
+    fn lupos_extable_within_module_init(addr: c_ulong, m: *const module) -> bool;
 }
 
-#[repr(C)]
-pub struct module {
-    pub num_exentries: usize,
-    pub extable: *mut exception_table_entry,
+/// ex_to_insn(): the ARCH_HAS_RELATIVE_EXTABLE instruction address.
+///
+/// # Safety
+/// `x` points to a valid exception table entry.
+unsafe fn ex_to_insn(x: *const exception_table_entry) -> c_ulong {
+    // SAFETY: x is valid; the displacement is relative to its own field.
+    unsafe {
+        let insn = addr_of!((*x).insn);
+        (insn as c_ulong).wrapping_add((*insn) as c_ulong)
+    }
 }
 
-#[cfg(not(feature = "ARCH_HAS_RELATIVE_EXTABLE"))]
-#[inline]
-unsafe fn ex_to_insn(x: *const exception_table_entry) -> usize {
-    (*x).insn
-}
+/// swap_ex(): exchange two relative entries, rebasing their displacements.
+///
+/// # Safety
+/// `a` and `b` point to entries of one exception table.
+unsafe extern "C" fn swap_ex(a: *mut c_void, b: *mut c_void, _size: c_int) {
+    // SAFETY: both entries are valid and distinct.
+    unsafe {
+        let x = a.cast::<exception_table_entry>();
+        let y = b.cast::<exception_table_entry>();
+        let delta = (b as isize).wrapping_sub(a as isize) as c_int;
 
-#[cfg(feature = "ARCH_HAS_RELATIVE_EXTABLE")]
-#[inline]
-unsafe fn ex_to_insn(x: *const exception_table_entry) -> usize {
-    (core::ptr::addr_of!((*x).insn) as usize).wrapping_add((*x).insn)
-}
+        let tmp = *x;
+        (*x).insn = (*y).insn.wrapping_add(delta);
+        (*y).insn = tmp.insn.wrapping_sub(delta);
 
-#[cfg(feature = "ARCH_HAS_RELATIVE_EXTABLE")]
-unsafe fn swap_ex(a: *mut core::ffi::c_void, b: *mut core::ffi::c_void, _size: i32) {
-    let x = a as *mut exception_table_entry;
-    let y = b as *mut exception_table_entry;
-    let tmp = core::ptr::read(x);
-    let delta = (b as isize).wrapping_sub(a as isize) as usize;
-
-    (*x).insn = (*y).insn.wrapping_add(delta);
-    (*y).insn = tmp.insn.wrapping_sub(delta);
-
-    // swap_ex_entry_fixup is a build-time hook supplied by the architecture.
-    (*x).fixup = (*y).fixup.wrapping_add(delta);
-    (*y).fixup = tmp.fixup.wrapping_sub(delta);
+        // swap_ex_entry_fixup(x, y, tmp, delta)
+        (*x).fixup = (*y).fixup.wrapping_add(delta);
+        (*y).fixup = tmp.fixup.wrapping_sub(delta);
+        (*x).data = (*y).data;
+        (*y).data = tmp.data;
+    }
 }
 
 /*
@@ -52,93 +69,86 @@ unsafe fn swap_ex(a: *mut core::ffi::c_void, b: *mut core::ffi::c_void, _size: i
  * This is used both for the kernel exception table and for
  * the exception tables of modules that get loaded.
  */
-unsafe extern "C" {
-    fn sort(
-        base: *mut core::ffi::c_void,
-        num: usize,
-        size: usize,
-        cmp: unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32,
-        swap: *const core::ffi::c_void,
-    );
-    fn bsearch(
-        key: *const core::ffi::c_void,
-        base: *const core::ffi::c_void,
-        num: usize,
-        size: usize,
-        cmp: unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32,
-    ) -> *mut core::ffi::c_void;
-    fn within_module_init(addr: usize, m: *const module) -> bool;
-}
+/// # Safety
+/// `a` and `b` point to exception table entries.
+unsafe extern "C" fn cmp_ex_sort(a: *const c_void, b: *const c_void) -> c_int {
+    // SAFETY: forwarded sort() contract.
+    unsafe {
+        let x = ex_to_insn(a.cast());
+        let y = ex_to_insn(b.cast());
 
-unsafe extern "C" fn cmp_ex_sort(
-    a: *const core::ffi::c_void,
-    b: *const core::ffi::c_void,
-) -> i32 {
-    let x = a as *const exception_table_entry;
-    let y = b as *const exception_table_entry;
-
-    /* avoid overflow */
-    if ex_to_insn(x) > ex_to_insn(y) {
-        return 1;
-    }
-    if ex_to_insn(x) < ex_to_insn(y) {
-        return -1;
+        /* avoid overflow */
+        if x > y {
+            return 1;
+        }
+        if x < y {
+            return -1;
+        }
     }
     0
 }
 
-pub unsafe fn sort_extable(
-    start: *mut exception_table_entry,
-    finish: *mut exception_table_entry,
-) {
-    let count = (finish as usize).wrapping_sub(start as usize)
-        / core::mem::size_of::<exception_table_entry>();
-    #[cfg(feature = "ARCH_HAS_RELATIVE_EXTABLE")]
-    let swap = swap_ex as *const core::ffi::c_void;
-    #[cfg(not(feature = "ARCH_HAS_RELATIVE_EXTABLE"))]
-    let swap = core::ptr::null();
-    sort(
-        start as *mut core::ffi::c_void,
-        count,
-        core::mem::size_of::<exception_table_entry>(),
-        cmp_ex_sort,
-        swap,
-    );
+/// Sorts an exception table by instruction address.
+///
+/// # Safety
+/// `start..finish` is a writable exception table.
+#[no_mangle]
+pub unsafe extern "C" fn sort_extable(start: *mut exception_table_entry, finish: *mut exception_table_entry) {
+    // SAFETY: forwarded caller contract.
+    unsafe {
+        sort(
+            start.cast::<c_void>(),
+            finish.offset_from(start) as usize,
+            size_of::<exception_table_entry>(),
+            Some(cmp_ex_sort),
+            Some(swap_ex),
+        );
+    }
 }
 
+/*
+ * If the exception table is sorted, any referring to the module init
+ * will be at the beginning or the end.
+ */
+/// # Safety
+/// `m` is a module whose exception table is sorted.
 #[cfg(CONFIG_MODULES)]
-pub unsafe fn trim_init_extable(m: *mut module) {
-    /* trim the beginning */
-    while (*m).num_exentries != 0
-        && within_module_init(ex_to_insn((*m).extable), m)
-    {
-        (*m).extable = (*m).extable.add(1);
-        (*m).num_exentries -= 1;
-    }
-    /* trim the end */
-    while (*m).num_exentries != 0
-        && within_module_init(
-            ex_to_insn((*m).extable.add((*m).num_exentries - 1)),
-            m,
-        )
-    {
-        (*m).num_exentries -= 1;
+#[no_mangle]
+pub unsafe extern "C" fn trim_init_extable(m: *mut module) {
+    // SAFETY: only entries inside the module's table are inspected.
+    unsafe {
+        /*trim the beginning*/
+        while (*m).num_exentries != 0 && lupos_extable_within_module_init(ex_to_insn((*m).extable), m) {
+            (*m).extable = (*m).extable.add(1);
+            (*m).num_exentries = (*m).num_exentries.wrapping_sub(1);
+        }
+        /*trim the end*/
+        while (*m).num_exentries != 0
+            && lupos_extable_within_module_init(
+                ex_to_insn((*m).extable.add((*m).num_exentries.wrapping_sub(1) as usize)),
+                m,
+            )
+        {
+            (*m).num_exentries = (*m).num_exentries.wrapping_sub(1);
+        }
     }
 }
 
-unsafe extern "C" fn cmp_ex_search(
-    key: *const core::ffi::c_void,
-    elt: *const core::ffi::c_void,
-) -> i32 {
-    let entry = elt as *const exception_table_entry;
-    let key = *(key as *const usize);
+/// # Safety
+/// `key` points to an address and `elt` to an exception table entry.
+unsafe extern "C" fn cmp_ex_search(key: *const c_void, elt: *const c_void) -> c_int {
+    // SAFETY: forwarded bsearch() contract.
+    unsafe {
+        let key = *key.cast::<c_ulong>();
+        let insn = ex_to_insn(elt.cast());
 
-    /* avoid overflow */
-    if key > ex_to_insn(entry) {
-        return 1;
-    }
-    if key < ex_to_insn(entry) {
-        return -1;
+        /* avoid overflow */
+        if key > insn {
+            return 1;
+        }
+        if key < insn {
+            return -1;
+        }
     }
     0
 }
@@ -150,18 +160,26 @@ unsafe extern "C" fn cmp_ex_search(
  * We use a binary search, and thus we assume that the table is
  * already sorted.
  */
-pub unsafe fn search_extable(
+/// # Safety
+/// `base` points to `num` sorted exception table entries.
+#[no_mangle]
+pub unsafe extern "C" fn search_extable(
     base: *const exception_table_entry,
     num: usize,
-    value: usize,
+    value: c_ulong,
 ) -> *const exception_table_entry {
-    bsearch(
-        &value as *const usize as *const core::ffi::c_void,
-        base as *const core::ffi::c_void,
-        num,
-        core::mem::size_of::<exception_table_entry>(),
-        cmp_ex_search,
-    ) as *const exception_table_entry
+    // SAFETY: forwarded caller contract.
+    unsafe {
+        bsearch(
+            addr_of!(value).cast::<c_void>(),
+            base.cast::<c_void>(),
+            num,
+            size_of::<exception_table_entry>(),
+            Some(cmp_ex_search),
+        )
+        .cast_const()
+        .cast::<exception_table_entry>()
+    }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

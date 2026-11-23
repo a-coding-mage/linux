@@ -97,7 +97,8 @@ fn time_before_eq(a: c_ulong, b: c_ulong) -> bool {
     (b.wrapping_sub(a) as c_long) >= 0
 }
 
-const HZ: c_ulong = bindings::HZ as c_ulong;
+// The kernel's HZ (CONFIG_HZ); bindings::HZ is the uapi value of 100.
+const HZ: c_ulong = bindings::LUPOS_CALIBRATE_HZ as c_ulong;
 #[cfg(CONFIG_ARCH_HAS_DELAY_TIMER)]
 const DELAY_CALIBRATION_TICKS: c_ulong = if HZ < 100 { 1 } else { HZ / 100 };
 #[cfg(CONFIG_ARCH_HAS_DELAY_TIMER)]

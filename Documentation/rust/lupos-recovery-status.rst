@@ -80,6 +80,67 @@ namespace/clone3 suites, and broader original suites. The bulk usercopy.rs
 reads user memory without exception-table protection and must not be admitted
 as is.
 
+Further lib owners (2026-11-23, continued)
+------------------------------------------
+
+Twenty-seven more ``lib/`` units are Rust-owned and selected by default. Each was
+written from its unchanged C unit, not taken from the bulk ``.rs``, several of
+which were stubs or wrong (cpumask's per-CPU cursor had become one global;
+kstrtox's narrowing helpers shadowed their own names). Exports, namespaces and
+``__read_mostly``/``.init.text`` placement match the C units:
+
+* string (``RUST_STRING``, x86-64): the routines asm/string_64.h does not
+  supply, as a ``#![no_builtins]`` crate, the counterpart of the C unit's
+  ``-ffreestanding``. ``load_unaligned_zeropad()`` keeps its exception-table
+  fixup in ``lib/string_native.c``.
+* kstrtox, seq_buf (C-variadic ``seq_buf_printf()`` and ``VaList``
+  ``seq_buf_vprintf()``, admitted per object like ``RUST_PANIC`` and pinned to
+  rustc 1.85.1), string_helpers (``!FORTIFY_SOURCE``), find_bit, bitmap and
+  bitmap-str (64-bit), klist, llist, cpumask (``!CPUMASK_OFFSTACK``),
+  memcat_p, debug_locks, bust_spinlocks, is_single_threaded, net_utils and
+  check_signature.
+* timerqueue (with the rbtree insertion inlines), errseq, dec_and_lock,
+  refcount, lockref (cmpxchg layout only), rcuref, once and extable (x86
+  relative entries).
+* kasprintf and dump_stack, C-variadic like seq_buf. kvasprintf() passes its
+  own ``llvm.returnaddress`` to ``kmalloc_track_caller()``, the C unit's
+  ``_RET_IP_``.
+* bug (x86-64 relative, formatted, verbose bug table): ``report_bug()`` and
+  the module bug list. The architecture's ``__warn_args()`` va_list
+  reconstruction stays native. All 130 warnings of the test run produce the
+  same reports as in C, including format arguments rebuilt from registers.
+
+Native leaves are limited to macro/inline primitives: locks and lockdep
+classes, kref/list/atomic inlines, per-CPU accessors, allocation macros with
+their hooks, devres name strings, user copies and warning/BUG sites. C integer
+semantics under ``-fno-strict-overflow`` use explicit wrapping arithmetic. The
+new objects import no Rust panic paths except two zero-divisor remainders,
+``cpumask_local_spread()`` and ``bitmap_fold()``, where C traps as well.
+
+The original test set adds TEST_MEMCAT_P, SEQ_BUF, STRING_HELPERS, SCANF,
+TEST_KSTRTOX, TEST_BITMAP, TEST_XARRAY, TEST_IDA, TEST_IOV_ITER, TEST_HEXDUMP,
+MIN_HEAP, HASH, UTIL_MACROS, BITS, CRC_KUNIT and DEBUG_PLIST to the KUnit
+configuration, enabled identically in the matched C control (which differs
+only in ``RUST_*`` selectors). Results are identical, 640 result lines: 561
+KUnit cases, 544 pass and 17 skip (benchmarks, CRNG, built-in-only and perf
+cases), plus test_bitmap 391544/391544, XArray 158825682/158825682, IDA
+147403/147403, test_hexdump 1184/1184, test_memcat_p and test-kstrtox without
+warnings. Console events are the deliberate KUnit NULL dereference, TEST_IDA's
+128 intentional bad-free warnings and the int_log zero-input warnings, as in C.
+
+Correction to an earlier owner: ``init/calibrate.rs`` took ``bindings::HZ``,
+which bindgen resolves to the uapi value 100 rather than ``CONFIG_HZ``. The
+preset-lpj path printed "537.60 BogoMIPS" where C prints "5376.00", and
+``DELAY_CALIBRATION_TICKS`` was wrong on the measured path. A Clang-evaluated
+``LUPOS_CALIBRATE_HZ`` enum, the ``LUPOS_SCHED_HZ`` pattern, now supplies the
+configured HZ; the boot line matches C.
+
+One run's lib_ratelimit stress case timed out after the host suspended for 18
+minutes mid-test (host journal ``PM: suspend entry``/``exit``); two immediate
+reruns of the same image pass, as does the C control. Timing figures from
+these runs are not performance results: the host was on battery under the
+powersave governor, and only back-to-back Rust/C runs are comparable.
+
 Current recovery and configured-build repairs (2026-10-03)
 -------------------------------------------------------
 

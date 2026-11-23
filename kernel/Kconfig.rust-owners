@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config RUST_RANGE
+	bool "Rust implementation of range add and subtract"
+	depends on RUST
+	default y
+	help
+	  Build add_range(), add_range_with_merge(), subtract_range(),
+	  clean_sort_range() and sort_range() from kernel/range.rs with the
+	  original C interface. Disable this option to retain the original C
+	  implementation.
+
+config RUST_KSYMS_COMMON
+	bool "Rust implementation of kallsyms_show_value()"
+	depends on RUST
+	default y
+	help
+	  Build kallsyms_show_value() from kernel/ksyms_common.rs. The
+	  security_capable() check stays native in
+	  kernel/ksyms_common_helpers.c. Disable this option to retain the
+	  original C implementation.
+
+config RUST_EXEC_DOMAIN
+	bool "Rust implementation of the personality() system call"
+	depends on RUST
+	default y
+	help
+	  Build the personality() body and the /proc/execdomains entry from
+	  kernel/exec_domain.rs. The SYSCALL_DEFINE1() wrapper and the
+	  module_init() record stay native in kernel/exec_domain_helpers.c.
+	  Disable this option to retain the original C implementation.
+
+config RUST_ELFCOREHDR
+	bool "Rust implementation of the crash ELF core header location"
+	depends on RUST && VMCORE_INFO
+	default y
+	help
+	  Define elfcorehdr_addr, elfcorehdr_size and the elfcorehdr= parser
+	  in kernel/elfcorehdr.rs. The early_param() record stays native in
+	  kernel/elfcorehdr_helpers.c. Disable this option to retain the
+	  original C implementation.

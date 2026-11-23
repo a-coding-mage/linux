@@ -283,7 +283,7 @@ pub unsafe extern "C" fn seq_buf_do_printk(s: *mut SeqBuf, lvl: *const c_char) {
             if lf.is_null() {
                 break;
             }
-            let len = (lf.offset_from(start) + 1) as c_int;
+            let len = lf.offset_from(start).wrapping_add(1) as c_int;
 
             _printk(c"%s%.*s".as_ptr().cast(), lvl, len, start);
             lf = lf.add(1);
@@ -467,16 +467,16 @@ pub unsafe extern "C" fn seq_buf_putmem_hex(s: *mut SeqBuf, mem: *const c_void, 
             #[cfg(target_endian = "big")]
             for i in 0..start_len as usize {
                 *hexp.add(j as usize) = hex_asc_hi(*data.add(i));
-                j += 1;
+                j = j.wrapping_add(1);
                 *hexp.add(j as usize) = hex_asc_lo(*data.add(i));
-                j += 1;
+                j = j.wrapping_add(1);
             }
             #[cfg(target_endian = "little")]
             for i in (0..start_len as usize).rev() {
                 *hexp.add(j as usize) = hex_asc_hi(*data.add(i));
-                j += 1;
+                j = j.wrapping_add(1);
                 *hexp.add(j as usize) = hex_asc_lo(*data.add(i));
-                j += 1;
+                j = j.wrapping_add(1);
             }
             if j == 0 || (j / 2) as c_uint > len {
                 lupos_seq_buf_warn_on_once();
@@ -485,7 +485,7 @@ pub unsafe extern "C" fn seq_buf_putmem_hex(s: *mut SeqBuf, mem: *const c_void, 
 
             /* j increments twice per loop */
             *hexp.add(j as usize) = b' ';
-            j += 1;
+            j = j.wrapping_add(1);
 
             seq_buf_putmem(s, hex.as_ptr().cast::<c_void>(), j as c_uint);
             if seq_buf_has_overflowed(s) {

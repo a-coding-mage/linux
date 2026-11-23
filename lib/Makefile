@@ -21,17 +21,24 @@ KCOV_INSTRUMENT_debugobjects.o := n
 KCOV_INSTRUMENT_dynamic_debug.o := n
 KCOV_INSTRUMENT_fault-inject.o := n
 KCOV_INSTRUMENT_find_bit.o := n
+KCOV_INSTRUMENT_find_bit_rust.o := n
 
 # string.o implements standard library functions like memset/memcpy etc.
 # Use -ffreestanding to ensure that the compiler does not try to "optimize"
 # them into calls to themselves.
 CFLAGS_string.o := -ffreestanding
+# The Rust provider's native leaf keeps the same flags; string_rust.rs is a
+# #![no_builtins] crate for the same reason.
+CFLAGS_string_native.o := -ffreestanding
+KCOV_INSTRUMENT_string_native.o := n
 
 # Early boot use of cmdline, don't instrument it
 ifdef CONFIG_AMD_MEM_ENCRYPT
 KASAN_SANITIZE_string.o := n
+KASAN_SANITIZE_string_native.o := n
 
 CFLAGS_string.o += -fno-stack-protector
+CFLAGS_string_native.o += -fno-stack-protector
 endif
 
 ifeq ($(CONFIG_RUST_CTYPE),y)
@@ -143,6 +150,105 @@ else
 seq-buf-provider := seq_buf.o
 endif
 
+ifeq ($(CONFIG_RUST_STRING_HELPERS),y)
+string-helpers-provider := string_helpers_rust.o string_helpers_helpers.o
+$(obj)/string_helpers_rust.o: modfile := lib/string_helpers
+else
+string-helpers-provider := string_helpers.o
+endif
+
+ifeq ($(CONFIG_RUST_STRING),y)
+string-provider := string_rust.o string_native.o
+$(obj)/string_rust.o: modfile := lib/string
+else
+string-provider := string.o
+endif
+
+ifeq ($(CONFIG_RUST_FIND_BIT),y)
+find-bit-provider := find_bit_rust.o
+$(obj)/find_bit_rust.o: modfile := lib/find_bit
+else
+find-bit-provider := find_bit.o
+endif
+
+ifeq ($(CONFIG_RUST_BITMAP),y)
+bitmap-provider := bitmap_rust.o bitmap_helpers.o
+$(obj)/bitmap_rust.o: modfile := lib/bitmap
+else
+bitmap-provider := bitmap.o
+endif
+
+ifeq ($(CONFIG_RUST_BITMAP_STR),y)
+bitmap-str-provider := bitmap_str_rust.o
+$(obj)/bitmap_str_rust.o: modfile := lib/bitmap-str
+else
+bitmap-str-provider := bitmap-str.o
+endif
+
+ifeq ($(CONFIG_RUST_TIMERQUEUE),y)
+timerqueue-provider := timerqueue_rust.o timerqueue_helpers.o
+$(obj)/timerqueue_rust.o: modfile := lib/timerqueue
+else
+timerqueue-provider := timerqueue.o
+endif
+
+ifeq ($(CONFIG_RUST_ERRSEQ),y)
+errseq-provider := errseq_rust.o errseq_helpers.o
+$(obj)/errseq_rust.o: modfile := lib/errseq
+else
+errseq-provider := errseq.o
+endif
+
+ifeq ($(CONFIG_RUST_DEC_AND_LOCK),y)
+dec-and-lock-provider := dec_and_lock_rust.o dec_and_lock_helpers.o
+$(obj)/dec_and_lock_rust.o: modfile := lib/dec_and_lock
+else
+dec-and-lock-provider := dec_and_lock.o
+endif
+
+ifeq ($(CONFIG_RUST_KASPRINTF),y)
+kasprintf-provider := kasprintf_rust.o kasprintf_helpers.o
+$(obj)/kasprintf_rust.o: modfile := lib/kasprintf
+RUST_ALLOWED_FEATURES_kasprintf_rust.o += c_variadic,link_llvm_intrinsics
+else
+kasprintf-provider := kasprintf.o
+endif
+
+ifeq ($(CONFIG_RUST_REFCOUNT),y)
+refcount-provider := refcount_rust.o refcount_helpers.o
+$(obj)/refcount_rust.o: modfile := lib/refcount
+else
+refcount-provider := refcount.o
+endif
+
+ifeq ($(CONFIG_RUST_LOCKREF),y)
+lockref-provider := lockref_rust.o lockref_helpers.o
+$(obj)/lockref_rust.o: modfile := lib/lockref
+else
+lockref-provider := lockref.o
+endif
+
+ifeq ($(CONFIG_RUST_RCUREF),y)
+rcuref-provider := rcuref_rust.o rcuref_helpers.o
+$(obj)/rcuref_rust.o: modfile := lib/rcuref
+else
+rcuref-provider := rcuref.o
+endif
+
+ifeq ($(CONFIG_RUST_ONCE),y)
+once-provider := once_rust.o once_helpers.o
+$(obj)/once_rust.o: modfile := lib/once
+else
+once-provider := once.o
+endif
+
+ifeq ($(CONFIG_RUST_EXTABLE),y)
+extable-provider := extable_rust.o extable_helpers.o
+$(obj)/extable_rust.o: modfile := lib/extable
+else
+extable-provider := extable.o
+endif
+
 # Keep random32's original object slot and translation-unit identity.
 ifeq ($(CONFIG_RUST_RANDOM32),y)
 random32-provider := random32_rust.o random32_helpers.o
@@ -176,12 +282,12 @@ earlycpio-provider := earlycpio.o
 endif
 
 # Keep the providers at their original positions in lib.a.
-lib-y += string.o vsprintf.o $(cmdline-provider) \
-	 $(rbtree-provider) radix-tree.o timerqueue.o xarray.o \
-	 maple_tree.o idr.o extable.o irq_regs.o $(argv-split-provider) \
+lib-y += $(string-provider) vsprintf.o $(cmdline-provider) \
+	 $(rbtree-provider) radix-tree.o $(timerqueue-provider) xarray.o \
+	 maple_tree.o idr.o $(extable-provider) irq_regs.o $(argv-split-provider) \
 	 flex_proportions.o $(ratelimit-provider) \
 	 $(is-single-threaded-provider) plist.o decompress.o kobject_uevent.o \
-	 $(earlycpio-provider) $(seq-buf-provider) $(siphash-provider) dec_and_lock.o \
+	 $(earlycpio-provider) $(seq-buf-provider) $(siphash-provider) $(dec-and-lock-provider) \
 	 nmi_backtrace.o
 ifeq ($(CONFIG_RUST_WIN_MINMAX),y)
 lib-y += win_minmax_rust.o
@@ -197,12 +303,18 @@ $(obj)/union_find_rust.o: modfile := lib/union_find
 else
 lib-$(CONFIG_UNION_FIND) += union_find.o
 endif
+ifeq ($(CONFIG_RUST_DUMP_STACK),y)
+lib-$(CONFIG_PRINTK) += dump_stack_rust.o dump_stack_helpers.o
+$(obj)/dump_stack_rust.o: modfile := lib/dump_stack
+RUST_ALLOWED_FEATURES_dump_stack_rust.o += c_variadic
+else
 lib-$(CONFIG_PRINTK) += dump_stack.o
+endif
 lib-$(CONFIG_SMP) += $(cpumask-provider)
 lib-$(CONFIG_MIN_HEAP) += min_heap.o
 
 lib-y	+= kobject.o $(klist-provider)
-obj-y	+= lockref.o
+obj-y	+= $(lockref-provider)
 
 CONTEXT_ANALYSIS_rhashtable.o := y
 
@@ -233,7 +345,7 @@ else
 scatterlist-provider := scatterlist.o
 endif
 obj-y += $(debug-locks-provider) $(random32-provider) \
-	 $(bust-spinlocks-provider) kasprintf.o bitmap.o $(scatterlist-provider)
+	 $(bust-spinlocks-provider) $(kasprintf-provider) $(bitmap-provider) $(scatterlist-provider)
 ifeq ($(CONFIG_RUST_LIST_SORT),y)
 obj-y += list_sort_rust.o
 else
@@ -252,7 +364,7 @@ RUSTFLAGS_bsearch_rust.o += --extern bindings
 else
 obj-y += bsearch.o
 endif
-obj-y += find_bit.o $(llist-provider) lwq.o
+obj-y += $(find-bit-provider) $(llist-provider) lwq.o
 ifeq ($(CONFIG_RUST_MEMWEIGHT),y)
 obj-y += memweight_rust.o
 else
@@ -266,9 +378,9 @@ RUST_ALLOWED_FEATURES_base64_rust.o := $(if $(CONFIG_PPC),asm_experimental_arch)
 else
 obj-y += base64.o
 endif
-obj-y += once.o refcount.o rcuref.o usercopy.o errseq.o bucket_locks.o \
-	 generic-radix-tree.o bitmap-str.o
-obj-y += string_helpers.o
+obj-y += $(once-provider) $(refcount-provider) $(rcuref-provider) usercopy.o $(errseq-provider) bucket_locks.o \
+	 generic-radix-tree.o $(bitmap-str-provider)
+obj-y += $(string-helpers-provider)
 ifeq ($(CONFIG_RUST_HEXDUMP),y)
 obj-y += hexdump_rust.o
 else
@@ -430,7 +542,12 @@ obj-$(CONFIG_FUNCTION_ERROR_INJECTION) += error-inject.o
 
 obj-$(CONFIG_CODE_TAGGING) += codetag.o
 
+ifeq ($(CONFIG_RUST_BUG),y)
+lib-$(CONFIG_GENERIC_BUG) += bug_rust.o bug_helpers.o
+$(obj)/bug_rust.o: modfile := lib/bug
+else
 lib-$(CONFIG_GENERIC_BUG) += bug.o
+endif
 
 obj-$(CONFIG_HAVE_ARCH_TRACEHOOK) += syscall.o
 obj-$(CONFIG_ARCH_NEED_CMPXCHG_1_EMU) += cmpxchg-emu.o

@@ -165,6 +165,188 @@ config RUST_SEQ_BUF
 	  lib/seq_buf_helpers.c. Disable this option to retain the original
 	  C implementation.
 
+config RUST_STRING_HELPERS
+	bool "Rust implementation of the string formatting helpers"
+	depends on RUST && !FORTIFY_SOURCE
+	default y
+	help
+	  Build string_get_size(), the escape/unescape helpers, the quotable
+	  and array string duplicators and the sysfs/string matching helpers
+	  from lib/string_helpers.rs with the original exported C interface.
+	  Allocation macros, devres_alloc() and the quotable warning stay
+	  native in lib/string_helpers_helpers.c. FORTIFY_SOURCE kernels keep
+	  the original C provider, whose fortify reporters are not translated.
+
+config RUST_STRING
+	bool "Rust implementation of the generic string routines"
+	depends on RUST && X86_64 && DCACHE_WORD_ACCESS
+	depends on HAVE_EFFICIENT_UNALIGNED_ACCESS && ARCH_HAS_FAST_MULTIPLIER
+	default y
+	help
+	  Build the lib/string.c routines that x86-64 does not provide in
+	  asm/string_64.h (string comparison, copying, scanning, memcmp(),
+	  bcmp(), memchr() and memchr_inv()) from lib/string.rs, as a
+	  no_builtins crate with the original exported C interface.
+	  load_unaligned_zeropad() with its exception-table fixup and the
+	  warning/BUG sites stay native in lib/string_native.c. Disable this
+	  option to retain the original C implementation.
+
+config RUST_FIND_BIT
+	bool "Rust implementation of the generic bit search functions"
+	depends on RUST && 64BIT && !CPU_BIG_ENDIAN
+	default y
+	help
+	  Build the _find_*_bit(), __find_nth_*_bit(), find_next_clump8()
+	  and find_random_bit() functions from lib/find_bit.rs with the
+	  original exported C interface. Disable this option to retain the
+	  original C implementation.
+
+config RUST_BITMAP
+	bool "Rust implementation of the bitmap helper functions"
+	depends on RUST && 64BIT
+	default y
+	help
+	  Build the __bitmap_*() operations, remapping, allocation and u32
+	  array conversion helpers from lib/bitmap.rs with the original
+	  exported C interface. The kmalloc_array() families and
+	  devm_add_action_or_reset() stay native in lib/bitmap_helpers.c.
+	  Disable this option to retain the original C implementation.
+
+config RUST_BITMAP_STR
+	bool "Rust implementation of bitmap string parsing and printing"
+	depends on RUST
+	default y
+	help
+	  Build bitmap_parse(), bitmap_parselist() and their user-buffer
+	  variants and the bitmask/list buffer printers from
+	  lib/bitmap-str.rs with the original exported C interface.
+	  Disable this option to retain the original C implementation.
+
+config RUST_TIMERQUEUE
+	bool "Rust implementation of the generic timer queue"
+	depends on RUST
+	default y
+	help
+	  Build timerqueue_add(), timerqueue_del(), timerqueue_iterate_next()
+	  and timerqueue_linked_add() from lib/timerqueue.rs, including the
+	  rbtree insertion inlines, with the original exported C interface.
+	  The two warning sites stay native in lib/timerqueue_helpers.c.
+	  Disable this option to retain the original C implementation.
+
+config RUST_ERRSEQ
+	bool "Rust implementation of errseq_t error sequence counters"
+	depends on RUST
+	default y
+	help
+	  Build errseq_set(), errseq_sample(), errseq_check() and
+	  errseq_check_and_advance() from lib/errseq.rs with the original
+	  exported C interface. The fully ordered cmpxchg() and the warning
+	  stay native in lib/errseq_helpers.c. Disable this option to retain
+	  the original C implementation.
+
+config RUST_DEC_AND_LOCK
+	bool "Rust implementation of the decrement-and-lock helpers"
+	depends on RUST
+	default y
+	help
+	  Build atomic_dec_and_lock() and its IRQ-saving and raw-lock variants
+	  from lib/dec_and_lock.rs with the original exported C interface.
+	  The atomic and spinlock primitives stay native in
+	  lib/dec_and_lock_helpers.c. Disable this option to retain the
+	  original C implementation.
+
+config RUST_KASPRINTF
+	bool "Rust implementation of the allocating printf helpers"
+	depends on RUST && RUSTC_VERSION = 108501
+	default y
+	help
+	  Build kasprintf(), kvasprintf() and kvasprintf_const() from
+	  lib/kasprintf.rs with the original exported C interface, using the
+	  C-variadic and va_list ABI inspected for rustc 1.85.1. The
+	  kmalloc_track_caller() allocation and the warning stay native in
+	  lib/kasprintf_helpers.c. Disable this option to retain the original
+	  C implementation.
+
+config RUST_REFCOUNT
+	bool "Rust implementation of the out-of-line refcount_t functions"
+	depends on RUST
+	default y
+	help
+	  Build refcount_warn_saturate() and the refcount_dec_*() helpers from
+	  lib/refcount.rs with the original exported C interface. Release
+	  cmpxchg, refcount_dec_and_test(), lock primitives and one warning
+	  per original site stay native in lib/refcount_helpers.c. Disable
+	  this option to retain the original C implementation.
+
+config RUST_LOCKREF
+	bool "Rust implementation of lockref reference counts"
+	depends on RUST && ARCH_USE_CMPXCHG_LOCKREF && SMP
+	depends on !DEBUG_SPINLOCK && !DEBUG_LOCK_ALLOC && !PREEMPT_RT
+	default y
+	help
+	  Build the lockref_*() functions, including their CMPXCHG_LOOP()
+	  fast paths, from lib/lockref.rs with the original exported C
+	  interface. Only the cmpxchg lockref layout is supported. The
+	  unlocked-value test, relaxed try_cmpxchg64() and spinlock primitives
+	  stay native in lib/lockref_helpers.c. Disable this option to retain
+	  the original C implementation.
+
+config RUST_RCUREF
+	bool "Rust implementation of the rcuref slow paths"
+	depends on RUST
+	default y
+	help
+	  Build rcuref_get_slowpath() and rcuref_put_slowpath() from
+	  lib/rcuref.rs with the original exported C interface. The release
+	  cmpxchg and warnings stay native in lib/rcuref_helpers.c. Disable
+	  this option to retain the original C implementation.
+
+config RUST_ONCE
+	bool "Rust implementation of the DO_ONCE() slow paths"
+	depends on RUST
+	default y
+	help
+	  Build the __do_once_*() functions and the deferred static-branch
+	  disable work from lib/once.rs with the original exported C
+	  interface. The static lock and mutex, work and static-key
+	  primitives stay native in lib/once_helpers.c. Disable this option
+	  to retain the original C implementation.
+
+config RUST_BUG
+	bool "Rust implementation of generic BUG()/WARN() trap reporting"
+	depends on RUST && X86_64 && GENERIC_BUG && DEBUG_BUGVERBOSE
+	default y
+	help
+	  Build report_bug(), report_bug_entry(), find_bug(), the module bug
+	  table registration and generic_bug_clear_once() from lib/bug.rs
+	  for the x86-64 relative, formatted bug table. RCU-watching state,
+	  the KUnit suppression branch, RCU list primitives and the
+	  architecture's __warn_args() stay native in lib/bug_helpers.c.
+	  Disable this option to retain the original C implementation.
+
+config RUST_EXTABLE
+	bool "Rust implementation of exception table sorting and search"
+	depends on RUST && X86
+	default y
+	help
+	  Build sort_extable(), trim_init_extable() and search_extable() from
+	  lib/extable.rs for x86's relative exception table entries.
+	  within_module_init() stays native in lib/extable_helpers.c. Disable
+	  this option to retain the original C implementation.
+
+config RUST_DUMP_STACK
+	bool "Rust implementation of the generic dump_stack()"
+	depends on RUST && PRINTK && RUSTC_VERSION = 108501
+	default y
+	help
+	  Build dump_stack(), dump_stack_lvl(), dump_stack_print_info(),
+	  show_regs_print_info() and the C-variadic
+	  dump_stack_set_arch_desc() from lib/dump_stack.rs with the original
+	  exported C interface. Per-CPU, credential, utsname, configured
+	  reporter and IRQ-state primitives stay native in
+	  lib/dump_stack_helpers.c. Disable this option to retain the
+	  original C implementation.
+
 config RUST_EARLYCPIO
 	bool "Rust implementation of the early CPIO parser"
 	depends on RUST

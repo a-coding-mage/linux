@@ -3,14 +3,40 @@
 # Makefile for the linux kernel.
 #
 
-obj-y     = fork.o exec_domain.o exec_state.o panic.o \
+# Defined before obj-y: the included *_rust.mk files expand obj-y with :=.
+ifeq ($(CONFIG_RUST_KSYMS_COMMON),y)
+ksyms-common-provider := ksyms_common_rust.o ksyms_common_helpers.o
+$(obj)/ksyms_common_rust.o: modfile := kernel/ksyms_common
+else
+ksyms-common-provider := ksyms_common.o
+endif
+ifeq ($(CONFIG_RUST_EXEC_DOMAIN),y)
+exec-domain-provider := exec_domain_rust.o exec_domain_helpers.o
+$(obj)/exec_domain_rust.o: modfile := kernel/exec_domain
+else
+exec-domain-provider := exec_domain.o
+endif
+ifeq ($(CONFIG_RUST_ELFCOREHDR),y)
+elfcorehdr-provider := elfcorehdr_rust.o elfcorehdr_helpers.o
+$(obj)/elfcorehdr_rust.o: modfile := kernel/elfcorehdr
+else
+elfcorehdr-provider := elfcorehdr.o
+endif
+ifeq ($(CONFIG_RUST_RANGE),y)
+range-provider := range_rust.o
+$(obj)/range_rust.o: modfile := kernel/range
+else
+range-provider := range.o
+endif
+
+obj-y     = fork.o $(exec-domain-provider) exec_state.o panic.o \
 	    cpu.o exit.o softirq.o resource.o \
 	    sysctl.o capability.o ptrace.o user.o \
 	    signal.o sys.o umh.o workqueue.o pid.o task_work.o \
 	    extable.o params.o \
 	    kthread.o sys_ni.o nsproxy.o nstree.o nscommon.o \
 	    notifier.o ksysfs.o cred.o reboot.o \
-	    async.o range.o smpboot.o ucount.o regset.o ksyms_common.o
+	    async.o $(range-provider) smpboot.o ucount.o regset.o $(ksyms-common-provider)
 
 include $(srctree)/kernel/fork_rust.mk
 include $(srctree)/kernel/pid_rust.mk
@@ -93,7 +119,7 @@ obj-$(CONFIG_MODULE_SIG_FORMAT) += module_signature.o
 obj-$(CONFIG_KALLSYMS) += kallsyms.o
 obj-$(CONFIG_KALLSYMS_SELFTEST) += kallsyms_selftest.o
 obj-$(CONFIG_BSD_PROCESS_ACCT) += acct.o
-obj-$(CONFIG_VMCORE_INFO) += vmcore_info.o elfcorehdr.o
+obj-$(CONFIG_VMCORE_INFO) += vmcore_info.o $(elfcorehdr-provider)
 obj-$(CONFIG_CRASH_RESERVE) += crash_reserve.o
 obj-$(CONFIG_KEXEC_CORE) += kexec_core.o
 obj-$(CONFIG_CRASH_DUMP) += crash_core.o

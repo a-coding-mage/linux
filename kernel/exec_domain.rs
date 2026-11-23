@@ -8,60 +8,77 @@
  * 2001-05-06	Complete rewrite,  Christoph Hellwig (hch@infradead.org)
  */
 
-// Dependencies supplied by the surrounding kernel translation unit.
-use core::ffi::c_void;
+// Dependencies: linux/init.h, linux/personality.h, linux/proc_fs.h,
+// linux/sched.h, linux/seq_file.h, linux/syscalls.h.
+//
+// The SYSCALL_DEFINE1(personality) entry wrapper and the module_init()
+// record stay in kernel/exec_domain_helpers.c; they call the Rust bodies.
 
-#[repr(C)]
-pub struct SeqFile {
-    _private: [u8; 0],
-}
+use kernel::bindings::get_current;
+use kernel::ffi::c_uint;
 
-extern "C" {
-    fn seq_puts(m: *mut SeqFile, s: *const u8);
-    fn proc_create_single(
-        name: *const u8,
-        mode: u16,
-        parent: *mut c_void,
-        show: unsafe extern "C" fn(*mut SeqFile, *mut c_void) -> i32,
-    ) -> *mut c_void;
-    fn set_personality(personality: u32);
-}
-
-// `current` is supplied by the kernel scheduler context.
-#[repr(C)]
-pub struct TaskStruct {
-    pub personality: u32,
-}
-
-extern "C" {
-    static mut current: *mut TaskStruct;
-}
-
-// The CONFIG_PROC_FS build-time condition is preserved here as a Rust cfg.
+/// The /proc/execdomains entry (CONFIG_PROC_FS).
 #[cfg(CONFIG_PROC_FS)]
-unsafe extern "C" fn execdomains_proc_show(m: *mut SeqFile, _v: *mut c_void) -> i32 {
-    static TEXT: &[u8] = b"0-0\tLinux           \t[kernel]\n\0";
-    seq_puts(m, TEXT.as_ptr());
-    0
-}
+pub mod procfs {
+    use core::ffi::c_void;
+    use core::ptr::null_mut;
+    use kernel::bindings::{seq_file, seq_write};
+    use kernel::ffi::{c_char, c_int, c_uint};
 
-#[cfg(CONFIG_PROC_FS)]
-unsafe extern "C" fn proc_execdomains_init() -> i32 {
-    static NAME: &[u8] = b"execdomains\0";
-    proc_create_single(NAME.as_ptr(), 0, core::ptr::null_mut(), execdomains_proc_show);
-    0
-}
-
-// module_init(proc_execdomains_init);
-
-pub unsafe extern "C" fn personality(personality: u32) -> u32 {
-    let old = (*current).personality;
-
-    if personality != 0xffff_ffff {
-        set_personality(personality);
+    // seq_file embeds zero-sized lockdep keys; only pointers cross here.
+    #[allow(improper_ctypes)]
+    extern "C" {
+        fn proc_create_single_data(
+            name: *const c_char,
+            mode: c_uint,
+            parent: *mut c_void,
+            show: unsafe extern "C" fn(*mut seq_file, *mut c_void) -> c_int,
+            data: *mut c_void,
+        ) -> *mut c_void;
     }
 
-    old
+    /// The /proc/execdomains show callback.
+    ///
+    /// # Safety
+    /// `m` is the seq_file being shown.
+    unsafe extern "C" fn execdomains_proc_show(m: *mut seq_file, _v: *mut c_void) -> c_int {
+        // seq_puts() of a constant string is seq_write() of its length.
+        let s = c"0-0\tLinux           \t[kernel]\n";
+        // SAFETY: m is live for the show callback.
+        unsafe { seq_write(m, s.as_ptr().cast::<c_void>(), s.count_bytes()) };
+        0
+    }
+
+    /// The module_init() of the original unit.
+    ///
+    /// # Safety
+    /// Called once during boot.
+    #[no_mangle]
+    #[link_section = ".init.text"]
+    pub unsafe extern "C" fn proc_execdomains_init() -> c_int {
+        // SAFETY: proc_create_single(name, mode, NULL, show).
+        unsafe {
+            proc_create_single_data(c"execdomains".as_ptr().cast(), 0, null_mut(), execdomains_proc_show, null_mut());
+        }
+        0
+    }
+}
+
+/// The body of SYSCALL_DEFINE1(personality, unsigned int, personality).
+#[no_mangle]
+pub extern "C" fn lupos_sys_personality(personality: c_uint) -> c_uint {
+    // SAFETY: current is the running task; set_personality() assigns
+    // current->personality.
+    unsafe {
+        let current = get_current();
+        let old = (*current).personality;
+
+        if personality != 0xffffffff {
+            (*current).personality = personality;
+        }
+
+        old
+    }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

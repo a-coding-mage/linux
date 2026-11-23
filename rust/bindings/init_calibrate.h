@@ -16,4 +16,11 @@
 #include "../../init/calibrate_percpu.h"
 #pragma pop_macro("MODULE")
 
+/*
+ * bindgen keeps the first HZ macro it sees, the uapi USER_HZ-style 100 from
+ * asm-generic/param.h, not the kernel's HZ (CONFIG_HZ). Export the
+ * configured tick rate as a Clang-evaluated constant instead.
+ */
+enum { LUPOS_CALIBRATE_HZ = HZ };
+
 #endif

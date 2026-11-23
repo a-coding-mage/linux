@@ -4,41 +4,25 @@
  * Contains a few generic function definations independent of config KALLSYMS.
  */
 
-// External kernel dependencies supplied by other translation units.
+// Dependencies: linux/kallsyms.h, linux/security.h.
+
+use core::ptr::{addr_of, read_volatile};
+use kernel::bindings::{cred, kptr_restrict};
+use kernel::ffi::c_int;
+
+// `struct cred` embeds zero-sized tracking types; only pointers cross here.
+#[allow(improper_ctypes)]
 extern "C" {
-    static mut kptr_restrict: i32;
-    static mut init_user_ns: UserNamespace;
-    fn security_capable(
-        cred: *const Cred,
-        ns: *const UserNamespace,
-        cap: i32,
-        opts: u32,
-    ) -> i32;
+    #[cfg(CONFIG_PERF_EVENTS)]
+    static sysctl_perf_event_paranoid: c_int;
+    fn lupos_ksyms_capable_syslog_noaudit(cred: *const cred) -> bool;
 }
 
-#[repr(C)]
-pub struct Cred {
-    _private: [u8; 0],
-}
-
-#[repr(C)]
-pub struct UserNamespace {
-    _private: [u8; 0],
-}
-
-const CAP_SYSLOG: i32 = 34;
-const CAP_OPT_NOAUDIT: u32 = 0;
-
-#[inline]
-unsafe fn kallsyms_for_perf() -> i32 {
-    // CONFIG_PERF_EVENTS controls this declaration and branch at build time.
+fn kallsyms_for_perf() -> c_int {
     #[cfg(CONFIG_PERF_EVENTS)]
     {
-        extern "C" {
-            static mut sysctl_perf_event_paranoid: i32;
-        }
-
-        if sysctl_perf_event_paranoid <= 1 {
+        // SAFETY: a plain read of the always-valid sysctl integer.
+        if unsafe { read_volatile(addr_of!(sysctl_perf_event_paranoid)) } <= 1 {
             return 1;
         }
     }
@@ -53,37 +37,26 @@ unsafe fn kallsyms_for_perf() -> i32 {
  * Otherwise, require CAP_SYSLOG (assuming kptr_restrict isn't set to
  * block even that).
  */
-pub unsafe fn kallsyms_show_value(cred: *const Cred) -> bool {
-    match kptr_restrict {
-        0 => {
-            if kallsyms_for_perf() != 0 {
-                return true;
+/// Returns whether `cred` may see kallsyms addresses.
+///
+/// # Safety
+/// `cred` points to valid credentials.
+#[no_mangle]
+pub unsafe extern "C" fn kallsyms_show_value(cred: *const cred) -> bool {
+    // SAFETY: kptr_restrict is an always-valid sysctl integer; the
+    // capability check is the native security_capable() call.
+    unsafe {
+        match read_volatile(addr_of!(kptr_restrict)) {
+            0 => {
+                if kallsyms_for_perf() != 0 {
+                    return true;
+                }
+                // fallthrough
+                lupos_ksyms_capable_syslog_noaudit(cred)
             }
-            // fallthrough
-            if security_capable(
-                cred,
-                &init_user_ns as *const UserNamespace,
-                CAP_SYSLOG,
-                CAP_OPT_NOAUDIT,
-            ) == 0
-            {
-                return true;
-            }
-            false
+            1 => lupos_ksyms_capable_syslog_noaudit(cred),
+            _ => false,
         }
-        1 => {
-            if security_capable(
-                cred,
-                &init_user_ns as *const UserNamespace,
-                CAP_SYSLOG,
-                CAP_OPT_NOAUDIT,
-            ) == 0
-            {
-                return true;
-            }
-            false
-        }
-        _ => false,
     }
 }
 

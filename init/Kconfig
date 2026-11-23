@@ -557,6 +557,7 @@ config AUDITSYSCALL
 
 source "kernel/irq/Kconfig"
 source "kernel/time/Kconfig"
+source "kernel/time/Kconfig.rust-owners"
 source "kernel/bpf/Kconfig"
 source "kernel/Kconfig.preempt"
 
@@ -2643,4 +2644,5 @@ source "kernel/smpboot_rust.Kconfig"
 source "kernel/stop_machine_rust.Kconfig"
 source "kernel/irq_work_rust.Kconfig"
 source "kernel/notifier_rust.Kconfig"
+source "kernel/Kconfig.rust-owners"
 source "kernel/freezer_rust.Kconfig"

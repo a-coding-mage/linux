@@ -3,155 +3,260 @@
  * Out-of-line refcount functions.
  */
 
-// Dependencies supplied by the surrounding kernel translation unit:
-// linux/mutex.h, linux/refcount.h, linux/spinlock.h, linux/bug.h
+// Dependencies: linux/mutex.h, linux/refcount.h, linux/spinlock.h, linux/bug.h.
+
+use core::ptr::{addr_of_mut, read_volatile, write_volatile};
+use kernel::bindings::{atomic_t, mutex, mutex_unlock, refcount_t, spinlock_t};
+use kernel::ffi::{c_int, c_uint, c_ulong};
 
 extern "C" {
-    fn refcount_set(r: *mut refcount_t, value: i32);
-    fn atomic_try_cmpxchg_release(refs: *mut atomic_t, old: *mut i32, new: i32) -> bool;
-    fn atomic_read(refs: *const atomic_t) -> u32;
-    fn mutex_lock(lock: *mut mutex);
-    fn mutex_unlock(lock: *mut mutex);
-    fn refcount_dec_and_test(r: *mut refcount_t) -> bool;
-    fn spin_lock(lock: *mut spinlock_t);
-    fn spin_unlock(lock: *mut spinlock_t);
-    fn spin_lock_irqsave(lock: *mut spinlock_t, flags: unsigned_long);
-    fn spin_unlock_irqrestore(lock: *mut spinlock_t, flags: unsigned_long);
-    fn warn_once(condition: bool, message: *const u8) -> bool;
+    fn lupos_refcount_try_cmpxchg_release(v: *mut atomic_t, old: *mut c_int, new: c_int) -> bool;
+    fn lupos_refcount_dec_and_test(r: *mut refcount_t) -> bool;
+    fn lupos_refcount_mutex_lock(lock: *mut mutex);
+    fn lupos_refcount_spin_lock(lock: *mut spinlock_t);
+    fn lupos_refcount_spin_unlock(lock: *mut spinlock_t);
+    fn lupos_refcount_spin_lock_irqsave(lock: *mut spinlock_t) -> c_ulong;
+    fn lupos_refcount_spin_unlock_irqrestore(lock: *mut spinlock_t, flags: c_ulong);
+
+    fn lupos_refcount_warn_add_not_zero_ovf();
+    fn lupos_refcount_warn_add_ovf();
+    fn lupos_refcount_warn_add_uaf();
+    fn lupos_refcount_warn_sub_uaf();
+    fn lupos_refcount_warn_dec_leak();
+    fn lupos_refcount_warn_unknown();
+    fn lupos_refcount_warn_dec_not_one_underflow();
 }
 
-// External types and constants supplied by the surrounding kernel translation unit.
-#[allow(non_camel_case_types)]
-type unsigned_long = usize;
+/// REFCOUNT_SATURATED, `INT_MIN / 2`; lib/refcount_helpers.c asserts it.
+const REFCOUNT_SATURATED: c_int = c_int::MIN / 2;
 
-#[allow(non_camel_case_types)]
-enum refcount_t {}
-#[allow(non_camel_case_types)]
-enum atomic_t {}
-#[allow(non_camel_case_types)]
-enum mutex {}
-#[allow(non_camel_case_types)]
-enum spinlock_t {}
+/// `enum refcount_saturation_type`; lib/refcount_helpers.c asserts it.
+const REFCOUNT_ADD_NOT_ZERO_OVF: c_uint = 0;
+const REFCOUNT_ADD_OVF: c_uint = 1;
+const REFCOUNT_ADD_UAF: c_uint = 2;
+const REFCOUNT_SUB_UAF: c_uint = 3;
+const REFCOUNT_DEC_LEAK: c_uint = 4;
 
-const REFCOUNT_SATURATED: u32 = 0x4000_0000;
-
-#[repr(C)]
-#[non_exhaustive]
-#[derive(Copy, Clone)]
-pub enum refcount_saturation_type {
-    REFCOUNT_ADD_NOT_ZERO_OVF,
-    REFCOUNT_ADD_OVF,
-    REFCOUNT_ADD_UAF,
-    REFCOUNT_SUB_UAF,
-    REFCOUNT_DEC_LEAK,
+/// atomic_read(&r->refs).
+///
+/// # Safety
+/// `r` points to a valid refcount.
+unsafe fn refs_read(r: *mut refcount_t) -> c_int {
+    // SAFETY: atomic_read() is a volatile load of the counter.
+    unsafe { read_volatile(addr_of_mut!((*r).refs.counter)) }
 }
 
-#[inline]
-pub unsafe fn refcount_warn_saturate(r: *mut refcount_t, t: refcount_saturation_type) {
-    refcount_set(r, REFCOUNT_SATURATED as i32);
+/// refcount_set(r, n): atomic_set(&r->refs, n).
+///
+/// # Safety
+/// `r` points to a valid refcount.
+unsafe fn refcount_set(r: *mut refcount_t, n: c_int) {
+    // SAFETY: atomic_set() is a volatile store of the counter.
+    unsafe { write_volatile(addr_of_mut!((*r).refs.counter), n) };
+}
 
-    match t {
-        refcount_saturation_type::REFCOUNT_ADD_NOT_ZERO_OVF => {
-            warn_once(true, b"refcount_t: saturated; leaking memory.\0".as_ptr());
-        }
-        refcount_saturation_type::REFCOUNT_ADD_OVF => {
-            warn_once(true, b"refcount_t: saturated; leaking memory.\0".as_ptr());
-        }
-        refcount_saturation_type::REFCOUNT_ADD_UAF => {
-            warn_once(true, b"refcount_t: addition on 0; use-after-free.\0".as_ptr());
-        }
-        refcount_saturation_type::REFCOUNT_SUB_UAF => {
-            warn_once(true, b"refcount_t: underflow; use-after-free.\0".as_ptr());
-        }
-        refcount_saturation_type::REFCOUNT_DEC_LEAK => {
-            warn_once(true, b"refcount_t: decrement hit 0; leaking memory.\0".as_ptr());
-        }
-        _ => {
-            warn_once(true, b"refcount_t: unknown saturation event!?.\0".as_ptr());
+/// Saturates `r` and reports the saturation event `t`.
+///
+/// # Safety
+/// `r` points to a valid refcount.
+#[no_mangle]
+pub unsafe extern "C" fn refcount_warn_saturate(r: *mut refcount_t, t: c_uint) {
+    // SAFETY: r is valid; each event has its own native WARN_ONCE() site.
+    unsafe {
+        refcount_set(r, REFCOUNT_SATURATED);
+
+        match t {
+            REFCOUNT_ADD_NOT_ZERO_OVF => lupos_refcount_warn_add_not_zero_ovf(),
+            REFCOUNT_ADD_OVF => lupos_refcount_warn_add_ovf(),
+            REFCOUNT_ADD_UAF => lupos_refcount_warn_add_uaf(),
+            REFCOUNT_SUB_UAF => lupos_refcount_warn_sub_uaf(),
+            REFCOUNT_DEC_LEAK => lupos_refcount_warn_dec_leak(),
+            _ => lupos_refcount_warn_unknown(),
         }
     }
 }
+// EXPORT_SYMBOL(refcount_warn_saturate);
 
-#[inline]
-pub unsafe fn refcount_dec_if_one(r: *mut refcount_t) -> bool {
-    let mut val: i32 = 1;
-    atomic_try_cmpxchg_release(r as *mut atomic_t, &mut val, 0)
+/**
+ * refcount_dec_if_one - decrement a refcount if it is 1
+ * @r: the refcount
+ *
+ * No atomic_t counterpart, it attempts a 1 -> 0 transition and returns the
+ * success thereof.
+ *
+ * Like all decrement operations, it provides release memory order and provides
+ * a control dependency.
+ *
+ * It can be used like a try-delete operator; this explicit case is provided
+ * and not cmpxchg in generic, because that would allow implementing unsafe
+ * operations.
+ *
+ * Return: true if the resulting refcount is 0, false otherwise
+ */
+/// # Safety
+/// `r` points to a valid refcount.
+#[no_mangle]
+pub unsafe extern "C" fn refcount_dec_if_one(r: *mut refcount_t) -> bool {
+    let mut val: c_int = 1;
+
+    // SAFETY: native atomic_try_cmpxchg_release() on the counter.
+    unsafe { lupos_refcount_try_cmpxchg_release(addr_of_mut!((*r).refs), &mut val, 0) }
 }
+// EXPORT_SYMBOL(refcount_dec_if_one);
 
-#[inline]
-pub unsafe fn refcount_dec_not_one(r: *mut refcount_t) -> bool {
-    let mut val: u32 = atomic_read(r as *const atomic_t);
+/**
+ * refcount_dec_not_one - decrement a refcount if it is not 1
+ * @r: the refcount
+ *
+ * No atomic_t counterpart, it decrements unless the value is 1, in which case
+ * it will return false.
+ *
+ * Was often done like: atomic_add_unless(&var, -1, 1)
+ *
+ * Return: true if the decrement operation was successful, false otherwise
+ */
+/// # Safety
+/// `r` points to a valid refcount.
+#[no_mangle]
+pub unsafe extern "C" fn refcount_dec_not_one(r: *mut refcount_t) -> bool {
+    // SAFETY: r is valid; the update uses the native release cmpxchg.
+    unsafe {
+        let mut val = refs_read(r) as c_uint;
 
-    loop {
-        if val == REFCOUNT_SATURATED {
-            return true;
+        loop {
+            if val == REFCOUNT_SATURATED as c_uint {
+                return true;
+            }
+
+            if val == 1 {
+                return false;
+            }
+
+            let new = val.wrapping_sub(1);
+            if new > val {
+                lupos_refcount_warn_dec_not_one_underflow();
+                return true;
+            }
+
+            let mut old = val as c_int;
+            let swapped = lupos_refcount_try_cmpxchg_release(addr_of_mut!((*r).refs), &mut old, new as c_int);
+            val = old as c_uint;
+            if swapped {
+                break;
+            }
         }
+    }
 
-        if val == 1 {
+    true
+}
+// EXPORT_SYMBOL(refcount_dec_not_one);
+
+/**
+ * refcount_dec_and_mutex_lock - return holding mutex if able to decrement
+ *                               refcount to 0
+ * @r: the refcount
+ * @lock: the mutex to be locked
+ *
+ * Similar to atomic_dec_and_mutex_lock(), it will WARN on underflow and fail
+ * to decrement when saturated at REFCOUNT_SATURATED.
+ *
+ * Provides release memory ordering, such that prior loads and stores are done
+ * before, and provides a control dependency such that free() must come after.
+ * See the comment on top.
+ *
+ * Return: true and hold mutex if able to decrement refcount to 0, false
+ *         otherwise
+ */
+/// # Safety
+/// `r` and `lock` are valid; the caller may sleep.
+#[no_mangle]
+pub unsafe extern "C" fn refcount_dec_and_mutex_lock(r: *mut refcount_t, lock: *mut mutex) -> bool {
+    // SAFETY: native refcount and mutex primitives.
+    unsafe {
+        if refcount_dec_not_one(r) {
             return false;
         }
 
-        let new = val - 1;
-        if new > val {
-            warn_once(true, b"refcount_t: underflow; use-after-free.\0".as_ptr());
-            return true;
+        lupos_refcount_mutex_lock(lock);
+        if !lupos_refcount_dec_and_test(r) {
+            mutex_unlock(lock);
+            return false;
+        }
+    }
+
+    true
+}
+// EXPORT_SYMBOL(refcount_dec_and_mutex_lock);
+
+/**
+ * refcount_dec_and_lock - return holding spinlock if able to decrement
+ *                         refcount to 0
+ * @r: the refcount
+ * @lock: the spinlock to be locked
+ *
+ * Similar to atomic_dec_and_lock(), it will WARN on underflow and fail to
+ * decrement when saturated at REFCOUNT_SATURATED.
+ *
+ * Provides release memory ordering, such that prior loads and stores are done
+ * before, and provides a control dependency such that free() must come after.
+ * See the comment on top.
+ *
+ * Return: true and hold spinlock if able to decrement refcount to 0, false
+ *         otherwise
+ */
+/// # Safety
+/// `r` and `lock` are valid.
+#[no_mangle]
+pub unsafe extern "C" fn refcount_dec_and_lock(r: *mut refcount_t, lock: *mut spinlock_t) -> bool {
+    // SAFETY: native refcount and spinlock primitives.
+    unsafe {
+        if refcount_dec_not_one(r) {
+            return false;
         }
 
-        let mut old = val as i32;
-        if atomic_try_cmpxchg_release(r as *mut atomic_t, &mut old, new as i32) {
-            return true;
+        lupos_refcount_spin_lock(lock);
+        if !lupos_refcount_dec_and_test(r) {
+            lupos_refcount_spin_unlock(lock);
+            return false;
         }
-        val = old as u32;
-    }
-}
-
-#[inline]
-pub unsafe fn refcount_dec_and_mutex_lock(r: *mut refcount_t, lock: *mut mutex) -> bool {
-    if refcount_dec_not_one(r) {
-        return false;
-    }
-
-    mutex_lock(lock);
-    if !refcount_dec_and_test(r) {
-        mutex_unlock(lock);
-        return false;
     }
 
     true
 }
+// EXPORT_SYMBOL(refcount_dec_and_lock);
 
-#[inline]
-pub unsafe fn refcount_dec_and_lock(r: *mut refcount_t, lock: *mut spinlock_t) -> bool {
-    if refcount_dec_not_one(r) {
-        return false;
-    }
+/**
+ * refcount_dec_and_lock_irqsave - return holding spinlock with disabled
+ *                                 interrupts if able to decrement refcount to 0
+ * @r: the refcount
+ * @lock: the spinlock to be locked
+ * @flags: saved IRQ-flags if the is acquired
+ *
+ * Same as refcount_dec_and_lock() above except that the spinlock is acquired
+ * with disabled interrupts.
+ *
+ * Return: true and hold spinlock if able to decrement refcount to 0, false
+ *         otherwise
+ */
+/// # Safety
+/// `r`, `lock` and `flags` are valid.
+#[no_mangle]
+pub unsafe extern "C" fn refcount_dec_and_lock_irqsave(r: *mut refcount_t, lock: *mut spinlock_t, flags: *mut c_ulong) -> bool {
+    // SAFETY: native refcount and spinlock primitives.
+    unsafe {
+        if refcount_dec_not_one(r) {
+            return false;
+        }
 
-    spin_lock(lock);
-    if !refcount_dec_and_test(r) {
-        spin_unlock(lock);
-        return false;
+        *flags = lupos_refcount_spin_lock_irqsave(lock);
+        if !lupos_refcount_dec_and_test(r) {
+            lupos_refcount_spin_unlock_irqrestore(lock, *flags);
+            return false;
+        }
     }
 
     true
 }
-
-#[inline]
-pub unsafe fn refcount_dec_and_lock_irqsave(
-    r: *mut refcount_t,
-    lock: *mut spinlock_t,
-    flags: *mut unsigned_long,
-) -> bool {
-    if refcount_dec_not_one(r) {
-        return false;
-    }
-
-    spin_lock_irqsave(lock, *flags);
-    if !refcount_dec_and_test(r) {
-        spin_unlock_irqrestore(lock, *flags);
-        return false;
-    }
-
-    true
-}
+// EXPORT_SYMBOL(refcount_dec_and_lock_irqsave);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

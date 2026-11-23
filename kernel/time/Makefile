@@ -7,7 +7,19 @@ endif
 
 obj-y += time.o timer.o hrtimer.o sleep_timeout.o
 obj-y += timekeeping.o ntp.o clocksource.o jiffies.o timer_list.o
-obj-y += timeconv.o timecounter.o alarmtimer.o
+ifeq ($(CONFIG_RUST_TIMECONV),y)
+timeconv-provider := timeconv_rust.o
+$(obj)/timeconv_rust.o: modfile := kernel/time/timeconv
+else
+timeconv-provider := timeconv.o
+endif
+ifeq ($(CONFIG_RUST_TIMECOUNTER),y)
+timecounter-provider := timecounter_rust.o timecounter_helpers.o
+$(obj)/timecounter_rust.o: modfile := kernel/time/timecounter
+else
+timecounter-provider := timecounter.o
+endif
+obj-y += $(timeconv-provider) $(timecounter-provider) alarmtimer.o
 
 ifeq ($(CONFIG_POSIX_TIMERS),y)
  obj-y += posix-timers.o posix-cpu-timers.o posix-clock.o itimer.o

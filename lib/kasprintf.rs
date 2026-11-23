@@ -5,55 +5,58 @@
  *  Copyright (C) 1991, 1992  Linus Torvalds
  */
 
-use core::ffi::{c_char, c_int, c_uint, c_void};
+// Dependencies: linux/stdarg.h, linux/slab.h, linux/types.h, linux/string.h.
+//
+// C-variadic kasprintf() and the va_list kvasprintf*() use the compiler's
+// VaList ABI, admitted for this object by lib/Makefile (RUST_KASPRINTF
+// requires the inspected rustc 1.85.1, as RUST_PANIC does). The
+// kmalloc_track_caller() site receives kvasprintf()'s own return address,
+// the C unit's _RET_IP_.
 
-// Dependencies supplied by the surrounding kernel translation.
-pub type gfp_t = c_uint;
-pub type va_list = *mut c_void;
+use core::ffi::VaList;
+use core::ptr::null_mut;
+use kernel::bindings::{gfp_t, kstrdup_const, strchr, strcmp};
+use kernel::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 
 extern "C" {
-    fn va_copy(dst: va_list, src: va_list);
-    fn va_end(ap: va_list);
-    fn va_arg(ap: va_list, ty: *const c_void) -> *const c_char;
-    fn vsnprintf(buf: *mut c_char, size: usize, fmt: *const c_char, ap: va_list) -> c_uint;
-    fn kmalloc_track_caller(size: usize, gfp: gfp_t) -> *mut c_char;
-    fn kstrdup_const(s: *const c_char, gfp: gfp_t) -> *const c_char;
-    fn strchr(s: *const c_char, c: c_int) -> *mut c_char;
-    fn strcmp(s1: *const c_char, s2: *const c_char) -> c_int;
-    fn warn(condition: bool, fmt: *const c_char, ...);
+    #[link_name = "vsnprintf"]
+    fn native_vsnprintf(buf: *mut c_char, size: usize, fmt: *const c_char, args: VaList<'_, '_>) -> c_int;
+    #[link_name = "llvm.returnaddress"]
+    fn return_address(level: c_int) -> *mut c_void;
+
+    fn lupos_kasprintf_kmalloc_track_caller(size: usize, gfp: gfp_t, caller: c_ulong) -> *mut c_char;
+    fn lupos_kasprintf_warn_mismatch(first: c_uint, second: c_uint, fmt: *const c_char);
 }
 
 /* Simplified asprintf. */
-pub unsafe extern "C" fn kvasprintf(
-    gfp: gfp_t,
-    fmt: *const c_char,
-    ap: va_list,
-) -> *mut c_char {
-    let first: c_uint;
-    let second: c_uint;
-    let p: *mut c_char;
-    let aq: va_list;
+/// Returns a newly allocated string formatted from `fmt` and `ap`.
+///
+/// # Safety
+/// `fmt` and `ap` form a valid printf format and argument list.
+#[no_mangle]
+#[inline(never)]
+pub unsafe extern "C" fn kvasprintf(gfp: gfp_t, fmt: *const c_char, ap: VaList<'_, '_>) -> *mut c_char {
+    // SAFETY: va_copy() brackets the sizing pass; the second pass writes at
+    // most first + 1 bytes into the allocation.
+    unsafe {
+        let caller = return_address(0) as c_ulong;
 
-    va_copy(aq, ap);
-    first = vsnprintf(core::ptr::null_mut(), 0, fmt, aq);
-    va_end(aq);
+        let first = ap.with_copy(|aq| native_vsnprintf(null_mut(), 0, fmt, aq)) as c_uint;
 
-    p = kmalloc_track_caller(first.wrapping_add(1) as usize, gfp);
-    if p.is_null() {
-        return core::ptr::null_mut();
+        let p = lupos_kasprintf_kmalloc_track_caller(first.wrapping_add(1) as usize, gfp, caller);
+        if p.is_null() {
+            return null_mut();
+        }
+
+        let second = native_vsnprintf(p, first.wrapping_add(1) as usize, fmt, ap) as c_uint;
+        if first != second {
+            lupos_kasprintf_warn_mismatch(first, second, fmt);
+        }
+
+        p
     }
-
-    second = vsnprintf(p, first.wrapping_add(1) as usize, fmt, ap);
-    warn(
-        first != second,
-        c"different return values (%u and %u) from vsnprintf(\"%s\", ...)".as_ptr(),
-        first,
-        second,
-        fmt,
-    );
-
-    p
 }
+// EXPORT_SYMBOL(kvasprintf);
 
 /*
  * If fmt contains no % (or is exactly %s), use kstrdup_const. If fmt
@@ -61,27 +64,32 @@ pub unsafe extern "C" fn kvasprintf(
  * allocation and string copy. In any case, the return value should be
  * freed using kfree_const().
  */
-pub unsafe extern "C" fn kvasprintf_const(
-    gfp: gfp_t,
-    fmt: *const c_char,
-    ap: va_list,
-) -> *const c_char {
-    if strchr(fmt, '%' as c_int).is_null() {
-        return kstrdup_const(fmt, gfp);
+/// # Safety
+/// `fmt` and `ap` form a valid printf format and argument list.
+#[no_mangle]
+pub unsafe extern "C" fn kvasprintf_const(gfp: gfp_t, fmt: *const c_char, mut ap: VaList<'_, '_>) -> *const c_char {
+    // SAFETY: fmt is NUL-terminated; a "%s" format carries one string.
+    unsafe {
+        if strchr(fmt, c_int::from(b'%')).is_null() {
+            return kstrdup_const(fmt, gfp);
+        }
+        if strcmp(fmt, c"%s".as_ptr().cast()) == 0 {
+            return kstrdup_const(ap.arg::<*const c_char>(), gfp);
+        }
+        kvasprintf(gfp, fmt, ap)
     }
-    if strcmp(fmt, c"%s".as_ptr()) == 0 {
-        return kstrdup_const(va_arg(ap, core::ptr::null()), gfp);
-    }
-    kvasprintf(gfp, fmt, ap)
 }
+// EXPORT_SYMBOL(kvasprintf_const);
 
-pub unsafe extern "C" fn kasprintf(
-    gfp: gfp_t,
-    fmt: *const c_char,
-    mut args: ...,
-) -> *mut c_char {
-    let ap: va_list = &mut args as *mut _ as va_list;
-    kvasprintf(gfp, fmt, ap)
+/// Returns a newly allocated string formatted from `fmt` and its arguments.
+///
+/// # Safety
+/// `fmt` is a printf format matching the variadic arguments.
+#[no_mangle]
+pub unsafe extern "C" fn kasprintf(gfp: gfp_t, fmt: *const c_char, mut args: ...) -> *mut c_char {
+    // SAFETY: va_start/va_end bracket this call, as in the C body.
+    unsafe { kvasprintf(gfp, fmt, args.as_va_list()) }
 }
+// EXPORT_SYMBOL(kasprintf);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
